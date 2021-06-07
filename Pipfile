@@ -11,3 +11,4 @@ python_version = "3.9"
 [scripts]
 install = "sh bin/install.sh"
 buildc = "sh bin/compile_cpp.sh"
+start = "python index.py"
