@@ -11,4 +11,10 @@ sys.path.insert(1, os.path.join(os.getcwd(), 'physical-modelling-lib/build'))
 # import project files
 import physical_lib
 
-print(physical_lib.add(2, 3))
+
+def main():
+	print(physical_lib.add(2, 3))
+
+
+if __name__ == '__main__':
+	main()
