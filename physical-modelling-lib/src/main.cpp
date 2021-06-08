@@ -1,4 +1,5 @@
-#include <pybind11/pybind11.h>
+#include <pybind11/pybind11.h>	// python bindings
+// #include <GLFW/glfw3.h>		// GPU helper
 
 namespace py = pybind11;
 
