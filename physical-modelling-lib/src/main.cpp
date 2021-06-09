@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>	// python bindings
-#include <GLFW/glfw3.h>			// OpenGL
-// #include <GL/glew.h>
+#include <GL/glew.h>			// OpenGL
+#include <GLFW/glfw3.h>
 
 // python namespace
 namespace py = pybind11;

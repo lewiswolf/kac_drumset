@@ -23,14 +23,13 @@ set(GLFW_SRC PUBLIC ${PROJECT_SOURCE_DIR}/includes/glfw/src)
 set(GLFW_INCLUDE PUBLIC ${PROJECT_SOURCE_DIR}/includes/glfw/include)
 
 # include glew
-# add_subdirectory(${PROJECT_SOURCE_DIR}/includes/glew/build/cmake)
-# set(GLEW_SRC PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/auto/src)
-# set(GLEW_INCLUDE PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/include)
+set(GLEW_SRC PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/auto/src)
+set(GLEW_INCLUDE PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/include)
 
 # link libraries
-target_link_directories(${PROJECT_NAME} ${GLFW_SRC})
-target_include_directories(${PROJECT_NAME} ${GLFW_INCLUDE})
+target_link_directories(${PROJECT_NAME} ${GLFW_SRC} ${GLEW_SRC})
+target_include_directories(${PROJECT_NAME} ${GLFW_INCLUDE} ${GLEW_INCLUDE})
 if(APPLE)
 	# macos specifics
-    target_link_libraries(${PROJECT_NAME} PUBLIC "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
+	target_link_libraries(${PROJECT_NAME} PUBLIC "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
 endif()
