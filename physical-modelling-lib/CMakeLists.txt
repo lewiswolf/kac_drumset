@@ -23,7 +23,7 @@ set(GLFW_SRC PUBLIC ${PROJECT_SOURCE_DIR}/includes/glfw/src)
 set(GLFW_INCLUDE PUBLIC ${PROJECT_SOURCE_DIR}/includes/glfw/include)
 
 # include glew
-set(GLEW_SRC PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/auto/src)
+set(GLEW_SRC PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/src)
 set(GLEW_INCLUDE PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/include)
 
 # link libraries
