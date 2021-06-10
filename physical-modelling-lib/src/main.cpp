@@ -6,6 +6,10 @@
 namespace py = pybind11;
 
 float add_floats(float x, float y) {
+	/*
+		Add two numbers
+		x + y = z
+	*/
 	return x + y;
 }
 

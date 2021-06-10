@@ -7,8 +7,8 @@ fi
 
 # clear build folder (used for testing)
 cd physical-modelling-lib/build
-shopt -s extglob
-rm -rf !(.gitignore)
+	shopt -s extglob
+	rm -rf !(.gitignore)
 cd ../../
 
 # build project
