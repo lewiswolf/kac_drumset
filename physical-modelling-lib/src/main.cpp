@@ -1,20 +1,46 @@
-#include <pybind11/pybind11.h>	// python bindings
+/*
+	Render the main executable.
+*/
+
 #include <GL/glew.h>			// OpenGL
 #include <GLFW/glfw3.h>
 
-// python namespace
-namespace py = pybind11;
+int main() {
+	// start GL context and O/S window using the GLFW helper library
+  if (!glfwInit()) {
+    // fprintf(1, "ERROR: could not start GLFW3\n");
+    return 1;
+  } 
 
-float add_floats(float x, float y) {
-	/*
-		Add two numbers
-		x + y = z
-	*/
-	return x + y;
-}
+  // uncomment these lines if on Apple OS X
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-// configure python bindings
-PYBIND11_MODULE(physical_lib, handle) {
-	handle.doc() = "Physical modelling library";
-	handle.def("add", &add_floats);
+  GLFWwindow* window = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
+  if (!window) {
+    // fprintf(stderr, "ERROR: could not open window with GLFW3\n");
+    glfwTerminate();
+    return 1;
+  }
+  glfwMakeContextCurrent(window);
+                                  
+  // start GLEW extension handler
+  glewExperimental = GL_TRUE;
+  glewInit();
+
+  // get version info
+  const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
+  const GLubyte* version = glGetString(GL_VERSION); // version as a string
+
+  // tell GL to only draw onto a pixel if the shape is closer to the viewer
+  glEnable(GL_DEPTH_TEST); // enable depth-testing
+  glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
+
+  /* OTHER STUFF GOES HERE NEXT */
+  
+  // close GL context and any other GLFW resources
+  glfwTerminate();
+  return 0;
 }
