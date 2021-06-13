@@ -14,6 +14,9 @@ file(
 	${PROJECT_SOURCE_DIR}/src/*.hpp
 )
 # include glfw3
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${PROJECT_SOURCE_DIR}/includes/glfw)
 set(GLFW_SRC PUBLIC ${PROJECT_SOURCE_DIR}/includes/glfw/src)
 set(GLFW_INCLUDE PUBLIC ${PROJECT_SOURCE_DIR}/includes/glfw/include)
