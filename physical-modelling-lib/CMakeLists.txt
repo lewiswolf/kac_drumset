@@ -5,14 +5,8 @@ project(physical_lib)
 set(CMAKE_CXX_STANDARD 17)
 
 # include src
-file(
-	GLOB_RECURSE
-	${PROJECT_SOURCE_DIR}/src/*.cpp
-)
-file(
-	GLOB_RECURSE
-	${PROJECT_SOURCE_DIR}/src/*.hpp
-)
+file(GLOB_RECURSE ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE ${PROJECT_SOURCE_DIR}/src/*.hpp)
 # include glfw3
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
