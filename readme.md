@@ -9,9 +9,21 @@
 pipenv run install
 ```
 
-Please note, this is not the typical `pipenv install` command, as this command will also install any necessary C++ libraries, as well as check for any other missing dependencies.
+Please note, this is not the typical `pipenv install` command, as this command will also install any necessary C++ libraries, as well as build the project.
 
-## Run
+## Rebuild C++
+
+```bash
+pipenv run buildcpp
+```
+
+## Run Standalone
+
+```bash
+pipenv run cpp
+```
+
+## Run Python (coming soon...)
 
 ```bash
 pipenv run start

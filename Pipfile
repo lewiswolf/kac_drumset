@@ -11,5 +11,5 @@ python_version = "3.9"
 [scripts]
 install = "sh bin/install.sh"
 buildcpp = "sh bin/compile_cpp.sh"
-python = "python index.py"
+start = "python index.py"
 cpp = "./physical-modelling-lib/build/physical_modelling_lib"
