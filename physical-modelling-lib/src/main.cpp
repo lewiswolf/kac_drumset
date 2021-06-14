@@ -9,7 +9,7 @@
 int main() {
 	std::string windowName = "Drum Model";
 	int domainSize[2] = {80, 80}; 	// grid resolution
-	float magnifier = 10;			// pixels per grid grid point (1 * 1 => n * n)
+	float magnifier = 10;			// pixels per grid point (1 * 1 => n * n)
 
 	// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
