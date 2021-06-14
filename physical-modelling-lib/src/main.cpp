@@ -1,46 +1,42 @@
-/*
-	Render the main executable.
-*/
-
-#include <GL/glew.h>			// OpenGL
-#include <GLFW/glfw3.h>
+// core
+#include <string>
+// includes
+#include <GL/glew.h>    	// OpenGL
+#include <GLFW/glfw3.h>		// OpenGL Window
+// src
+#include "openGL_functions.h"
 
 int main() {
-	// start GL context and O/S window using the GLFW helper library
-  if (!glfwInit()) {
-    // fprintf(1, "ERROR: could not start GLFW3\n");
-    return 1;
-  } 
+	std::string windowName = "Drum Model";
+	int domainSize[2] = {80, 80}; 	// grid resolution
+	float magnifier = 10;			// pixels per grid grid point (1 * 1 => n * n)
 
-  // uncomment these lines if on Apple OS X
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  GLFWwindow* window = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
-  if (!window) {
-    // fprintf(stderr, "ERROR: could not open window with GLFW3\n");
-    glfwTerminate();
-    return 1;
-  }
-  glfwMakeContextCurrent(window);
-                                  
-  // start GLEW extension handler
-  glewExperimental = GL_TRUE;
-  glewInit();
+	GLFWwindow* window = initOpenGL(domainSize[0], domainSize[1], windowName, magnifier);
+	
+	// where the shaders are
+	// const char* vertex_path_fbo = {"shaders_FDTD/fbo_vs.glsl"}; 		// vertex shader of solver program
+	// const char* fragment_path_fbo = {"shaders_FDTD/fbo_fs.glsl"}; 		// fragment shader of solver program
+	// const char* vertex_path_render = {"shaders_FDTD/render_vs.glsl"};	// vertex shader of render program
+	// const char* fragment_path_render = {"shaders_FDTD/render_fs.glsl"};	// fragment shader of render program
+	
+	// // FBO shader program (solver)
+	// GLuint shader_program_fbo = 0;
+	// GLuint vs_fbo = 0;
+	// GLuint fs_fbo = 0;
+	// if(!loadShaderProgram(vertex_path_fbo, fragment_path_fbo, vs_fbo, fs_fbo, shader_program_fbo))
+	// 	return 1;
 
-  // get version info
-  const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
-  const GLubyte* version = glGetString(GL_VERSION); // version as a string
+	// // screen shader program (render)
+	// GLuint shader_program_render = 0;
+	// GLuint vs_render = 0;
+	// GLuint fs_render = 0;
+	// if(!loadShaderProgram(vertex_path_render, fragment_path_render, vs_render, fs_render, shader_program_render))
+	// 	return 1;
 
-  // tell GL to only draw onto a pixel if the shape is closer to the viewer
-  glEnable(GL_DEPTH_TEST); // enable depth-testing
-  glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
-
-  /* OTHER STUFF GOES HERE NEXT */
-  
-  // close GL context and any other GLFW resources
-  glfwTerminate();
-  return 0;
+	return 0;
 }

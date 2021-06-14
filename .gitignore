@@ -2,3 +2,5 @@
 .mypy_cache
 Pipfile.lock
 
+# lew stuff
+/unused

@@ -1,9 +1,7 @@
 ## Dependencies
 
 -   [cmake](https://formulae.brew.sh/formula/cmake)
-<!-- -   [vcpkg](https://formulae.brew.sh/formula/vcpkg) -->
 -   [pipenv](https://formulae.brew.sh/formula/pipenv#default)
-<!-- -   [pybind](https://github.com/pybind/pybind11) -->
 
 ## Install
 

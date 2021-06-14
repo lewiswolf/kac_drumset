@@ -5,8 +5,8 @@ project(physical_lib)
 set(CMAKE_CXX_STANDARD 17)
 
 # include src
-file(GLOB_RECURSE ${PROJECT_SOURCE_DIR}/src/*.cpp)
-file(GLOB_RECURSE ${PROJECT_SOURCE_DIR}/src/*.hpp)
+file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB ${PROJECT_SOURCE_DIR}/src/*.h)
 # include glfw3
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -20,18 +20,18 @@ set(GLEW_SRC PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/src)
 set(GLEW_INCLUDE PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/include)
 
 # configure pybind
-add_subdirectory(${PROJECT_SOURCE_DIR}/includes/pybind11)
-pybind11_add_module(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/py.cpp)
-# link libraries to pybind
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw glew)
-target_link_directories(${PROJECT_NAME} ${GLFW_SRC} ${GLEW_SRC})
-target_include_directories(${PROJECT_NAME} ${GLFW_INCLUDE} ${GLEW_INCLUDE})
-if(APPLE)
-	target_link_libraries(${PROJECT_NAME} PUBLIC "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
-endif()
+# add_subdirectory(${PROJECT_SOURCE_DIR}/includes/pybind11)
+# pybind11_add_module(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/py.cpp)
+# # link libraries to pybind
+# target_link_libraries(${PROJECT_NAME} PUBLIC glfw glew)
+# target_link_directories(${PROJECT_NAME} ${GLFW_SRC} ${GLEW_SRC})
+# target_include_directories(${PROJECT_NAME} ${GLFW_INCLUDE} ${GLEW_INCLUDE})
+# if(APPLE)
+# 	target_link_libraries(${PROJECT_NAME} PUBLIC "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
+# endif()
 
 # compile standalone app
-add_executable(physical_modelling_lib ${PROJECT_SOURCE_DIR}/src/main.cpp)
+add_executable(physical_modelling_lib ${SOURCES})
 # link libraries to executable 
 target_link_libraries(physical_modelling_lib PUBLIC glfw glew)
 target_link_directories(physical_modelling_lib ${GLFW_SRC} ${GLEW_SRC})
