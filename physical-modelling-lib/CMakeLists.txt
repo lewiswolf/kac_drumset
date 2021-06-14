@@ -5,7 +5,7 @@ project(physical_lib)
 set(CMAKE_CXX_STANDARD 17)
 
 # include src
-file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp) # note to self, redesign filetree to support both pybind and standalone
+file(GLOB PROJECT_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp) # note to self, redesign filetree to support both pybind and standalone
 file(GLOB ${PROJECT_SOURCE_DIR}/src/*.h)
 # include glfw3
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -20,7 +20,7 @@ set(GLEW_SRC PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/src)
 set(GLEW_INCLUDE PUBLIC ${PROJECT_SOURCE_DIR}/includes/glew/include)
 
 # compile standalone app
-add_executable(physical_modelling_lib ${SOURCES})
+add_executable(physical_modelling_lib ${PROJECT_SRC})
 # link libraries to executable 
 target_link_libraries(physical_modelling_lib PUBLIC glfw glew)
 target_link_directories(physical_modelling_lib ${GLFW_SRC} ${GLEW_SRC})
