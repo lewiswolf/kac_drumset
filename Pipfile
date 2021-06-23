@@ -15,5 +15,6 @@ flake8 = "*"
 python_version = "3.9"
 
 [scripts]
-start = "python index.py"
 test = "sh ./bin/test.sh"
+generate = "python index.py -g"
+train = "python index.py -t"

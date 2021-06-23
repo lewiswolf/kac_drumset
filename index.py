@@ -1,7 +1,6 @@
 # core libraries
 import os
 import sys
-import time
 
 # dependencies
 import click			# CLI arguments
@@ -12,15 +11,27 @@ sys.path.insert(1, os.path.join(os.getcwd(), 'src'))
 from settings import settings
 
 
-def main():
-	with tqdm(
-		bar_format='{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt}, {elapsed} < {remaining}, {rate_fmt}  ',
-		unit=' units',
-		total=settings['test']
-	) as pbar:
-		for i in range(settings['test']):
-			time.sleep(0.6)
-			pbar.update(1)
+# set command line flags
+@click.command()
+@click.option('--train', '-t', is_flag=True, help='Train a new model.')
+@click.option('--generate', '-g', is_flag=True, help='Generate targets before training.')
+def main(generate, train):
+	if (generate):
+		# generate dataset
+		print('generate dataset')
+	if (train):
+		# train model
+		print('train model')
+
+	# # progress bar example for later
+	# with tqdm(
+	# 	bar_format='{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt}, {elapsed} < {remaining}, {rate_fmt}  ',
+	# 	unit=' units',
+	# 	total=settings['test']
+	# ) as pbar:
+	# 	for i in range(settings['test']):
+	# 		# do stuff
+	# 		pbar.update(1)
 
 
 if __name__ == '__main__':
