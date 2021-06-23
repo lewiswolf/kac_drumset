@@ -8,7 +8,7 @@ from tqdm import tqdm	# CLI progress bar
 
 # src files
 sys.path.insert(1, os.path.join(os.getcwd(), 'src'))
-from settings import settings
+from settings import settings	# creates a settings object
 
 
 # set command line flags
