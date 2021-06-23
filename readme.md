@@ -1,30 +1,15 @@
 ## Dependencies
 
--   [cmake](https://formulae.brew.sh/formula/cmake)
 -   [pipenv](https://formulae.brew.sh/formula/pipenv#default)
 
 ## Install
 
 ```bash
-pipenv run install
+pipenv install
 ```
 
-Please note, this is not the typical `pipenv install` command, as this command will also install any necessary C++ libraries, as well as build the project.
-
-## Rebuild C++
+<!-- Pytorch is installed automatically, and will work fine for all CPU based usages. However, to configure this package for GPU usage, you must install your required pytorch version via:
 
 ```bash
-pipenv run buildcpp
-```
-
-## Run Standalone
-
-```bash
-pipenv run cpp
-```
-
-## Run Python (coming soon...)
-
-```bash
-pipenv run start
-```
+$ pipenv run pip install torch==1.8.1+cu102 ...
+``` -->

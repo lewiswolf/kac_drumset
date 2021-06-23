@@ -1,19 +1,26 @@
 # core libraries
 import os
 import sys
+import time
 
 # dependencies
+import click			# CLI arguments
+from tqdm import tqdm	# CLI progress bar
 
-# add /src and /lib to sys.path
+# src files
 sys.path.insert(1, os.path.join(os.getcwd(), 'src'))
-sys.path.insert(1, os.path.join(os.getcwd(), 'physical-modelling-lib/build'))
-
-# import project files
-import physical_lib
+from settings import settings
 
 
 def main():
-	print(physical_lib.add(2, 3))
+	with tqdm(
+		bar_format='{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt}, {elapsed} < {remaining}, {rate_fmt}  ',
+		unit=' units',
+		total=settings['test']
+	) as pbar:
+		for i in range(settings['test']):
+			time.sleep(0.6)
+			pbar.update(1)
 
 
 if __name__ == '__main__':
