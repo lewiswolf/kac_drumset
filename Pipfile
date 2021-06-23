@@ -7,6 +7,9 @@ name = "pypi"
 click = "*"
 tqdm = "*"
 
+[dev-packages]
+mypy = "*"
+
 [requires]
 python_version = "3.9"
 
