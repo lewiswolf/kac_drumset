@@ -30,11 +30,15 @@ $ pipenv run test
 $ pipenv run generate
 ```
 
+Not yet implemented...
+
 ## Train Model
 
 ```bash
 pipenv run train
 ```
+
+Not yet implemented...
 
 <!-- Pytorch is installed automatically, and will work fine for all CPU based usages. However, to configure this package for GPU usage, you must install your required pytorch version via:
 
