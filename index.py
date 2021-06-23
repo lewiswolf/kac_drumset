@@ -15,7 +15,7 @@ from settings import settings	# creates a settings object
 @click.command()
 @click.option('--train', '-t', is_flag=True, help='Train a new model.')
 @click.option('--generate', '-g', is_flag=True, help='Generate targets before training.')
-def main(generate, train):
+def main(generate: bool, train: bool) -> None:
 	if (generate):
 		# generate dataset
 		print('generate dataset')
