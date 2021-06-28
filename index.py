@@ -15,7 +15,7 @@ from dataset import generateDataset, loadDataset	# methods for handling and gene
 @click.option('--train', '-t', is_flag=True, help='Train a new model.')
 @click.option('--generate', '-g', is_flag=True, help='Generate targets before training.')
 def main(generate: bool, train: bool) -> None:
-	# generate targets and store metadata
+	# generate a dataset, or load one if one already exists
 	datasetJSON = generateDataset() if generate else loadDataset()
 	print(datasetJSON)
 
