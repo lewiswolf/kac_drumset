@@ -53,7 +53,7 @@ def generateDataset() -> list[Sample]:
 	with tqdm(
 		bar_format='{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt}, Elapsed: {elapsed}, ETA: {remaining}, {rate_fmt}  ',
 		unit=' data samples',
-		total=settings['NUM_OF_TARGETS']
+		total=settings['NUM_OF_TARGETS'],
 	) as pbar:
 		for i in range(settings['NUM_OF_TARGETS']):
 			'''
