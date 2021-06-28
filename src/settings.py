@@ -5,12 +5,13 @@ This file is used to define and configure the project settings.
 from typing import TypedDict
 
 
-# type declarations
 class Settings(TypedDict):
-	test: int
+	NUM_OF_TARGETS: int		# How many data samples are there in the dataset?
+	SAMPLE_RATE: int		# audio samplerate
 
 
 # the configurable object
 settings: Settings = {
-	'test': 100
+	'NUM_OF_TARGETS': 10,
+	'SAMPLE_RATE': 44100,
 }
