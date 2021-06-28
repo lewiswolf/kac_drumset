@@ -31,12 +31,11 @@ class DatasetMetadata(TypedDict):
 
 def generateDataset() -> list[Sample]:
 	'''
-	Generates a dataset of drum sounds and returns the metadata.
+	Generates a dataset of drum sounds.
 	The generated dataset, including the individual .wav files and the metadata.json,
 	is saved in ../data.
 	'''
 
-	print('Generating dataset... 🎯')
 	metadata: DatasetMetadata = {
 		'NUM_OF_TARGETS': settings['NUM_OF_TARGETS'],
 		'SAMPLE_RATE': settings['SAMPLE_RATE'],
@@ -50,6 +49,7 @@ def generateDataset() -> list[Sample]:
 			os.remove(os.path.join(datasetFolder, file))
 
 	# generate datatset
+	print('Generating dataset... 🎯')
 	with tqdm(
 		bar_format='{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt}, Elapsed: {elapsed}, ETA: {remaining}, {rate_fmt}  ',
 		unit=' data samples',
