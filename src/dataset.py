@@ -14,8 +14,8 @@ class Sample(TypedDict):
 	'''
 	Class declaration for each data sample.
 	'''
-	filepath: str
-	labels: list
+	filepath: str			# location os .wav file, relative to project directory
+	labels: list			# labels for each sample...
 
 
 class DatasetMetadata(TypedDict):
@@ -24,9 +24,9 @@ class DatasetMetadata(TypedDict):
 	This object and the settings object are compared to ensure a loaded dataset matches
 	the project settings.
 	'''
-	NUM_OF_TARGETS: int
-	SAMPLE_RATE: int
-	data: list[Sample]
+	NUM_OF_TARGETS: int		# number of samples in the dataset
+	SAMPLE_RATE: int		# audio sample rate
+	data: list[Sample]		# the dataset itself
 
 
 def generateDataset() -> list[Sample]:
