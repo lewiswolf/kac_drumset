@@ -1,9 +1,11 @@
 # core
 import json
 import os
+import sys
 from typing import TypedDict
 
 # dependencies
+import click					# CLI arguments
 from tqdm import tqdm			# CLI progress bar
 
 # src
@@ -14,8 +16,8 @@ class Sample(TypedDict):
 	'''
 	Class declaration for each data sample.
 	'''
-	filepath: str			# location of .wav file, relative to project directory
-	labels: list			# labels for each sample...
+	filepath: str				# location of .wav file, relative to project directory
+	labels: list				# labels for each sample...
 
 
 class DatasetMetadata(TypedDict):
@@ -24,9 +26,9 @@ class DatasetMetadata(TypedDict):
 	This object and the settings object are compared to ensure a loaded dataset matches
 	the project settings.
 	'''
-	NUM_OF_TARGETS: int		# How many data samples are there in the dataset?
-	SAMPLE_RATE: int		# audio sample rate
-	data: list[Sample]		# the dataset itself
+	NUM_OF_TARGETS: int			# How many data samples are there in the dataset?
+	SAMPLE_RATE: int			# audio sample rate
+	data: list[Sample]			# the dataset itself
 
 
 def generateDataset() -> list[Sample]:
@@ -92,12 +94,16 @@ def loadDataset() -> list[Sample]:
 		else:
 			dataset = metadata['data']
 
-	# regenerate new dataset if import fails
 	except FileNotFoundError:
+		# regenerate new dataset if no dataset exists
 		print('Could not load a dataset. 🤷')
 		dataset = generateDataset()
 	except DatasetIncompatible:
-		print('Imported dataset is incompatible with project settings. 🤷')
+		# if the dataset is incompatible with the current project settings, ask to regenerate
+		print('Imported dataset is incompatible with the current project settings. 🤷')
+		if not click.confirm('Do you want to generate a new dataset?', default=None, prompt_suffix=': '):
+			print('Check data/metadata.json to see your previous project setting.')
+			sys.exit()
 		dataset = generateDataset()
 
 	return dataset
