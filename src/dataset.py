@@ -65,7 +65,7 @@ def generateDataset() -> list[Sample]:
 
 	# export metadata json
 	with open(os.path.join(os.getcwd(), 'data/metadata.json'), 'w') as json_file:
-		json.dump(metadata, json_file)
+		json.dump(metadata, json_file, skipkeys=True, indent="\t")
 
 	return metadata['data']
 
