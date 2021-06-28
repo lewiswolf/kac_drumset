@@ -4,10 +4,10 @@ import os
 from typing import TypedDict
 
 # dependencies
-from tqdm import tqdm	# CLI progress bar
+from tqdm import tqdm			# CLI progress bar
 
 # src
-from settings import settings
+from settings import settings	# creates a project settings object
 
 
 class Sample(TypedDict):
@@ -89,7 +89,7 @@ def loadDataset() -> list[Sample]:
 		# if the dataset is bigger than the project settings, trim its size
 		if (metadata['NUM_OF_TARGETS'] != settings['NUM_OF_TARGETS']):
 			metadata['data'] = metadata['data'][: settings['NUM_OF_TARGETS']]
-			
+
 		dataset = metadata['data']
 
 	except (FileNotFoundError, DatasetIncompatible):
