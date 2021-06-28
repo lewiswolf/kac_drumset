@@ -85,11 +85,11 @@ def loadDataset() -> list[Sample]:
 		metadata: DatasetMetadata = json.load(open(os.path.join(os.getcwd(), 'data/metadata.json'), 'r'))
 
 		# if the project settings and data settings do not align, throw error
-		if (metadata['NUM_OF_TARGETS'] < settings['NUM_OF_TARGETS'] or metadata['SAMPLE_RATE'] != settings['SAMPLE_RATE']):
+		if metadata['NUM_OF_TARGETS'] < settings['NUM_OF_TARGETS'] or metadata['SAMPLE_RATE'] != settings['SAMPLE_RATE']:
 			raise DatasetIncompatible
 
 		# if the dataset is bigger than the project settings, trim its size
-		if (metadata['NUM_OF_TARGETS'] > settings['NUM_OF_TARGETS']):
+		if metadata['NUM_OF_TARGETS'] > settings['NUM_OF_TARGETS']:
 			dataset = metadata['data'][: settings['NUM_OF_TARGETS']]
 		else:
 			dataset = metadata['data']
