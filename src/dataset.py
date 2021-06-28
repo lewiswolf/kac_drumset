@@ -14,7 +14,7 @@ class Sample(TypedDict):
 	'''
 	Class declaration for each data sample.
 	'''
-	filepath: str			# location os .wav file, relative to project directory
+	filepath: str			# location of .wav file, relative to project directory
 	labels: list			# labels for each sample...
 
 
