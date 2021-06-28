@@ -24,7 +24,7 @@ class DatasetMetadata(TypedDict):
 	This object and the settings object are compared to ensure a loaded dataset matches
 	the project settings.
 	'''
-	NUM_OF_TARGETS: int		# number of samples in the dataset
+	NUM_OF_TARGETS: int		# How many data samples are there in the dataset?
 	SAMPLE_RATE: int		# audio sample rate
 	data: list[Sample]		# the dataset itself
 

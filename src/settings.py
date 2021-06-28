@@ -7,7 +7,7 @@ from typing import TypedDict
 
 class Settings(TypedDict):
 	NUM_OF_TARGETS: int		# How many data samples are there in the dataset?
-	SAMPLE_RATE: int		# audio samplerate
+	SAMPLE_RATE: int		# audio sample rate
 
 
 # the configurable object
