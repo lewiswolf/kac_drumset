@@ -94,10 +94,10 @@ def loadDataset() -> list[Sample]:
 
 	# regenerate new dataset if import fails
 	except FileNotFoundError:
-		print('Could not load a dataset. 🤷‍♂️')
+		print('Could not load a dataset. 🤷')
 		dataset = generateDataset()
 	except DatasetIncompatible:
-		print('Imported dataset is incompatible with project settings. 🤷‍♂️')
+		print('Imported dataset is incompatible with project settings. 🤷')
 		dataset = generateDataset()
 
 	return dataset
