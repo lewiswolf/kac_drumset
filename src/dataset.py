@@ -109,7 +109,7 @@ def loadDataset() -> list[DataSample]:
 			return metadata['data']
 
 	except (FileNotFoundError, KeyError):
-		# regenerate new dataset if no dataset exists
+		# generate new dataset if no dataset exists
 		print('Could not load a dataset. 🤷')
 		return generateDataset()
 	except DatasetIncompatible:

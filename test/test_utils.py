@@ -20,7 +20,7 @@ class testTone():
 		self.hz = hz											# frequency
 		self.sr = sr											# sample rate
 		self.length = math.ceil(self.sr * length)				# duration of sine wave in samples
-		self.wave = self.__generateWav()	# wave array
+		self.wave = self.__generateWav()						# wave array
 
 	def __generateWav(self) -> npt.NDArray[np.float64]:
 		'''
