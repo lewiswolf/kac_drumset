@@ -3,17 +3,19 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[requires]
+python_version = "3.9"
+
 [packages]
 click = "*"
+numpy = "*"
+soundfile = "*"
 tqdm = "*"
 
 [dev-packages]
-mypy = "*"
 flake8 = "*"
 flake8-commas = "*"
-
-[requires]
-python_version = "3.9"
+mypy = "*"
 
 [scripts]
 test = "sh ./test/test.sh"
