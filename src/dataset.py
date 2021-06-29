@@ -14,7 +14,7 @@ from settings import settings	# creates a project settings object
 
 # tests
 sys.path.insert(1, os.path.join(os.getcwd(), 'test'))
-from tests import testTone
+from test_utils import testTone
 
 
 class DataSample(TypedDict):
@@ -52,7 +52,7 @@ def generateDataset() -> list[DataSample]:
 	# clear dataset folder
 	datasetFolder = os.path.join(os.getcwd(), 'data')
 	for file in os.listdir(datasetFolder):
-		if (file != '.gitignore'):
+		if file != '.gitignore':
 			os.remove(os.path.join(datasetFolder, file))
 
 	# generate datatset
@@ -95,6 +95,7 @@ def loadDataset() -> list[DataSample]:
 	try:
 		# load a dataset if it exists
 		# TO ADD: it would be good to type check this at runtime, to check for errors such as KeyError
+		# https://stackoverflow.com/questions/66665336 a non-hacky version of this?
 		metadata: DatasetMetadata = json.load(open(os.path.join(os.getcwd(), 'data/metadata.json'), 'r'))
 
 		# if the project settings and data settings do not align, throw error
