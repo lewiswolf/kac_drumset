@@ -1,11 +1,11 @@
-# core libraries
+# core
 import os
 import sys
 
 # dependencies
-import click			# CLI arguments
+import click										# CLI arguments
 
-# src files
+# src
 sys.path.insert(1, os.path.join(os.getcwd(), 'src'))
 from dataset import generateDataset, loadDataset	# methods for handling and generating a dataset
 
@@ -17,7 +17,6 @@ from dataset import generateDataset, loadDataset	# methods for handling and gene
 def main(generate: bool, train: bool) -> None:
 	# generate a dataset, or load one if one already exists
 	datasetJSON = generateDataset() if generate else loadDataset()
-	print(datasetJSON)
 
 
 if __name__ == '__main__':
