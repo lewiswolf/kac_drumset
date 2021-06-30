@@ -1,19 +1,21 @@
 # core
 import json
 import os
-import random 					# for testing
 import sys
 from typing import TypedDict
 
 # dependencies
-import click					# CLI arguments
-from tqdm import tqdm			# CLI progress bar
+import click							# CLI arguments
+import torch							# pytorch
+from tqdm import tqdm					# CLI progress bar
 
 # src
-from settings import settings	# creates a project settings object
+from settings import settings			# creates a project settings object
+import input_features					# methods for converting .wav files into a range of input features
 
 # tests
 sys.path.insert(1, os.path.join(os.getcwd(), 'test'))
+import random
 from test_utils import testTone
 
 
@@ -38,7 +40,46 @@ class DatasetMetadata(TypedDict):
 	data: list[DataSample]		# the dataset itself
 
 
-def generateDataset() -> list[DataSample]:
+class TorchDataset(torch.utils.data.Dataset):
+	'''
+	Pytorch wrapper for the generated/loaded dataset.
+	'''
+	# TO ADD: better type hinting for pytorch, such that the internal datatype (float64,
+	# float32, etc.) is specified. Alternative is to use a global `torch.set_default_dtype(d)`.
+
+	def __init__(self, data: list[DataSample]) -> None:
+		# seperate x and y
+		X, Y = [], []
+		for i in range(settings['DATASET_SIZE']):
+			X.append(data[i]['filepath'])
+			Y.append(data[i]['labels'])
+
+		self.X = self.preprocess(X)
+		self.Y = torch.tensor(Y)
+
+	def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
+		return self.X[index], self.Y[index]
+
+	def __len__(self) -> int:
+		return settings['DATASET_SIZE']
+
+	def preprocess(self, X: list[str]) -> torch.Tensor:
+		'''
+		Transforms the generated dataset into a series of different input features.
+		'''
+
+		print('Preprocessing dataset... 📚')
+		if settings['INPUT_FEATURES'] == 'end2end':
+			return input_features.end2end(X)
+		if settings['INPUT_FEATURES'] == 'fft':
+			return input_features.fft(X)
+		if settings['INPUT_FEATURES'] == 'mel':
+			return input_features.mel(X)
+		if settings['INPUT_FEATURES'] == 'q':
+			return input_features.q(X)
+
+
+def generateDataset() -> TorchDataset:
 	'''
 	Generates a dataset of sounds. The generated dataset, including the individual .wav
 	files and the metadata.json, is saved in ../data.
@@ -81,10 +122,10 @@ def generateDataset() -> list[DataSample]:
 	with open(os.path.join(os.getcwd(), 'data/metadata.json'), 'w') as json_file:
 		json.dump(metadata, json_file, skipkeys=True, indent="\t")
 
-	return metadata['data']
+	return TorchDataset(metadata['data'])
 
 
-def loadDataset() -> list[DataSample]:
+def loadDataset() -> TorchDataset:
 	'''
 	Attempts to load a dataset if one has already been generated. Verifies the metadata
 	of the loaded dataset, and ammends the dataset if necessary.
@@ -110,9 +151,9 @@ def loadDataset() -> list[DataSample]:
 
 		# if the dataset is bigger than the project settings, trim its size, or simply return the datatset
 		if metadata['DATASET_SIZE'] > settings['DATASET_SIZE']:
-			return metadata['data'][: settings['DATASET_SIZE']]
+			return TorchDataset(metadata['data'][: settings['DATASET_SIZE']])
 		else:
-			return metadata['data']
+			return TorchDataset(metadata['data'])
 
 	except (FileNotFoundError, KeyError):
 		# generate new dataset if no dataset exists
