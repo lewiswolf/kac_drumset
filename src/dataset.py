@@ -32,8 +32,9 @@ class DatasetMetadata(TypedDict):
 	object and the settings object are compared to ensure a loaded dataset matches the
 	project settings.
 	'''
-	NUM_OF_TARGETS: int			# How many data samples are there in the dataset?
-	SAMPLE_RATE: int			# audio sample rate
+	DATASET_SIZE: int			# how many data samples are there in the dataset?
+	DATA_LENGTH: float			# length of each sample in the dataset (seconds)
+	SAMPLE_RATE: int			# audio sample rate (hz)
 	data: list[DataSample]		# the dataset itself
 
 
@@ -44,7 +45,8 @@ def generateDataset() -> list[DataSample]:
 	'''
 
 	metadata: DatasetMetadata = {
-		'NUM_OF_TARGETS': settings['NUM_OF_TARGETS'],
+		'DATASET_SIZE': settings['DATASET_SIZE'],
+		'DATA_LENGTH': settings['DATA_LENGTH'],
 		'SAMPLE_RATE': settings['SAMPLE_RATE'],
 		'data': [],
 	}
@@ -60,12 +62,12 @@ def generateDataset() -> list[DataSample]:
 	with tqdm(
 		bar_format='{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt}, Elapsed: {elapsed}, ETA: {remaining}, {rate_fmt}  ',
 		unit=' data samples',
-		total=settings['NUM_OF_TARGETS'],
+		total=settings['DATASET_SIZE'],
 	) as pbar:
-		for i in range(settings['NUM_OF_TARGETS']):
+		for i in range(settings['DATASET_SIZE']):
 			# create a random test tone, export it as a wav, and append the metadata to the output
 			filepath = f'data/sample_{i:05d}.wav'
-			sin = testTone((random.random() * 770) + 110, 5, settings['SAMPLE_RATE'])
+			sin = testTone((random.random() * 770) + 110, settings['DATA_LENGTH'], settings['SAMPLE_RATE'])
 			sin.exportWav(os.path.join(os.getcwd(), filepath))
 			metadata['data'].append({
 				"filepath": filepath,
@@ -99,12 +101,16 @@ def loadDataset() -> list[DataSample]:
 		metadata: DatasetMetadata = json.load(open(os.path.join(os.getcwd(), 'data/metadata.json'), 'r'))
 
 		# if the project settings and data settings do not align, throw error
-		if metadata['NUM_OF_TARGETS'] < settings['NUM_OF_TARGETS'] or metadata['SAMPLE_RATE'] != settings['SAMPLE_RATE']:
+		# TO ADD: make this loop over the metadata keys to make any future object expansions simpler.
+		# https://github.com/python/mypy/issues/6262 `for key in dict.keys()` produces a type error.
+		if (metadata['DATASET_SIZE'] < settings['DATASET_SIZE']
+					or metadata['SAMPLE_RATE'] != settings['SAMPLE_RATE']
+					or metadata['DATA_LENGTH'] != settings['DATA_LENGTH']):
 			raise DatasetIncompatible
 
 		# if the dataset is bigger than the project settings, trim its size, or simply return the datatset
-		if metadata['NUM_OF_TARGETS'] > settings['NUM_OF_TARGETS']:
-			return metadata['data'][: settings['NUM_OF_TARGETS']]
+		if metadata['DATASET_SIZE'] > settings['DATASET_SIZE']:
+			return metadata['data'][: settings['DATASET_SIZE']]
 		else:
 			return metadata['data']
 

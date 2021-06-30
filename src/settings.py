@@ -6,12 +6,14 @@ from typing import TypedDict
 
 
 class Settings(TypedDict):
-	NUM_OF_TARGETS: int		# How many data samples are there in the dataset?
-	SAMPLE_RATE: int		# audio sample rate
+	DATASET_SIZE: int		# how many data samples are there in the dataset?
+	DATA_LENGTH: float		# length of each sample in the dataset (seconds)
+	SAMPLE_RATE: int		# audio sample rate (hz)
 
 
 # the configurable object
 settings: Settings = {
-	'NUM_OF_TARGETS': 10,
+	'DATASET_SIZE': 10,
+	'DATA_LENGTH': 5.0,
 	'SAMPLE_RATE': 44100,
 }
