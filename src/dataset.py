@@ -5,13 +5,13 @@ import sys
 from typing import TypedDict
 
 # dependencies
-import click							# CLI arguments
-import torch							# pytorch
-from tqdm import tqdm					# CLI progress bar
+import click								# CLI arguments
+import torch								# pytorch
+from tqdm import tqdm						# CLI progress bar
 
 # src
-from settings import settings			# creates a project settings object
-import input_features					# methods for converting .wav files into a range of input features
+from settings import settings				# creates a project settings object
+from input_features import inputFeatures	# methods for converting .wav files into a range of input features
 
 # tests
 sys.path.insert(1, os.path.join(os.getcwd(), 'test'))
@@ -34,7 +34,7 @@ class DatasetMetadata(TypedDict):
 	object and the settings object are compared to ensure a loaded dataset matches the
 	project settings.
 	'''
-	DATASET_SIZE: int			# how many data samples are there in the dataset?
+	DATASET_SIZE: int		 	# how many data samples are there in the dataset?
 	DATA_LENGTH: float			# length of each sample in the dataset (seconds)
 	SAMPLE_RATE: int			# audio sample rate (hz)
 	data: list[DataSample]		# the dataset itself
@@ -48,13 +48,11 @@ class TorchDataset(torch.utils.data.Dataset):
 	# float32, etc.) is specified. Alternative is to use a global `torch.set_default_dtype(d)`.
 
 	def __init__(self, data: list[DataSample]) -> None:
-		# seperate x and y
 		X, Y = [], []
-		for i in range(settings['DATASET_SIZE']):
-			X.append(data[i]['filepath'])
-			Y.append(data[i]['labels'])
-
-		self.X = self.preprocess(X)
+		for sample in data:
+			X.append(sample['filepath'])
+			Y.append(sample['labels'])
+		self.X = inputFeatures(X)
 		self.Y = torch.tensor(Y)
 
 	def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
@@ -62,21 +60,6 @@ class TorchDataset(torch.utils.data.Dataset):
 
 	def __len__(self) -> int:
 		return settings['DATASET_SIZE']
-
-	def preprocess(self, X: list[str]) -> torch.Tensor:
-		'''
-		Transforms the generated dataset into a series of different input features.
-		'''
-
-		print('Preprocessing dataset... 📚')
-		if settings['INPUT_FEATURES'] == 'end2end':
-			return input_features.end2end(X)
-		if settings['INPUT_FEATURES'] == 'fft':
-			return input_features.fft(X)
-		if settings['INPUT_FEATURES'] == 'mel':
-			return input_features.mel(X)
-		if settings['INPUT_FEATURES'] == 'q':
-			return input_features.q(X)
 
 
 def generateDataset() -> TorchDataset:

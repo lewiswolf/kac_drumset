@@ -36,8 +36,7 @@ class testTone():
 			wave[i] = math.sin(phi)
 			phi += two_pi * self.hz * sampleLength
 			if phi > two_pi:
-				phi -= math.floor(phi / two_pi) * two_pi
-
+				phi -= two_pi
 		return wave
 
 	def exportWav(self, filepath: str) -> None:

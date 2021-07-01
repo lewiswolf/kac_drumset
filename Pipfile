@@ -8,6 +8,7 @@ click = "*"
 numpy = "*"
 soundfile = "*"
 torch = "*"
+torchaudio = "*"
 tqdm = "*"
 
 [dev-packages]
