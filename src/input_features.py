@@ -25,7 +25,7 @@ def constantQ(x: torch.Tensor) -> torch.Tensor:
 def inputFeatures(data: list[str]) -> torch.Tensor:
 	'''
 	This method produces the input features to pass to the neural network, by
-	first importing a pre-generated .wav file, and return a tensor corresponding
+	first importing a pre-generated .wav file, returning a tensor corresponding
 	to a range of input features.
 	'''
 
@@ -40,9 +40,8 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 		for i in range(settings['DATASET_SIZE']):
 			waveform, sr = torchaudio.load(os.path.join(os.getcwd(), data[i]))
 			if sr != settings['SAMPLE_RATE']:
-				# resample the imported waveform if its sample rate is wrong. This
-				# _shouldn't_ happen, hence why a slower resampling function is used.
-				waveform = torchaudio.functional.resample(waveform, sr, settings['SAMPLE_RATE'])
+				# resample the imported waveform if its sample rate is wrong.
+				waveform = torchaudio.transforms.Resample(sr, settings['SAMPLE_RATE'])(waveform)
 			if waveform.shape[0] > 1:
 				# convert the imported .wav file to mono if necessary
 				mono = torch.zeros(1, waveform.shape[1])
