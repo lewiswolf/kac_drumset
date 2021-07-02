@@ -5,7 +5,14 @@ the type declarations should be used as a guideline to ensure
 that the settings object works as intended.
 '''
 
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, Union
+
+
+class SpectroSettings(TypedDict):
+	n_fft: int												# number of fft bins
+	n_mels: int												# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
+	window_length: Union[int, None]							# window length in samples
+	hop_length: Union[int, None]							# hop length in samples
 
 
 class Settings(TypedDict):
@@ -14,6 +21,7 @@ class Settings(TypedDict):
 	SAMPLE_RATE: int										# audio sample rate (hz)
 	INPUT_FEATURES: Literal['end2end', 'fft', 'mel', 'q']	# how is the data represented when it is fed to the network?
 	NORMALISE_INPUT: bool									# should each sample in the dataset be normalised before training?
+	SPECTRO_SETTINGS: SpectroSettings
 
 
 # the configurable object
@@ -23,4 +31,10 @@ settings: Settings = {
 	'SAMPLE_RATE': 44100,
 	'INPUT_FEATURES': 'end2end',
 	'NORMALISE_INPUT': False,
+	'SPECTRO_SETTINGS': {
+		'n_fft': 440,
+		'n_mels': 128,
+		'window_length': None,
+		'hop_length': None,
+	},
 }

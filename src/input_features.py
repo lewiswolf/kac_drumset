@@ -10,18 +10,6 @@ from tqdm import tqdm			# CLI progress bar
 from settings import settings	# creates a project settings object
 
 
-def fastFourier(x: torch.Tensor) -> torch.Tensor:
-	return x
-
-
-def melSpectro(x: torch.Tensor) -> torch.Tensor:
-	return x
-
-
-def constantQ(x: torch.Tensor) -> torch.Tensor:
-	return x
-
-
 def inputFeatures(data: list[str]) -> torch.Tensor:
 	'''
 	This method produces the input features to pass to the neural network, by
@@ -56,12 +44,27 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 			# append correct input representation to output tensor
 			if settings['INPUT_FEATURES'] == 'end2end':
 				tmpList.append(waveform[0])
+
 			if settings['INPUT_FEATURES'] == 'fft':
-				tmpList.append(fastFourier(waveform[0]))
+				tmpList.append(torchaudio.transforms.Spectrogram(
+					n_fft=settings['SPECTRO_SETTINGS']['n_fft'],
+					win_length=settings['SPECTRO_SETTINGS']['window_length'],
+					hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+					power=2.0,
+				)(waveform[0]))
+
 			if settings['INPUT_FEATURES'] == 'mel':
-				tmpList.append(constantQ(waveform[0]))
-			if settings['INPUT_FEATURES'] == 'q':
-				tmpList.append(melSpectro(waveform[0]))
+				tmpList.append(torchaudio.transforms.MelSpectrogram(
+					sample_rate=settings['SAMPLE_RATE'],
+					n_fft=settings['SPECTRO_SETTINGS']['n_fft'],
+					n_mels=settings['SPECTRO_SETTINGS']['n_mels'],
+					win_length=settings['SPECTRO_SETTINGS']['window_length'],
+					hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+					power=2.0,
+				)(waveform[0]))
+
+			# if settings['INPUT_FEATURES'] == 'q':
+			# 	tmpList.append(melSpectro(waveform[0]))
 
 			pbar.update(1)
 
