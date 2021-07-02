@@ -27,18 +27,21 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 	) as pbar:
 		for i in range(settings['DATASET_SIZE']):
 			waveform, sr = torchaudio.load(os.path.join(os.getcwd(), data[i]))
+			
+			# resample the imported waveform if its sample rate is wrong.
 			if sr != settings['SAMPLE_RATE']:
-				# resample the imported waveform if its sample rate is wrong.
 				waveform = torchaudio.transforms.Resample(sr, settings['SAMPLE_RATE'])(waveform)
+			
+			# convert the imported .wav file to mono if necessary
 			if waveform.shape[0] > 1:
-				# convert the imported .wav file to mono if necessary
 				mono = torch.zeros(1, waveform.shape[1])
 				for i in range(waveform.shape[1]):
 					for j in range(waveform.shape[0]):
 						mono[0][i] += waveform[j][i] / waveform.shape[0]
 				waveform = mono
-			if settings['NORMALISE_INPUT']:
-				# normalise the audio file
+			
+			# normalise the audio file
+			if settings['NORMALISE_INPUT'] and torch.max(waveform[0]) != 1.0:
 				waveform[0] = waveform[0] * (1.0 / torch.max(waveform[0]))
 
 			# append correct input representation to output tensor
