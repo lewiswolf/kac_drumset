@@ -16,6 +16,12 @@ or to install this project for development:
 $ pipenv install -d
 ```
 
+In either case, _pytorch_ is installed automatically, and will work fine for all CPU based usages. However, to configure this package for GPU usage, you must reinstall the appropriate version of _pytorch_ for your machine (which can be found [here](https://pytorch.org/get-started/locally/)) via:
+
+```bash
+$ pipenv run pip install torch==1.8.1+cu102 ...
+```
+
 ## Test
 
 _For development only._
