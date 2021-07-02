@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 click = "*"
+librosa = "*"
 numpy = "*"
 soundfile = "*"
 torch = "*"
