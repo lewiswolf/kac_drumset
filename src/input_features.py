@@ -57,7 +57,7 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 				tmpList.append(torchaudio.transforms.MelSpectrogram(
 					sample_rate=settings['SAMPLE_RATE'],
 					n_fft=settings['SPECTRO_SETTINGS']['n_fft'],
-					n_mels=settings['SPECTRO_SETTINGS']['n_mels'],
+					n_mels=settings['SPECTRO_SETTINGS']['n_mel'],
 					win_length=settings['SPECTRO_SETTINGS']['window_length'],
 					hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
 					power=2.0,

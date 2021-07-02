@@ -98,7 +98,6 @@ def generateDataset() -> TorchDataset:
 				"labels": [sin.hz],
 			})
 
-			# update progress bar
 			pbar.update(1)
 
 	# export metadata json

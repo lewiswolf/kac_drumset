@@ -10,7 +10,7 @@ from typing import Literal, TypedDict, Union
 
 class SpectroSettings(TypedDict):
 	n_fft: int												# number of fft bins
-	n_mels: int												# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
+	n_mel: int												# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
 	window_length: Union[int, None]							# window length in samples
 	hop_length: Union[int, None]							# hop length in samples
 
@@ -33,7 +33,7 @@ settings: Settings = {
 	'NORMALISE_INPUT': False,
 	'SPECTRO_SETTINGS': {
 		'n_fft': 440,
-		'n_mels': 128,
+		'n_mel': 128,
 		'window_length': None,
 		'hop_length': None,
 	},
