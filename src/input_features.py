@@ -33,13 +33,9 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 			if sr != settings['SAMPLE_RATE']:
 				waveform = torchaudio.transforms.Resample(sr, settings['SAMPLE_RATE'])(waveform)
 
-			# convert the imported .wav file to mono if necessary
+			# convert the imported .wav file to mono
 			if waveform.shape[0] > 1:
-				mono = torch.zeros(1, waveform.shape[1])
-				for i in range(waveform.shape[1]):
-					for j in range(waveform.shape[0]):
-						mono[0][i] += waveform[j][i] / waveform.shape[0]
-				waveform = mono
+				waveform = torch.mean(waveform, 0, keepdim=True)
 
 			# normalise the audio file
 			if settings['NORMALISE_INPUT'] and torch.max(waveform[0]) != 1.0:
