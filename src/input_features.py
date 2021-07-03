@@ -35,15 +35,17 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 
 			# convert the imported .wav file to mono
 			if waveform.shape[0] > 1:
-				waveform = torch.mean(waveform, 0, keepdim=True)
+				waveform = torch.mean(waveform, 0)
+			else:
+				waveform = waveform[0]
 
 			# normalise the audio file
-			if settings['NORMALISE_INPUT'] and torch.max(waveform[0]) != 1.0:
-				waveform[0] = waveform[0] * (1.0 / torch.max(waveform[0]))
+			if settings['NORMALISE_INPUT'] and torch.max(waveform) != 1.0:
+				waveform = waveform * (1.0 / torch.max(waveform))
 
 			# append correct input representation to output tensor
 			if settings['INPUT_FEATURES'] == 'end2end':
-				tmpList.append(waveform[0])
+				tmpList.append(waveform)
 
 			if settings['INPUT_FEATURES'] == 'fft':
 				tmpList.append(torchaudio.transforms.Spectrogram(
@@ -51,7 +53,7 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 					win_length=settings['SPECTRO_SETTINGS']['window_length'],
 					hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
 					power=2.0,
-				)(waveform[0]))
+				)(waveform))
 
 			if settings['INPUT_FEATURES'] == 'mel':
 				tmpList.append(torchaudio.transforms.MelSpectrogram(
@@ -61,13 +63,13 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 					win_length=settings['SPECTRO_SETTINGS']['window_length'],
 					hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
 					power=2.0,
-				)(waveform[0]))
+				)(waveform))
 
 			if settings['INPUT_FEATURES'] == 'q':
 				# TO ADD: rewrite this lil function using `torch..nn.module` such that it is of the
 				# form tensor -> tensor as opposed to tensor -> numpy -> tensor. PR torchaudio.
 				# (and librosa isn't type checked).
-				arr = waveform[0].numpy()
+				arr = waveform.numpy()
 				arr = librosa.vqt(
 					arr,
 					sr=settings['SAMPLE_RATE'],
