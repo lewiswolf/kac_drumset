@@ -27,18 +27,7 @@ class testTone():
 		'''
 		Render a sine wave to a numpy array.
 		'''
-
-		two_pi = (2 * math.pi)
-		sampleLength = 1 / self.sr
-		phi = 0.0
-		wave = np.zeros(self.length)
-
-		for i in range(self.length):
-			wave[i] = math.sin(phi)
-			phi += two_pi * self.hz * sampleLength
-			if phi > two_pi:
-				phi -= two_pi
-		return wave
+		return np.sin(2 * math.pi * self.hz * (1 / self.sr) * np.arange(self.length))
 
 	def exportWav(self, filepath: str) -> None:
 		'''
