@@ -2,6 +2,7 @@
 import math
 
 # dependencies
+import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 import soundfile as sf
@@ -44,3 +45,29 @@ class testTone():
 		Write waveform to file.
 		'''
 		sf.write(filepath, self.wave, self.sr)
+
+
+def plotSpectrogram(waveform: npt.NDArray[np.float64]) -> None:
+	pass
+
+
+def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
+	'''
+	Plots a waveform using matplotlib. Designed to handle mono and multichannel inputs of
+	shape [C, S] or [S], where C is the number of channels, and S is the number of samples.
+	'''
+
+	if waveform.ndim == 1:
+		fig, ax = plt.subplots(1, figsize=(10, 1.5), dpi=100)
+		time = np.linspace(0, len(waveform) / sr, num=len(waveform))
+		ax.plot(time, waveform, color='black')
+		ax.set(xlabel='Time (Seconds)', ylabel='Amplitude')
+	else:
+		fig, ax = plt.subplots(waveform.shape[0], 1, figsize=(10, waveform.shape[0] * 1.5), dpi=100)
+		time = np.linspace(0, len(waveform[0]) / sr, num=len(waveform[0]))
+		for i, channel in enumerate(waveform):
+			ax[i].plot(time, channel, color='black')
+			ax[i].set(xlabel='Time (Seconds)', ylabel='Amplitude')
+
+	plt.tight_layout()
+	plt.show()

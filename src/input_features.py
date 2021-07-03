@@ -10,6 +10,11 @@ from tqdm import tqdm			# CLI progress bar
 # src
 from settings import settings	# creates a project settings object
 
+# tests
+import sys
+sys.path.insert(1, os.path.join(os.getcwd(), 'test'))
+from test_utils import plotSpectrogram, plotWaveform
+
 
 def inputFeatures(data: list[str]) -> torch.Tensor:
 	'''
@@ -80,5 +85,10 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 				tmpList.append(torch.from_numpy(arr))
 
 			pbar.update(1)
+
+	if settings['INPUT_FEATURES'] == 'end2end':
+		plotWaveform(tmpList[0].numpy()[0:22050], settings['SAMPLE_RATE'])
+	else:
+		plotSpectrogram(tmpList[0].numpy())
 
 	return torch.stack(tmpList)
