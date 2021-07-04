@@ -2,6 +2,7 @@
 import math
 
 # dependencies
+import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
@@ -54,11 +55,11 @@ def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
 		ax.set(xlabel='Time (Seconds)', ylabel='Amplitude')
 	else:
 		# render a multi channel waveform
-		fig, ax = plt.subplots(waveform.shape[0], 1, figsize=(10, waveform.shape[0] * 1.75), dpi=100)
+		fig, ax = plt.subplots(waveform.shape[0], 1, figsize=(10, waveform.shape[0] * 1.75), dpi=100, squeeze=False)
 		time = np.linspace(0, len(waveform[0]) / sr, num=len(waveform[0]))
 		for i, channel in enumerate(waveform):
-			ax[i].plot(time, channel, color='black')
-			ax[i].set(xlabel='Time (Seconds)', ylabel='Amplitude')
+			ax[i][0].plot(time, channel, color='black')
+			ax[i][0].set(xlabel='Time (Seconds)', ylabel='Amplitude')
 
 	plt.tight_layout()
 	plt.show()
