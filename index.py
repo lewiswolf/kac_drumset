@@ -20,6 +20,7 @@ from test_utils import withProfiler
 @click.option('--generate', '-g', is_flag=True, help='Generate targets before training.')
 def main(generate: bool, train: bool) -> None:
 	# generate a pytorch dataset, or load one if a dataset already exists
+	# dataset = generateDataset() if generate else loadDataset()
 	withProfiler(generateDataset if generate else loadDataset, 5)
 
 

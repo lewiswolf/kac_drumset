@@ -2,7 +2,7 @@
 import cProfile
 import math
 import pstats
-from typing import Any, Callable
+from typing import Callable
 
 # dependencies
 import matplotlib.pyplot as plt
@@ -69,7 +69,12 @@ def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
 	plt.show()
 
 
-def withProfiler(func: Callable[Any, Any], n: int) -> None:
+def withProfiler(func: Callable, n: int) -> None:
+	'''
+	Calls the input function using cProfile to generate a performance report in the console.
+	Prints the n most costly functions.
+	'''
+
 	with cProfile.Profile() as pr:
 		func()
 	stats = pstats.Stats(pr)
