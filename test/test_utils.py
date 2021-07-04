@@ -2,7 +2,6 @@
 import math
 
 # dependencies
-import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
@@ -37,7 +36,7 @@ class testTone():
 		sf.write(filepath, self.wave, self.sr)
 
 
-def plotSpectrogram(waveform: npt.NDArray[np.float64]) -> None:
+def plotSpectrogram(spectrogram: npt.NDArray[np.float64]) -> None:
 	pass
 
 
@@ -53,13 +52,15 @@ def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
 		time = np.linspace(0, len(waveform) / sr, num=len(waveform))
 		ax.plot(time, waveform, color='black')
 		ax.set(xlabel='Time (Seconds)', ylabel='Amplitude')
-	else:
+	elif waveform.ndim == 2:
 		# render a multi channel waveform
 		fig, ax = plt.subplots(waveform.shape[0], 1, figsize=(10, waveform.shape[0] * 1.75), dpi=100, squeeze=False)
 		time = np.linspace(0, len(waveform[0]) / sr, num=len(waveform[0]))
 		for i, channel in enumerate(waveform):
 			ax[i][0].plot(time, channel, color='black')
 			ax[i][0].set(xlabel='Time (Seconds)', ylabel='Amplitude')
+	else:
+		raise ValueError('Incorrect size of input array; only [N * M] & [M] supported.')
 
 	plt.tight_layout()
 	plt.show()
