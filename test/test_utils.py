@@ -1,5 +1,8 @@
 # core
+import cProfile
 import math
+import pstats
+from typing import Any, Callable
 
 # dependencies
 import matplotlib.pyplot as plt
@@ -64,3 +67,11 @@ def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
 
 	plt.tight_layout()
 	plt.show()
+
+
+def withProfiler(func: Callable[Any, Any], n: int) -> None:
+	with cProfile.Profile() as pr:
+		func()
+	stats = pstats.Stats(pr)
+	stats.sort_stats(pstats.SortKey.TIME)
+	stats.print_stats(n)
