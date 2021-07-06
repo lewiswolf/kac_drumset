@@ -2,7 +2,7 @@
 import cProfile
 import math
 import pstats
-from typing import Callable, Union
+from typing import Callable, Literal, Union
 
 # dependencies
 import matplotlib.pyplot as plt
@@ -13,24 +13,34 @@ import soundfile as sf
 
 class testTone():
 	'''
-	This class produces an arbitrary sine wave.
+	This class produces an arbitrary test tone, such as a sine wave or a sawtooth wave.
 	params:
-		hz - frequency of the sinewave
-		length - duration of the sine wave in seconds
-		sr - sample rate in hz
+		hz 		- frequency of the sinewave
+		length 	- duration of the sine wave in seconds
+		sr 		- sample rate in hz
+		type 	- type of waveform. currently supported = [sine, sawtooth]
 	'''
 
-	def __init__(self, hz: float, length: float, sr: int) -> None:
+	def __init__(self, hz: float, length: float, sr: int, waveform: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin') -> None:
 		self.hz = hz								# frequency
 		self.sr = sr								# sample rate
 		self.length = math.ceil(self.sr * length)	# duration of sine wave in samples
-		self.wave = self.__generateWav()			# wave array
+		self.type = waveform						# type of waveform
+		self.wave = self.__generateWav(waveform)	# wave array
 
-	def __generateWav(self) -> npt.NDArray[np.float64]:
+	def __generateWav(self, waveform: Literal['saw', 'sin', 'sqr', 'tri']) -> npt.NDArray[np.float64]:
 		'''
-		Render a sine wave to a numpy array.
+		Render a specified waveform to a numpy array.
 		'''
-		return np.sin(2 * math.pi * self.hz * (1 / self.sr) * np.arange(self.length))
+		if waveform == 'saw':
+			return -2 / math.pi * np.arctan(1 / np.tan(math.pi * self.hz * (np.arange(self.length) / self.sr)))
+		if waveform == 'sin':
+			return np.sin(2 * math.pi * self.hz * (np.arange(self.length) / self.sr))
+		if waveform == 'sqr':
+			sin = np.sin(2 * math.pi * self.hz * (np.arange(self.length) / self.sr))
+			return sin / np.abs(sin) 
+		if waveform == 'tri':
+			return 2 / math.pi * np.arcsin(np.sin(2 * math.pi * self.hz * (np.arange(self.length) / self.sr)))
 
 	def exportWav(self, filepath: str) -> None:
 		'''

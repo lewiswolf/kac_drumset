@@ -91,11 +91,11 @@ def generateDataset() -> TorchDataset:
 		for i in range(settings['DATASET_SIZE']):
 			# create a random test tone, export it as a wav, and append the metadata to the output
 			filepath = f'data/sample_{i:05d}.wav'
-			sin = testTone((random.random() * 770) + 110, settings['DATA_LENGTH'], settings['SAMPLE_RATE'])
-			sin.exportWav(os.path.join(os.getcwd(), filepath))
+			tone = testTone((random.random() * 770) + 110, settings['DATA_LENGTH'], settings['SAMPLE_RATE'], waveform='sin')
+			tone.exportWav(os.path.join(os.getcwd(), filepath))
 			metadata['data'].append({
 				"filepath": filepath,
-				"labels": [sin.hz],
+				"labels": [tone.hz],
 			})
 
 			pbar.update(1)
