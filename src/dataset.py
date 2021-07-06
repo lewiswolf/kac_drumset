@@ -44,8 +44,6 @@ class TorchDataset(torch.utils.data.Dataset):
 	'''
 	Pytorch wrapper for the generated/loaded dataset.
 	'''
-	# TO ADD: better type hinting for pytorch, such that the internal datatype (float64,
-	# float32, etc.) is specified. Alternative is to use a global `torch.set_default_dtype(d)`.
 
 	def __init__(self, data: list[DataSample]) -> None:
 		X, Y = [], []
@@ -119,13 +117,11 @@ def loadDataset() -> TorchDataset:
 
 	try:
 		# load a dataset if it exists
-		# TO ADD: it would be good to type check this at runtime, to check for errors such as KeyError
-		# https://stackoverflow.com/questions/66665336 a non-hacky version of this?
+		# TO ADD: see todo.md -> 'Type check imported json file at runtime'.
 		metadata: DatasetMetadata = json.load(open(os.path.join(os.getcwd(), 'data/metadata.json'), 'r'))
 
 		# if the project settings and data settings do not align, throw error
-		# TO ADD: make this loop over the metadata keys to make any future object expansions simpler.
-		# https://github.com/python/mypy/issues/6262 `for key in dict.keys()` produces a type error.
+		# TO ADD: see todo.md -> 'Extendable way to loop over TypedDict keys'
 		if (metadata['DATASET_SIZE'] < settings['DATASET_SIZE']
 					or metadata['SAMPLE_RATE'] != settings['SAMPLE_RATE']
 					or metadata['DATA_LENGTH'] != settings['DATA_LENGTH']):

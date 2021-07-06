@@ -52,9 +52,9 @@ class testTone():
 def plotSpectrogram(
 	spectrogram: npt.NDArray[np.float64],
 	sr: Union[int, None] = None,
-	scale: float = 1.0,
 	window_length: Union[int, None] = None,
 	hop_length: Union[int, None] = None,
+	scale: float = 1.0,
 ) -> None:
 	'''
 	Plots a spectrogram, using the settings of spectrogram to infer the axes.
