@@ -34,7 +34,7 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 		for i in range(settings['DATASET_SIZE']):
 			waveform, sr = torchaudio.load(os.path.join(os.getcwd(), data[i]))
 
-			# resample the imported waveform if its sample rate is wrong.
+			# resample the imported waveform if its sample rate is wrong
 			if sr != settings['SAMPLE_RATE']:
 				waveform = torchaudio.transforms.Resample(sr, settings['SAMPLE_RATE'])(waveform)
 
@@ -70,25 +70,39 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 					power=2.0,
 				)(waveform))
 
-			if settings['INPUT_FEATURES'] == 'q':
-				# TO ADD: rewrite this lil function using `torch..nn.module` such that it is of the
+			# NOT WORKING
+			# if settings['INPUT_FEATURES'] == 'q':
+				# TO ADD: rewrite this lil function using `torch.nn.module` such that it is of the
 				# form tensor -> tensor as opposed to tensor -> numpy -> tensor. PR torchaudio.
-				# (and librosa isn't type checked).
-				arr = waveform.numpy()
-				arr = librosa.vqt(
-					arr,
-					sr=settings['SAMPLE_RATE'],
-					n_bins=settings['SPECTRO_SETTINGS']['n_bins'],
-					hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
-					gamme=0.0,
-				)
-				tmpList.append(torch.from_numpy(arr))
+				# arr = waveform.detach().numpy()
+				# arr = librosa.vqt(
+				# 	arr,
+				# 	sr=settings['SAMPLE_RATE'],
+				# 	n_bins=settings['SPECTRO_SETTINGS']['n_bins'],
+				# 	hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+				# 	gamma=0.0,
+				# )
+				# tmpList.append(torch.from_numpy(arr))
 
 			pbar.update(1)
 
 	if settings['INPUT_FEATURES'] == 'end2end':
-		plotWaveform(tmpList[0].numpy()[0:22050], settings['SAMPLE_RATE'])
-	else:
-		plotSpectrogram(tmpList[0].numpy())
+		plotWaveform(tmpList[0].detach().numpy(), settings['SAMPLE_RATE'])
+	elif settings['INPUT_FEATURES'] == 'fft':
+		plotSpectrogram(
+			tmpList[0].detach().numpy(),
+			sr=settings['SAMPLE_RATE'],
+			window_length=settings['SPECTRO_SETTINGS']['window_length'],
+			hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+		)
+	# NOT WORKING
+	# else:
+	# 	plotSpectrogram(
+	# 		tmpList[0].detach().numpy(),
+	# 		sr=settings['SAMPLE_RATE'],
+	# 		scale=2.0,
+	# 		window_length=settings['SPECTRO_SETTINGS']['window_length'],
+	# 		hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+	# 	)
 
 	return torch.stack(tmpList)

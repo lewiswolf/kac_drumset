@@ -2,7 +2,7 @@
 import cProfile
 import math
 import pstats
-from typing import Callable
+from typing import Callable, Union
 
 # dependencies
 import matplotlib.pyplot as plt
@@ -39,8 +39,56 @@ class testTone():
 		sf.write(filepath, self.wave, self.sr)
 
 
-def plotSpectrogram(spectrogram: npt.NDArray[np.float64]) -> None:
-	pass
+def plotSpectrogram(
+	spectrogram: npt.NDArray[np.float64],
+	sr: Union[int, None] = None,
+	scale: float = 1.0,
+	window_length: Union[int, None] = None,
+	hop_length: Union[int, None] = None,
+) -> None:
+	'''
+	Plots a spectrogram, using the settings of spectrogram to infer the axes.
+	params:
+		sr	 			- sample rate, in hz
+		scale			- linear/logarithmic control for the y axis (default: 1.0, linear)
+		window_length	- window length used as part of the spectral density function, in samples
+		hop_length		- hop length used as part of the spectral density function, in samples
+	'''
+
+	fig, ax = plt.subplots(1, figsize=(12, 6), dpi=100)
+	plt.imshow(spectrogram, aspect='auto', cmap='YlGn', origin='lower')
+	cbar = plt.colorbar(location="bottom")
+	cbar.ax.set_xlabel('Power')
+
+	if window_length and sr:
+		# default torchaudio value
+		if not hop_length:
+			hop_length = window_length // 2
+
+		# map x axis from frames to seconds
+		plt.xticks(
+			np.linspace(0, spectrogram.shape[1], num=11),
+			np.round(np.linspace(
+				0,
+				(hop_length / window_length) * window_length * spectrogram.shape[1] / sr,
+				num=11,
+			), decimals=2),
+		)
+		ax.set(xlabel='Time (Seconds)')
+	else:
+		ax.set(xlabel='Frames')
+
+	if sr:
+		# map y axis from bins to frequency spectrum
+		plt.yticks(
+			np.linspace(0, spectrogram.shape[0], num=11),
+			np.round(np.power(np.linspace(0, 1, num=11), scale) * sr / 2).astype('int64'),
+		)
+		ax.set(ylabel='Frequency (Hz)')
+	else:
+		ax.set(ylabel='Frequency Bins')
+
+	plt.show()
 
 
 def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
@@ -52,8 +100,7 @@ def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
 	if waveform.ndim == 1:
 		# render a mono waveform
 		fig, ax = plt.subplots(1, figsize=(10, 1.75), dpi=100)
-		time = np.linspace(0, len(waveform) / sr, num=len(waveform))
-		ax.plot(time, waveform, color='black')
+		ax.plot(np.linspace(0, len(waveform) / sr, num=len(waveform)), waveform, color='black')
 		ax.set(xlabel='Time (Seconds)', ylabel='Amplitude')
 	elif waveform.ndim == 2:
 		# render a multi channel waveform

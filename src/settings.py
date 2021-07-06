@@ -32,9 +32,9 @@ settings: Settings = {
 	'INPUT_FEATURES': 'end2end',
 	'NORMALISE_INPUT': False,
 	'SPECTRO_SETTINGS': {
-		'n_bins': 440,
+		'n_bins': 400,
 		'n_mel': 128,
-		'window_length': None,
-		'hop_length': None,
+		'window_length': 400,
+		'hop_length': 200,
 	},
 }
