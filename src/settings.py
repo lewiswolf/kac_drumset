@@ -5,14 +5,14 @@ the type declarations should be used as a guideline to ensure
 that the settings object works as intended.
 '''
 
-from typing import Literal, TypedDict, Union
+from typing import Literal, TypedDict
 
 
 class SpectroSettings(TypedDict):
-	n_bins: int												# number of stft or vqt bins
+	n_bins: int												# number of frequency bins for the spectral density function
 	n_mel: int												# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
-	window_length: Union[int, None]							# window length in samples
-	hop_length: Union[int, None]							# hop length in samples
+	window_length: int										# window length in samples
+	hop_length: int											# hop length in samples
 
 
 class Settings(TypedDict):
