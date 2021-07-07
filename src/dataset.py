@@ -93,7 +93,7 @@ def generateDataset() -> TorchDataset:
 			tone.exportWav(os.path.join(os.getcwd(), filepath))
 			metadata['data'].append({
 				"filepath": filepath,
-				"labels": [tone.hz],
+				"labels": [tone.f0],
 			})
 
 			pbar.update(1)
