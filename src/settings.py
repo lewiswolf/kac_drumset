@@ -10,7 +10,7 @@ from typing import Literal, TypedDict
 
 class SpectroSettings(TypedDict):
 	n_bins: int												# number of frequency bins for the spectral density function
-	n_mel: int												# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
+	n_mels: int												# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
 	window_length: int										# window length in samples
 	hop_length: int											# hop length in samples
 
@@ -29,11 +29,11 @@ settings: Settings = {
 	'DATASET_SIZE': 10,
 	'DATA_LENGTH': 5.0,
 	'SAMPLE_RATE': 44100,
-	'INPUT_FEATURES': 'end2end',
+	'INPUT_FEATURES': 'fft',
 	'NORMALISE_INPUT': False,
 	'SPECTRO_SETTINGS': {
-		'n_bins': 400,
-		'n_mel': 128,
+		'n_bins': 800,
+		'n_mels': 128,
 		'window_length': 400,
 		'hop_length': 200,
 	},

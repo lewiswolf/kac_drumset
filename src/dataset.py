@@ -42,7 +42,8 @@ class DatasetMetadata(TypedDict):
 
 class TorchDataset(torch.utils.data.Dataset):
 	'''
-	Pytorch wrapper for the generated/loaded dataset.
+	Pytorch wrapper for the generated/loaded dataset. Formats the dataset's labels into
+	a tensor self.Y, and sends the data itself to be preprocessed into input features.
 	'''
 
 	def __init__(self, data: list[DataSample]) -> None:

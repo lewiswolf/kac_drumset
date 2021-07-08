@@ -13,7 +13,7 @@ from settings import settings	# creates a project settings object
 # tests
 import sys
 sys.path.insert(1, os.path.join(os.getcwd(), 'test'))
-from test_utils import plotSpectrogram, plotWaveform
+from test_utils import plotMelSpectrogram, plotSpectrogram, plotWaveform
 
 
 def inputFeatures(data: list[str]) -> torch.Tensor:
@@ -64,7 +64,7 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 				tmpList.append(torchaudio.transforms.MelSpectrogram(
 					sample_rate=settings['SAMPLE_RATE'],
 					n_fft=settings['SPECTRO_SETTINGS']['n_bins'],
-					n_mels=settings['SPECTRO_SETTINGS']['n_mel'],
+					n_mels=settings['SPECTRO_SETTINGS']['n_mels'],
 					win_length=settings['SPECTRO_SETTINGS']['window_length'],
 					hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
 					power=2.0,
@@ -94,15 +94,14 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 			sr=settings['SAMPLE_RATE'],
 			window_length=settings['SPECTRO_SETTINGS']['window_length'],
 			hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+			scale=1.0,
 		)
-	# NOT WORKING
-	# else:
-	# 	plotSpectrogram(
-	# 		tmpList[0].detach().numpy(),
-	# 		sr=settings['SAMPLE_RATE'],
-	# 		scale=2.0,
-	# 		window_length=settings['SPECTRO_SETTINGS']['window_length'],
-	# 		hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
-	# 	)
+	elif settings['INPUT_FEATURES'] == 'mel':
+		plotMelSpectrogram(
+			tmpList[0].detach().numpy(),
+			sr=settings['SAMPLE_RATE'],
+			window_length=settings['SPECTRO_SETTINGS']['window_length'],
+			hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+		)
 
 	return torch.stack(tmpList)
