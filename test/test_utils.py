@@ -5,11 +5,11 @@ import pstats
 from typing import Callable, Literal, Union
 
 # dependencies
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
-import numpy.typing as npt
-import soundfile as sf
+import matplotlib						# graphs library
+import matplotlib.pyplot as plt			# graphs themselves
+import numpy as np						# maths
+import numpy.typing as npt				# typing for numpy
+import soundfile as sf					# audio read & write
 
 
 class testTone():
@@ -50,7 +50,7 @@ class testTone():
 		sf.write(filepath, self.wave, self.sr)
 
 
-def plotGenericSpectrogram(
+def __plotGenericSpectrogram(
 	spectrogram: npt.NDArray[np.float64],
 	sr: Union[int, None] = None,
 	window_length: Union[int, None] = None,
@@ -113,7 +113,7 @@ def plotMelSpectrogram(
 		hop_length		- hop length used as part of the spectral density function, in samples
 	'''
 
-	fig, ax = plotGenericSpectrogram(spectrogram, sr=sr, window_length=window_length, hop_length=hop_length)
+	fig, ax = __plotGenericSpectrogram(spectrogram, sr=sr, window_length=window_length, hop_length=hop_length)
 
 	if sr:
 		# map y axis from mel bins to frequency spectrum
@@ -130,7 +130,6 @@ def plotSpectrogram(
 	sr: Union[int, None] = None,
 	window_length: Union[int, None] = None,
 	hop_length: Union[int, None] = None,
-	scale: float = 1.0,
 ) -> None:
 	'''
 	Plots a spectrogram, either from an FFT or VQT, whilst also inferring the y-axis values.
@@ -142,13 +141,13 @@ def plotSpectrogram(
 		scale			- linear/logarithmic control for the y axis (default: 1.0, linear)
 	'''
 
-	fig, ax = plotGenericSpectrogram(spectrogram, sr=sr, window_length=window_length, hop_length=hop_length)
+	fig, ax = __plotGenericSpectrogram(spectrogram, sr=sr, window_length=window_length, hop_length=hop_length)
 
 	if sr:
 		# map y axis from bins to frequency spectrum
 		plt.yticks(
 			np.linspace(0, spectrogram.shape[0], num=11),
-			np.ceil(np.power(np.linspace(0, 1, num=11), scale) * sr / 2).astype('int64'),
+			np.round(np.linspace(0, 1, num=11) * sr / 2).astype('int64'),
 		)
 
 	plt.show()
