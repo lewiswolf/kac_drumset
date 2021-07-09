@@ -11,7 +11,7 @@ from tqdm import tqdm						# CLI progress bar
 
 # src
 from settings import settings				# creates a project settings object
-from input_features import inputFeatures	# methods for converting .wav files into a range of input features
+from input_features import inputFeatures	# a method for converting .wav files into a range of input features
 
 # tests
 sys.path.insert(1, os.path.join(os.getcwd(), 'test'))

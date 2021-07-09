@@ -2,6 +2,7 @@
 import os
 
 # dependencies
+import numpy as np 				# maths
 import librosa					# numpy audio manipulation
 import torch					# pytorch
 import torchaudio				# tensor audio manipulation
@@ -13,7 +14,7 @@ from settings import settings	# creates a project settings object
 # tests
 import sys
 sys.path.insert(1, os.path.join(os.getcwd(), 'test'))
-from test_utils import plotMelSpectrogram, plotSpectrogram, plotWaveform
+from test_utils import plotSpectrogram, plotWaveform
 
 
 def inputFeatures(data: list[str]) -> torch.Tensor:
@@ -63,45 +64,39 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 			if settings['INPUT_FEATURES'] == 'mel':
 				tmpList.append(torchaudio.transforms.MelSpectrogram(
 					sample_rate=settings['SAMPLE_RATE'],
-					n_fft=settings['SPECTRO_SETTINGS']['n_bins'],
 					n_mels=settings['SPECTRO_SETTINGS']['n_mels'],
+					n_fft=settings['SPECTRO_SETTINGS']['n_bins'],
 					win_length=settings['SPECTRO_SETTINGS']['window_length'],
 					hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
 					power=2.0,
 				)(waveform))
 
 			# NOT WORKING
-			# if settings['INPUT_FEATURES'] == 'q':
+			if settings['INPUT_FEATURES'] == 'cqt':
 				# TO ADD: rewrite this lil function using `torch.nn.module` such that it is of the
 				# form tensor -> tensor as opposed to tensor -> numpy -> tensor. PR torchaudio.
-				# arr = waveform.detach().numpy()
-				# arr = librosa.vqt(
-				# 	arr,
-				# 	sr=settings['SAMPLE_RATE'],
-				# 	n_bins=settings['SPECTRO_SETTINGS']['n_bins'],
-				# 	hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
-				# 	gamma=0.0,
-				# )
-				# tmpList.append(torch.from_numpy(arr))
+				arr = waveform.detach().numpy()
+				arr = librosa.cqt(
+					arr,
+					sr=settings['SAMPLE_RATE'],
+					n_bins=84,
+					fmin=55 * (2 ** (-9 / 12)), # C1 is the default vqt bottom frequency
+					# hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+					dtype=np.float32,
+				)
+				tmpList.append(torch.abs(torch.from_numpy(arr)))
 
 			pbar.update(1)
 
 	if settings['INPUT_FEATURES'] == 'end2end':
 		plotWaveform(tmpList[0].detach().numpy(), settings['SAMPLE_RATE'])
-	elif settings['INPUT_FEATURES'] == 'fft':
+	else:
 		plotSpectrogram(
 			tmpList[0].detach().numpy(),
+			input_type=settings['INPUT_FEATURES'],
 			sr=settings['SAMPLE_RATE'],
-			window_length=settings['SPECTRO_SETTINGS']['window_length'],
 			hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
-			scale=1.0,
-		)
-	elif settings['INPUT_FEATURES'] == 'mel':
-		plotMelSpectrogram(
-			tmpList[0].detach().numpy(),
-			sr=settings['SAMPLE_RATE'],
-			window_length=settings['SPECTRO_SETTINGS']['window_length'],
-			hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+			f_min=55 * (2 ** (-9 / 12)) if settings['INPUT_FEATURES'] == 'cqt' else 0.0,
 		)
 
 	return torch.stack(tmpList)
