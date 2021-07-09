@@ -4,7 +4,7 @@
 
     So far, most internal types have been well documented. When it comes to numpy and tensors however, it is not very simple to set the internal datatypes. In my research so for, I have assertained that numpy cannot be declared with generic types, such that the declaration `npt.NDArray[np.float64]` cannot be replaced by `npt.NDArray[np.genericFloat]` or anything similar. Numpy does not support such a feature, although I imagine it would be possible to import a custom type, that can be used to specify the types for all numpy arrays across the project, but this seems like a complex solution, as all files within the project will be dependent to the file in which this global type is defined. Pytorch has its own set of problems, as the only way to annotate a tensor is with `torch.Tensor`, without any means to specifiy an internal datatype. Pytorch does offer `torch.set_default_dtype(dtype)`, but this has the same complexity issue as the proposed numpy solution.
 
-## dataset.py
+## `dataset.py`
 
 -   **Type check imported json file at runtime**
 
@@ -20,3 +20,9 @@
     ```
 
     However with a `TypedDict`, this code produces the error `TypedDict key to be string literal`. This issue is well documented [here](https://github.com/python/mypy/issues/6262). The current solution is not very extensible, as adding new keys to corresponding dictionaries necessetates that the code that currently performs this comparison is updated.
+
+## `input_features.py`
+
+-   **Port `librosa.vqt()` to PyTorch**
+
+    The librosa.vqt function is written solely in python, whereas a pytorch version would be written with a c++ backend, using python bindings. This would be much quicker to use, as the CQT/VQT is a slow function to begin with. This would also remove the need to import librosa altogether, as well as convert the current function, which works torch.Tensor -> numpy.ndarray -> torch.Tensor, to torch.Tensor -> torch.Tensor. To use terminology borrowed from category theory, this proposed function would be the 'unique morphism' from _a_ to _b_.

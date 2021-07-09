@@ -1,4 +1,5 @@
 # core
+import math
 import os
 
 # dependencies
@@ -25,6 +26,15 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 	'''
 
 	tmpList = []
+
+	# pre-compute spectrogram settings for constant q transform
+	if settings['INPUT_FEATURES'] == 'cqt':
+		f_min = 22.05
+		max_octaves = math.log2((settings['SAMPLE_RATE'] * 0.5) / f_min)
+		bins_per_octave = math.floor(settings['SPECTRO_SETTINGS']['n_bins'] / max_octaves)
+		n_bins = math.floor(bins_per_octave * max_octaves) # var used for CQT only!
+	else:
+		f_min = 0.0
 
 	print('Preprocessing dataset... 📚')
 	with tqdm(
@@ -71,17 +81,16 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 					power=2.0,
 				)(waveform))
 
-			# NOT WORKING
 			if settings['INPUT_FEATURES'] == 'cqt':
-				# TO ADD: rewrite this lil function using `torch.nn.module` such that it is of the
-				# form tensor -> tensor as opposed to tensor -> numpy -> tensor. PR torchaudio.
+				# TO ADD: see todo.md -> 'Port librosa.vqt() to PyTorch'
 				arr = waveform.detach().numpy()
 				arr = librosa.cqt(
 					arr,
 					sr=settings['SAMPLE_RATE'],
-					n_bins=84,
-					fmin=55 * (2 ** (-9 / 12)), # C1 is the default vqt bottom frequency
-					# hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
+					n_bins=n_bins,
+					bins_per_octave=bins_per_octave,
+					fmin=f_min,
+					hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
 					dtype=np.float32,
 				)
 				tmpList.append(torch.abs(torch.from_numpy(arr)))
@@ -96,7 +105,7 @@ def inputFeatures(data: list[str]) -> torch.Tensor:
 			input_type=settings['INPUT_FEATURES'],
 			sr=settings['SAMPLE_RATE'],
 			hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
-			f_min=55 * (2 ** (-9 / 12)) if settings['INPUT_FEATURES'] == 'cqt' else 0.0,
+			f_min=f_min,
 		)
 
 	return torch.stack(tmpList)

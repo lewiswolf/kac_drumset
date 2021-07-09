@@ -29,12 +29,12 @@ settings: Settings = {
 	'DATASET_SIZE': 10,
 	'DATA_LENGTH': 5.0,
 	'SAMPLE_RATE': 44100,
-	'INPUT_FEATURES': 'end2end',
+	'INPUT_FEATURES': 'cqt',
 	'NORMALISE_INPUT': False,
 	'SPECTRO_SETTINGS': {
-		'n_bins': 800,
+		'n_bins': 512,
 		'n_mels': 128,
-		'window_length': 400,
-		'hop_length': 200,
+		'window_length': 512,
+		'hop_length': 256,
 	},
 }
