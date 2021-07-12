@@ -9,6 +9,18 @@ from typing import Literal, TypedDict
 
 
 class SpectroSettings(TypedDict):
+	'''
+	These settings deal strictly with the input representations of the data.
+	For FFT, this is calculated using the provided n_bins for the number of 
+	frequency bins, window_length and hop_length. The mel representation uses 
+	the same settings as the FFT, with the addition of n_mels, the number of
+	mel frequency bins. And lastly, constant q transform makes use of only the
+	number of bins, as well as the hop_length (there is no overlapping window 
+	functionality currently supported). n_bins is used to indicate the maximum
+	amount of bins to be used, whereas in reality this is altered to ensure
+	that there are an even amount of bins per octave. 
+	'''
+	
 	n_bins: int												# number of frequency bins for the spectral density function
 	n_mels: int												# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
 	window_length: int										# window length in samples
@@ -29,7 +41,7 @@ settings: Settings = {
 	'DATASET_SIZE': 10,
 	'DATA_LENGTH': 5.0,
 	'SAMPLE_RATE': 44100,
-	'INPUT_FEATURES': 'cqt',
+	'INPUT_FEATURES': 'end2end',
 	'NORMALISE_INPUT': False,
 	'SPECTRO_SETTINGS': {
 		'n_bins': 512,
