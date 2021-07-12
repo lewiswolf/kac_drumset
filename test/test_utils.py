@@ -87,11 +87,12 @@ def plotSpectrogram(
 	if input_type and sr:
 		if input_type == 'cqt':
 			y_ticks = np.linspace(0, spectrogram.shape[0], num=11)
-			y_ticks = f_min * 2 ** (y_ticks / math.ceil(spectrogram.shape[0] / (math.log2((sr * 0.5) / f_min))))
+			y_ticks = f_min * 2 ** (y_ticks / math.ceil(spectrogram.shape[0] / math.log2(sr * 0.5 / f_min)))
 		if input_type == 'fft':
-			y_ticks = np.linspace(0, 1, num=11) * sr * 0.5
+			y_ticks = np.linspace(0, sr * 0.5, num=11)
 		if input_type == 'mel':
-			y_ticks = 700.0 * (10.0 ** (np.linspace(0, math.log10(1 + (sr / 1400.0)), num=11)) - 1.0)
+			y_ticks = np.linspace(0, math.log10(1 + sr * 0.5 / 700.0), num=11)
+			y_ticks = 700.0 * (10.0 ** y_ticks - 1.0)
 
 		plt.yticks(np.linspace(0, spectrogram.shape[0], num=11), np.round(y_ticks).astype('int64'))
 		ax.set(ylabel='Frequency (Hz)')

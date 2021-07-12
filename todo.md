@@ -21,6 +21,10 @@
 
     However with a `TypedDict`, this code produces the error `TypedDict key to be string literal`. This issue is well documented [here](https://github.com/python/mypy/issues/6262). The current solution is not very extensible, as adding new keys to corresponding dictionaries necessetates that the code that currently performs this comparison is updated.
 
+-   **Add the ability to export a torch dataset**
+
+    Currently this module supports saving and loading a dataset of .wav files, but the preprocessing step is repeated everytime the module is used. Although currently I don't know what input features I want to use for the model, I will at some point probably want to reuse a dataset of preprocessed input features multiple times.
+
 ## `input_features.py`
 
 -   **Port `librosa.vqt()` to PyTorch**
