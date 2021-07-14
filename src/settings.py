@@ -5,7 +5,7 @@ the type declarations should be used as a guideline to ensure
 that the settings object works as intended.
 '''
 
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, Union
 
 
 class SpectroSettings(TypedDict):
@@ -28,6 +28,7 @@ class SpectroSettings(TypedDict):
 
 
 class Settings(TypedDict):
+	PATH_2_CUDA: Union[str, None]							# absolute filepath to Nvidia's CUDA SDK
 	DATASET_SIZE: int										# how many data samples are there in the dataset?
 	DATA_LENGTH: float										# length of each sample in the dataset (seconds)
 	SAMPLE_RATE: int										# audio sample rate (hz)
@@ -38,6 +39,7 @@ class Settings(TypedDict):
 
 # the configurable object
 settings: Settings = {
+	'PATH_2_CUDA': None,
 	'DATASET_SIZE': 10,
 	'DATA_LENGTH': 5.0,
 	'SAMPLE_RATE': 44100,

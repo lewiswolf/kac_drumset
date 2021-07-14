@@ -1,6 +1,7 @@
 ## Dependencies
 
 -   [pipenv](https://formulae.brew.sh/formula/pipenv#default)
+-   [CUDA SDK](https://developer.nvidia.com/cuda-downloads)
 
 ## Install
 
@@ -21,6 +22,8 @@ In either case, _pytorch_ is installed automatically, and will work fine for all
 ```bash
 $ pipenv run pip install torch==1.8.1+cu102 ...
 ```
+
+To ensure that the GPU can be fully utilised by this application, make sure to update the _PATH_2_CUDA_ variable in `src/settings.py`, which should point to your installed version of the CUDA SDK.
 
 ## Test
 
@@ -45,9 +48,3 @@ pipenv run train
 ```
 
 Not yet implemented...
-
-<!-- Pytorch is installed automatically, and will work fine for all CPU based usages. However, to configure this package for GPU usage, you must install your required pytorch version via:
-
-```bash
-$ pipenv run pip install torch==1.8.1+cu102 ...
-``` -->

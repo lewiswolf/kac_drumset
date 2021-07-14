@@ -7,11 +7,17 @@ import click										# CLI arguments
 
 # src
 sys.path.insert(1, os.path.join(os.getcwd(), 'src'))
+from settings import settings						# creates a project settings object
 from dataset import generateDataset, loadDataset	# methods for handling and generating a dataset
 
 # test
 sys.path.insert(1, os.path.join(os.getcwd(), 'test'))
 from test_utils import withProfiler
+
+
+# add the CUDA SDK to the environment variables
+if settings['PATH_2_CUDA'] is not None and 'CUDA_HOME' not in os.environ:
+	os.environ['CUDA_HOME'] = settings['PATH_2_CUDA']
 
 
 # set command line flags
