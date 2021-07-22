@@ -2,7 +2,7 @@
 import json
 import os
 import sys
-from typing import TypedDict
+from typing import cast, TypedDict
 
 # dependencies
 import click								# CLI arguments
@@ -122,7 +122,7 @@ def loadDataset() -> TorchDataset:
 		metadata: DatasetMetadata = json.load(open(os.path.join(os.getcwd(), 'data/metadata.json'), 'r'))
 		# enforce type
 		# TO FIX: see todo.md -> 'pydantic.create_model_from_typeddict has an incompatible type error'
-		pydantic.create_model_from_typeddict(DatasetMetadata)(**metadata)
+		metadata = cast(DatasetMetadata, pydantic.create_model_from_typeddict(DatasetMetadata)(**metadata).dict())
 
 		# if the project settings and data settings do not align, throw error
 		# TO ADD: see todo.md -> 'Extendable way to loop over TypedDict keys'

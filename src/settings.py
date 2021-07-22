@@ -5,8 +5,12 @@ the type declarations should be used as a guideline to ensure
 that the settings object works as intended.
 '''
 
-from typing import Literal, TypedDict, Union
+# core
+import sys
+from typing import cast, Literal, TypedDict, Union
 
+# dependencies
+import pydantic 	# runtime type-checking
 
 class SpectroSettings(TypedDict):
 	'''
@@ -52,3 +56,11 @@ settings: Settings = {
 		'hop_length': 256,
 	},
 }
+
+# validate settings object and enforce types at runtime
+try:
+	# TO FIX: see todo.md -> 'pydantic.create_model_from_typeddict has an incompatible type error'
+	settings = cast(Settings, pydantic.create_model_from_typeddict(Settings)(**settings).dict())
+except pydantic.ValidationError as e:
+	print(f"ERROR: The project settings are not configured correctly. {e}")
+	sys.exit()
