@@ -1,4 +1,5 @@
 # dependencies
 from numba import cuda			# GPU acceleration
 
-print(cuda.is_available())
+if not cuda.is_available():
+	print('WARNING❗️ Nvidia GPU support is not available.')

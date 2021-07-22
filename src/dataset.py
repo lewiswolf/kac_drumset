@@ -6,6 +6,7 @@ from typing import TypedDict
 
 # dependencies
 import click								# CLI arguments
+import pydantic								# runtime type-checking
 import torch								# pytorch
 from tqdm import tqdm						# CLI progress bar
 
@@ -118,8 +119,10 @@ def loadDataset() -> TorchDataset:
 
 	try:
 		# load a dataset if it exists
-		# TO ADD: see todo.md -> 'Type check imported json file at runtime'.
 		metadata: DatasetMetadata = json.load(open(os.path.join(os.getcwd(), 'data/metadata.json'), 'r'))
+		# enforce type
+		# TO FIX: see todo.md -> 'pydantic.create_model_from_typeddict has an incompatible type error'
+		pydantic.create_model_from_typeddict(DatasetMetadata)(**metadata)
 
 		# if the project settings and data settings do not align, throw error
 		# TO ADD: see todo.md -> 'Extendable way to loop over TypedDict keys'
@@ -134,11 +137,11 @@ def loadDataset() -> TorchDataset:
 		else:
 			return TorchDataset(metadata['data'])
 
-	except (FileNotFoundError, KeyError):
+	except FileNotFoundError:
 		# generate new dataset if no dataset exists
 		print('Could not load a dataset. 🤷')
 		return generateDataset()
-	except DatasetIncompatible:
+	except (pydantic.ValidationError, DatasetIncompatible):
 		# if the dataset is incompatible with the current project settings, ask to regenerate
 		print('Imported dataset is incompatible with the current project settings. 🤷')
 		if not click.confirm('Do you want to generate a new dataset?', default=None, prompt_suffix=': '):

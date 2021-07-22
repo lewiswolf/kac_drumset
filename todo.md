@@ -4,11 +4,11 @@
 
     So far, most internal types have been well documented. When it comes to numpy and tensors however, it is not very simple to set the internal datatypes. In my research so for, I have assertained that numpy cannot be declared with generic types, such that the declaration `npt.NDArray[np.float64]` cannot be replaced by `npt.NDArray[np.genericFloat]` or anything similar. Numpy does not support such a feature, although I imagine it would be possible to import a custom type, that can be used to specify the types for all numpy arrays across the project, but this seems like a complex solution, as all files within the project will be dependent to the file in which this global type is defined. Pytorch has its own set of problems, as the only way to annotate a tensor is with `torch.Tensor`, without any means to specifiy an internal datatype. Pytorch does offer `torch.set_default_dtype(dtype)`, but this has the same complexity issue as the proposed numpy solution.
 
+-   **`pydantic.create_model_from_typeddict` has an incompatible type error**
+
+    See [here](https://github.com/samuelcolvin/pydantic/issues/3008) for details.
+
 ## `dataset.py`
-
--   **Type check imported json file at runtime**
-
-    When importing the file _metadata.json_, it is expected to be of the type `DatasetMetadata`, which can generally be assumed because of the way the object has been constructed. However, if the json file is somehow corrupted by the time it comes to importing it, there is no way for the system to reliably catch these errors, except for specifying them directly, such as with KeyError. A non-hacky version of [this](https://stackoverflow.com/questions/66665336)?
 
 -   **Extendable way to loop over TypedDict keys**
 
@@ -29,4 +29,4 @@
 
 -   **Port `librosa.vqt()` to PyTorch**
 
-    The librosa.vqt function is written solely in python, whereas a pytorch version would be written with a c++ backend, using python bindings. This would be much quicker to use, as the CQT/VQT is a slow function to begin with. This would also remove the need to import librosa altogether, as well as convert the current function, which works torch.Tensor -> numpy.ndarray -> torch.Tensor, to torch.Tensor -> torch.Tensor. To use terminology borrowed from category theory, this proposed function would be the 'unique morphism' from _a_ to _b_.
+    The `librosa.vqt` function is written solely in python, whereas a pytorch version would be written with a c++ backend, using python bindings. This would be much quicker to use, as the CQT/VQT is a slow algorithm to begin with. This would also remove the need to import librosa altogether, as well as convert the current function, which works torch.Tensor -> numpy.ndarray -> torch.Tensor, to torch.Tensor -> torch.Tensor. To use terminology borrowed from category theory, this proposed function would be the 'unique morphism' from _a_ to _b_.
