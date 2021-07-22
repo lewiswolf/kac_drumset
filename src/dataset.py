@@ -131,11 +131,8 @@ def loadDataset() -> TorchDataset:
 					or metadata['DATA_LENGTH'] != settings['DATA_LENGTH']):
 			raise DatasetIncompatible
 
-		# if the dataset is bigger than the project settings, trim its size, or simply return the datatset
-		if metadata['DATASET_SIZE'] > settings['DATASET_SIZE']:
-			return TorchDataset(metadata['data'][: settings['DATASET_SIZE']])
-		else:
-			return TorchDataset(metadata['data'])
+		# if the dataset is bigger than the project settings, trim its size, or return the entire atatset
+		return TorchDataset(metadata['data'][: settings['DATASET_SIZE']])
 
 	except FileNotFoundError:
 		# generate new dataset if no dataset exists
