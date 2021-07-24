@@ -2,31 +2,18 @@
 import json
 import os
 import sys
-from typing import cast, TypedDict
+from typing import cast, Type, TypedDict
 
 # dependencies
-import click								# CLI arguments
-import pydantic								# runtime type-checking
-import torch								# pytorch
-from tqdm import tqdm						# CLI progress bar
+import click					# CLI arguments
+import pydantic					# runtime type-checking
+import torch					# pytorch
+from tqdm import tqdm			# CLI progress bar
 
 # src
-from settings import settings				# creates a project settings object
-from input_features import inputFeatures	# a method for converting .wav files into a range of input features
-
-# tests
-sys.path.insert(1, os.path.join(os.getcwd(), 'test'))
-import random
-from test_utils import testTone
-
-
-class DataSample(TypedDict):
-	'''
-	Metadata format for each data sample. Each data sample consist of a wav file stored
-	on disk alongside its respective labels.
-	'''
-	filepath: str				# location of .wav file, relative to project directory
-	labels: list[float]			# labels for each sample
+from audio_sample import AudioSample, SampleMetadata
+from input_features import inputFeatures
+from settings import settings
 
 
 class DatasetMetadata(TypedDict):
@@ -38,7 +25,7 @@ class DatasetMetadata(TypedDict):
 	DATASET_SIZE: int		 	# how many data samples are there in the dataset?
 	DATA_LENGTH: float			# length of each sample in the dataset (seconds)
 	SAMPLE_RATE: int			# audio sample rate (hz)
-	data: list[DataSample]		# the dataset itself
+	data: list[SampleMetadata]	# the dataset itself
 
 
 class TorchDataset(torch.utils.data.Dataset):
@@ -47,25 +34,25 @@ class TorchDataset(torch.utils.data.Dataset):
 	a tensor self.Y, and sends the data itself to be preprocessed into input features.
 	'''
 
-	def __init__(self, data: list[DataSample]) -> None:
+	def __init__(self, data: list[SampleMetadata]) -> None:
 		X, Y = [], []
 		for sample in data:
-			X.append(sample['filepath'])
-			Y.append(sample['labels'])
-		self.X = inputFeatures(X)
+			X.append(sample['x'])
+			Y.append(sample['y'])
+		self.X = torch.tensor(X)
 		self.Y = torch.tensor(Y)
 
-	def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
-		return self.X[index], self.Y[index]
+	def __getitem__(self, i: int) -> tuple[torch.Tensor, torch.Tensor]:
+		return self.X[i], self.Y[i]
 
 	def __len__(self) -> int:
 		return settings['DATASET_SIZE']
 
 
-def generateDataset() -> TorchDataset:
+def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 	'''
-	Generates a dataset of sounds. The generated dataset, including the individual .wav
-	files and the metadata.json, is saved in ../data.
+	Generates a dataset of audio samples. The generated dataset, including the individual
+	.wav files and the metadata.json, are saved in ../data.
 	'''
 
 	metadata: DatasetMetadata = {
@@ -89,15 +76,10 @@ def generateDataset() -> TorchDataset:
 		total=settings['DATASET_SIZE'],
 	) as pbar:
 		for i in range(settings['DATASET_SIZE']):
-			# create a random test tone, export it as a wav, and append the metadata to the output
-			filepath = f'data/sample_{i:05d}.wav'
-			tone = testTone((random.random() * 770) + 110, settings['DATA_LENGTH'], settings['SAMPLE_RATE'], waveform='sin')
-			tone.exportWav(os.path.join(os.getcwd(), filepath))
-			metadata['data'].append({
-				"filepath": filepath,
-				"labels": [tone.f0],
-			})
-
+			sample = DataSample()
+			sample.exportWAV(f'data/sample_{i:05d}.wav')
+			# sample.metadata['x'] = inputFeatures(sample.wave)
+			metadata['data'].append(sample.metadata)
 			pbar.update(1)
 
 	# export metadata json
@@ -107,7 +89,7 @@ def generateDataset() -> TorchDataset:
 	return TorchDataset(metadata['data'])
 
 
-def loadDataset() -> TorchDataset:
+def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 	'''
 	Attempts to load a dataset if one has already been generated. Verifies the metadata
 	of the loaded dataset, and ammends the dataset if necessary.
@@ -120,7 +102,7 @@ def loadDataset() -> TorchDataset:
 	try:
 		# load a dataset if it exists
 		metadata: DatasetMetadata = json.load(open(os.path.join(os.getcwd(), 'data/metadata.json'), 'r'))
-		# enforce type
+		# validate and enforce types at runtime
 		# TO FIX: see todo.md -> 'pydantic.create_model_from_typeddict has an incompatible type error'
 		metadata = cast(DatasetMetadata, pydantic.create_model_from_typeddict(DatasetMetadata)(**metadata).dict())
 
@@ -137,11 +119,11 @@ def loadDataset() -> TorchDataset:
 	except FileNotFoundError:
 		# generate new dataset if no dataset exists
 		print('Could not load a dataset. 🤷')
-		return generateDataset()
+		return generateDataset(DataSample)
 	except (pydantic.ValidationError, DatasetIncompatible):
 		# if the dataset is incompatible with the current project settings, ask to regenerate
 		print('Imported dataset is incompatible with the current project settings. 🤷')
 		if not click.confirm('Do you want to generate a new dataset?', default=None, prompt_suffix=': '):
 			print('Check data/metadata.json to see your previous project setting.')
 			sys.exit()
-		return generateDataset()
+		return generateDataset(DataSample)

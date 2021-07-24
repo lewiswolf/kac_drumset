@@ -2,36 +2,32 @@
 import cProfile
 import math
 import pstats
+import random
 from typing import Callable, Literal, Union
 
 # dependencies
 import matplotlib.pyplot as plt			# graphs
 import numpy as np						# maths
 import numpy.typing as npt				# typing for numpy
-import soundfile as sf					# audio read & write
+
+# src
+from audio_sample import AudioSample
 
 
-class testTone():
+class TestTone(AudioSample):
 	'''
 	This class produces an arbitrary test tone, such as a sine wave.
 	params:
 		f0 		- Fundamental frequency in hz.
-		length 	- Duration of the tone in seconds.
-		sr 		- Audio sample rate in hz.
 		type 	- Type of waveform. Currently supported = [sawtooth, sine, square, triangle].
 	'''
 
-	def __init__(self, f0: float, length: float, sr: int, waveform: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin') -> None:
-		self.f0 = f0								# fundamental frequency
-		self.sr = sr								# sample rate
-		self.length = math.ceil(self.sr * length)	# duration of sine wave in samples
-		self.type = waveform						# type of waveform
-		self.wave = self.__generateWav()			# waveform array
+	def init(self) -> None:
+		self.f0: float = random.random() * 770 + 110
+		self.type: Literal['saw', 'sin', 'sqr', 'tri'] = 'tri'
 
-	def __generateWav(self) -> npt.NDArray[np.float64]:
-		'''
-		Render a specified waveform to a numpy array.
-		'''
+	def generateWaveform(self) -> npt.NDArray[np.float64]:
+		''' Renders a specified waveform to a numpy array. '''
 		if self.type == 'saw':
 			return -2 / math.pi * np.arctan(1 / np.tan(math.pi * self.f0 * (np.arange(self.length) / self.sr)))
 		if self.type == 'sin':
@@ -41,12 +37,6 @@ class testTone():
 			return sin / np.abs(sin)
 		if self.type == 'tri':
 			return 2 / math.pi * np.arcsin(np.sin(2 * math.pi * self.f0 * (np.arange(self.length) / self.sr)))
-
-	def exportWav(self, filepath: str) -> None:
-		'''
-		Write waveform to file.
-		'''
-		sf.write(filepath, self.wave, self.sr)
 
 
 def plotSpectrogram(

@@ -12,6 +12,7 @@ from typing import cast, Literal, TypedDict, Union
 # dependencies
 import pydantic 	# runtime type-checking
 
+
 class SpectroSettings(TypedDict):
 	'''
 	These settings deal strictly with the input representations of the data.
@@ -57,10 +58,10 @@ settings: Settings = {
 	},
 }
 
-# validate settings object and enforce types at runtime
+# validate and enforce types at runtime
 try:
 	# TO FIX: see todo.md -> 'pydantic.create_model_from_typeddict has an incompatible type error'
 	settings = cast(Settings, pydantic.create_model_from_typeddict(Settings)(**settings).dict())
 except pydantic.ValidationError as e:
-	print(f"ERROR: The project settings are not configured correctly. {e}")
+	print(f'ERROR: The project settings are not configured correctly. {e}')
 	sys.exit()
