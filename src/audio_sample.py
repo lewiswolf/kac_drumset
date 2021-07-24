@@ -55,7 +55,7 @@ class AudioSample:
 		''' template method '''
 		return np.zeros(0)
 
-	def exportWAV(self, filepath: str) -> None:
+	def exportWAV(self, absolutePath: str, relativePath: str) -> None:
 		''' write waveform to file '''
-		self.metadata['filepath'] = filepath
-		sf.write(filepath, self.wave, self.sr)
+		self.metadata['filepath'] = relativePath
+		sf.write(absolutePath, self.wave, self.sr)

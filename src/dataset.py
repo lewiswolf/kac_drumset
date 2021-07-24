@@ -55,6 +55,7 @@ def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 	.wav files and the metadata.json, are saved in ../data.
 	'''
 
+	cwd = os.getcwd()
 	metadata: DatasetMetadata = {
 		'DATASET_SIZE': settings['DATASET_SIZE'],
 		'DATA_LENGTH': settings['DATA_LENGTH'],
@@ -63,10 +64,9 @@ def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 	}
 
 	# clear dataset folder
-	datasetFolder = os.path.join(os.getcwd(), 'data')
-	for file in os.listdir(datasetFolder):
+	for file in os.listdir(f'{cwd}/data'):
 		if file != '.gitignore':
-			os.remove(os.path.join(datasetFolder, file))
+			os.remove(f'{cwd}/data/{file}')
 
 	# generate datatset
 	print('Generating dataset... 🎯')
@@ -77,13 +77,13 @@ def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 	) as pbar:
 		for i in range(settings['DATASET_SIZE']):
 			sample = DataSample()
-			sample.exportWAV(f'data/sample_{i:05d}.wav')
+			sample.exportWAV(f'{cwd}/data/sample_{i:05d}.wav', f'data/sample_{i:05d}.wav')
 			# sample.metadata['x'] = inputFeatures(sample.wave)
 			metadata['data'].append(sample.metadata)
 			pbar.update(1)
 
 	# export metadata json
-	with open(os.path.join(os.getcwd(), 'data/metadata.json'), 'w') as json_file:
+	with open(f'{cwd}/data/metadata.json', 'w') as json_file:
 		json.dump(metadata, json_file, skipkeys=True, indent="\t")
 
 	return TorchDataset(metadata['data'])
@@ -95,13 +95,15 @@ def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 	of the loaded dataset, and ammends the dataset if necessary.
 	'''
 
+	cwd = os.getcwd()
+
 	# custom exception if dataset generation settings do not match the project setttings
 	class DatasetIncompatible(Exception):
 		pass
 
 	try:
 		# load a dataset if it exists
-		metadata: DatasetMetadata = json.load(open(os.path.join(os.getcwd(), 'data/metadata.json'), 'r'))
+		metadata: DatasetMetadata = json.load(open(f'{cwd}/data/metadata.json', 'r'))
 		# validate and enforce types at runtime
 		# TO FIX: see todo.md -> 'pydantic.create_model_from_typeddict has an incompatible type error'
 		metadata = cast(DatasetMetadata, pydantic.create_model_from_typeddict(DatasetMetadata)(**metadata).dict())

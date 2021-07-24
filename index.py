@@ -6,12 +6,12 @@ import sys
 import click					# CLI arguments
 
 # src
-sys.path.insert(1, os.path.join(os.getcwd(), 'src'))
+sys.path.insert(1, f'{os.getcwd()}/src')
 from dataset import generateDataset, loadDataset
 from physical_model import PhysicalModel
 
 # test
-sys.path.insert(1, os.path.join(os.getcwd(), 'test'))
+sys.path.insert(1, f'{os.getcwd()}/test')
 from test_utils import TestTone
 
 
