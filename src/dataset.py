@@ -1,19 +1,28 @@
+'''
+Methods for constructing and loading a pytorch dataset. The constructor function
+defined below creates a dataset of audio files which are stored on disk, and
+configures the metadata for the dataset. When loading a dataset, its internal settings
+are checked to ensure that the project settings and the dataset settings align. If this
+is not the case, the dataset is either ammended or regenerated entirely.
+'''
+
 # core
 import json
 import os
 import sys
-from typing import cast, Type, TypedDict
+from typing import cast, Literal, Type, TypedDict
 
 # dependencies
 import click					# CLI arguments
 import pydantic					# runtime type-checking
+import soundfile as sf			# audio read & write
 import torch					# pytorch
 from tqdm import tqdm			# CLI progress bar
 
 # src
 from audio_sample import AudioSample, SampleMetadata
 from input_features import inputFeatures
-from settings import settings
+from settings import settings, SpectroSettings
 
 
 class DatasetMetadata(TypedDict):
@@ -22,10 +31,13 @@ class DatasetMetadata(TypedDict):
 	object and the settings object are compared to ensure a loaded dataset matches the
 	project settings.
 	'''
-	DATASET_SIZE: int		 	# how many data samples are there in the dataset?
-	DATA_LENGTH: float			# length of each sample in the dataset (seconds)
-	SAMPLE_RATE: int			# audio sample rate (hz)
-	data: list[SampleMetadata]	# the dataset itself
+	DATASET_SIZE: int		 								# how many data samples are there in the dataset?
+	DATA_LENGTH: float										# length of each sample in the dataset (seconds)
+	SAMPLE_RATE: int										# audio sample rate (hz)
+	INPUT_FEATURES: Literal['end2end', 'fft', 'mel', 'cqt']	# how is the data represented when it is fed to the network?
+	NORMALISE_INPUT: bool									# should each sample in the dataset be normalised before training?
+	SPECTRO_SETTINGS: SpectroSettings						# spectrogram settings
+	data: list[SampleMetadata]								# the dataset itself
 
 
 class TorchDataset(torch.utils.data.Dataset):
@@ -35,12 +47,8 @@ class TorchDataset(torch.utils.data.Dataset):
 	'''
 
 	def __init__(self, data: list[SampleMetadata]) -> None:
-		X, Y = [], []
-		for sample in data:
-			X.append(sample['x'])
-			Y.append(sample['y'])
-		self.X = torch.tensor(X)
-		self.Y = torch.tensor(Y)
+		self.X = torch.tensor([sample['x'] for sample in data])
+		self.Y = torch.tensor([sample['y'] for sample in data])
 
 	def __getitem__(self, i: int) -> tuple[torch.Tensor, torch.Tensor]:
 		return self.X[i], self.Y[i]
@@ -60,6 +68,9 @@ def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 		'DATASET_SIZE': settings['DATASET_SIZE'],
 		'DATA_LENGTH': settings['DATA_LENGTH'],
 		'SAMPLE_RATE': settings['SAMPLE_RATE'],
+		'INPUT_FEATURES': settings['INPUT_FEATURES'],
+		'NORMALISE_INPUT': settings['NORMALISE_INPUT'],
+		'SPECTRO_SETTINGS': settings['SPECTRO_SETTINGS'],
 		'data': [],
 	}
 
@@ -77,8 +88,9 @@ def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 	) as pbar:
 		for i in range(settings['DATASET_SIZE']):
 			sample = DataSample()
-			sample.exportWAV(f'{cwd}/data/sample_{i:05d}.wav', f'data/sample_{i:05d}.wav')
-			# sample.metadata['x'] = inputFeatures(sample.wave)
+			relativePath = f'data/sample_{i:05d}.wav'
+			sample.exportWAV(f'{cwd}/{relativePath}', relativePath)
+			sample.metadata['x'] = inputFeatures(sample.wave)
 			metadata['data'].append(sample.metadata)
 			pbar.update(1)
 
@@ -97,8 +109,11 @@ def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 
 	cwd = os.getcwd()
 
-	# custom exception if dataset generation settings do not match the project setttings
+	# custom exceptions used to handle changes made to the settings
 	class DatasetIncompatible(Exception):
+		pass
+
+	class InputIncompatible(Exception):
 		pass
 
 	try:
@@ -111,21 +126,48 @@ def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 		# if the project settings and data settings do not align, throw error
 		# TO ADD: see todo.md -> 'Extendable way to loop over TypedDict keys'
 		if (metadata['DATASET_SIZE'] < settings['DATASET_SIZE']
-					or metadata['SAMPLE_RATE'] != settings['SAMPLE_RATE']
-					or metadata['DATA_LENGTH'] != settings['DATA_LENGTH']):
+					or [metadata['SAMPLE_RATE'], metadata['DATA_LENGTH']]
+					!= [settings['SAMPLE_RATE'], settings['DATA_LENGTH']]):
 			raise DatasetIncompatible
 
-		# if the dataset is bigger than the project settings, trim its size, or return the entire atatset
+		if ([metadata['INPUT_FEATURES'], metadata['NORMALISE_INPUT'], metadata['SPECTRO_SETTINGS']]
+					!= [settings['INPUT_FEATURES'], settings['NORMALISE_INPUT'], settings['SPECTRO_SETTINGS']]):
+			raise InputIncompatible
+
 		return TorchDataset(metadata['data'][: settings['DATASET_SIZE']])
 
+	# generate new dataset if no dataset exists
 	except FileNotFoundError:
-		# generate new dataset if no dataset exists
 		print('Could not load a dataset. 🤷')
 		return generateDataset(DataSample)
+
+	# if the dataset is incompatible with the current project settings, ask to regenerate
 	except (pydantic.ValidationError, DatasetIncompatible):
-		# if the dataset is incompatible with the current project settings, ask to regenerate
 		print('Imported dataset is incompatible with the current project settings. 🤷')
 		if not click.confirm('Do you want to generate a new dataset?', default=None, prompt_suffix=': '):
 			print('Check data/metadata.json to see your previous project setting.')
 			sys.exit()
 		return generateDataset(DataSample)
+
+	# recompute input features if project settings don't align
+	except InputIncompatible:
+		print('Preprocessing dataset... 📚')
+		metadata['INPUT_FEATURES'] = settings['INPUT_FEATURES']
+		metadata['NORMALISE_INPUT'] = settings['NORMALISE_INPUT']
+		metadata['SPECTRO_SETTINGS'] = settings['SPECTRO_SETTINGS']
+
+		with tqdm(
+			bar_format='{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt}, Elapsed: {elapsed}, ETA: {remaining}, {rate_fmt}  ',
+			unit=' data samples',
+			total=settings['DATASET_SIZE'],
+		) as pbar:
+			for i in range(settings['DATASET_SIZE']):
+				filepath = metadata['data'][i]['filepath']
+				metadata['data'][i]['x'] = inputFeatures(sf.read(f'{cwd}/{filepath}')[0])
+				pbar.update(1)
+
+		# export metadata json
+		with open(f'{cwd}/data/metadata.json', 'w') as json_file:
+			json.dump(metadata, json_file, skipkeys=True, indent="\t")
+
+		return TorchDataset(metadata['data'][: settings['DATASET_SIZE']])

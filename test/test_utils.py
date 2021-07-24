@@ -24,7 +24,7 @@ class TestTone(AudioSample):
 
 	def init(self) -> None:
 		self.f0: float = random.random() * 770 + 110
-		self.type: Literal['saw', 'sin', 'sqr', 'tri'] = 'tri'
+		self.type: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin'
 
 	def generateWaveform(self) -> npt.NDArray[np.float64]:
 		''' Renders a specified waveform to a numpy array. '''

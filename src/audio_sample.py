@@ -1,9 +1,9 @@
 '''
 This file defines an arbitrary audio sample to be used as part of this project. This class
-is intended to act as a template for any type of audio sample, as its basic methods and
-properties, which are required for use with this system, will be inherited. This design also
-ensures that this project's dataset constructor (essentially dataset.py) can be completely
-abstracted, detached from its input.
+is intended to act as a template for any type of audio sample, as the methods and properties
+defined below, which are required for use with this system, will be inherited from this
+parent class. This design also ensures that this project's dataset constructor (essentially
+dataset.py) can be completely abstracted, and detached from its input.
 '''
 
 # core
@@ -21,8 +21,8 @@ from settings import settings
 
 class SampleMetadata(TypedDict):
 	'''
-	Metadata format for each data sample. Each data sample consists of a wav file stored
-	on disk alongside its respective labels.
+	Metadata format for each audio sample. Each audio sample consists of a wav file stored
+	on disk alongside its respective input data (x) and labels (y).
 	'''
 	filepath: str				# location of .wav file, relative to project directory
 	x: list						# input data for the network
@@ -56,6 +56,15 @@ class AudioSample:
 		return np.zeros(0)
 
 	def exportWAV(self, absolutePath: str, relativePath: str) -> None:
-		''' write waveform to file '''
+		'''
+		Write the generated waveform to a file.
+		params:
+			absolutePath: 	The absolute filepath pointing to where the exported file is
+							stored. This is used to avoid calling os.getcwd() each time
+							this method is called.
+			relativePath: 	The relative filepath pointing to the the exported file is
+							stored. This is used to populate the metadata.
+		'''
+
 		self.metadata['filepath'] = relativePath
 		sf.write(absolutePath, self.wave, self.sr)
