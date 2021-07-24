@@ -29,14 +29,14 @@ class TestTone(AudioSample):
 	def generateWaveform(self) -> npt.NDArray[np.float64]:
 		''' Renders a specified waveform to a numpy array. '''
 		if self.type == 'saw':
-			return -2 / math.pi * np.arctan(1 / np.tan(math.pi * self.f0 * (np.arange(self.length) / self.sr)))
+			return -2 / np.pi * np.arctan(1 / np.tan(np.pi * self.f0 * (np.arange(self.length) / self.sr)))
 		if self.type == 'sin':
-			return np.sin(2 * math.pi * self.f0 * (np.arange(self.length) / self.sr))
+			return np.sin(2 * np.pi * self.f0 * (np.arange(self.length) / self.sr))
 		if self.type == 'sqr':
-			sin = np.sin(2 * math.pi * self.f0 * (np.arange(self.length) / self.sr))
+			sin = np.sin(2 * np.pi * self.f0 * (np.arange(self.length) / self.sr))
 			return sin / np.abs(sin)
 		if self.type == 'tri':
-			return 2 / math.pi * np.arcsin(np.sin(2 * math.pi * self.f0 * (np.arange(self.length) / self.sr)))
+			return 2 / np.pi * np.arcsin(np.sin(2 * np.pi * self.f0 * (np.arange(self.length) / self.sr)))
 
 
 def plotSpectrogram(

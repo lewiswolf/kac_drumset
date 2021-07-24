@@ -4,7 +4,7 @@ import math
 # dependencies
 import numpy as np 				# maths
 import numpy.typing as npt		# typing for numpy
-import librosa				# numpy audio manipulation
+import librosa					# numpy audio manipulation
 import torch					# pytorch
 import torchaudio				# tensor audio manipulation
 
