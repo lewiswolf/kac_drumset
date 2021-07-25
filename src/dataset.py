@@ -164,7 +164,7 @@ def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 		dataset.Y = torch.zeros(
 			(settings['DATASET_SIZE'],) + tuple(torch.as_tensor(metadata['data'][0]['y']).shape),
 		)
-		
+
 		# confirm matching input settings
 		# TO ADD: see todo.md -> 'Extendable way to loop over TypedDict keys'
 		if ([metadata['INPUT_FEATURES'], metadata['NORMALISE_INPUT'], metadata['SPECTRO_SETTINGS']]
