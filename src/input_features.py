@@ -12,14 +12,34 @@ import torchaudio				# tensor audio manipulation
 from settings import settings
 
 
+# config settings specifically for use with a constant q transform
 if settings['INPUT_FEATURES'] == 'cqt':
 	f_min = 22.05
 	max_octaves = math.log2((settings['SAMPLE_RATE'] * 0.5) / f_min)
 	bins_per_octave = math.floor(settings['SPECTRO_SETTINGS']['n_bins'] / max_octaves)
-	n_bins = math.floor(bins_per_octave * max_octaves) # var used for CQT only!
+	n_bins = math.floor(bins_per_octave * max_octaves)
 
 
-def inputFeatures(waveform: npt.NDArray[np.float64]) -> list:
+def inputSize() -> tuple[int, ...]:
+	'''
+	Helper method used for precomputing the size of an individual input feature.
+	'''
+
+	if settings['INPUT_FEATURES'] == 'end2end':
+		return (math.ceil(settings['DATA_LENGTH'] * settings['SAMPLE_RATE']), )
+	else:
+		temporalWidth = math.ceil(
+			(math.ceil(settings['DATA_LENGTH'] * settings['SAMPLE_RATE']) + 1) / settings['SPECTRO_SETTINGS']['hop_length'],
+		)
+		if settings['INPUT_FEATURES'] == 'fft':
+			return (settings['SPECTRO_SETTINGS']['n_bins'] // 2 + 1, temporalWidth)
+		if settings['INPUT_FEATURES'] == 'mel':
+			return (settings['SPECTRO_SETTINGS']['n_mels'], temporalWidth)
+		if settings['INPUT_FEATURES'] == 'cqt':
+			return (n_bins, temporalWidth)
+
+
+def inputFeatures(waveform: npt.NDArray[np.float64]) -> torch.Tensor:
 	'''
 	This method produces the input features to pass to the neural network, by
 	first importing a pre-generated .wav file, returning a tensor corresponding
@@ -32,7 +52,7 @@ def inputFeatures(waveform: npt.NDArray[np.float64]) -> list:
 
 	# return correct input representation to output tensor
 	if settings['INPUT_FEATURES'] == 'end2end':
-		return waveform.tolist()
+		return torch.as_tensor(waveform)
 
 	if settings['INPUT_FEATURES'] == 'fft':
 		return torchaudio.transforms.Spectrogram(
@@ -40,7 +60,7 @@ def inputFeatures(waveform: npt.NDArray[np.float64]) -> list:
 			win_length=settings['SPECTRO_SETTINGS']['window_length'],
 			hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
 			power=2.0,
-		)(torch.from_numpy(waveform)).tolist()
+		)(torch.as_tensor(waveform))
 
 	if settings['INPUT_FEATURES'] == 'mel':
 		return torchaudio.transforms.MelSpectrogram(
@@ -50,11 +70,11 @@ def inputFeatures(waveform: npt.NDArray[np.float64]) -> list:
 			win_length=settings['SPECTRO_SETTINGS']['window_length'],
 			hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
 			power=2.0,
-		)(torch.from_numpy(waveform)).tolist()
+		)(torch.as_tensor(waveform))
 
 	if settings['INPUT_FEATURES'] == 'cqt':
 		# TO ADD: see todo.md -> 'Port librosa.vqt() to PyTorch'
-		return np.abs(librosa.cqt(
+		return torch.as_tensor(np.abs(librosa.cqt(
 			waveform,
 			sr=settings['SAMPLE_RATE'],
 			n_bins=n_bins,
@@ -62,4 +82,4 @@ def inputFeatures(waveform: npt.NDArray[np.float64]) -> list:
 			fmin=f_min,
 			hop_length=settings['SPECTRO_SETTINGS']['hop_length'],
 			dtype=np.float64,
-		)).tolist()
+		)))

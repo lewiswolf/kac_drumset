@@ -3,7 +3,7 @@ import cProfile
 import math
 import pstats
 import random
-from typing import Callable, Literal, Union
+from typing import Any, Callable, Literal, Union
 
 # dependencies
 import matplotlib.pyplot as plt			# graphs
@@ -23,7 +23,7 @@ class TestTone(AudioSample):
 	'''
 
 	def init(self) -> None:
-		self.f0: float = random.random() * 770 + 110
+		self.f0: float = 349.0
 		self.type: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin'
 
 	def generateWaveform(self) -> npt.NDArray[np.float64]:
@@ -117,14 +117,14 @@ def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
 	plt.show()
 
 
-def withProfiler(func: Callable, n: int) -> None:
+def withProfiler(func: Callable, n: int, *args: Any) -> None:
 	'''
 	Calls the input function using cProfile to generate a performance report in the console.
 	Prints the n most costly functions.
 	'''
 
 	with cProfile.Profile() as pr:
-		func()
+		func(*args)
 	stats = pstats.Stats(pr)
 	stats.sort_stats(pstats.SortKey.TIME)
 	stats.print_stats(n)

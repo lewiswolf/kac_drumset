@@ -8,7 +8,6 @@ dataset.py) can be completely abstracted, and detached from its input.
 
 # core
 import math
-from typing import TypedDict
 
 # dependencies
 import numpy as np				# maths
@@ -19,33 +18,21 @@ import soundfile as sf			# audio read & write
 from settings import settings
 
 
-class SampleMetadata(TypedDict):
-	'''
-	Metadata format for each audio sample. Each audio sample consists of a wav file stored
-	on disk alongside its respective input data (x) and labels (y).
-	'''
-	filepath: str				# location of .wav file, relative to project directory
-	x: list						# input data for the network
-	y: list						# labels for each sample
-
-
 class AudioSample:
 	''' Template parent class for an audio sample. '''
 	def __init__(self):
 		# default variables
 		self.sr: int = settings['SAMPLE_RATE']
 		self.length: int = math.ceil(settings['DATA_LENGTH'] * self.sr)
-		self.metadata: SampleMetadata = {
-			'filepath': '',
-			'x': [],
-			'y': [],
-		}
-
+		self.y: list = []
 		# call user defined init method
 		self.init()
-
 		# generate waveform and metadata
 		self.wave: npt.NDArray[np.float64] = self.generateWaveform()
+
+	def __export__(self, absolutePath: str) -> None:
+		'''	Write the generated waveform to a file. '''
+		sf.write(absolutePath, self.wave, self.sr)
 
 	def init(self) -> None:
 		''' template method '''
@@ -54,17 +41,3 @@ class AudioSample:
 	def generateWaveform(self) -> npt.NDArray[np.float64]:
 		''' template method '''
 		return np.zeros(0)
-
-	def exportWAV(self, absolutePath: str, relativePath: str) -> None:
-		'''
-		Write the generated waveform to a file.
-		params:
-			absolutePath: 	The absolute filepath pointing to where the exported file is
-							stored. This is used to avoid calling os.getcwd() each time
-							this method is called.
-			relativePath: 	The relative filepath pointing to the the exported file is
-							stored. This is used to populate the metadata.
-		'''
-
-		self.metadata['filepath'] = relativePath
-		sf.write(absolutePath, self.wave, self.sr)

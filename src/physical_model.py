@@ -21,7 +21,7 @@ if settings['PATH_2_CUDA'] is not None:
 
 class PhysicalModel(AudioSample):
 	def init(self) -> None:
-		self.metadata['y'] = []
+		self.y = []
 
 	def generateWaveform(self) -> npt.NDArray[np.float64]:
 		return np.zeros(0)
