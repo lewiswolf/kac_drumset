@@ -19,11 +19,13 @@ tqdm = "*"
 flake8 = "*"
 flake8-commas = "*"
 mypy = "*"
+pygments = "*"
 
 [requires]
 python_version = "3.9"
 
 [scripts]
-test = "sh ./test/test.sh"
 generate = "python index.py -g"
+latex = "sh ./paper/build_latex.sh"
+test = "sh ./test/test.sh"
 train = "python index.py -t"
