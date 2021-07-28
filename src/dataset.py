@@ -10,7 +10,7 @@ is not the case, the dataset is either ammended or regenerated entirely.
 import json
 import os
 import sys
-from typing import Literal, TextIO, Type, TypedDict
+from typing import Literal, Type, TypedDict
 
 # dependencies
 import click					# CLI arguments
@@ -77,37 +77,34 @@ class TorchDataset(torch.utils.data.Dataset):
 		return settings['DATASET_SIZE']
 
 
-def writeMetadataToFile(file: TextIO) -> None:
+def parseMetadataToString() -> str:
 	'''
-	Appends the project metadata, as defined in DatasetMetadata, to a .json file. The
-	file is intended to be opened in 'append' mode. 
+	Parse the project metadata, as defined in DatasetMetadata, to a raw JSON string.
 	'''
 
-	file.write(r'{' + f'{os.linesep}')
+	str = r'{'
+	str += f'{os.linesep}'
 	for key in DatasetMetadata.__dict__['__annotations__'].keys():
 		if key != 'data':
 			# TO FIX: see todo.md -> 'Extendable way to loop over TypedDict keys'
-			file.write(rf'"{key}": {json.dumps(settings[key])},{os.linesep}')
-	file.write(rf'"data": [{os.linesep}')
+			str += rf'"{key}": {json.dumps(settings[key])},{os.linesep}'
+	str += rf'"data": [{os.linesep}'
+	return str
 
 
-def writeDataSampleToFile(file: TextIO, i: int, samplePath: str, x: torch.Tensor, y: torch.Tensor) -> None:
+def parseDataSampleToString(finalLine: bool, samplePath: str, x: torch.Tensor, y: torch.Tensor) -> str:
 	'''
-	Appends a datasample, as defined in SampleMetadata, to a .json file. The file is 
-	intended to be opened in 'append' mode, and this function is designed for use within 
-	a for loop.
+	Parse a datasample, as defined by SampleMetadata, to a raw JSON string with line breaks.
+	This function is designed for use within a for loop.
 	'''
 
-	file.write(
-		r'{' + f'{os.linesep}'
-		+ fr'"filepath": "{samplePath}",{os.linesep}'
-		+ fr'"x": {x.tolist()},{os.linesep}'
-		+ fr'"y": {y.tolist()}{os.linesep}',
-	)
-	if i != settings['DATASET_SIZE'] - 1:
-		file.write(r'},' + f'{os.linesep}')
-	else:
-		file.write(r'}]}')
+	str = r'{'
+	str += f'{os.linesep}'
+	str += fr'"filepath": "{samplePath}",{os.linesep}'
+	str += fr'"x": {x.tolist()},{os.linesep}'
+	str += fr'"y": {y.tolist()}{os.linesep}'
+	str += r'}]}' if finalLine else r'},' + f'{os.linesep}'
+	return str
 
 
 def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
@@ -126,7 +123,7 @@ def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 
 	print('Generating dataset... 🎯')
 	with open(f'{cwd}/data/metadata.json', 'at') as newFile:
-		writeMetadataToFile(newFile)
+		newFile.write(parseMetadataToString())
 		with tqdm(**tqdmSettings) as pbar:
 			for i in range(settings['DATASET_SIZE']):
 				# prepare sample
@@ -142,7 +139,7 @@ def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 				relativePath = f'data/sample_{i:05d}.wav'
 				sample.__export__(f'{cwd}/{relativePath}')
 				# export metadata
-				writeDataSampleToFile(newFile, i, relativePath, x, y)
+				newFile.write(parseDataSampleToString(i == settings['DATASET_SIZE'] - 1, relativePath, x, y))
 				pbar.update(1)
 		newFile.close()
 	return dataset
@@ -207,7 +204,7 @@ def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 			# regenerate inputs features and metadata.json
 			else:
 				with open(f'{cwd}/data/metadata_temp.json', 'at') as newFile:
-					writeMetadataToFile(newFile)
+					newFile.write(parseMetadataToString())
 					with tqdm(**tqdmSettings) as pbar:
 						for i in range(settings['DATASET_SIZE']):
 							# import relevant information
@@ -225,7 +222,7 @@ def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 							# append input features to dataset
 							dataset.setitem(i, x, y)
 							# export metadata
-							writeDataSampleToFile(newFile, i, relativePath, x, y)
+							newFile.write(parseDataSampleToString(i == settings['DATASET_SIZE'] - 1, relativePath, x, y))
 							pbar.update(1)
 					file.close()
 					os.remove(f'{cwd}/data/metadata.json')
