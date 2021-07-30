@@ -59,7 +59,7 @@ class DatasetMetadata(TypedDict):
 class TorchDataset(torch.utils.data.Dataset):
 	'''
 	Pytorch wrapper for the generated/loaded dataset. Formats the dataset's labels into
-	a tensor self.Y, and sends the data itself to be preprocessed into input features.
+	a tensor self.Y, and the input into a tensor self.X.
 	'''
 
 	def __init__(self) -> None:
@@ -79,7 +79,8 @@ class TorchDataset(torch.utils.data.Dataset):
 
 def parseMetadataToString() -> str:
 	'''
-	Parse the project metadata, as defined in DatasetMetadata, to a raw JSON string.
+	Parse the project metadata, as defined in DatasetMetadata, to a raw JSON string with
+	line breaks.
 	'''
 
 	str = r'{'

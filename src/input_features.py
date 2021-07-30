@@ -1,3 +1,9 @@
+'''
+This file is used to transform arrays of raw audio into various input types
+ready for training a neural network. This file also includes other helper
+methods relating to the size of the input data.
+'''
+
 # core
 import math
 
@@ -50,7 +56,7 @@ def inputFeatures(waveform: npt.NDArray[np.float64]) -> torch.Tensor:
 	if settings['NORMALISE_INPUT'] and np.max(waveform) != 1.0:
 		waveform = waveform * (1.0 / np.max(waveform))
 
-	# return correct input representation to output tensor
+	# return the correct input representation as a tensor
 	if settings['INPUT_FEATURES'] == 'end2end':
 		return torch.as_tensor(waveform)
 
