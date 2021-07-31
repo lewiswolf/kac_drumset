@@ -67,3 +67,9 @@
 -   **Port `librosa.vqt()` to PyTorch**
 
     The `librosa.vqt` function is written solely in python, whereas a pytorch version would be written with a c++ backend, using python bindings. This would be much quicker to use, as the CQT/VQT is a slow algorithm to begin with. This would also remove the need to import librosa altogether.
+
+## `geometry.py`
+
+-   **Missing a reliable algorithm to generate all concave shapes**
+
+    Currently, convex shapes can be deterministically created with an efficient algorithm, as well as some concave shapes. However, due to the algorithm chosen to create concave shapes, not _all_ possible concave shapes can be created. The concave algorithm works by centering a collection of random points around the origin, and connecting them according to their polar angle. More complex concave shapes do not share this property, as it is possible for concave shapes to not obey this ordering. An algorithm that can create these shapes however, whilst maintaining that there are no line crossings. Perhaps a random walk/travelling salesman algorithm is required?

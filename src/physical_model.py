@@ -7,20 +7,24 @@ import numpy as np				# maths
 import numpy.typing as npt		# typing for numpy
 
 # src
-from settings import settings
 from audio_sample import AudioSample
+from geometry import RandomPolygon
+from settings import settings
 
 
 # add the CUDA SDK to the environment variables
 if settings['PATH_2_CUDA'] is not None:
-	if 'CUDA_HOME' not in os.environ:
-		os.environ['CUDA_HOME'] = settings['PATH_2_CUDA']
+	os.environ['CUDA_HOME'] = settings['PATH_2_CUDA']
 	if not cuda.is_available():
 		print('WARNING❗️ Nvidia GPU support is not available.')
 
 
 class PhysicalModel(AudioSample):
+	'''
+	'''
+
 	def init(self) -> None:
+		self.shape = RandomPolygon()
 		self.y = []
 
 	def generateWaveform(self) -> npt.NDArray[np.float64]:

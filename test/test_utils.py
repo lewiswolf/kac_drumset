@@ -18,12 +18,12 @@ class TestTone(AudioSample):
 	'''
 	This class produces an arbitrary test tone, such as a sine wave.
 	params:
-		f0 		- Fundamental frequency in hz.
-		type 	- Type of waveform. Currently supported = [sawtooth, sine, square, triangle].
+		f0 		Fundamental frequency in hz.
+		type 	Type of waveform. Currently supported = [sawtooth, sine, square, triangle].
 	'''
 
 	def init(self) -> None:
-		self.f0: float = random.random() * 770 + 110
+		self.f0: float = random.uniform(110, 880)
 		self.type: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin'
 
 	def generateWaveform(self) -> npt.NDArray[np.float64]:
@@ -47,14 +47,14 @@ def plotSpectrogram(
 	f_min: float = 20.0,
 ) -> None:
 	'''
-	Plots an arbitrary spectrogram, and formats the axes based on the type of spectrogram and
-	the settings used for the spectral density function.
+	Plots an arbitrary spectrogram, and formats the axes based on the type of spectrogram and the
+	settings used for the spectral density function.
 
 	params:
-		input_type		- What type of spectrogram is it? Currently supported = [FFT, MelSpec, CQT]
-		sr	 			- Audio sample rate in hz.
-		hop_length		- Hop length used as part of the spectral density function, in samples.
-		f_min			- Sets the minimum frequency of the y-axis in hz. This is necessary for an
+		input_type		What type of spectrogram is it? Currently supported = [FFT, MelSpec, CQT]
+		sr	 			Audio sample rate in hz.
+		hop_length		Hop length used as part of the spectral density function, in samples.
+		f_min			Sets the minimum frequency of the y-axis in hz. This is necessary for an
 						accurate representation of the cqt.
 	'''
 
@@ -92,23 +92,43 @@ def plotSpectrogram(
 	plt.show()
 
 
+def plotVertices(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> None:
+	'''
+	A helper method used to plot the vertices of a predefined shape.
+	params:
+		x & y	numpy arrays of coordinates, such that (x[i], y[i]) form a cartesian product. These
+				coordinates should be ordered such that each pair (x[i], y[i]) is connected to both
+				(x[i + 1], y[i + 1]) and (x[i - 1], y[i - 1]).
+	'''
+
+	fig, ax = plt.subplots(1, figsize=(12, 6), dpi=100)
+	plt.scatter(x, y, c='#15b01a')
+	plt.plot(np.append(x, x[0]), np.append(y, y[0]), c='#15b01a')
+	# set axes
+	ax.set_xlim(0.0, 1.0)
+	ax.set_ylim(0.0, 1.0)
+	plt.xticks([])
+	plt.yticks([])
+	plt.show()
+
+
 def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
 	'''
-	Plots a waveform using matplotlib. Designed to handle mono and multichannel inputs of
-	shape [C, S] or [S], where C is the number of channels, and S is the number of samples.
+	Plots a waveform using matplotlib. Designed to handle mono and multichannel inputs of shape [C, S]
+	or [S], where C is the number of channels, and S is the number of samples.
 	'''
 
 	if waveform.ndim == 1:
 		# render a mono waveform
 		fig, ax = plt.subplots(1, figsize=(10, 1.75), dpi=100)
-		ax.plot(np.linspace(0, len(waveform) / sr, num=len(waveform)), waveform, color='green')
+		ax.plot(np.linspace(0, len(waveform) / sr, num=len(waveform)), waveform, color='#15b01a')
 		ax.set(xlabel='Time (Seconds)', ylabel='Amplitude')
 	elif waveform.ndim == 2:
 		# render a multi channel waveform
 		fig, ax = plt.subplots(waveform.shape[0], 1, figsize=(10, waveform.shape[0] * 1.75), dpi=100, squeeze=False)
 		time = np.linspace(0, len(waveform[0]) / sr, num=len(waveform[0]))
 		for i, channel in enumerate(waveform):
-			ax[i][0].plot(time, channel, color='green')
+			ax[i][0].plot(time, channel, color='#15b01a')
 			ax[i][0].set(xlabel='Time (Seconds)', ylabel='Amplitude')
 	else:
 		raise ValueError('Incorrect size of input array; only [N * M] & [M] supported.')

@@ -1,7 +1,12 @@
 % ARTICLE PREAMBLE
-\title{\LaTeX~Template}
+\title{Predicting the Shape of Arbitrary 2-dimensional Drums}
 \author{Lewis Wolstanholme}
 \date{\getDate\today}
 \maketitle
 
-\noindent Write some stuff \dots
+\noindent For this project, random convex shapes were generated according to the efficient algorithm presented by \citet{valtrProbabilityThatRandom1995}.
+Concave shapes were individually generated using a set of \(n\) random cartesian products, centred around the origin, connected to their closest neighbours according to \(\displaystyle \arctan \left( \frac{y}{x} \right)\).
+The dataset itself was formed around a Bernoulli distribution of these two algorithms.
+Given that the latter algorithm, used to create concave shapes, has a measurable probability of also returning a convex shape~\citep{valtrProbabilityThatRandom1995}, we can assume that the distribution of \(n\) sided convex drums will be equivalent to
+\[ p_n = \frac{1}{2} + \frac{1}{2}\left( \frac{\genfrac(){0pt}{1}{2n - 2}{n-1}}{n!}\right)^2\]
+where \(n\) is determined by a uniform distribution ranging from 3 to \_.
