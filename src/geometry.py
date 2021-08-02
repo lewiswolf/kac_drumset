@@ -9,7 +9,7 @@ import numpy as np 				# maths
 import numpy.typing as npt		# typing for numpy
 
 
-ALLOW_CONCAVE = False			# are concave shapes allowed?
+ALLOW_CONCAVE = True			# are concave shapes allowed?
 MAX_VERTICES = 5				# maximum amount of vertices for a given shape
 
 
@@ -46,7 +46,7 @@ def generateConcave(n: int) -> npt.NDArray[np.float64]:
 	vertices[:, 1] -= (np.max(vertices[:, 1]) + np.min(vertices[:, 1])) / 2
 	# order by polar angle theta
 	vertices = vertices[np.argsort(np.arctan2(vertices[:, 1], vertices[:, 0]))]
-	# move back to positive quadrant
+	# centre polygon on positive quadrant
 	vertices += 0.5
 	return vertices
 
@@ -90,16 +90,15 @@ def generateConvex(n: int) -> npt.NDArray[np.float64]:
 
 	# arrange to points end to end to form a polygon
 	x_accum = y_accum = 0
-	min_polygon_x = min_polygon_y = 0
 	for i, [x, y] in enumerate(vertices):
 		vertices[i] = [x_accum, y_accum]
 		x_accum += x
 		y_accum += y
-		min_polygon_x = min(min_polygon_x, x_accum)
-		min_polygon_y = min(min_polygon_y, y_accum)
 
-	# move the polygon to the original min and max coordinates
-	vertices[:, 0] += X_rand[0] - min_polygon_x
-	vertices[:, 1] += Y_rand[0] - min_polygon_y
+	# center the polygon between 0 and 1
+	x_min = np.min(vertices[:, 0])
+	y_min = np.min(vertices[:, 1])
+	vertices[:, 0] += ((1 - (np.max(vertices[:, 0]) - x_min)) / 2) - x_min
+	vertices[:, 1] += ((1 - (np.max(vertices[:, 1]) - y_min)) / 2) - y_min
 
 	return vertices

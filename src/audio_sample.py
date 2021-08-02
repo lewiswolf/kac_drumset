@@ -20,6 +20,7 @@ from settings import settings
 
 class AudioSample:
 	''' Template parent class for an audio sample. '''
+
 	def __init__(self):
 		# default variables
 		self.sr: int = settings['SAMPLE_RATE']
