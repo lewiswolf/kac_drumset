@@ -103,10 +103,11 @@ def plotVertices(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> None
 
 	fig, ax = plt.subplots(1, figsize=(12, 6), dpi=100)
 	plt.scatter(x, y, c='#15b01a')
+	plt.scatter(0.5, 0.5)
 	plt.plot(np.append(x, x[0]), np.append(y, y[0]), c='#15b01a')
 	# set axes
-	ax.set_xlim(0.0, 1.0)
-	ax.set_ylim(0.0, 1.0)
+	ax.set_xlim(-0.01, 1.01)
+	ax.set_ylim(-0.01, 1.01)
 	plt.xticks([])
 	plt.yticks([])
 	plt.show()

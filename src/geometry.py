@@ -10,13 +10,13 @@ import numpy.typing as npt		# typing for numpy
 
 
 ALLOW_CONCAVE = True			# are concave shapes allowed?
-MAX_VERTICES = 5				# maximum amount of vertices for a given shape
+MAX_VERTICES = 10				# maximum amount of vertices for a given shape
 
 
 class RandomPolygon():
 	'''
-	This class is used to generate a random shape, and discretise its vertices
-	onto a uniform grid.
+	This class is used to generate a random polygon, normalised and centered between
+	0.0 and 1.0.
 	'''
 
 	n: int									# the number of vertices
@@ -42,18 +42,27 @@ def generateConcave(n: int) -> npt.NDArray[np.float64]:
 	# TO ADD: see todo.md -> 'Missing a reliable algorithm to generate all concave shapes'
 	vertices = np.random.random((n, 2))
 	# center around the origin
-	vertices[:, 0] -= (np.max(vertices[:, 0]) + np.min(vertices[:, 0])) / 2
-	vertices[:, 1] -= (np.max(vertices[:, 1]) + np.min(vertices[:, 1])) / 2
+	x_min = np.min(vertices[:, 0])
+	x_max = np.max(vertices[:, 0])
+	y_min = np.min(vertices[:, 1])
+	y_max = np.max(vertices[:, 1])
+	vertices[:, 0] -= (x_max + x_min) / 2
+	vertices[:, 1] -= (y_max + y_min) / 2
 	# order by polar angle theta
 	vertices = vertices[np.argsort(np.arctan2(vertices[:, 1], vertices[:, 0]))]
-	# centre polygon on positive quadrant
+	# normalise and centre polygon on positive quadrant
+	vertices *= 1 / max((x_max - x_min), (y_max - y_min))
 	vertices += 0.5
+	# correct floating point error
+	if np.min(vertices) != 0.0:
+		i = np.argmin(vertices)
+		vertices[int(np.floor(i / 2)), i % 2] = 0.0
 	return vertices
 
 
 def generateConvex(n: int) -> npt.NDArray[np.float64]:
 	'''
-	Generate convex shappes according to Pavel Valtr's 1995 alogrithm. Ported from
+	Generate convex shappes according to Pavel Valtr's 1995 alogrithm. Adapted from
 	Sander Verdonschot's Java version, found here:
 		https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
 	'''
@@ -95,10 +104,19 @@ def generateConvex(n: int) -> npt.NDArray[np.float64]:
 		x_accum += x
 		y_accum += y
 
-	# center the polygon between 0 and 1
+	# center around the origin
 	x_min = np.min(vertices[:, 0])
+	x_max = np.max(vertices[:, 0])
 	y_min = np.min(vertices[:, 1])
-	vertices[:, 0] += ((1 - (np.max(vertices[:, 0]) - x_min)) / 2) - x_min
-	vertices[:, 1] += ((1 - (np.max(vertices[:, 1]) - y_min)) / 2) - y_min
+	y_max = np.max(vertices[:, 1])
+	vertices[:, 0] += ((x_max - x_min) / 2) - x_max
+	vertices[:, 1] += ((y_max - y_min) / 2) - y_max
 
+	# normalise and centre polygon on positive quadrant
+	vertices *= 1 / max((x_max - x_min), (y_max - y_min))
+	vertices += 0.5
+	# correct floating point error
+	if np.min(vertices) != 0.0:
+		j = np.argmin(vertices)
+		vertices[int(np.floor(j / 2)), j % 2] = 0.0
 	return vertices
