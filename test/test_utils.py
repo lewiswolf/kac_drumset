@@ -92,18 +92,18 @@ def plotSpectrogram(
 	plt.show()
 
 
-def plotVertices(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> None:
+def plotVertices(coords: npt.NDArray[np.float64]) -> None:
 	'''
 	A helper method used to plot the vertices of a predefined shape.
 	params:
-		x & y	numpy arrays of coordinates, such that (x[i], y[i]) form a cartesian product. These
-				coordinates should be ordered such that each pair (x[i], y[i]) is connected to both
-				(x[i + 1], y[i + 1]) and (x[i - 1], y[i - 1]).
+		coords	a 2d numpy array of coordinates ([[x_1, y_1], [x_2, y_2], ...]), such that
+				(x[i], y[i]) form a cartesian product. These coordinates should be ordered such
+				that each pair (x[i], y[i]) is connected to both (x[i + 1], y[i + 1]) and
+				(x[i - 1], y[i - 1]).
 	'''
 
 	fig, ax = plt.subplots(1, figsize=(12, 6), dpi=100)
-	plt.scatter(x, y, c='#15b01a')
-	plt.plot(np.append(x, x[0]), np.append(y, y[0]), c='#15b01a')
+	plt.fill(coords[:, 0], coords[:, 1], facecolor='#1B9E31', edgecolor='#126B21')
 	# set axes
 	ax.set_xlim(-0.01, 1.01)
 	ax.set_ylim(-0.01, 1.01)
