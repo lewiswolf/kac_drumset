@@ -35,14 +35,20 @@ class RandomPolygon():
 			self.vertices = generateConvex(self.n)
 			cv2.fillConvexPoly(
 				self.grid,
-				np.array([[round(x * (pmSettings['grid_size'] - 1)), round(y * (pmSettings['grid_size'] - 1))] for [x, y] in self.vertices], 'int32'),
+				np.array([[
+					round(x * (pmSettings['grid_size'] - 1)),
+					round(y * (pmSettings['grid_size'] - 1)),
+				] for [x, y] in self.vertices], 'int32'),
 				1,
 			)
 		else:
 			self.vertices = generateConcave(self.n)
 			cv2.fillPoly(
 				self.grid,
-				np.array([[[round(x * (pmSettings['grid_size'] - 1)), round(y * (pmSettings['grid_size'] - 1))] for [x, y] in self.vertices]], 'int32'),
+				np.array([[[
+					round(x * (pmSettings['grid_size'] - 1)),
+					round(y * (pmSettings['grid_size'] - 1)),
+				] for [x, y] in self.vertices]], 'int32'),
 				1,
 			)
 
