@@ -13,6 +13,18 @@ from typing import cast, Literal, TypedDict, Union
 import pydantic 	# runtime type-checking
 
 
+class PhysicalModelSettings(TypedDict):
+	'''
+	These settings deal strictly with physical model, a numerical method for
+	generating the sounds of arbitrarily shaped drums.
+	'''
+
+	path_2_cuda: Union[str, None]							# absolute filepath to Nvidia's CUDA SDK
+	allow_concave: bool										# are the drums allowed to be concave? or only convex?
+	max_vertices: int										# maximum amount of vertices for a given drum
+	grid_size: int											# size of the discrete matrix used for modelling
+
+
 class SpectroSettings(TypedDict):
 	'''
 	These settings deal strictly with the input representations of the data.
@@ -33,18 +45,17 @@ class SpectroSettings(TypedDict):
 
 
 class Settings(TypedDict):
-	PATH_2_CUDA: Union[str, None]							# absolute filepath to Nvidia's CUDA SDK
 	DATASET_SIZE: int										# how many data samples are there in the dataset?
 	DATA_LENGTH: float										# length of each sample in the dataset (seconds)
 	SAMPLE_RATE: int										# audio sample rate (hz)
 	INPUT_FEATURES: Literal['end2end', 'fft', 'mel', 'cqt']	# how is the data represented when it is fed to the network?
 	NORMALISE_INPUT: bool									# should each sample in the dataset be normalised before training?
 	SPECTRO_SETTINGS: SpectroSettings
+	PM_SETTINGS: PhysicalModelSettings
 
 
 # the configurable object
 settings: Settings = {
-	'PATH_2_CUDA': None,
 	'DATASET_SIZE': 10,
 	'DATA_LENGTH': 5.0,
 	'SAMPLE_RATE': 44100,
@@ -55,6 +66,12 @@ settings: Settings = {
 		'n_mels': 128,
 		'window_length': 512,
 		'hop_length': 256,
+	},
+	'PM_SETTINGS': {
+		'path_2_cuda': None,
+		'allow_concave': True,
+		'max_vertices': 10,
+		'grid_size': 1000,
 	},
 }
 

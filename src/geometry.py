@@ -1,36 +1,46 @@
 '''
+This file contains functions relating to computational geometry, such as generating
+random polygons, and converting them into bit masks. All of these functions are
+controlled by the class RandomPoly().
 '''
 
 # core
 import random
 
 # dependencies
-import numpy as np 				# maths
-import numpy.typing as npt		# typing for numpy
+import numpy as np 						# maths
+import numpy.typing as npt				# typing for numpy
+from skimage.draw import polygon2mask	# convert vertices to polygon mask
 
-
-ALLOW_CONCAVE = True			# are concave shapes allowed?
-MAX_VERTICES = 10				# maximum amount of vertices for a given shape
+# src
+from settings import PhysicalModelSettings, settings
+pmSettings: PhysicalModelSettings = settings['PM_SETTINGS']
 
 
 class RandomPolygon():
 	'''
-	This class is used to generate a random polygon, normalised and centered between
-	0.0 and 1.0.
+	This class is used to generate a random polygon, normalised and centered between 0.0
+	and 1.0. The resultant vertices are then projected onto a discrete matrix.
 	'''
 
-	n: int									# the number of vertices
-	vertices: npt.NDArray[np.float64]		# cartesian products representing the corners of a shape
+	grid: npt.NDArray[np.int8]			# discrete projection of the polygon, where 1 signifies a bounded region of the shape
+	n: int								# the number of vertices
+	vertices: npt.NDArray[np.float64]	# cartesian products representing the corners of a shape
 
 	def __init__(self) -> None:
-		self.n = random.randint(3, MAX_VERTICES)
+		self.n = random.randint(3, pmSettings['max_vertices'])
 
-		if not ALLOW_CONCAVE:
+		if not pmSettings['allow_concave']:
 			self.vertices = generateConvex(self.n)
 		elif random.getrandbits(1):
 			self.vertices = generateConcave(self.n)
 		else:
 			self.vertices = generateConvex(self.n)
+
+		self.grid = np.transpose(polygon2mask(
+			(pmSettings['grid_size'], pmSettings['grid_size']),
+			[[round(x * (pmSettings['grid_size'] - 1)), round(y * (pmSettings['grid_size'] - 1))] for [x, y] in self.vertices],
+		)).astype(np.int8)
 
 
 def generateConcave(n: int) -> npt.NDArray[np.float64]:

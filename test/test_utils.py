@@ -39,6 +39,19 @@ class TestTone(AudioSample):
 			return 2 / np.pi * np.arcsin(np.sin(2 * np.pi * self.f0 * (np.arange(self.length) / self.sr)))
 
 
+def plotMatrix(m: npt.NDArray) -> None:
+	'''
+	A helper method for plotting a matrix, where (x0, y0) = M[N - 1, 0]
+	for a matrix of size (N, M).
+	'''
+
+	fig, ax = plt.subplots(1, figsize=(8, 8), dpi=100)
+	ax.imshow(m, aspect='auto', cmap='Greens', origin='lower')
+	plt.xticks([])
+	plt.yticks([])
+	plt.show()
+
+
 def plotSpectrogram(
 	spectrogram: npt.NDArray[np.float64],
 	input_type: Union[Literal['cqt', 'fft', 'mel'], None] = None,
@@ -102,11 +115,11 @@ def plotVertices(coords: npt.NDArray[np.float64]) -> None:
 				(x[i - 1], y[i - 1]).
 	'''
 
-	fig, ax = plt.subplots(1, figsize=(12, 6), dpi=100)
+	fig, ax = plt.subplots(1, figsize=(8, 8), dpi=100)
 	plt.fill(coords[:, 0], coords[:, 1], facecolor='#1B9E31', edgecolor='#126B21')
 	# set axes
-	ax.set_xlim(-0.01, 1.01)
-	ax.set_ylim(-0.01, 1.01)
+	ax.set_xlim(0.0, 1.0)
+	ax.set_ylim(0.0, 1.0)
 	plt.xticks([])
 	plt.yticks([])
 	plt.show()
