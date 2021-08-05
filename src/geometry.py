@@ -8,7 +8,7 @@ controlled by the class RandomPoly().
 import random
 
 # dependencies
-import cv2
+import cv2								# image processing
 import numpy as np 						# maths
 import numpy.typing as npt				# typing for numpy
 
