@@ -8,9 +8,9 @@ controlled by the class RandomPoly().
 import random
 
 # dependencies
+import cv2
 import numpy as np 						# maths
 import numpy.typing as npt				# typing for numpy
-from skimage.draw import polygon2mask	# convert vertices to polygon mask
 
 # src
 from settings import PhysicalModelSettings, settings
@@ -29,18 +29,22 @@ class RandomPolygon():
 
 	def __init__(self) -> None:
 		self.n = random.randint(3, pmSettings['max_vertices'])
+		self.grid = np.zeros((pmSettings['grid_size'], pmSettings['grid_size']), 'int8')
 
-		if not pmSettings['allow_concave']:
+		if not pmSettings['allow_concave'] or random.getrandbits(1):
 			self.vertices = generateConvex(self.n)
-		elif random.getrandbits(1):
-			self.vertices = generateConcave(self.n)
+			cv2.fillConvexPoly(
+				self.grid,
+				np.array([[round(x * (pmSettings['grid_size'] - 1)), round(y * (pmSettings['grid_size'] - 1))] for [x, y] in self.vertices], 'int32'),
+				1,
+			)
 		else:
-			self.vertices = generateConvex(self.n)
-
-		self.grid = np.transpose(polygon2mask(
-			(pmSettings['grid_size'], pmSettings['grid_size']),
-			[[round(x * (pmSettings['grid_size'] - 1)), round(y * (pmSettings['grid_size'] - 1))] for [x, y] in self.vertices],
-		)).astype(np.int8)
+			self.vertices = generateConcave(self.n)
+			cv2.fillPoly(
+				self.grid,
+				np.array([[[round(x * (pmSettings['grid_size'] - 1)), round(y * (pmSettings['grid_size'] - 1))] for [x, y] in self.vertices]], 'int32'),
+				1,
+			)
 
 
 def generateConcave(n: int) -> npt.NDArray[np.float64]:
