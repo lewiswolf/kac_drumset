@@ -198,9 +198,8 @@ def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 							dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
 						# append input features to dataset
 						dataset.setitem(i, x, y)
-						if i == settings['DATASET_SIZE'] - 1:
-							file.close()
 						pbar.update(1)
+				file.close()
 
 			# regenerate inputs features and metadata.json
 			else:

@@ -22,9 +22,10 @@ class TestTone(AudioSample):
 		type 	Type of waveform. Currently supported = [sawtooth, sine, square, triangle].
 	'''
 
-	def init(self) -> None:
+	def __init__(self) -> None:
 		self.f0: float = random.uniform(110, 880)
 		self.type: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin'
+		super().__init__()
 
 	def generateWaveform(self) -> npt.NDArray[np.float64]:
 		''' Renders a specified waveform to a numpy array. '''
@@ -150,14 +151,14 @@ def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
 	plt.show()
 
 
-def withProfiler(func: Callable, n: int, *args: Any) -> None:
+def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
 	'''
 	Calls the input function using cProfile to generate a performance report in the console.
 	Prints the n most costly functions.
 	'''
 
 	with cProfile.Profile() as pr:
-		func(*args)
+		func(*args, **kwargs)
 	stats = pstats.Stats(pr)
 	stats.sort_stats(pstats.SortKey.TIME)
 	stats.print_stats(n)

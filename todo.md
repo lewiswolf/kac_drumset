@@ -62,6 +62,10 @@
     	print(test[key])
     ```
 
+-   **Dataset may be needlessly regenerated**
+
+    Given a dataset of N samples, where N > M, if the dataset size is changed to M in `settings.py`, this may cause unwarranted behaviour as a result of line 177. Elsewhere, when the dataset metadata does need to be regenerated, due to both the dataset size being changed to M and some other parameter, information about the extra samples may be lost when regenerating the metadata. This is so far untested, but should be looked in to before the code is deployed. An example of how this issue might cause problems: given a dataset of size N, after which some setting is changed that causes the metadata to be regenerated as well as the dataset size being changed to M, if the dataset size was changed back to N, the system would require the dataset be _fully regenerated_ from scratch, even though the correct number of audio samples exists.
+
 ## `input_features.py`
 
 -   **Port `librosa.vqt()` to PyTorch**

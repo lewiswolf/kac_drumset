@@ -1,7 +1,7 @@
 '''
 This file contains functions relating to computational geometry, such as generating
 random polygons, and converting them into bit masks. All of these functions are
-controlled by the class RandomPoly().
+controlled by the class RandomPolygon().
 '''
 
 # core
