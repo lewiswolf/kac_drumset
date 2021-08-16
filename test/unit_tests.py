@@ -14,7 +14,11 @@ sys.path.insert(1, f'{os.getcwd()}/src')
 from dataset import DatasetMetadata, parseDataSampleToString, parseMetadataToString
 
 
-class TestExportedMetadata(unittest.TestCase):
+class DatasetTests(unittest.TestCase):
+	'''
+	Tests used in conjunction with `dataset.py`
+	'''
+
 	def test_metadata_stringify(self):
 		'''
 		First stringifies the dataset's metadata, ready for exporting a .json file, and

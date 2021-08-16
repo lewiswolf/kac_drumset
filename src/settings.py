@@ -45,33 +45,37 @@ class SpectroSettings(TypedDict):
 
 
 class Settings(TypedDict):
-	DATASET_SIZE: int										# how many data samples are there in the dataset?
+	BATCH_SIZE: int											# bacth size used when training the network
 	DATA_LENGTH: float										# length of each sample in the dataset (seconds)
-	SAMPLE_RATE: int										# audio sample rate (hz)
+	DATASET_SIZE: int										# how many data samples are there in the dataset?
+	DATASET_SPLIT: tuple[float, float, float]				# size of the training, test and validation sets (must sum to 1.0)
 	INPUT_FEATURES: Literal['end2end', 'fft', 'mel', 'cqt']	# how is the data represented when it is fed to the network?
 	NORMALISE_INPUT: bool									# should each sample in the dataset be normalised before training?
-	SPECTRO_SETTINGS: SpectroSettings
 	PM_SETTINGS: PhysicalModelSettings
+	SAMPLE_RATE: int										# audio sample rate (hz)
+	SPECTRO_SETTINGS: SpectroSettings
 
 
 # the configurable object
 settings: Settings = {
-	'DATASET_SIZE': 10,
+	'BATCH_SIZE': 4,
 	'DATA_LENGTH': 5.0,
-	'SAMPLE_RATE': 44100,
+	'DATASET_SIZE': 10,
+	'DATASET_SPLIT': (0.7, 0.15, 0.15),
 	'INPUT_FEATURES': 'end2end',
 	'NORMALISE_INPUT': False,
-	'SPECTRO_SETTINGS': {
-		'n_bins': 512,
-		'n_mels': 128,
-		'window_length': 512,
-		'hop_length': 256,
-	},
 	'PM_SETTINGS': {
 		'path_2_cuda': None,
 		'allow_concave': True,
 		'max_vertices': 10,
 		'grid_size': 1000,
+	},
+	'SAMPLE_RATE': 44100,
+	'SPECTRO_SETTINGS': {
+		'n_bins': 512,
+		'n_mels': 128,
+		'window_length': 512,
+		'hop_length': 256,
 	},
 }
 

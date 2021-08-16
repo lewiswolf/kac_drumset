@@ -26,6 +26,7 @@ pygments = "*"
 python_version = "3.9"
 
 [scripts]
+evaluate = "python index.py -e"
 generate = "python index.py -g"
 latex = "sh ./paper/build_latex.sh"
 test = "sh ./test/test.sh"
