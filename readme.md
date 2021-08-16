@@ -53,6 +53,14 @@ Not yet implemented...
 $ pipenv run train
 ```
 
+## Train Model
+
+Not yet implemented...
+
+```bash
+$ pipenv run evaluate
+```
+
 ## Working with LaTeX
 
 The paper associated with this project is contained in `/paper`, and can _only_ be updated when the dev packages are installed. The template used for this document can be found [here](https://github.com/lewiswolf/personal-latex-template.git), and is designed for use with one of latex's command line interfaces such as [MacTeX](https://formulae.brew.sh/cask/mactex-no-gui). For convenience, this project is packaged with a helper method that will reconstruct the pdf document from the raw `.tex` files, via:
