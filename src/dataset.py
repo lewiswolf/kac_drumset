@@ -62,9 +62,11 @@ class TorchDataset(torch.utils.data.Dataset):
 	a tensor self.Y, and the input into a tensor self.X.
 	'''
 
+	X: torch.Tensor
+	Y: torch.Tensor
+
 	def __init__(self) -> None:
-		self.X: torch.Tensor = torch.zeros((settings['DATASET_SIZE'],) + inputSize())
-		self.Y: torch.Tensor
+		self.X = torch.zeros((settings['DATASET_SIZE'],) + inputSize())
 
 	def setitem(self, i: int, x: torch.Tensor, y: torch.Tensor) -> None:
 		self.X[i] = x
@@ -93,7 +95,7 @@ def parseMetadataToString() -> str:
 	return str
 
 
-def parseDataSampleToString(finalLine: bool, samplePath: str, x: torch.Tensor, y: torch.Tensor) -> str:
+def parseDataSampleToString(samplePath: str, x: torch.Tensor, y: torch.Tensor, finalLine: bool) -> str:
 	'''
 	Parse a datasample, as defined by SampleMetadata, to a raw JSON string with line breaks.
 	This function is designed for use within a for loop.
@@ -140,7 +142,7 @@ def generateDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 				relativePath = f'data/sample_{i:05d}.wav'
 				sample.__export__(f'{cwd}/{relativePath}')
 				# export metadata
-				newFile.write(parseDataSampleToString(i == settings['DATASET_SIZE'] - 1, relativePath, x, y))
+				newFile.write(parseDataSampleToString(relativePath, x, y, i == settings['DATASET_SIZE'] - 1))
 				pbar.update(1)
 		newFile.close()
 	return dataset
@@ -222,7 +224,7 @@ def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
 							# append input features to dataset
 							dataset.setitem(i, x, y)
 							# export metadata
-							newFile.write(parseDataSampleToString(i == settings['DATASET_SIZE'] - 1, relativePath, x, y))
+							newFile.write(parseDataSampleToString(relativePath, x, y, i == settings['DATASET_SIZE'] - 1))
 							pbar.update(1)
 					file.close()
 					os.remove(f'{cwd}/data/metadata.json')

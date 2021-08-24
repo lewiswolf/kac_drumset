@@ -23,31 +23,31 @@ class RandomPolygon():
 	and 1.0. The resultant vertices are then projected onto a discrete matrix.
 	'''
 
-	grid: npt.NDArray[np.int8]			# discrete projection of the polygon, where 1 signifies a bounded region of the shape
+	mask: npt.NDArray[np.int8]			# discrete projection of the polygon, where 1 signifies a bounded region of the shape
 	n: int								# the number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the corners of a shape
 
-	def __init__(self) -> None:
+	def __init__(self, gridSize: int) -> None:
 		self.n = random.randint(3, pmSettings['max_vertices'])
-		self.grid = np.zeros((pmSettings['grid_size'], pmSettings['grid_size']), 'int8')
+		self.mask = np.zeros((gridSize, gridSize), 'int8')
 
 		if not pmSettings['allow_concave'] or random.getrandbits(1):
 			self.vertices = generateConvex(self.n)
 			cv2.fillConvexPoly(
-				self.grid,
+				self.mask,
 				np.array([[
-					round(x * (pmSettings['grid_size'] - 1)),
-					round(y * (pmSettings['grid_size'] - 1)),
+					round(x * (gridSize - 1)),
+					round(y * (gridSize - 1)),
 				] for [x, y] in self.vertices], 'int32'),
 				1,
 			)
 		else:
 			self.vertices = generateConcave(self.n)
 			cv2.fillPoly(
-				self.grid,
+				self.mask,
 				np.array([[[
-					round(x * (pmSettings['grid_size'] - 1)),
-					round(y * (pmSettings['grid_size'] - 1)),
+					round(x * (gridSize - 1)),
+					round(y * (gridSize - 1)),
 				] for [x, y] in self.vertices]], 'int32'),
 				1,
 			)

@@ -53,7 +53,7 @@ Not yet implemented...
 $ pipenv run train
 ```
 
-## Train Model
+## Evaluate Model
 
 Not yet implemented...
 

@@ -24,16 +24,18 @@ def main(evaluate: bool, generate: bool, train: bool) -> None:
 	# 'Internal types for nested lists, numpy arrays and pytroch tensors'
 	torch.set_default_dtype(torch.float64)
 
-	# generate a pytorch dataset, or load one if a dataset already exists
-	dataset = generateDataset(PhysicalModel) if generate else loadDataset(PhysicalModel)
+	# # generate a pytorch dataset, or load one if a dataset already exists
+	# dataset = generateDataset(PhysicalModel) if generate else loadDataset(PhysicalModel)
 
-	# train a new model
-	if train:
-		trainModel(*getTrainingDatasets(dataset))
+	# # train a new model
+	# if train:
+	# 	trainModel(*getTrainingDatasets(dataset))
 
 	# evaluate a model
 	# if evaluate:
 	# 	evaluationDataset = getEvaluationDataset(dataset)
+
+	PhysicalModel()
 
 
 if __name__ == '__main__':

@@ -22,7 +22,6 @@ class PhysicalModelSettings(TypedDict):
 	path_2_cuda: Union[str, None]							# absolute filepath to Nvidia's CUDA SDK
 	allow_concave: bool										# are the drums allowed to be concave? or only convex?
 	max_vertices: int										# maximum amount of vertices for a given drum
-	grid_size: int											# size of the discrete matrix used for modelling
 
 
 class SpectroSettings(TypedDict):
@@ -68,7 +67,6 @@ settings: Settings = {
 		'path_2_cuda': None,
 		'allow_concave': True,
 		'max_vertices': 10,
-		'grid_size': 1000,
 	},
 	'SAMPLE_RATE': 44100,
 	'SPECTRO_SETTINGS': {

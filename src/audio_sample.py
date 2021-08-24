@@ -24,11 +24,12 @@ class AudioSample(ABC):
 	''' Template parent class for an audio sample. '''
 
 	sr: int = settings['SAMPLE_RATE']						# sample rate
-	length: int = math.ceil(settings['DATA_LENGTH'] * sr)	# length of the audio sample
+	duration: int = math.ceil(settings['DATA_LENGTH'] * sr)	# duration of the audio sample
 	wave: npt.NDArray[np.float64]							# the audio sample itself
-	y: list[Union[float, int]] = []							# metadata / labels
+	y: list[Union[float, int]]								# metadata / labels
 
-	def __init__(self) -> None:
+	def __init__(self, y: list[Union[float, int]] = []) -> None:
+		self.y = y
 		self.wave = self.generateWaveform()
 
 	def __export__(self, absolutePath: str) -> None:
