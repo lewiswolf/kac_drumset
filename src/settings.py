@@ -21,7 +21,10 @@ class PhysicalModelSettings(TypedDict):
 
 	path_2_cuda: Union[str, None]							# absolute filepath to Nvidia's CUDA SDK
 	allow_concave: bool										# are the drums allowed to be concave? or only convex?
+	drum_size: float										# size of the drum, spanning both the horizontal and vertical axes (m)
+	material_density: float 								# material density of the simulated drum membrane (kg/m^2)
 	max_vertices: int										# maximum amount of vertices for a given drum
+	tension: float											# tension at rest (N/m)
 
 
 class SpectroSettings(TypedDict):
@@ -66,7 +69,10 @@ settings: Settings = {
 	'PM_SETTINGS': {
 		'path_2_cuda': None,
 		'allow_concave': True,
+		'drum_size': 0.3,
+		'material_density': 0.26,
 		'max_vertices': 10,
+		'tension': 3000.0,
 	},
 	'SAMPLE_RATE': 44100,
 	'SPECTRO_SETTINGS': {

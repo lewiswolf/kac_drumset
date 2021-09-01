@@ -81,3 +81,6 @@
 -   **Testing convexity**
 
     It may also be useful to test convexity, a function for which is available in the [CGAL library](https://doc.cgal.org/latest/Convex_hull_2/group__PkgConvexHull2Convexity.html). Whether or not this is available in scikit-geometry, I am still unsure.
+
+    **Better solution to `unit_tests.py` => `test_floating_point_error()`?**
+    Title says it all...

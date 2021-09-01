@@ -6,15 +6,12 @@ controlled by the class RandomPolygon().
 
 # core
 import random
+import math
 
 # dependencies
 import cv2								# image processing
 import numpy as np 						# maths
 import numpy.typing as npt				# typing for numpy
-
-# src
-from settings import PhysicalModelSettings, settings
-pmSettings: PhysicalModelSettings = settings['PM_SETTINGS']
 
 
 class RandomPolygon():
@@ -27,11 +24,21 @@ class RandomPolygon():
 	n: int								# the number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the corners of a shape
 
-	def __init__(self, gridSize: int) -> None:
-		self.n = random.randint(3, pmSettings['max_vertices'])
+	def __init__(self, maxVertices: int, gridSize: int, allowConcave: bool = True) -> None:
+		'''
+		This function generates the polygon.
+		params:
+			maxVertives:	Maximum amount of vertices. The true value is a uniform
+							distribution from 3 to maxVertices.
+			gridSize:		Every polygon has a squared boolean mask as a property. This
+							variable size of this mask.
+			allConcave:		Is this polygon allowed to be concave?
+		'''
+
+		self.n = random.randint(3, maxVertices)
 		self.mask = np.zeros((gridSize, gridSize), 'int8')
 
-		if not pmSettings['allow_concave'] or random.getrandbits(1):
+		if not allowConcave or random.getrandbits(1):
 			self.vertices = generateConvex(self.n)
 			cv2.fillConvexPoly(
 				self.mask,
@@ -73,10 +80,7 @@ def generateConcave(n: int) -> npt.NDArray[np.float64]:
 	# normalise and centre polygon on positive quadrant
 	vertices *= 1 / max((x_max - x_min), (y_max - y_min))
 	vertices += 0.5
-	# correct floating point error
-	if np.min(vertices) != 0.0:
-		i = np.argmin(vertices)
-		vertices[int(np.floor(i / 2)), i % 2] = 0.0
+	correctFloatingPointError(vertices)
 	return vertices
 
 
@@ -88,10 +92,8 @@ def generateConvex(n: int) -> npt.NDArray[np.float64]:
 	'''
 
 	# initialise random coordinates
-	X_rand = np.sort(np.random.random(n))
-	Y_rand = np.sort(np.random.random(n))
-	X_new = np.zeros(n)
-	Y_new = np.zeros(n)
+	X_rand, Y_rand = np.sort(np.random.random(n)), np.sort(np.random.random(n))
+	X_new, Y_new = np.zeros(n), np.zeros(n)
 
 	# divide the interior points into two chains
 	lastTop = lastBot = X_rand[0]
@@ -125,18 +127,30 @@ def generateConvex(n: int) -> npt.NDArray[np.float64]:
 		y_accum += y
 
 	# center around the origin
-	x_min = np.min(vertices[:, 0])
-	x_max = np.max(vertices[:, 0])
-	y_min = np.min(vertices[:, 1])
-	y_max = np.max(vertices[:, 1])
+	x_min, x_max = np.min(vertices[:, 0]), np.max(vertices[:, 0])
+	y_min, y_max = np.min(vertices[:, 1]), np.max(vertices[:, 1])
 	vertices[:, 0] += ((x_max - x_min) / 2) - x_max
 	vertices[:, 1] += ((y_max - y_min) / 2) - y_max
 
 	# normalise and centre polygon on positive quadrant
 	vertices *= 1 / max((x_max - x_min), (y_max - y_min))
 	vertices += 0.5
-	# correct floating point error
-	if np.min(vertices) != 0.0:
-		j = np.argmin(vertices)
-		vertices[int(np.floor(j / 2)), j % 2] = 0.0
+	correctFloatingPointError(vertices)
+	return vertices
+
+
+def correctFloatingPointError(vertices: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+	'''
+	Corrects a floating point error which occurs from normilising the vertices
+	between 0.0 and 1.0. See `unit_tests.py` => `test_floating_point_error()`.
+	'''
+
+	try:
+		assert np.min(vertices) == 0.0
+		assert np.max(vertices) == 1.0
+	except AssertionError:
+		i = np.argmin(vertices)
+		j = np.argmax(vertices)
+		vertices[math.floor(i / 2), i % 2] = 0.0
+		vertices[math.floor(j / 2), j % 2] = 1.0
 	return vertices

@@ -24,23 +24,29 @@ if pmSettings['path_2_cuda'] is not None:
 class PhysicalModel(AudioSample):
 	'''
 	'''
+
 	# variables
-	L: float = 0.3 # roughly 12"			# width and height of the simulation (m)
-	p: float = 0.26							# material density (kg/m^2)
-	t: float = 2000							# tension at rest (N/m)
+	L: float = pmSettings['drum_size']			# width and height of the simulation (m)
+	p: float = pmSettings['material_density']	# material density (kg/m^2)
+	t: float = pmSettings['tension']			# tension at rest (N/m)
 
 	# inferrences
-	k: float = 1 / settings['SAMPLE_RATE']	# sample length (ms)
-	c: float = (t / p) ** 0.5				# wavespeed (m/s)
-	gamma: float = c / L					# scaled wavespeed (1/s)
-	H: float = math.floor(1 / (gamma * k))	# number of grid points across each dimension, for the domain U ∈ [0, 1]
-	h: float = 1 / H						# length of each grid step
-	cfl: float = gamma * k / h				# courant number
+	k: float = 1 / settings['SAMPLE_RATE']		# sample length (ms)
+	c: float = (t / p) ** 0.5					# wavespeed (m/s)
+	gamma: float = c / L						# scaled wavespeed (1/s)
+	H: int = math.floor(1 / (gamma * k))		# number of grid points across each dimension, for the domain U ∈ [0, 1]
+	h: float = 1 / H							# length of each grid step
+	cfl: float = gamma * k / h					# courant number
 
 	def __init__(self) -> None:
-		self.shape = RandomPolygon(self.H)
+		self.shape = RandomPolygon(
+			pmSettings['max_vertices'],
+			self.H,
+			allowConcave=pmSettings['allow_concave'],
+		)
 		super().__init__(y=self.shape.vertices.tolist())
 
 	def generateWaveform(self) -> npt.NDArray[np.float64]:
+		u = np.zeros((self.H, self.H))
 		waveform = np.zeros(self.duration)
 		return waveform
