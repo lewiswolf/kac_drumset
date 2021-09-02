@@ -53,6 +53,29 @@ def plotMatrix(m: npt.NDArray) -> None:
 	plt.show()
 
 
+def plotPolygon(vertices: npt.NDArray[np.float64], centroid: Union[tuple[()], tuple[float, float]] = ()) -> None:
+	'''
+	A helper method used to plot the vertices of a predefined polygon.
+	params:
+		vertices	A 2d numpy array of coordinates ([[x_1, y_1], [x_2, y_2], ...]), such that
+					(x[i], y[i]) form a cartesian product. These coordinates should be ordered
+					such that each pair (x[i], y[i]) is intended to be connected to both
+					(x[i + 1], y[i + 1]) and (x[i - 1], y[i - 1]).
+		centroid	A coordinate pair used to mark the geometric centroid of the shape.
+	'''
+
+	fig, ax = plt.subplots(1, figsize=(8, 8), dpi=100)
+	plt.fill(vertices[:, 0], vertices[:, 1], facecolor='#1B9E31', edgecolor='#126B21')
+	if centroid:
+		plt.scatter(*centroid, c=['#000000'], zorder=10)
+	# set axes
+	ax.set_xlim(np.min(vertices), np.max(vertices))
+	ax.set_ylim(np.min(vertices), np.max(vertices))
+	plt.xticks([])
+	plt.yticks([])
+	plt.show()
+
+
 def plotSpectrogram(
 	spectrogram: npt.NDArray[np.float64],
 	input_type: Union[Literal['cqt', 'fft', 'mel'], None] = None,
@@ -103,26 +126,6 @@ def plotSpectrogram(
 	else:
 		ax.set(ylabel='Frequency Bins')
 
-	plt.show()
-
-
-def plotVertices(vertices: npt.NDArray[np.float64]) -> None:
-	'''
-	A helper method used to plot the vertices of a predefined shape.
-	params:
-		vertices	a 2d numpy array of coordinates ([[x_1, y_1], [x_2, y_2], ...]), such that
-				(x[i], y[i]) form a cartesian product. These coordinates should be ordered such
-				that each pair (x[i], y[i]) is connected to both (x[i + 1], y[i + 1]) and
-				(x[i - 1], y[i - 1]).
-	'''
-
-	fig, ax = plt.subplots(1, figsize=(8, 8), dpi=100)
-	plt.fill(vertices[:, 0], vertices[:, 1], facecolor='#1B9E31', edgecolor='#126B21')
-	# set axes
-	ax.set_xlim(np.min(vertices), np.max(vertices))
-	ax.set_ylim(np.min(vertices), np.max(vertices))
-	plt.xticks([])
-	plt.yticks([])
 	plt.show()
 
 

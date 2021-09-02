@@ -1,7 +1,8 @@
 '''
-This file contains functions relating to computational geometry, such as generating
-random polygons, and converting them into bit masks. All of these functions are
-controlled by the class RandomPolygon().
+This file contains various functions relating to computational geometry. These include:
+	-	Generating random polygons, which can either be convex or concave.
+	-	Creating a discrete matrix representation of the polygon. (boolean mask)
+	-	Calulating the area of the polygon, as well as its centroid.
 '''
 
 # core
@@ -17,29 +18,43 @@ import numpy.typing as npt				# typing for numpy
 class RandomPolygon():
 	'''
 	This class is used to generate a random polygon, normalised and centered between 0.0
-	and 1.0. The resultant vertices are then projected onto a discrete matrix.
+	and 1.0. Various properties relating to this polygon are also attached to this class.
 	'''
 
-	mask: npt.NDArray[np.int8]			# discrete projection of the polygon, where 1 signifies a bounded region of the shape
+	area: float							# area of the polygon
+	centroid: tuple[float, float]		# coordinate pair representing the centroid of the polygon
+	convex: bool						# is the polygon convex?
+	mask: npt.NDArray[np.int8]			# discrete projection of the polygon, where 1 signifies the internal region of the shape
 	n: int								# the number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the corners of a shape
 
 	def __init__(self, maxVertices: int, gridSize: int, allowConcave: bool = True) -> None:
 		'''
-		This function generates the polygon.
+		This function generates a polygon, whilst also calculating its properties.
 		params:
-			maxVertives:	Maximum amount of vertices. The true value is a uniform
+			maxVertices:	Maximum amount of vertices. The true value is a uniform
 							distribution from 3 to maxVertices.
-			gridSize:		Every polygon has a squared boolean mask as a property. This
-							variable size of this mask.
-			allConcave:		Is this polygon allowed to be concave?
+			gridSize:		Every polygon has a boolean mask as one of its properties.
+							This variable controls the size of that mask.
+			allowConcave:	Is this polygon allowed to be concave?
 		'''
 
+		# generate random polygon
 		self.n = random.randint(3, maxVertices)
-		self.mask = np.zeros((gridSize, gridSize), 'int8')
-
 		if not allowConcave or random.getrandbits(1):
 			self.vertices = generateConvex(self.n)
+			self.convex = True
+		else:
+			self.vertices = generateConcave(self.n)
+			self.convex = isConvex(self.n, self.vertices)
+
+		# calculate other properties
+		self.area = shoelaceFormula(self.n, self.vertices)
+		self.centroid = locateCentroid(self.area, self.n, self.vertices)
+
+		# compute the boolean mask
+		self.mask = np.zeros((gridSize, gridSize), 'int8')
+		if self.convex:
 			cv2.fillConvexPoly(
 				self.mask,
 				np.array([[
@@ -49,7 +64,6 @@ class RandomPolygon():
 				1,
 			)
 		else:
-			self.vertices = generateConcave(self.n)
 			cv2.fillPoly(
 				self.mask,
 				np.array([[[
@@ -58,21 +72,46 @@ class RandomPolygon():
 				] for [x, y] in self.vertices]], 'int32'),
 				1,
 			)
+		self.mask = np.transpose(self.mask) # this maintains that mask[x, y] works as intended
+
+
+def locateCentroid(area: float, n: int, vertices: npt.NDArray[np.float64]) -> tuple[float, float]:
+	'''
+	The below algorithm is used to calculate the geometric centroid of a 2D polygon.
+	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and
+	centroid of a polygon'.
+	'''
+
+	if n == 3:
+		# Triangles have a much simpler formula, and so these are caluclated seperately.
+		return (sum(vertices[:, 0]) / 3, sum(vertices[:, 1]) / 3)
+
+	return (
+		abs(sum([
+			(vertices[i, 0] + vertices[(i + 1) % n, 0])
+			* (vertices[i, 0] * vertices[(i + 1) % n, 1] - vertices[(i + 1) % n, 0] * vertices[i, 1])
+			for i in range(n)
+		]) / (6 * area)),
+		abs(sum([
+			(vertices[i, 1] + vertices[(i + 1) % n, 1])
+			* (vertices[i, 0] * vertices[(i + 1) % n, 1] - vertices[(i + 1) % n, 0] * vertices[i, 1])
+			for i in range(n)
+		]) / (6 * area)),
+	)
 
 
 def generateConcave(n: int) -> npt.NDArray[np.float64]:
 	'''
-	Generate a random concave shape, with a small probability of also returning a
-	convex shape.
+	Generates a random concave shape, with a small probability of also returning a
+	convex shape. It should be noted that this function can not be used to create
+	all possible simple polygons; see todo.md => 'Missing a reliable algorithm to
+	generate all concave shapes'.
 	'''
 
-	# TO ADD: see todo.md -> 'Missing a reliable algorithm to generate all concave shapes'
 	vertices = np.random.random((n, 2))
 	# center around the origin
-	x_min = np.min(vertices[:, 0])
-	x_max = np.max(vertices[:, 0])
-	y_min = np.min(vertices[:, 1])
-	y_max = np.max(vertices[:, 1])
+	x_min, x_max = np.min(vertices[:, 0]), np.max(vertices[:, 0])
+	y_min, y_max = np.min(vertices[:, 1]), np.max(vertices[:, 1])
 	vertices[:, 0] -= (x_max + x_min) / 2
 	vertices[:, 1] -= (y_max + y_min) / 2
 	# order by polar angle theta
@@ -141,7 +180,7 @@ def generateConvex(n: int) -> npt.NDArray[np.float64]:
 
 def correctFloatingPointError(vertices: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
 	'''
-	Corrects a floating point error which occurs from normilising the vertices
+	Corrects a floating point error which occurs when normilising the vertices
 	between 0.0 and 1.0. See `unit_tests.py` => `test_floating_point_error()`.
 	'''
 
@@ -154,3 +193,40 @@ def correctFloatingPointError(vertices: npt.NDArray[np.float64]) -> npt.NDArray[
 		vertices[math.floor(i / 2), i % 2] = 0.0
 		vertices[math.floor(j / 2), j % 2] = 1.0
 	return vertices
+
+
+def shoelaceFormula(n: int, vertices: npt.NDArray[np.float64]) -> float:
+	'''
+	An implementation of the shoelace algorithm, first described by Albrecht Ludwig
+	Friedrich Meister, which is used to calculate the area of a polygon. The area
+	of a polygon can also be computed (using Green's theorem directly) using
+	`cv2.contourArea(self.vertices.astype('float32'))`. However, this function requires
+	that the input be of the type float32, resulting in a trade off between (marginal)
+	performance gains and lower precision.
+	'''
+
+	return abs(sum([
+		vertices[i, 0] * vertices[(i + 1) % n, 1]
+		- vertices[i, 1] * vertices[(i + 1) % n, 0]
+		for i in range(n)
+	])) / 2
+
+
+def isConvex(n: int, vertices: npt.NDArray[np.float64]) -> bool:
+	'''
+	Tests whether or not a given array of vertices forms a convex polygon. This is
+	achieved using the resultant sign of the cross product for each vertex:
+		[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)]
+	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a
+	polygon (2D) has its vertices ordered clockwise or counter-clockwise'.
+	'''
+
+	for b in range(n):
+		a = b - 1 if b > 0 else n - 1
+		c = b + 1 if b < n - 1 else 0
+		if np.cross(
+			np.array([vertices[b, 0] - vertices[a, 0], vertices[b, 1] - vertices[a, 1]]),
+			np.array([vertices[c, 0] - vertices[b, 0], vertices[c, 1] - vertices[b, 1]]),
+		) < 0:
+			return False
+	return True
