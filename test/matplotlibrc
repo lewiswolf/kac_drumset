@@ -13,8 +13,8 @@ font.family				: serif
 font.size 				: 16
 text.color				: black
 # with LaTeX
-# text.usetex				: True
-# font.serif 				: Computer Modern Roman
+# text.usetex			: True
+# font.serif 			: Computer Modern Roman
 # without LaTeX
 text.usetex				: False
 font.serif 				: Helvetica

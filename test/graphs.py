@@ -1,11 +1,15 @@
 # core
 import math
+import os
 from typing import Literal, Union
 
 # dependencies
 import matplotlib.pyplot as plt			# graphs
 import numpy as np						# maths
 import numpy.typing as npt				# typing for numpy
+
+# test
+plt.style.use(f'{os.getcwd()}/test/matplotlibrc')
 
 
 def plot2DMatrix(m: npt.NDArray) -> None:
@@ -15,7 +19,7 @@ def plot2DMatrix(m: npt.NDArray) -> None:
 	'''
 
 	# check size
-	if waveform.ndim != 1:
+	if m.ndim != 1:
 		raise ValueError('Input matrix is not 2D')
 	# plot matrix
 	fig, ax = plt.subplots(1, figsize=(8, 8))
