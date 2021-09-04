@@ -1,0 +1,46 @@
+###########
+# colours #
+###########
+axes.prop_cycle			: cycler('color', ['1B9E31'])
+image.cmap				: Greens
+patch.edgecolor			: 126B21
+patch.force_edgecolor	: True
+
+###############
+# font styles #
+###############
+font.family				: serif
+font.size 				: 16
+text.color				: black
+# with LaTeX
+# text.usetex				: True
+# font.serif 				: Computer Modern Roman
+# without LaTeX
+text.usetex				: False
+font.serif 				: Helvetica
+
+##########
+# figure #
+##########
+figure.dpi				: 100
+figure.autolayout		: True
+
+###########
+# savefig #
+###########
+savefig.bbox			: tight
+savefig.pad_inches		: 0.05
+savefig.dpi				: 500
+savefig.format			: png
+
+##########
+# images #
+##########
+image.aspect			: auto
+image.origin			: lower
+
+########
+# axes #
+########
+xaxis.labellocation		: center
+yaxis.labellocation		: center
