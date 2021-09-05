@@ -1,3 +1,10 @@
+'''
+This file contains functions used to produce multiple plots, either for testing or for export.
+The styles for these graphs are defined in `./matplotlibrc`. Each function has the kwarg
+exportPath, which can be used to set the filepath and the image title for an exported image.
+When exportPath is falsey, the graph will simply be displayed on screen.
+'''
+
 # core
 import math
 import os
@@ -12,24 +19,28 @@ import numpy.typing as npt				# typing for numpy
 plt.style.use(f'{os.getcwd()}/test/matplotlibrc')
 
 
-def plot2DMatrix(m: npt.NDArray) -> None:
+def plot2DMatrix(m: npt.NDArray, exportPath: str = '') -> None:
 	'''
 	A helper method for plotting a matrix, where (x0, y0) = M[N - 1, 0]
 	for a matrix of size (N, M).
 	'''
 
 	# check size
-	if m.ndim != 1:
+	if m.ndim != 2:
 		raise ValueError('Input matrix is not 2D')
 	# plot matrix
 	fig, ax = plt.subplots(1, figsize=(8, 8))
 	ax.imshow(m)
 	plt.xticks([])
 	plt.yticks([])
-	plt.show()
+	plt.savefig(exportPath) if exportPath else plt.show()
 
 
-def plotPolygon(vertices: npt.NDArray[np.float64], centroid: Union[tuple[()], tuple[float, float]] = ()) -> None:
+def plotPolygon(
+	vertices: npt.NDArray[np.float64],
+	centroid: Union[tuple[()], tuple[float, float]] = (),
+	exportPath: str = '',
+) -> None:
 	'''
 	A helper method used to plot the vertices of a predefined polygon.
 	params:
@@ -48,9 +59,10 @@ def plotPolygon(vertices: npt.NDArray[np.float64], centroid: Union[tuple[()], tu
 	# set axes
 	ax.set_xlim(np.min(vertices), np.max(vertices))
 	ax.set_ylim(np.min(vertices), np.max(vertices))
+	plt.axis('off')
 	plt.xticks([])
 	plt.yticks([])
-	plt.show()
+	plt.savefig(exportPath) if exportPath else plt.show()
 
 
 def plotSpectrogram(
@@ -59,6 +71,7 @@ def plotSpectrogram(
 	sr: Union[int, None] = None,
 	hop_length: Union[int, None] = None,
 	f_min: float = 20.0,
+	exportPath: str = '',
 ) -> None:
 	'''
 	Plots an arbitrary spectrogram, and formats the axes based on the type of spectrogram and the
@@ -103,10 +116,10 @@ def plotSpectrogram(
 	else:
 		ax.set(ylabel='Frequency Bins')
 
-	plt.show()
+	plt.savefig(exportPath) if exportPath else plt.show()
 
 
-def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
+def plotWaveform(waveform: npt.NDArray[np.float64], sr: int, exportPath: str = '') -> None:
 	'''
 	Plots a waveform using matplotlib. Designed to handle mono and multichannel inputs of shape [C, S]
 	or [S], where C is the number of channels, and S is the number of samples.
@@ -132,4 +145,4 @@ def plotWaveform(waveform: npt.NDArray[np.float64], sr: int) -> None:
 	else:
 		raise ValueError('Incorrect size of input array; only [N * M] & [M] supported.')
 
-	plt.show()
+	plt.savefig(exportPath) if exportPath else plt.show()
