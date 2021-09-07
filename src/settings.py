@@ -7,7 +7,7 @@ that the settings object works as intended.
 
 # core
 import sys
-from typing import cast, Literal, TypedDict, Union
+from typing import cast, Literal, TypedDict
 
 # dependencies
 import pydantic 	# runtime type-checking
@@ -19,7 +19,7 @@ class PhysicalModelSettings(TypedDict):
 	generating the sounds of arbitrarily shaped drums.
 	'''
 
-	path_2_cuda: Union[str, None]							# absolute filepath to Nvidia's CUDA SDK
+	path_2_cuda: str										# absolute filepath to Nvidia's CUDA SDK
 	allow_concave: bool										# are the drums allowed to be concave? or only convex?
 	drum_size: float										# size of the drum, spanning both the horizontal and vertical axes (m)
 	material_density: float 								# material density of the simulated drum membrane (kg/m^2)
@@ -40,6 +40,7 @@ class SpectroSettings(TypedDict):
 	that there are an even amount of bins per octave.
 	'''
 
+	f_min: float											# minimum frequency of transform, cqt only (hz)
 	n_bins: int												# number of frequency bins for the spectral density function
 	n_mels: int												# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
 	window_length: int										# window length in samples
@@ -47,35 +48,36 @@ class SpectroSettings(TypedDict):
 
 
 class Settings(TypedDict):
-	BATCH_SIZE: int											# bacth size used when training the network
-	DATA_LENGTH: float										# length of each sample in the dataset (seconds)
-	DATASET_SIZE: int										# how many data samples are there in the dataset?
-	DATASET_SPLIT: tuple[float, float, float]				# size of the training, test and validation sets (must sum to 1.0)
-	INPUT_FEATURES: Literal['end2end', 'fft', 'mel', 'cqt']	# how is the data represented when it is fed to the network?
-	NORMALISE_INPUT: bool									# should each sample in the dataset be normalised before training?
-	PM_SETTINGS: PhysicalModelSettings
-	SAMPLE_RATE: int										# audio sample rate (hz)
-	SPECTRO_SETTINGS: SpectroSettings
+	batch_size: int											# bacth size used when training the network
+	data_length: float										# length of each sample in the dataset (seconds)
+	dataset_size: int										# how many data samples are there in the dataset?
+	dataset_split: tuple[float, float, float]				# size of the training, test and validation sets (must sum to 1.0)
+	input_features: Literal['end2end', 'fft', 'mel', 'cqt']	# how is the data represented when it is fed to the network?
+	normalise_input: bool									# should each sample in the dataset be normalised before training?
+	pm_settings: PhysicalModelSettings
+	sample_rate: int										# audio sample rate (hz)
+	spectro_settings: SpectroSettings
 
 
 # the configurable object
 settings: Settings = {
-	'BATCH_SIZE': 4,
-	'DATA_LENGTH': 5.0,
-	'DATASET_SIZE': 10,
-	'DATASET_SPLIT': (0.7, 0.15, 0.15),
-	'INPUT_FEATURES': 'end2end',
-	'NORMALISE_INPUT': False,
-	'PM_SETTINGS': {
-		'path_2_cuda': None,
+	'batch_size': 4,
+	'data_length': 5.0,
+	'dataset_size': 10,
+	'dataset_split': (0.7, 0.15, 0.15),
+	'input_features': 'end2end',
+	'normalise_input': False,
+	'pm_settings': {
+		'path_2_cuda': '',
 		'allow_concave': True,
 		'drum_size': 0.3,
 		'material_density': 0.26,
 		'max_vertices': 10,
 		'tension': 3000.0,
 	},
-	'SAMPLE_RATE': 44100,
-	'SPECTRO_SETTINGS': {
+	'sample_rate': 44100,
+	'spectro_settings': {
+		'f_min': 22.05,
 		'n_bins': 512,
 		'n_mels': 128,
 		'window_length': 512,
