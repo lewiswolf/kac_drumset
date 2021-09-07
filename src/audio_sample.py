@@ -21,12 +21,15 @@ from settings import settings
 
 
 class AudioSample(ABC):
-	''' Template parent class for an audio sample. '''
+	'''
+	Template parent class for an audio sample.
+	'''
 
-	sr: int = settings['SAMPLE_RATE']						# sample rate
-	duration: int = math.ceil(settings['DATA_LENGTH'] * sr)	# duration of the audio sample
-	wave: npt.NDArray[np.float64]							# the audio sample itself
-	y: list[Union[float, int]]								# metadata / labels
+	duration: float = settings['data_length']	# duration of the audio file (seconds)
+	sr: int = settings['sample_rate']			# sample rate (hz)
+	length: int = math.ceil(duration * sr)		# length of the audio file (samples)
+	wave: npt.NDArray[np.float64]				# the audio sample itself
+	y: list[Union[float, int]]					# metadata / labels
 
 	def __init__(self, y: list[Union[float, int]] = []) -> None:
 		self.y = y
