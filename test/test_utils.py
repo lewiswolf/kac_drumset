@@ -89,7 +89,7 @@ class TestTone(AudioSampler):
 
 	def getLabels(self) -> list[Union[float, int]]:
 		''' Returns f0 as a label. '''
-		return [self.f0]
+		return [self.f0] if self.f0 else []
 
 
 def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
