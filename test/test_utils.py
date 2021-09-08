@@ -3,10 +3,13 @@ Utility functions for use whilst developing, as well as part of unit_tests.py.
 '''
 
 # core
+import contextlib
 import cProfile
 import pstats
+import os
 import random
-from typing import Any, Callable, Literal, Union
+import sys
+from typing import Any, Callable, Iterator, Literal, Union
 
 # dependencies
 import numpy as np						# maths
@@ -90,6 +93,23 @@ class TestTone(AudioSampler):
 	def getLabels(self) -> list[Union[float, int]]:
 		''' Returns f0 as a label. '''
 		return [self.f0] if self.f0 else []
+
+
+@contextlib.contextmanager
+def noPrinting(allow_errors: bool = False) -> Iterator[Any]:
+	'''
+	This wrapper can used around blocks of code to silece calls to print(), as well as
+	optionally silence error messages.
+	'''
+
+	with open(os.devnull, 'w') as dummy_file:
+		if not allow_errors:
+			sys.stderr = dummy_file
+		sys.stdout = dummy_file
+		yield
+		dummy_file.close()
+	sys.stderr = sys.__stderr__
+	sys.stdout = sys.__stdout__
 
 
 def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
