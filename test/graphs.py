@@ -19,10 +19,26 @@ import numpy.typing as npt				# typing for numpy
 plt.style.use(f'{os.getcwd()}/test/matplotlibrc')
 
 
+def plot1DMatrix(m: npt.NDArray[np.float64], export_path: str = '') -> None:
+	'''
+	A helper method for plotting a one dimensional matrix.
+	'''
+
+	# check size
+	if m.ndim != 1:
+		raise ValueError('Input matrix is not 1D')
+	
+	fig, ax = plt.subplots(1, figsize=(8, 1.75))
+	ax.imshow(m.reshape((1, -1)))
+	plt.xticks([])
+	plt.yticks([])
+	plt.savefig(export_path) if export_path else plt.show()
+
+
 def plot2DMatrix(m: npt.NDArray, export_path: str = '') -> None:
 	'''
-	A helper method for plotting a matrix, where (x0, y0) = M[N - 1, 0]
-	for a matrix of size (N, M).
+	A helper method for plotting a two dimensional matrix, where
+	(x0, y0) = M[N - 1, 0] for a matrix of size (N, M).
 	'''
 
 	# check size
