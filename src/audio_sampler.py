@@ -20,25 +20,35 @@ import soundfile as sf			# audio read & write
 from settings import settings
 
 
-class AudioSample(ABC):
+class AudioSampler(ABC):
 	'''
 	Template parent class for an audio sample.
 	'''
 
-	duration: float = settings['data_length']	# duration of the audio file (seconds)
-	sr: int = settings['sample_rate']			# sample rate (hz)
-	length: int = math.ceil(duration * sr)		# length of the audio file (samples)
-	wave: npt.NDArray[np.float64]				# the audio sample itself
-	y: list[Union[float, int]]					# metadata / labels
+	duration: float = settings['data_length']				# duration of the audio file (seconds)
+	sr: int = settings['sample_rate']						# sample rate (hz)
+	length: int = math.ceil(duration * sr)					# length of the audio file (samples)
+	waveform: npt.NDArray[np.float64] = np.zeros(length)	# the audio sample itself
 
-	def __init__(self, y: list[Union[float, int]] = []) -> None:
-		self.y = y
-		self.wave = self.generateWaveform()
+	def __init__(self) -> None:
+		pass
 
-	def __export__(self, absolutePath: str) -> None:
-		'''	Write the generated waveform to a file. '''
-		sf.write(absolutePath, self.wave, self.sr)
+	def export(self, absolutePath: str) -> None:
+		'''
+		Write the generated waveform to a file.
+		'''
+		sf.write(absolutePath, self.waveform, self.sr)
 
 	@abstractmethod
-	def generateWaveform(self) -> npt.NDArray[np.float64]:
+	def generateWaveform(self) -> None:
+		'''
+		This method should be used to set self.waveform.
+		'''
+		pass
+
+	@abstractmethod
+	def getLabels(self) -> list[Union[float, int]]:
+		'''
+		This method should return the y labels for the generated audio.
+		'''
 		pass
