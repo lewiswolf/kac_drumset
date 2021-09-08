@@ -1,5 +1,5 @@
 '''
-This file defines an arbitrary audio sample to be used as part of this project. This class
+This file defines an arbitrary audio sampler to be used as part of this project. This class
 is intended to act as a template for any type of audio sample, as the methods and properties
 defined below, which are required for use with this system, will be inherited from this
 parent class. This design also ensures that this project's dataset constructor (essentially
