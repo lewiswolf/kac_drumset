@@ -1,5 +1,5 @@
 '''
-Utility functions used whilst developing, as well as alongside unit_tests.py.
+Utility functions for use whilst developing, as well as part of unit_tests.py.
 '''
 
 # core
@@ -22,6 +22,9 @@ class TestSweep(AudioSampler):
 	'''
 
 	def __init__(self) -> None:
+		'''
+		Render the sinusoidal sweep.
+		'''
 		phi: float = 0.0
 		s_l: float = 1 / self.sr
 		two_pi: float = 2 * np.pi
