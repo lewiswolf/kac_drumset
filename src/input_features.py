@@ -95,6 +95,7 @@ class InputFeatures():
 			self.n_mels = n_mels
 			self.window_length = window_length
 			self.transformer = torchaudio.transforms.MelSpectrogram(
+				f_min=self.f_min,
 				hop_length=self.hop_length,
 				n_fft=self.n_bins,
 				n_mels=self.n_mels,

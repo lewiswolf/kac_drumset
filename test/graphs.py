@@ -27,7 +27,7 @@ def plot1DMatrix(m: npt.NDArray[np.float64], export_path: str = '') -> None:
 	# check size
 	if m.ndim != 1:
 		raise ValueError('Input matrix is not 1D')
-	
+	# plot matrix
 	fig, ax = plt.subplots(1, figsize=(8, 1.75))
 	ax.imshow(m.reshape((1, -1)))
 	plt.xticks([])
@@ -86,7 +86,7 @@ def plotSpectrogram(
 	input_type: Union[Literal['cqt', 'fft', 'mel'], None] = None,
 	sr: Union[int, None] = None,
 	hop_length: Union[int, None] = None,
-	f_min: float = 20.0,
+	f_min: float = 20.05,
 	export_path: str = '',
 ) -> None:
 	'''
@@ -125,7 +125,7 @@ def plotSpectrogram(
 		if input_type == 'fft':
 			y_ticks = np.linspace(0, sr * 0.5, num=11)
 		if input_type == 'mel':
-			y_ticks = np.linspace(0, math.log10(1 + sr * 0.5 / 700.0), num=11)
+			y_ticks = np.linspace(math.log10(1 + f_min / 700.0), math.log10(1 + sr * 0.5 / 700.0), num=11)
 			y_ticks = 700.0 * (10.0 ** y_ticks - 1.0)
 		plt.yticks(np.linspace(0, spectrogram.shape[0], num=11), np.round(y_ticks).astype('int64'))
 		ax.set(ylabel='Frequency (Hz)')
