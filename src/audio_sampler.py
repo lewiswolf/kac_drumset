@@ -22,7 +22,14 @@ from settings import settings
 
 class AudioSampler(ABC):
 	'''
-	Template parent class for an audio sample.
+	Template parent class for an audio sample. The intended use when
+	deployed:
+		sampler = AudioSampler()
+		for i in range(n):
+			sampler.generateWaveform()
+			x = sampler.waveform
+			y = sampler.getLabels()
+			sampler.export()
 	'''
 
 	duration: float = settings['data_length']				# duration of the audio file (seconds)
