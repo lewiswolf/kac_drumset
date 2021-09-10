@@ -92,8 +92,8 @@ def generateConcave(n: int) -> npt.NDArray[np.float64]:
 	# order by polar angle theta
 	vertices = vertices[np.argsort(np.arctan2(vertices[:, 1], vertices[:, 0]))]
 	# normalise
-	min_v = np.min(vertices)
-	vertices = (vertices - min_v) / (np.max(vertices) - min_v)
+	v_min = np.min(vertices)
+	vertices = (vertices - v_min) / (np.max(vertices) - v_min)
 	return vertices
 
 
@@ -141,9 +141,7 @@ def generateConvex(n: int) -> npt.NDArray[np.float64]:
 
 	# normalise
 	v_min = np.min(vertices)
-	vertices = (vertices - min_v) / (np.max(vertices) - min_v)
-
-	plotPolygon(vertices)
+	vertices = (vertices - v_min) / (np.max(vertices) - v_min)
 	return vertices
 
 
