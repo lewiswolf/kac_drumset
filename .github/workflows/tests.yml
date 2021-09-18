@@ -9,7 +9,7 @@ on:
 
 jobs:
     test-macos:
-        runs-on: macos-latest
+        runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@master
             - uses: actions/setup-python@v2
@@ -30,6 +30,6 @@ jobs:
               run: |
                   pipenv install -d
 
-            - name: Run unit tests across multiple OS.
+            - name: Run unit tests.
               run: |
                   pipenv run python test/unit_tests.py
