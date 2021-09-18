@@ -35,7 +35,11 @@ jobs:
     #           run: pipenv run python test/unit_tests.py
 
     unit-tests-ubuntu:
-        runs-on: ubuntu-latest
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+
         steps:
             - uses: actions/checkout@master
             - uses: actions/setup-python@v2
@@ -50,11 +54,13 @@ jobs:
                   path: ~/.local/share/virtualenvs
                   key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
 
+            - name: Linux dependencies
+              if: ${{ matrix.os == 'ubuntu-latest' }}
+              run: sudo apt-get install libsndfile1
+
             - name: Install dependencies
               if: steps.cache-pipenv.outputs.cache-hit != 'true'
-              run: |
-                  sudo apt-get install libsndfile1
-                  pipenv install -d
+              run: pipenv install -d
 
             - name: Run unit tests
               run: pipenv run python test/unit_tests.py
