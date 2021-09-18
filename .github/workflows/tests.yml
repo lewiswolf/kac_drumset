@@ -7,34 +7,12 @@ on:
         branches: [master]
 
 jobs:
-    # unit-tests-macos:
-    #     runs-on: macos-latest
-    #     steps:
-    #         - uses: actions/checkout@master
-    #         - uses: actions/setup-python@v2
-    #           with:
-    #               python-version: "3.9"
+    # unit-tests:
+    #     runs-on: ${{ matrix.os }}
+    # strategy:
+    #   matrix:
+    #     os: [macos-latest, windows-latest]
 
-    #         - name: Install pipenv
-    #           run: |
-    #               python -m pip install --upgrade pipenv wheel
-    #         - id: cache-pipenv
-    #           uses: actions/cache@v1
-    #           with:
-    #               path: ~/.local/share/virtualenvs
-    #               key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
-
-    #         - name: Install dependencies
-    #           if: steps.cache-pipenv.outputs.cache-hit != 'true'
-    #           run: |
-    #               pipenv install -d
-
-    #         - name: Run unit tests
-    #           run: |
-    #               pipenv run python test/unit_tests.py
-
-    # unit-tests-windows:
-    #     runs-on: windows-latest
     #     steps:
     #         - uses: actions/checkout@master
     #         - uses: actions/setup-python@v2
@@ -72,12 +50,11 @@ jobs:
                   path: ~/.local/share/virtualenvs
                   key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
 
-    	      - name: Install libsndfile
-              run: echo hello
-
             - name: Install dependencies
               if: steps.cache-pipenv.outputs.cache-hit != 'true'
-              run: pipenv install -d
+              run: |
+                  echo hello
+                  pipenv install -d
 
             - name: Run unit tests
               run: pipenv run python test/unit_tests.py
