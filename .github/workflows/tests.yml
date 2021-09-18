@@ -19,7 +19,6 @@ jobs:
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - name: Run unit tests across multiple OS.
-              uses: actions/checkout@master
               with:
                   python-version: "3.9"
               run: |
