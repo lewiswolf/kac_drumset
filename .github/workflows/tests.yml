@@ -1,15 +1,17 @@
 name: Tests
 
 on:
-    # Triggers the workflow on push or pull request events but only for the master branch
     push:
         branches: [master]
     pull_request:
         branches: [master]
 
 jobs:
-    test-macos:
-        runs-on: ubuntu-latest
+    unit-tests:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [macos-latest, ubuntu-latest]
         steps:
             - uses: actions/checkout@master
             - uses: actions/setup-python@v2
@@ -30,6 +32,6 @@ jobs:
               run: |
                   pipenv install -d
 
-            - name: Run unit tests.
+            - name: Run unit tests
               run: |
                   pipenv run python test/unit_tests.py
