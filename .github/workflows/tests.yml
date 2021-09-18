@@ -73,7 +73,7 @@ jobs:
                   key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
 
     	      - name: Install libsndfile
-              	  run: sudo apt-get install libsndfile1
+              run: sudo apt-get install libsndfile1
 
             - name: Install dependencies
               if: steps.cache-pipenv.outputs.cache-hit != 'true'
