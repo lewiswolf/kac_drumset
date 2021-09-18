@@ -53,7 +53,7 @@ jobs:
             - name: Install dependencies
               if: steps.cache-pipenv.outputs.cache-hit != 'true'
               run: |
-				  sudo apt-get install libsndfile1
+				  apt-get install libsndfile1
                   pipenv install -d
 
             - name: Run unit tests
