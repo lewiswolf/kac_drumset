@@ -64,10 +64,10 @@ class GeometryTests(unittest.TestCase):
 				self.assertTrue(isConvex(polygon.n, polygon.vertices))
 				# This test asserts that the calculated centroid lies within the polygon. For
 				# concave shapes, this test may fail.
-				# self.assertEqual(polygon.mask[
-				# 	round(polygon.centroid[0] * 100),
-				# 	round(polygon.centroid[1] * 100),
-				# ], 1)
+				self.assertEqual(polygon.mask[
+					round(polygon.centroid[0] * 100),
+					round(polygon.centroid[1] * 100),
+				], 1)
 
 
 class InputFeatureTests(unittest.TestCase):
