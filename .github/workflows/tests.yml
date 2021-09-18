@@ -8,7 +8,6 @@ on:
 
 jobs:
     unit-tests-macos:
-		name: unit-tests-macos
         runs-on: macos-latest
         steps:
             - uses: actions/checkout@master
@@ -35,7 +34,6 @@ jobs:
                   pipenv run python test/unit_tests.py
 
     unit-tests-ubuntu:
-		name: unit-tests-ubuntu
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@master
