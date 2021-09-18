@@ -8,6 +8,7 @@ on:
 
 jobs:
     unit-tests-macos:
+		name: unit-tests-macos
         runs-on: macos-latest
         steps:
             - uses: actions/checkout@master
@@ -34,6 +35,7 @@ jobs:
                   pipenv run python test/unit_tests.py
 
     unit-tests-ubuntu:
+		name: unit-tests-ubuntu
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@master
@@ -53,8 +55,8 @@ jobs:
             - name: Install dependencies
               if: steps.cache-pipenv.outputs.cache-hit != 'true'
               run: |
-                  pipenv install -d
 				  sudo apt-get install libsndfile1
+                  pipenv install -d
 
             - name: Run unit tests
               run: |
