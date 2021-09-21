@@ -17,6 +17,7 @@ import torch				# pytorch
 sys.path.insert(1, f'{os.getcwd()}/src')
 from geometry import RandomPolygon, isConvex, isColinear
 from input_features import InputFeatures
+from physical_model import DrumModel, raisedCosine
 
 # test
 from test_utils import TestSweep, noPrinting
@@ -115,6 +116,51 @@ class InputFeatureTests(unittest.TestCase):
 		# This test asserts that a normalised waveform is always bounded by [-1.0, 1.0].
 		self.assertEqual(np.max(InputFeatures.__normalise__(self.tone.waveform)), 1.0)
 		self.assertEqual(np.min(InputFeatures.__normalise__(self.tone.waveform)), -1.0)
+
+
+class PhysicalModelTests(unittest.TestCase):
+	'''
+	Tests used in conjunction with `physical_model.py`.
+	'''
+
+	drum = DrumModel()
+
+	def test_CFL_stability(self) -> None:
+		'''
+		The Courant number λ = γk/h is used to assert that the CFL stability criterion is upheld.
+		If λ > 1, the resultant simulation will be unstable.
+		'''
+		# For a 1D simulation
+		self.assertLessEqual(self.drum.cfl, 1.0)
+		# For a 2D simulation
+		self.assertLessEqual(self.drum.cfl, 1 / (2 ** 0.5))
+
+	def test_energy_conservation(self) -> None:
+		'''
+		For an accurate physical simulation, the conservation law of energy must be upheld. This
+		is both naively tested, using the waveform itself, and by comparing expected bounds on
+		the Hamiltonian energy throughout the simulation.
+		'''
+
+		# This test asserts that the resultant waveform is always bounded betweenn 1.0 and -1.0.
+		self.drum.length = 1000 # very short simulation
+		self.drum.generateWaveform()
+		self.assertLessEqual(np.max(self.drum.waveform), 1.0)
+		self.assertGreaterEqual(np.min(self.drum.waveform), -1.0)
+
+	def test_raised_cosine(self) -> None:
+		'''
+		'''
+
+		# This test asserts that the one dimensional case has the correct peaks.
+		rc = raisedCosine((100, ), (50, ), sigma=10)
+		self.assertEqual(np.max(rc), 1.0)
+		self.assertEqual(np.min(rc), 0.0)
+
+		# This test asserts that the two dimensional case has the correct peaks.
+		rc = raisedCosine((100, 100), (50, 50), sigma=10)
+		self.assertEqual(np.max(rc), 1.0)
+		self.assertEqual(np.min(rc), 0.0)
 
 
 if __name__ == '__main__':
