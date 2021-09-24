@@ -29,9 +29,9 @@ class DrumModel(AudioSampler):
 
 	# user-defined variables
 	a: float					# maximum amplitude of the simulation ∈ [0, 1].
-	allow_concave: bool 		# can the drum be a concave shape?
+	allow_concave: bool			# can the drum be a concave shape?
 	L: float					# width and height of the simulation (m)
-	max_vertices: int			# what is the maximum number of a vertices a given drum can have?
+	max_vertices: int			# what is the maximum number of vertices a given drum can have?
 	p: float					# material density (kg/m^2)
 	t: float					# tension at rest (N/m)
 	# inferrences
@@ -39,7 +39,7 @@ class DrumModel(AudioSampler):
 	c: float					# wavespeed (m/s)
 	gamma: float				# scaled wavespeed (1/s)
 	H: int						# number of grid points across each dimension, for the domain U ∈ [0, 1]
-	h: float 					# length of each grid step
+	h: float					# length of each grid step
 	cfl: float					# courant number
 	# classes
 	shape: RandomPolygon		# the shape of the drum
@@ -59,7 +59,7 @@ class DrumModel(AudioSampler):
 			a				Maximum amplitude of the simulation ∈ [0, 1].
 			allow_concave	Can the drum be a concave shape?
 			L				Width and height of the simulation (m)
-			max_vertices	What is the maximum number of a vertices a given drum can have?
+			max_vertices	What is the maximum number of vertices a given drum can have?
 			p				Material density (kg/m^2)
 			t				Tension at rest (N/m)
 		'''
@@ -94,22 +94,32 @@ class DrumModel(AudioSampler):
 		u: npt.NDArray[np.float64]			# the FDTD grid
 		u_0: npt.NDArray[np.float64]		# the FDTD grid at t = 0
 		u_1: npt.NDArray[np.float64]		# the FDTD grid at t = 1
+		x_range: tuple[int, int]			# range of the update equation across the x axis
+		y_range: tuple[int, int]			# range of the update equation across the y axis
 
 		# initialise a random drum shape
-		if not hasattr(self, 'shape'):
-			self.shape = RandomPolygon(
-				self.max_vertices,
-				grid_size=self.H,
-				allow_concave=self.allow_concave,
-			)
-			strike = (
-				round(self.shape.centroid[0] * self.H), round(self.shape.centroid[1] * self.H),
-			)
+		self.shape = RandomPolygon(
+			self.max_vertices,
+			grid_size=self.H,
+			allow_concave=self.allow_concave,
+		)
+		strike = (
+			round(self.shape.centroid[0] * self.H),
+			round(self.shape.centroid[1] * self.H),
+		)
 
 		# calculate the initial conditions relative to the centroid of the drum
-		u = np.zeros((self.H, self.H))
+		u = np.zeros((self.H + 2, self.H + 2))
 		u_0 = np.copy(u)
-		u_1 = self.a * raisedCosine((self.H, self.H), strike)
+		u_1 = self.a * raisedCosine((self.H + 2, self.H + 2), strike)
+		x_range = (
+			round(np.min(self.shape.vertices[:, 0] * self.H)) + 1,
+			round(np.max(self.shape.vertices[:, 0] * self.H)) + 1,
+		)
+		y_range = (
+			round(np.min(self.shape.vertices[:, 1] * self.H)) + 1,
+			round(np.max(self.shape.vertices[:, 1] * self.H)) + 1,
+		)
 
 		for i in range(self.length):
 			# handle initial events
@@ -122,30 +132,30 @@ class DrumModel(AudioSampler):
 
 			# main loop
 			if i % 2 == 0:
-				for x in range(self.H):
-					for y in range(self.H):
+				for x in range(*x_range):
+					for y in range(*y_range):
 						# dirichlet  boundary condition
-						if self.shape.mask[x, y] == 0:
+						if self.shape.mask[x - 1, y - 1] == 0:
 							continue
 						u[x, y] = (s_0 * sum([
-							u_1[x, y + 1] if y < self.H - 1 else 0.0,
-							u_1[x + 1, y] if x < self.H - 1 else 0.0,
-							u_1[x, y - 1] if y > 0 else 0.0,
-							u_1[x - 1, y] if x > 0 else 0.0,
+							u_1[x, y + 1],
+							u_1[x + 1, y],
+							u_1[x, y - 1],
+							u_1[x - 1, y],
 						])) + (s_1 * u_1[x, y]) - u_0[x, y]
 				u_0 = np.copy(u)
 
 			if i % 2 == 1:
-				for x in range(self.H):
-					for y in range(self.H):
+				for x in range(*x_range):
+					for y in range(*y_range):
 						# dirichlet  boundary condition
-						if self.shape.mask[x, y] == 0:
+						if self.shape.mask[x - 1, y - 1] == 0:
 							continue
 						u[x, y] = (s_0 * sum([
-							u_0[x, y + 1] if y < self.H - 1 else 0.0,
-							u_0[x + 1, y] if x < self.H - 1 else 0.0,
-							u_0[x, y - 1] if y > 0 else 0.0,
-							u_0[x - 1, y] if x > 0 else 0.0,
+							u_0[x, y + 1],
+							u_0[x + 1, y],
+							u_0[x, y - 1],
+							u_0[x - 1, y],
 						])) + (s_1 * u_0[x, y]) - u_1[x, y]
 				u_1 = np.copy(u)
 
@@ -171,14 +181,14 @@ def raisedCosine(
 	This functions creates a raised cosine distribution of size H, centered at
 	the contact_point. Only 1D and 2D distributions are supported.
 	params:
-		H				A tuple representing the size of the output matrix.
-		contact_point	The coordinate used to represent the centre of the
-						cosine distribution.
-		sigma			The radius of the distribution.
+			H				A tuple representing the size of the output matrix.
+			contact_point	The coordinate used to represent the centre of the
+											cosine distribution.
+			sigma			The radius of the distribution.
 	'''
 
 	# handle dimensions > 2 and incompatible inputs
-	if len(contact_point) > 2 or len(H) > 2 or len(H) != len(contact_point):
+	if len(contact_point) > 2 or len(H) > 2 or len(H) != len(contact_point):  # gross
 		raise ValueError()
 
 	# solve for the one dimensional case
