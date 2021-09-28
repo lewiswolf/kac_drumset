@@ -189,36 +189,37 @@ def generateDataset(
 	return dataset
 
 
-def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
-	'''
-	Attempts to load a dataset if one has already been generated. Verifies the metadata
-	of the loaded dataset, and ammends the dataset if necessary.
-	'''
+# def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
+# 	'''
+# 	Attempts to load a dataset if one has already been generated. Verifies the metadata
+# 	of the loaded dataset, and ammends the dataset if necessary.
+# 	'''
 
-	cwd = os.getcwd()
+# 	cwd = os.getcwd()
 
-	class DatasetIncompatible(Exception):
-		pass
+# 	class DatasetIncompatible(Exception):
+# 		pass
 
-	try:
-		with open(f'{cwd}/data/metadata.json') as file:
-			# skip the initial '{'
-			file.readlines(1)
+# 	try:
+# 		with open(f'{cwd}/data/metadata.json') as file:
+# 			# skip the initial '{'
+# 			file.readlines(1)
 
-			# confirm project settings match
-			input_compatible = True
-			for key in DatasetMetadata.__dict__['__annotations__'].keys():
-				if key == 'data':
-					file.readlines(1)
-					break
-				value = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
-				# TO FIX: see todo.md -> 'Extendable way to loop over TypedDict keys'
-				if key == 'DATASET_SIZE' and settings[key] > value:
-					raise DatasetIncompatible
-				elif (key == 'SAMPLE_RATE' or key == 'DATA_LENGTH') and settings[key] != value:
-					raise DatasetIncompatible
-				elif settings[key] != value:
-					input_compatible = False
+# 			# confirm project settings match
+# 			input_compatible = True
+# 			d_keys = DatasetMetadata.__dict__['__annotations__'].keys()
+# 			for key in DatasetMetadata.__dict__['__annotations__'].keys():
+# 				if key == 'data':
+# 					file.readlines(1)
+# 					break
+# 				value = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
+# 				# TO FIX: see todo.md -> 'Extendable way to loop over TypedDict keys'
+# 				if key == 'DATASET_SIZE' and settings[key] > value:
+# 					raise DatasetIncompatible
+# 				elif (key == 'SAMPLE_RATE' or key == 'DATA_LENGTH') and settings[key] != value:
+# 					raise DatasetIncompatible
+# 				elif settings[key] != value:
+# 					input_compatible = False
 
 	# 		print('Preprocessing dataset... 📚')
 	# 		dataset = TorchDataset()
