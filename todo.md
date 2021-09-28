@@ -34,6 +34,8 @@
     )(waveform.double())
     ```
 
+    This issue, specifically with pytorch, has also affected testing, as placing `torch.set_default_dtype(dtype)` somewhere within the code affects every function and file thereafter. I have not been able to find a way of running dedcated tests on idividual files, in an attempt to minimise these issues in the event that the library was to be separated/partially reused, without having to split the tests across multiple files and run them individually.
+
 -   **`pydantic.create_model_from_typeddict` has an incompatible type error**
 
     See [here](https://github.com/samuelcolvin/pydantic/issues/3008) for details.
@@ -77,6 +79,3 @@
 -   **Missing a reliable algorithm to generate all concave shapes**
 
     Currently, convex shapes can be deterministically created with an efficient algorithm, as well as some concave shapes. However, due to the algorithm chosen to create concave shapes, not _all_ possible concave shapes can be created. The concave algorithm works by centering a collection of random points around the origin, and connecting them according to their polar angle. More complex concave shapes do not share this property, as it is possible for concave shapes to not obey this ordering, whilst maintaining that there are no line crossings. The best solution I have found so far is [scikit-geometry's](https://github.com/scikit-geometry/scikit-geometry) python wrapper around CGAL's [random_polygon_2()](https://doc.cgal.org/latest/Generator/group__PkgGeneratorsRef.html#gaa8cb58e4cc9ab9e225808799b1a61174), which uses a 2-opt approach to configuring the polygon. Due to scikit-geometry needing to be built from source, this has not yet been implemented.
-
-    **Better solution to `unit_tests.py` => `test_floating_point_error()`?**
-    Title says it all...

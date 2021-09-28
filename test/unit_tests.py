@@ -4,23 +4,121 @@ tests is used in conjunction with a particular project file.
 '''
 
 # core
+import json
 import os
+import random
 import sys
+from typing import cast
 import unittest
 
 # dependencies
 import cv2					# image processing
 import numpy as np 			# maths
+import pydantic 			# runtime type-checking
 import torch				# pytorch
 
 # src
 sys.path.insert(1, f'{os.getcwd()}/src')
+import dataset as ds
 from geometry import RandomPolygon, isConvex, isColinear
 from input_features import InputFeatures
 from physical_model import DrumModel, raisedCosine
 
 # test
-from test_utils import TestSweep, noPrinting
+from test_utils import TestSweep, TestTone, noPrinting
+
+
+class DatasetTests(unittest.TestCase):
+	'''
+	Tests used in conjunction with `dataset.py`.
+	'''
+
+	@classmethod
+	def tearDownClass(cls) -> None:
+		'''
+		Clear the /tmp folder after all tests are done.
+		'''
+
+		cwd = os.getcwd()
+		for file in os.listdir(f'{cwd}/test/tmp'):
+			if file != '.gitignore':
+				os.remove(f'{cwd}/test/tmp/{file}')
+
+	def test_metadata_stringify(self) -> None:
+		'''
+		First stringifies the dataset's metadata, ready for exporting a .json file, and
+		then checks that it containes the correct values and data types.
+		'''
+
+		# number of tests
+		n = 10
+
+		# Test with y labels.
+		str = ds.parseMetadataToString()
+		for i in range(n):
+			str += ds.parseDataSampleToString({'filepath': '', 'x': [], 'y': [1]}, i == n - 1)
+		JSON = json.loads(str)
+		# This test asserts that the y labels exist.
+		for i in range(n):
+			self.assertTrue('y' in JSON['data'][i])
+		# This test asserts that the dataset matches the type specification.
+		cast(
+			ds.DatasetMetadata,
+			pydantic.create_model_from_typeddict(ds.DatasetMetadata)(**JSON).dict(),
+		)
+
+		# Test with falsey y labels.
+		str = ds.parseMetadataToString()
+		for i in range(n):
+			if random.getrandbits(1):
+				str += ds.parseDataSampleToString({'filepath': '', 'x': []}, i == n - 1)
+			else:
+				str += ds.parseDataSampleToString({'filepath': '', 'x': [], 'y': []}, i == n - 1)
+		JSON = json.loads(str)
+		# This test asserts that the y labels do not exist.
+		for i in range(n):
+			self.assertFalse('y' in JSON['data'][i])
+		# This test asserts that the dataset matches the type specification.
+		cast(
+			ds.DatasetMetadata,
+			pydantic.create_model_from_typeddict(ds.DatasetMetadata)(**JSON).dict(),
+		)
+
+	def test_generated_dataset(self) -> None:
+		'''
+		Tests associated with generating a dataset. These test check for the correct size
+		and data type of the dataset, both in memory and on disk.
+		'''
+
+		# Test with y.
+		with noPrinting():
+			dataset = ds.generateDataset(TestTone, dataset_size=10, dataset_dir='test/tmp')
+
+		# This test asserts that the dataset is the correct size, both in memory and on disk.
+		self.assertEqual(dataset.__len__(), 10)
+		self.assertEqual(len(dataset.Y), 10)
+		self.assertEqual(len(os.listdir(f'{os.getcwd()}/test/tmp')) - 2, 10)
+
+		# This test asserts that x and y are the correct data types.
+		for i in range(10):
+			x, y = dataset.__getitem__(i)
+			self.assertEqual(x.dtype, torch.float64)
+			self.assertNotEqual(y, None)
+			if y: # for mypy only
+				self.assertEqual(y.dtype, torch.float64)
+
+		# Test without y.
+		with noPrinting():
+			dataset = ds.generateDataset(TestSweep, dataset_size=10, dataset_dir='test/tmp')
+
+		# This test asserts that dataset.Y does not exist.
+		self.assertFalse(hasattr(dataset, 'Y'))
+
+		# This test asserts that x and y are the correct data types.
+		for i in range(10):
+			x, y = dataset.__getitem__(i)
+			self.assertEqual(x.dtype, torch.float64)
+			self.assertEqual(y, None)
 
 
 class GeometryTests(unittest.TestCase):
@@ -47,7 +145,7 @@ class GeometryTests(unittest.TestCase):
 			self.assertAlmostEqual(
 				polygon.area,
 				cv2.contourArea(polygon.vertices.astype('float32')),
-				places=7,
+				places=6,
 			)
 
 			# This test asserts that no 3 adjacent vertices are colinear.
@@ -85,14 +183,14 @@ class InputFeatureTests(unittest.TestCase):
 		self.assertTrue(np.array_equal(self.tone.waveform, T.detach().numpy()))
 		# This test asserts that the output tensor is the correct shape and type.
 		self.assertEqual(T.shape, IF.transformShape(self.tone.length))
-		self.assertEqual(torch.float64, T.dtype)
+		self.assertEqual(T.dtype, torch.float64)
 
 	def test_fft(self) -> None:
 		IF = InputFeatures(feature_type='fft')
 		spectrogram = IF.transform(self.tone.waveform)
 		# This test asserts that the output tensor is the correct shape and type.
 		self.assertEqual(spectrogram.shape, IF.transformShape(self.tone.length))
-		self.assertEqual(torch.float64, spectrogram.dtype)
+		self.assertEqual(spectrogram.dtype, torch.float64)
 
 	def test_mel(self) -> None:
 		# A low n_mels suits the test tone.
@@ -100,7 +198,7 @@ class InputFeatureTests(unittest.TestCase):
 		spectrogram = IF.transform(self.tone.waveform)
 		# This test asserts that the output tensor is the correct shape and type.
 		self.assertEqual(spectrogram.shape, IF.transformShape(self.tone.length))
-		self.assertEqual(torch.float64, spectrogram.dtype)
+		self.assertEqual(spectrogram.dtype, torch.float64)
 
 	def test_cqt(self) -> None:
 		# librosa.cqt() has a number of dependency issues, which clog up the console.
@@ -110,7 +208,7 @@ class InputFeatureTests(unittest.TestCase):
 			spectrogram = IF.transform(self.tone.waveform)
 		# This test asserts that the output tensor is the correct shape and type.
 		self.assertEqual(spectrogram.shape, IF.transformShape(self.tone.length))
-		self.assertEqual(torch.float64, spectrogram.dtype)
+		self.assertEqual(spectrogram.dtype, torch.float64)
 
 	def test_normalise(self) -> None:
 		# This test asserts that a normalised waveform is always bounded by [-1.0, 1.0].

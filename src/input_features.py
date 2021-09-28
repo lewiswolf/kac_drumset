@@ -19,6 +19,10 @@ import torchaudio				# tensor audio manipulation
 from settings import SpectroSettings, settings
 spec_settings: SpectroSettings = settings['spectro_settings']
 
+# necessary to enforce dtype throughout the project, see todo.md ->
+# 'Internal types for nested lists, numpy arrays and pytroch tensors'
+torch.set_default_dtype(torch.float64)
+
 
 class InputFeatures():
 	'''
@@ -86,9 +90,6 @@ class InputFeatures():
 
 		# configure mel
 		if self.feature_type == 'mel':
-			# Necessary to fix a bug with mel spectrograms, see todo.md ->
-			# 'Internal types for nested lists, numpy arrays and pytroch tensors'
-			torch.set_default_dtype(torch.float64)
 			self.f_min = f_min
 			self.hop_length = hop_length
 			self.n_bins = n_bins
