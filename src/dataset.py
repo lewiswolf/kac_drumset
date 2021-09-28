@@ -164,7 +164,7 @@ def generateDataset(
 		if file != '.gitignore':
 			os.remove(f'{cwd}/{dataset_dir}/{file}')
 
-	print('Generating dataset... 🎯')
+	print('Generating dataset... \U0001F3AF')
 	with open(f'{cwd}/{dataset_dir}/metadata.json', 'at') as new_file:
 		new_file.write(parseMetadataToString())
 		with tqdm(**tqdm_settings) as pbar:
@@ -189,97 +189,97 @@ def generateDataset(
 	return dataset
 
 
-# def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
-# 	'''
-# 	Attempts to load a dataset if one has already been generated. Verifies the metadata
-# 	of the loaded dataset, and ammends the dataset if necessary.
-# 	'''
+def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
+	'''
+	Attempts to load a dataset if one has already been generated. Verifies the metadata
+	of the loaded dataset, and ammends the dataset if necessary.
+	'''
 
-# 	cwd = os.getcwd()
+	cwd = os.getcwd()
 
-# 	class DatasetIncompatible(Exception):
-# 		pass
+	class DatasetIncompatible(Exception):
+		pass
 
-# 	try:
-# 		with open(f'{cwd}/data/metadata.json') as file:
-# 			# skip the initial '{'
-# 			file.readlines(1)
+	try:
+		with open(f'{cwd}/data/metadata.json') as file:
+			# skip the initial '{'
+			file.readlines(1)
 
-# 			# confirm project settings match
-# 			inputIncompatible = False
-# 			for key in DatasetMetadata.__dict__['__annotations__'].keys():
-# 				if key == 'data':
-# 					file.readlines(1)
-# 					break
-# 				value = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
-# 				# TO FIX: see todo.md -> 'Extendable way to loop over TypedDict keys'
-# 				if key == 'DATASET_SIZE' and settings[key] > value:
-# 					raise DatasetIncompatible
-# 				elif (key == 'SAMPLE_RATE' or key == 'DATA_LENGTH') and settings[key] != value:
-# 					raise DatasetIncompatible
-# 				elif settings[key] != value:
-# 					inputIncompatible = True
+			# confirm project settings match
+			input_compatible = True
+			for key in DatasetMetadata.__dict__['__annotations__'].keys():
+				if key == 'data':
+					file.readlines(1)
+					break
+				value = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
+				# TO FIX: see todo.md -> 'Extendable way to loop over TypedDict keys'
+				if key == 'DATASET_SIZE' and settings[key] > value:
+					raise DatasetIncompatible
+				elif (key == 'SAMPLE_RATE' or key == 'DATA_LENGTH') and settings[key] != value:
+					raise DatasetIncompatible
+				elif settings[key] != value:
+					input_compatible = False
 
-# 			print('Preprocessing dataset... 📚')
-# 			dataset = TorchDataset()
+	# 		print('Preprocessing dataset... 📚')
+	# 		dataset = TorchDataset()
 
-# 			# construct dataset from json
-# 			if not inputIncompatible:
-# 				with tqdm(**tqdm_settings) as pbar:
-# 					for i in range(settings['DATASET_SIZE']):
-# 						# import relevant information
-# 						file.readlines(2)
-# 						x = torch.as_tensor(
-# 							json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1]),
-# 						)
-# 						y = torch.as_tensor(
-# 							json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:]),
-# 						)
-# 						file.readlines(1)
-# 						# on the initial run, infer the size of dataset.Y
-# 						if i == 0:
-# 							dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
-# 						# append input features to dataset
-# 						dataset.setitem(i, x, y)
-# 						pbar.update(1)
-# 				file.close()
+	# 		# construct dataset from json
+	# 		if input_compatible:
+	# 			with tqdm(**tqdm_settings) as pbar:
+	# 				for i in range(settings['DATASET_SIZE']):
+	# 					# import relevant information
+	# 					file.readlines(2)
+	# 					x = torch.as_tensor(
+	# 						json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1]),
+	# 					)
+	# 					y = torch.as_tensor(
+	# 						json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:]),
+	# 					)
+	# 					file.readlines(1)
+	# 					# on the initial run, infer the size of dataset.Y
+	# 					if i == 0:
+	# 						dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
+	# 					# append input features to dataset
+	# 					dataset.setitem(i, x, y)
+	# 					pbar.update(1)
+	# 			file.close()
 
-# 			# regenerate inputs features and metadata.json
-# 			else:
-# 				with open(f'{cwd}/data/metadata_temp.json', 'at') as newFile:
-# 					newFile.write(parseMetadataToString())
-# 					with tqdm(**tqdm_settings) as pbar:
-# 						for i in range(settings['DATASET_SIZE']):
-# 							# import relevant information
-# 							file.readlines(1)
-# 							relativePath = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
-# 							file.readlines(1)
-# 							x = inputFeatures(sf.read(f'{cwd}/{relativePath}')[0])
-# 							y = torch.as_tensor(
-# 								json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:]),
-# 							)
-# 							file.readlines(1)
-# 							# on the initial run, infer the size of dataset.Y
-# 							if i == 0:
-# 								dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
-# 							# append input features to dataset
-# 							dataset.setitem(i, x, y)
-# 							# export metadata
-# 							newFile.write(parseDataSampleToString(relativePath, x, y, i == settings['DATASET_SIZE'] - 1))
-# 							pbar.update(1)
-# 					file.close()
-# 					os.remove(f'{cwd}/data/metadata.json')
-# 					os.rename(f'{cwd}/data/metadata_temp.json', f'{cwd}/data/metadata.json')
-# 					newFile.close()
-# 		return dataset
+	# 		# regenerate inputs features and metadata.json
+	# 		else:
+	# 			with open(f'{cwd}/data/metadata_temp.json', 'at') as newFile:
+	# 				newFile.write(parseMetadataToString())
+	# 				with tqdm(**tqdm_settings) as pbar:
+	# 					for i in range(settings['DATASET_SIZE']):
+	# 						# import relevant information
+	# 						file.readlines(1)
+	# 						relativePath = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
+	# 						file.readlines(1)
+	# 						x = inputFeatures(sf.read(f'{cwd}/{relativePath}')[0])
+	# 						y = torch.as_tensor(
+	# 							json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:]),
+	# 						)
+	# 						file.readlines(1)
+	# 						# on the initial run, infer the size of dataset.Y
+	# 						if i == 0:
+	# 							dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
+	# 						# append input features to dataset
+	# 						dataset.setitem(i, x, y)
+	# 						# export metadata
+	# 						newFile.write(parseDataSampleToString(relativePath, x, y, i == settings['DATASET_SIZE'] - 1))
+	# 						pbar.update(1)
+	# 				file.close()
+	# 				os.remove(f'{cwd}/data/metadata.json')
+	# 				os.rename(f'{cwd}/data/metadata_temp.json', f'{cwd}/data/metadata.json')
+	# 				newFile.close()
+	# 	return dataset
 
-# 	# handle exceptions
-# 	except Exception as e:
-# 		if type(e).__name__ == 'DatasetIncompatible':
-# 			print('Imported dataset is incompatible with the current project settings. 🤷')
-# 			print('Check data/metadata.json to see your previous project setting.')
-# 		else:
-# 			print('Could not load a dataset. 🤷')
-# 		if not click.confirm('Do you want to generate a new dataset?', default=None, prompt_suffix=': '):
-# 			sys.exit()
-# 		return generateDataset(DataSample)
+	# # handle exceptions
+	# except Exception as e:
+	# 	if type(e).__name__ == 'DatasetIncompatible':
+	# 		print('Imported dataset is incompatible with the current project settings. 🤷')
+	# 		print('Check data/metadata.json to see your previous project setting.')
+	# 	else:
+	# 		print('Could not load a dataset. 🤷')
+	# 	if not click.confirm('Do you want to generate a new dataset?', default=None, prompt_suffix=': '):
+	# 		sys.exit()
+	# 	return generateDataset(DataSample)
