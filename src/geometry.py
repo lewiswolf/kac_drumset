@@ -5,6 +5,7 @@ This file contains various functions relating to computational geometry. These i
 	-	Calulating the area of the polygon, as well as its centroid.
 	- 	Determing whether or not a given polygon is convex.
 	-	Determing whether or a not a set of three vertices are colinear.
+	- 	Locating the largest vector within a polygon.
 '''
 
 # core
@@ -92,9 +93,7 @@ def generateConcave(n: int) -> npt.NDArray[np.float64]:
 	# order by polar angle theta
 	vertices = vertices[np.argsort(np.arctan2(vertices[:, 1], vertices[:, 0]))]
 	# normalise
-	v_min = np.min(vertices)
-	vertices = (vertices - v_min) / (np.max(vertices) - v_min)
-	return vertices
+	return normaliseByLargestVector(n, vertices)
 
 
 def generateConvex(n: int) -> npt.NDArray[np.float64]:
@@ -140,9 +139,7 @@ def generateConvex(n: int) -> npt.NDArray[np.float64]:
 	vertices[:, 1] += ((y_max - np.min(vertices[:, 1])) / 2) - y_max
 
 	# normalise
-	v_min = np.min(vertices)
-	vertices = (vertices - v_min) / (np.max(vertices) - v_min)
-	return vertices
+	return normaliseByLargestVector(n, vertices)
 
 
 def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
@@ -176,6 +173,23 @@ def isConvex(n: int, vertices: npt.NDArray[np.float64]) -> bool:
 	return True
 
 
+def largestVector(n: int, vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, int]]:
+	'''
+	This function tests each pair of vertices in a given polygon to find the largest
+	vector, and return the length of the vector and its indices.
+	'''
+
+	vec_max = 0.0
+	idx = (0, 0)
+	for i in range(n):
+		for j in range(i + 1, n):
+			vec = ((vertices[i, 0] - vertices[j, 0]) ** 2 + (vertices[i, 1] - vertices[j, 1]) ** 2) ** 0.5
+			if vec > vec_max:
+				vec_max = vec
+				idx = (i, j)
+	return vec_max, idx
+
+
 def locateCentroid(area: float, n: int, vertices: npt.NDArray[np.float64]) -> tuple[float, float]:
 	'''
 	This algorithm is used to calculate the geometric centroid of a 2D polygon.
@@ -199,6 +213,33 @@ def locateCentroid(area: float, n: int, vertices: npt.NDArray[np.float64]) -> tu
 			for i in range(n)
 		]) / (6 * area)),
 	)
+
+
+def normaliseByLargestVector(n: int, vertices: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+	'''
+	This function uses the longest vector to define a polygon's span across the
+	y-axis. After finding the largest vector, the polygon is rotated about said
+	vector's midpoint, and finally the entire polygon is normalised to span the
+	unit interval.
+	'''
+
+	# find largest vector
+	_, idx = largestVector(n, vertices)
+
+	# rotate around the midpoint of the largest vector
+	vertices[:, 0] -= (vertices[idx[0], 0] + vertices[idx[1], 0]) / 2
+	vertices[:, 1] -= (vertices[idx[0], 1] + vertices[idx[1], 1]) / 2
+	theta = 0.0 - np.arctan(vertices[idx[0], 0] / vertices[idx[0], 1])
+	cos_theta, sin_theta = np.cos(theta), np.sin(theta)
+	for i, (x, y) in enumerate(vertices):
+		vertices[i, 0] = (x * cos_theta + y * sin_theta)
+		vertices[i, 1] = (-x * sin_theta + y * cos_theta)
+
+	# normalise to unit interval
+	vertices[:, 0] -= (np.min(vertices[:, 0]) + np.max(vertices[:, 0])) / 2
+	v_min = np.min(vertices)
+	vertices = (vertices - v_min) / (np.max(vertices) - v_min)
+	return vertices
 
 
 def shoelaceFormula(n: int, vertices: npt.NDArray[np.float64]) -> float:

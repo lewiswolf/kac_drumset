@@ -20,7 +20,7 @@ import torch				# pytorch
 # src
 sys.path.insert(1, f'{os.getcwd()}/src')
 import dataset as ds
-from geometry import RandomPolygon, isConvex, isColinear
+from geometry import RandomPolygon, isConvex, isColinear, largestVector
 from input_features import InputFeatures
 from physical_model import DrumModel, raisedCosine
 
@@ -37,6 +37,7 @@ class DatasetTests(unittest.TestCase):
 	def tearDownClass(cls) -> None:
 		'''
 		Clear the /tmp folder after all tests are done.
+		Maybe move this...
 		'''
 
 		cwd = os.getcwd()
@@ -134,14 +135,17 @@ class GeometryTests(unittest.TestCase):
 		for i in range(10000):
 			polygon = RandomPolygon(20, grid_size=100, allow_concave=True)
 
+			# This test asserts that a polygon has the correct number of vertices.
+			self.assertEqual(len(polygon.vertices), polygon.n)
+
 			# This test asserts that the vertices are strictly bounded between 0.0 and 1.0.
 			self.assertEqual(np.min(polygon.vertices), 0.0)
 			self.assertEqual(np.max(polygon.vertices), 1.0)
 
 			# This test asserts that the shoelaceFunction(), used for calculating the area of
-			# a polygon is accurate to at least 7 decimal places. This comparison is bounded
-			# due to the shoelaceFunction() being 64-bit, and the comparison function,
-			# cv2.contourArea(), being 32-bit.
+			# a polygon is accurate to at least 6 decimal places. This comparison is bounded
+			# due to the shoelaceFunction() being 64-bit, whilst the comparison function,
+			# cv2.contourArea(), is 32-bit.
 			self.assertAlmostEqual(
 				polygon.area,
 				cv2.contourArea(polygon.vertices.astype('float32')),
@@ -161,12 +165,16 @@ class GeometryTests(unittest.TestCase):
 				# As a result, if this test passes, we can assume that the generateConvex()
 				# function works as intended.
 				self.assertTrue(isConvex(polygon.n, polygon.vertices))
+				
 				# This test asserts that the calculated centroid lies within the polygon. For
 				# concave shapes, this test may fail.
-				# self.assertEqual(polygon.mask[
-				# 	round(polygon.centroid[0] * 100),
-				# 	round(polygon.centroid[1] * 100),
-				# ], 1)
+				self.assertEqual(polygon.mask[
+					round(polygon.centroid[0] * 100),
+					round(polygon.centroid[1] * 100),
+				], 1)
+
+				# This test asserts that the largest vector is of magnitude 1.0.
+				self.assertEqual(largestVector(polygon.n, polygon.vertices)[0], 1.0)
 
 
 class InputFeatureTests(unittest.TestCase):
@@ -212,8 +220,9 @@ class InputFeatureTests(unittest.TestCase):
 
 	def test_normalise(self) -> None:
 		# This test asserts that a normalised waveform is always bounded by [-1.0, 1.0].
-		self.assertEqual(np.max(InputFeatures.__normalise__(self.tone.waveform)), 1.0)
-		self.assertEqual(np.min(InputFeatures.__normalise__(self.tone.waveform)), -1.0)
+		norm = InputFeatures.__normalise__(self.tone.waveform)
+		self.assertEqual(np.max(norm), 1.0)
+		self.assertEqual(np.min(norm), -1.0)
 
 
 class PhysicalModelTests(unittest.TestCase):
@@ -229,7 +238,7 @@ class PhysicalModelTests(unittest.TestCase):
 		If λ > 1, the resultant simulation will be unstable.
 		'''
 		# For a 1D simulation
-		self.assertLessEqual(self.drum.cfl, 1.0)
+		# self.assertLessEqual(self.drum.cfl, 1.0)
 		# For a 2D simulation
 		self.assertLessEqual(self.drum.cfl, 1 / (2 ** 0.5))
 
@@ -248,6 +257,8 @@ class PhysicalModelTests(unittest.TestCase):
 
 	def test_raised_cosine(self) -> None:
 		'''
+		The raised cosine transform is used as the activation function for a physical model. These
+		tests assert that the raised cosine works as intended, both in the 1 and 2 dimensional case.
 		'''
 
 		# This test asserts that the one dimensional case has the correct peaks.
@@ -262,4 +273,5 @@ class PhysicalModelTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-	exit(unittest.main())
+	unittest.main()
+	exit()
