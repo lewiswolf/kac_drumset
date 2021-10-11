@@ -1,6 +1,9 @@
 '''
 '''
 
+# core
+import sys
+
 # dependencies
 import torch					# pytorch
 import torch.nn as nn			# neural network module
@@ -26,7 +29,8 @@ def trainModel(
 	if torch.cuda.is_available():
 		device = torch.device('cuda')
 	else:
-		print("WARNING❗️ Nvidia GPU support is not available for training the network.")
+		print(f'WARNING{"" if sys.platform not in ["linux", "darwin"] else "❗️"}')
+		print('Nvidia GPU support is not available for training the network.')
 		device = torch.device('cpu')
 
-	print("Training neural network... 🧠")
+	print(f'Training neural network... {"" if sys.platform not in ["linux", "darwin"] else "🧠"}')

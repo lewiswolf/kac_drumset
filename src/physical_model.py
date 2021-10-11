@@ -1,6 +1,7 @@
 # core
 import math
 import os
+import sys
 from typing import Union
 
 # dependencies
@@ -18,7 +19,8 @@ pm_settings: PhysicalModelSettings = settings['pm_settings']
 if pm_settings['path_2_cuda']:
 	os.environ['CUDA_HOME'] = pm_settings['path_2_cuda']
 	if not cuda.is_available():
-		print("WARNING❗️ Nvidia GPU support is not available for generating a physical model.")
+		print(f'WARNING{"" if sys.platform not in ["linux", "darwin"] else "❗️"}')
+		print('GPU support is not available for generating a physical model.')
 
 
 class DrumModel(AudioSampler):

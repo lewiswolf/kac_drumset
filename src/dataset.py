@@ -164,7 +164,7 @@ def generateDataset(
 		if file != '.gitignore':
 			os.remove(f'{cwd}/{dataset_dir}/{file}')
 
-	print("Generating dataset... 🎯")
+	print(f'Generating dataset... {"" if sys.platform not in ["linux", "darwin"] else "🎯"}')
 	with open(f'{cwd}/{dataset_dir}/metadata.json', 'at') as new_file:
 		new_file.write(parseMetadataToString())
 		with tqdm(**tqdm_settings) as pbar:
@@ -219,7 +219,8 @@ def generateDataset(
 # 					raise DatasetIncompatible
 # 				elif settings[key] != value:
 # 					inputIncompatible = True
-# 			print("Preprocessing dataset... 📚")
+
+# 			print(f'Preprocessing dataset... {"" if sys.platform not in ["linux", "darwin"] else "📚"}')
 # 			dataset = TorchDataset()
 
 # 			# construct dataset from json
@@ -275,10 +276,12 @@ def generateDataset(
 # 	# handle exceptions
 # 	except Exception as e:
 # 		if type(e).__name__ == 'DatasetIncompatible':
-# 			print("Imported dataset is incompatible with the current project settings. 🤷")
-# 			print("Check data/metadata.json to see your previous project setting.")
+# 			print(f'{"" if sys.platform not in ["linux", "darwin"] else "🤷"}')
+# 			print('Imported dataset is incompatible with the current project settings.')
+# 			print('Check data/metadata.json to see your previous project setting.')
 # 		else:
-# 			print("Could not load a dataset. 🤷")
+# 			print(f'{"" if sys.platform not in ["linux", "darwin"] else "🤷"}')
+# 			print(f'Could not load a dataset.')
 # 		if not click.confirm('Do you want to generate a new dataset?', default=None, prompt_suffix=': '):
 # 			sys.exit()
 # 		return generateDataset(DataSample)
