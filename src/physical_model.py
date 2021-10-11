@@ -43,6 +43,8 @@ class DrumModel(AudioSampler):
 	H: int						# number of grid points across each dimension, for the domain U ∈ [0, 1]
 	h: float					# length of each grid step
 	cfl: float					# courant number
+	s_0: float					# the first constant used in the FDTD
+	s_1: float					# the second constant used in the FDTD
 	# classes
 	shape: RandomPolygon		# the shape of the drum
 
@@ -80,6 +82,8 @@ class DrumModel(AudioSampler):
 		self.H = math.floor((1 / (2 ** 0.5)) / (self.gamma * self.k))
 		self.h = 1 / self.H
 		self.cfl = self.gamma * self.k / self.h
+		self.s_0 = self.cfl ** 2
+		self.s_1 = 2 - 4 * self.cfl ** 2
 
 	def generateWaveform(self) -> None:
 		'''
@@ -90,16 +94,16 @@ class DrumModel(AudioSampler):
 		using the main update loop.
 		'''
 
-		s_0: float = self.cfl ** 2			# the first constant in the FDTD update equation
-		s_1: float = 2 - 4 * self.cfl ** 2	# the second constant in the FDTD update equation
-		strike: tuple[int, int]				# strike location
+		# types 🙇‍♂️
+		strike: tuple[int, int]				# where is the drum struck.
 		u: npt.NDArray[np.float64]			# the FDTD grid
 		u_0: npt.NDArray[np.float64]		# the FDTD grid at t = 0
 		u_1: npt.NDArray[np.float64]		# the FDTD grid at t = 1
 		x_range: tuple[int, int]			# range of the update equation across the x axis
 		y_range: tuple[int, int]			# range of the update equation across the y axis
 
-		# initialise a random drum shape
+		# initialise a random drum shape and calculate the initial conditions
+		# relative to the centroid of the drum.
 		self.shape = RandomPolygon(
 			self.max_vertices,
 			grid_size=self.H,
@@ -109,8 +113,6 @@ class DrumModel(AudioSampler):
 			round(self.shape.centroid[0] * self.H),
 			round(self.shape.centroid[1] * self.H),
 		)
-
-		# calculate the initial conditions relative to the centroid of the drum
 		u = np.zeros((self.H + 2, self.H + 2))
 		u_0 = np.copy(u)
 		u_1 = self.a * raisedCosine((self.H + 2, self.H + 2), strike)
@@ -123,45 +125,92 @@ class DrumModel(AudioSampler):
 			round(np.max(self.shape.vertices[:, 1] * self.H)) + 1,
 		)
 
-		for i in range(self.length):
-			# handle initial events
-			if i == 0:
-				self.waveform[i] = 0.0
-				continue
-			if i == 1:
-				self.waveform[i] = u_1[strike]
-				continue
+		# FDTD w/ GPU
+		if cuda.is_available():
+			threads_per_block = (16, 16)
+			blocks_per_grid = (
+				math.ceil((x_range[1] - x_range[0]) / threads_per_block[0]),
+				math.ceil((y_range[1] - y_range[0]) / threads_per_block[1]),
+			)
 
-			# main loop
-			if i % 2 == 0:
-				for x in range(*x_range):
-					for y in range(*y_range):
-						# dirichlet  boundary condition
-						if self.shape.mask[x - 1, y - 1] == 0:
-							continue
-						u[x, y] = (s_0 * sum([
-							u_1[x, y + 1],
-							u_1[x + 1, y],
-							u_1[x, y - 1],
-							u_1[x - 1, y],
-						])) + (s_1 * u_1[x, y]) - u_0[x, y]
-				u_0 = np.copy(u)
+			for i in range(self.length):
+				# handle initial events
+				if i == 0:
+					self.waveform[i] = 0.0
+					continue
+				if i == 1:
+					self.waveform[i] = u_1[strike]
+					continue
 
-			if i % 2 == 1:
-				for x in range(*x_range):
-					for y in range(*y_range):
-						# dirichlet  boundary condition
-						if self.shape.mask[x - 1, y - 1] == 0:
-							continue
-						u[x, y] = (s_0 * sum([
-							u_0[x, y + 1],
-							u_0[x + 1, y],
-							u_0[x, y - 1],
-							u_0[x - 1, y],
-						])) + (s_1 * u_0[x, y]) - u_1[x, y]
-				u_1 = np.copy(u)
+				# main loop
+				if i % 2 == 0:
+					self.FDTDKernal[blocks_per_grid, threads_per_block](
+						u,
+						u_1,
+						u_0,
+						self.shape.mask,
+						x_range[0],
+						y_range[0],
+						self.s_0,
+						self.s_1,
+					)
+					u_0 = np.copy(u)
 
-			self.waveform[i] = u[strike]
+				if i % 2 == 1:
+					self.FDTDKernal[blocks_per_grid, threads_per_block](
+						u,
+						u_0,
+						u_1,
+						self.shape.mask,
+						x_range[0],
+						y_range[0],
+						self.s_0,
+						self.s_1,
+					)
+					u_1 = np.copy(u)
+				self.waveform[i] = u[strike]
+
+		# FDTD w/o GPU
+		else:
+			for i in range(self.length):
+				# handle initial events
+				if i == 0:
+					self.waveform[i] = 0.0
+					continue
+				if i == 1:
+					self.waveform[i] = u_1[strike]
+					continue
+
+				# main loop
+				if i % 2 == 0:
+					for x in range(*x_range):
+						for y in range(*y_range):
+							# dirichlet  boundary condition
+							if self.shape.mask[x - 1, y - 1] == 0:
+								continue
+							u[x, y] = (self.s_0 * sum([
+								u_1[x, y + 1],
+								u_1[x + 1, y],
+								u_1[x, y - 1],
+								u_1[x - 1, y],
+							])) + (self.s_1 * u_1[x, y]) - u_0[x, y]
+					u_0 = np.copy(u)
+
+				if i % 2 == 1:
+					for x in range(*x_range):
+						for y in range(*y_range):
+							# dirichlet  boundary condition
+							if self.shape.mask[x - 1, y - 1] == 0:
+								continue
+							u[x, y] = (self.s_0 * sum([
+								u_0[x, y + 1],
+								u_0[x + 1, y],
+								u_0[x, y - 1],
+								u_0[x - 1, y],
+							])) + (self.s_1 * u_0[x, y]) - u_1[x, y]
+					u_1 = np.copy(u)
+
+				self.waveform[i] = u[strike]
 
 	def getLabels(self) -> list[Union[float, int]]:
 		'''
@@ -169,9 +218,35 @@ class DrumModel(AudioSampler):
 		'''
 
 		if hasattr(self, 'shape'):
-			return self.shape.vertices.tolist()
+			out = np.zeros((self.max_vertices, 2))
+			for i in range(len(self.shape.vertices)):
+				out[i] = self.shape.vertices[i]
+			return out.tolist()
 		else:
 			return []
+
+	@staticmethod
+	@cuda.jit
+	def FDTDKernal(
+		u: npt.NDArray[np.float64],
+		u_minus_1: npt.NDArray[np.float64],
+		u_minus_2: npt.NDArray[np.float64],
+		mask: npt.NDArray[np.int8],
+		x_0: int,
+		y_0: int,
+		s_0: float,
+		s_1: float,
+	) -> None:
+		x, y = cuda.grid(2)
+		x += x_0
+		y += y_0
+		if mask[x - 1, y - 1] != 0 and x < u.shape[0] - 2 and y < u.shape[1] - 2:
+			u[x, y] = (s_0 * (
+				u_minus_1[x, y + 1]
+				+ u_minus_1[x + 1, y]
+				+ u_minus_1[x, y - 1]
+				+ u_minus_1[x - 1, y]
+			)) + (s_1 * u_minus_1[x, y]) - u_minus_2[x, y]
 
 
 def raisedCosine(
