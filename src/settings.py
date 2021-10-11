@@ -90,5 +90,5 @@ try:
 	# TO FIX: see todo.md -> 'pydantic.create_model_from_typeddict has an incompatible type error'
 	settings = cast(Settings, pydantic.create_model_from_typeddict(Settings)(**settings).dict())
 except pydantic.ValidationError as e:
-	print(f'ERROR: The project settings are not configured correctly. {e}')
+	print(f"ERROR: The project settings are not configured correctly. {e}")
 	sys.exit()

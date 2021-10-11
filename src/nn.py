@@ -26,7 +26,7 @@ def trainModel(
 	if torch.cuda.is_available():
 		device = torch.device('cuda')
 	else:
-		print('WARNING❗️ Nvidia GPU support is not available for training the network.')
+		print("WARNING❗️ Nvidia GPU support is not available for training the network.")
 		device = torch.device('cpu')
 
-	print('Training neural network... 🧠')
+	print("Training neural network... 🧠")

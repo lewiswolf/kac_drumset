@@ -165,7 +165,7 @@ class GeometryTests(unittest.TestCase):
 				# As a result, if this test passes, we can assume that the generateConvex()
 				# function works as intended.
 				self.assertTrue(isConvex(polygon.n, polygon.vertices))
-				
+
 				# This test asserts that the calculated centroid lies within the polygon. For
 				# concave shapes, this test may fail.
 				self.assertEqual(polygon.mask[
