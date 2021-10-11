@@ -164,7 +164,7 @@ def generateDataset(
 		if file != '.gitignore':
 			os.remove(f'{cwd}/{dataset_dir}/{file}')
 
-	print(f'Generating dataset... {"🎯" if sys.platform in ["linux", "darwin"] else ""}')
+	print(f'Generating dataset... {"" if sys.platform not in ["linux", "darwin"] else "🎯"}')
 	with open(f'{cwd}/{dataset_dir}/metadata.json', 'at') as new_file:
 		new_file.write(parseMetadataToString())
 		with tqdm(**tqdm_settings) as pbar:
