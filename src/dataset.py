@@ -164,7 +164,7 @@ def generateDataset(
 		if file != '.gitignore':
 			os.remove(f'{cwd}/{dataset_dir}/{file}')
 
-	print("Generating dataset... 🎯")
+	print("Generating dataset...  \U0001F3AF")
 	with open(f'{cwd}/{dataset_dir}/metadata.json', 'at') as new_file:
 		new_file.write(parseMetadataToString())
 		with tqdm(**tqdm_settings) as pbar:
