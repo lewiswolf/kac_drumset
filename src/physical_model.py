@@ -267,7 +267,7 @@ def raisedCosine(
 	params:
 			H				A tuple representing the size of the output matrix.
 			contact_point	The coordinate used to represent the centre of the
-											cosine distribution.
+							cosine distribution.
 			sigma			The radius of the distribution.
 	'''
 

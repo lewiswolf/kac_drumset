@@ -7,6 +7,7 @@ tests is used in conjunction with a particular project file.
 import json
 import os
 import random
+import shutil
 import sys
 from typing import cast
 import unittest
@@ -40,10 +41,13 @@ class DatasetTests(unittest.TestCase):
 		Maybe move this...
 		'''
 
-		cwd = os.getcwd()
-		for file in os.listdir(f'{cwd}/test/tmp'):
-			if file != '.gitignore':
-				os.remove(f'{cwd}/test/tmp/{file}')
+		directory = f'{os.getcwd()}/test/tmp'
+		for file in os.listdir(directory):
+			path = f'{directory}/{file}'
+			if os.path.isdir(path):
+				shutil.rmtree(path)
+			elif file != '.gitignore':
+				os.remove(path)
 
 	def test_metadata_stringify(self) -> None:
 		'''

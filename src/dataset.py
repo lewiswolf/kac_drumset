@@ -9,6 +9,7 @@ the dataset is either ammended or, if necessary, regenerated entirely.
 # core
 import json
 import os
+import shutil
 import sys
 from typing import Any, Literal, Type, TypedDict, Union
 
@@ -167,9 +168,13 @@ def generateDataset(
 	dataset = TorchDataset(dataset_size, IF.transformShape(sampler.length))
 
 	# clear dataset folder
-	for file in os.listdir(f'{cwd}/{dataset_dir}'):
-		if file != '.gitignore':
-			os.remove(f'{cwd}/{dataset_dir}/{file}')
+	directory = f'{cwd}/{dataset_dir}'
+	for file in os.listdir(directory):
+		path = f'{directory}/{file}'
+		if os.path.isdir(path):
+			shutil.rmtree(path)
+		elif file != '.gitignore':
+			os.remove(path)
 
 	print(f'Generating dataset... {"" if sys.platform not in ["linux", "darwin"] else "🎯"}')
 	with open(f'{cwd}/{dataset_dir}/metadata.json', 'at') as new_file:
