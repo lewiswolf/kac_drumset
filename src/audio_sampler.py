@@ -9,7 +9,7 @@ dataset.py) can be completely abstracted, and detached from its input.
 # core
 from abc import ABC, abstractmethod
 import math
-from typing import Union
+from typing import Any, Union
 
 # dependencies
 import numpy as np				# maths
@@ -37,7 +37,7 @@ class AudioSampler(ABC):
 	length: int = math.ceil(duration * sr)					# length of the audio file (samples)
 	waveform: npt.NDArray[np.float64] = np.zeros(length)	# the audio sample itself
 
-	def __init__(self) -> None:
+	def __init__(self, **kwargs: Any) -> None:
 		pass
 
 	def export(self, absolutePath: str) -> None:

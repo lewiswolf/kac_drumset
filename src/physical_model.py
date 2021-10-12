@@ -16,8 +16,8 @@ from settings import PhysicalModelSettings, settings
 pm_settings: PhysicalModelSettings = settings['pm_settings']
 
 # add the CUDA SDK to the environment variables
-if pm_settings['path_2_cuda']:
-	os.environ['CUDA_HOME'] = pm_settings['path_2_cuda']
+if settings['numba_path_2_cuda']:
+	os.environ['CUDA_HOME'] = settings['numba_path_2_cuda']
 	if not cuda.is_available():
 		print(f'WARNING{"" if sys.platform not in ["linux", "darwin"] else "❗️"}')
 		print('GPU support is not available for generating a physical model.')
@@ -52,29 +52,29 @@ class DrumModel(AudioSampler):
 		self,
 		a: float = 1.0,
 		allow_concave: bool = pm_settings['allow_concave'],
-		L: float = pm_settings['drum_size'],
+		drum_size: float = pm_settings['drum_size'],
 		max_vertices: int = pm_settings['max_vertices'],
-		p: float = pm_settings['material_density'],
-		t: float = pm_settings['tension'],
+		material_density: float = pm_settings['material_density'],
+		tension: float = pm_settings['tension'],
 	) -> None:
 		'''
 		Initialise the internal constants used for every simulation.
 		params:
-			a				Maximum amplitude of the simulation ∈ [0, 1].
-			allow_concave	Can the drum be a concave shape?
-			L				Width and height of the simulation (m)
-			max_vertices	What is the maximum number of vertices a given drum can have?
-			p				Material density (kg/m^2)
-			t				Tension at rest (N/m)
+			a					Maximum amplitude of the simulation ∈ [0, 1].
+			allow_concave		Can the drum be a concave shape?
+			drum_size			Width and height of the simulation (m)
+			max_vertices		What is the maximum number of vertices a given drum can have?
+			material_density	Material density (kg/m^2)
+			tension				Tension at rest (N/m)
 		'''
 
 		# initialise user defined variables
 		self.a = a
 		self.allow_concave = allow_concave
-		self.L = L
+		self.L = drum_size
 		self.max_vertices = max_vertices
-		self.p = p
-		self.t = t
+		self.p = material_density
+		self.t = tension
 		# initialise inferences
 		self.k = 1 / self.sr
 		self.c = (self.t / self.p) ** 0.5

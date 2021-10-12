@@ -10,7 +10,7 @@ the dataset is either ammended or, if necessary, regenerated entirely.
 import json
 import os
 import sys
-from typing import Literal, Type, TypedDict, Union
+from typing import Any, Literal, Type, TypedDict, Union
 
 # dependencies
 import click					# CLI arguments
@@ -57,6 +57,7 @@ class DatasetMetadata(TypedDict):
 	sample_rate: int										# audio sample rate (hz)
 	input_features: Literal['end2end', 'fft', 'mel', 'cqt']	# how is the data represented when it is fed to the network?
 	normalise_input: bool									# should each sample in the dataset be normalised before training?
+	sampler_settings: dict[str, Any]						# keyword arguments used to set the audio sampler
 	spectro_settings: SpectroSettings						# spectrogram settings
 	data: list[SampleMetadata]								# the dataset itself
 
@@ -105,16 +106,17 @@ class TorchDataset(torch.utils.data.Dataset):
 			self.Y[i] = y
 
 
-def parseMetadataToString() -> str:
+def parseMetadataToString(sampler_settings: dict[str, Any] = {}) -> str:
 	'''
 	Parse the project metadata, as defined in DatasetMetadata, to a raw JSON string with
 	line breaks.
 	'''
 
-	str = r'{'
-	str += f'{os.linesep}'
+	# initial line
+	str = r'{' + f'{os.linesep}'
 
-	# This is a mypy compliant implementation of iterating over typeddict keys. A simpler
+	# append information from the settings object
+	# this is a mypy compliant implementation of iterating over typeddict keys. A simpler
 	# yet error inducing alternative would be to use:
 	# for key in DatasetMetadata.__dict__['__annotations__'].keys():
 	# 	print(settings[key])
@@ -123,6 +125,10 @@ def parseMetadataToString() -> str:
 		if key in d_keys:
 			str += rf'"{key}": {json.dumps(value)},{os.linesep}'
 
+	# add any sampler settings
+	str += rf'"sampler_settings": {json.dumps(sampler_settings)},{os.linesep}'
+
+	# add data
 	str += rf'"data": [{os.linesep}'
 	return str
 
@@ -147,6 +153,7 @@ def generateDataset(
 	DataSampler: Type[AudioSampler],
 	dataset_size: int = settings['dataset_size'],
 	dataset_dir: str = 'data',
+	sampler_settings: dict[str, Any] = {},
 ) -> TorchDataset:
 	'''
 	Generates a dataset of audio samples. The generated dataset, including the individual
@@ -156,7 +163,7 @@ def generateDataset(
 
 	cwd = os.getcwd()
 	IF = InputFeatures()
-	sampler = DataSampler()
+	sampler = DataSampler(**sampler_settings)
 	dataset = TorchDataset(dataset_size, IF.transformShape(sampler.length))
 
 	# clear dataset folder
@@ -166,7 +173,7 @@ def generateDataset(
 
 	print(f'Generating dataset... {"" if sys.platform not in ["linux", "darwin"] else "🎯"}')
 	with open(f'{cwd}/{dataset_dir}/metadata.json', 'at') as new_file:
-		new_file.write(parseMetadataToString())
+		new_file.write(parseMetadataToString(sampler_settings=sampler_settings))
 		with tqdm(**tqdm_settings) as pbar:
 			for i in range(dataset_size):
 				# prepare sample

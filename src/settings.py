@@ -19,7 +19,6 @@ class PhysicalModelSettings(TypedDict):
 	generating the sounds of arbitrarily shaped drums.
 	'''
 
-	path_2_cuda: str										# absolute filepath to Nvidia's CUDA SDK
 	allow_concave: bool										# are the drums allowed to be concave? or only convex?
 	drum_size: float										# size of the drum, spanning both the horizontal and vertical axes (m)
 	material_density: float 								# material density of the simulated drum membrane (kg/m^2)
@@ -54,6 +53,7 @@ class Settings(TypedDict):
 	dataset_split: tuple[float, float, float]				# size of the training, test and validation sets (must sum to 1.0)
 	input_features: Literal['end2end', 'fft', 'mel', 'cqt']	# how is the data represented when it is fed to the network?
 	normalise_input: bool									# should each sample in the dataset be normalised before training?
+	numba_path_2_cuda: str									# absolute filepath to Nvidia's CUDA SDK for use with numba
 	pm_settings: PhysicalModelSettings
 	sample_rate: int										# audio sample rate (hz)
 	spectro_settings: SpectroSettings
@@ -62,18 +62,18 @@ class Settings(TypedDict):
 # the configurable object
 settings: Settings = {
 	'batch_size': 4,
-	'data_length': 5.0,
+	'data_length': 1.5,
 	'dataset_size': 10,
 	'dataset_split': (0.7, 0.15, 0.15),
 	'input_features': 'end2end',
 	'normalise_input': False,
+	'numba_path_2_cuda': '',
 	'pm_settings': {
-		'path_2_cuda': '',
 		'allow_concave': True,
 		'drum_size': 0.3,
 		'material_density': 0.26,
 		'max_vertices': 10,
-		'tension': 3000.0,
+		'tension': 2000.0,
 	},
 	'sample_rate': 44100,
 	'spectro_settings': {

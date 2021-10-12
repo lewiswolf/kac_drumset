@@ -55,7 +55,12 @@ class DatasetTests(unittest.TestCase):
 		n = 10
 
 		# Test with y labels.
-		str = ds.parseMetadataToString()
+		str = ds.parseMetadataToString(
+			sampler_settings={
+				'key1': 'value1',
+				'key2': 'value2',
+			},
+		)
 		for i in range(n):
 			str += ds.parseDataSampleToString({'filepath': '', 'x': [], 'y': [1]}, i == n - 1)
 		JSON = json.loads(str)
@@ -69,7 +74,12 @@ class DatasetTests(unittest.TestCase):
 		)
 
 		# Test with falsey y labels.
-		str = ds.parseMetadataToString()
+		str = ds.parseMetadataToString(
+			sampler_settings={
+				'key1': 'value1',
+				'key2': 'value2',
+			},
+		)
 		for i in range(n):
 			if random.getrandbits(1):
 				str += ds.parseDataSampleToString({'filepath': '', 'x': []}, i == n - 1)

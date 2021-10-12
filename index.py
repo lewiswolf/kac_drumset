@@ -1,17 +1,18 @@
 # core
 import os
 import sys
+from typing import cast, Any
 
 # dependencies
 import click					# CLI arguments
-import torch					# pytorch
 
 # src
 sys.path.insert(1, f'{os.getcwd()}/src')
 from data_loader import getEvaluationDataset, getTrainingDatasets
-from dataset import generateDataset, loadDataset
+from dataset import generateDataset
 from nn import trainModel
-from physical_model import PhysicalModel
+from physical_model import DrumModel
+from settings import settings
 
 
 # set command line flags
@@ -20,12 +21,11 @@ from physical_model import PhysicalModel
 @click.option('--generate', '-g', is_flag=True, help='Generate targets before training.')
 @click.option('--train', '-t', is_flag=True, help='Train a new model.')
 def main(evaluate: bool, generate: bool, train: bool) -> None:
-	# necessary to enforce dtype throughout the project, see todo.md ->
-	# 'Internal types for nested lists, numpy arrays and pytroch tensors'
-	torch.set_default_dtype(torch.float64)
-
 	# generate a pytorch dataset, or load one if a dataset already exists
-	dataset = generateDataset(PhysicalModel) if generate else loadDataset(PhysicalModel)
+	dataset = generateDataset(
+		DrumModel,
+		sampler_settings=cast(dict[str, Any], settings['pm_settings']),
+	)
 
 	# train a new model
 	if train:
@@ -37,4 +37,5 @@ def main(evaluate: bool, generate: bool, train: bool) -> None:
 
 
 if __name__ == '__main__':
-	exit(main())
+	main()
+	exit()
