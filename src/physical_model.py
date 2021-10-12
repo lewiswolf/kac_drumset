@@ -30,7 +30,7 @@ class DrumModel(AudioSampler):
 	'''
 
 	# user-defined variables
-	a: float					# maximum amplitude of the simulation ∈ [0, 1].
+	a: float					# maximum amplitude of the simulation ∈ [0, 1]
 	allow_concave: bool			# can the drum be a concave shape?
 	L: float					# width and height of the simulation (m)
 	max_vertices: int			# what is the maximum number of vertices a given drum can have?
@@ -45,6 +45,7 @@ class DrumModel(AudioSampler):
 	cfl: float					# courant number
 	s_0: float					# the first constant used in the FDTD
 	s_1: float					# the second constant used in the FDTD
+	d: float					# decay factor ∈ [0, 1]
 	# classes
 	shape: RandomPolygon		# the shape of the drum
 
@@ -52,9 +53,10 @@ class DrumModel(AudioSampler):
 		self,
 		a: float = 1.0,
 		allow_concave: bool = pm_settings['allow_concave'],
+		decay_time: float = pm_settings['decay_time'],
 		drum_size: float = pm_settings['drum_size'],
-		max_vertices: int = pm_settings['max_vertices'],
 		material_density: float = pm_settings['material_density'],
+		max_vertices: int = pm_settings['max_vertices'],
 		tension: float = pm_settings['tension'],
 	) -> None:
 		'''
@@ -75,6 +77,7 @@ class DrumModel(AudioSampler):
 		self.max_vertices = max_vertices
 		self.p = material_density
 		self.t = tension
+		self.t_60 = decay_time
 		# initialise inferences
 		self.k = 1 / self.sr
 		self.c = (self.t / self.p) ** 0.5
@@ -84,6 +87,7 @@ class DrumModel(AudioSampler):
 		self.cfl = self.gamma * self.k / self.h
 		self.s_0 = self.cfl ** 2
 		self.s_1 = 2 - 4 * self.cfl ** 2
+		self.d = (1 - (6 * np.log(10) / self.t_60) * self.k) / (1 + (6 * np.log(10) / self.t_60) * self.k)
 
 	def generateWaveform(self) -> None:
 		'''
@@ -153,6 +157,7 @@ class DrumModel(AudioSampler):
 						y_range[0],
 						self.s_0,
 						self.s_1,
+						self.d,
 					)
 					u_0 = np.copy(u)
 
@@ -166,6 +171,7 @@ class DrumModel(AudioSampler):
 						y_range[0],
 						self.s_0,
 						self.s_1,
+						self.d,
 					)
 					u_1 = np.copy(u)
 				self.waveform[i] = u[strike]
@@ -207,7 +213,7 @@ class DrumModel(AudioSampler):
 								u_0[x + 1, y],
 								u_0[x, y - 1],
 								u_0[x - 1, y],
-							])) + (self.s_1 * u_0[x, y]) - u_1[x, y]
+							])) + (self.s_1 * u_0[x, y]) - (self.d * u_1[x, y])
 					u_1 = np.copy(u)
 
 				self.waveform[i] = u[strike]
@@ -236,6 +242,7 @@ class DrumModel(AudioSampler):
 		y_0: int,
 		s_0: float,
 		s_1: float,
+		d: float,
 	) -> None:
 		x, y = cuda.grid(2)
 		x += x_0
@@ -246,7 +253,7 @@ class DrumModel(AudioSampler):
 				+ u_minus_1[x + 1, y]
 				+ u_minus_1[x, y - 1]
 				+ u_minus_1[x - 1, y]
-			)) + (s_1 * u_minus_1[x, y]) - u_minus_2[x, y]
+			)) + (s_1 * u_minus_1[x, y]) - (d * u_minus_2[x, y])
 
 
 def raisedCosine(

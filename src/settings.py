@@ -20,6 +20,7 @@ class PhysicalModelSettings(TypedDict):
 	'''
 
 	allow_concave: bool										# are the drums allowed to be concave? or only convex?
+	decay_time: float										# how long will the simulation take to decay?
 	drum_size: float										# size of the drum, spanning both the horizontal and vertical axes (m)
 	material_density: float 								# material density of the simulated drum membrane (kg/m^2)
 	max_vertices: int										# maximum amount of vertices for a given drum
@@ -70,6 +71,7 @@ settings: Settings = {
 	'numba_path_2_cuda': '',
 	'pm_settings': {
 		'allow_concave': True,
+		'decay_time': 1.5,
 		'drum_size': 0.3,
 		'material_density': 0.26,
 		'max_vertices': 10,
