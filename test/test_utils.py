@@ -45,6 +45,9 @@ class TestSweep(AudioSampler):
 	def getLabels(self) -> list[Union[float, int]]:
 		return []
 
+	def updateProperties(self) -> None:
+		pass
+
 
 class TestTone(AudioSampler):
 	'''
@@ -76,11 +79,7 @@ class TestTone(AudioSampler):
 		Renders a specified waveform to a numpy array.
 		'''
 
-		# initialise f0
-		if self.__random_f0:
-			self.f0 = random.uniform(110, 880)
 		f_t = self.f0 * (np.arange(self.length) / self.sr)
-		# generate waveforms
 		if self.waveshape == 'saw':
 			self.waveform = 2.0 * np.array([i % 1 for i in f_t]) - 1.0
 		if self.waveshape == 'sin':
@@ -93,6 +92,11 @@ class TestTone(AudioSampler):
 	def getLabels(self) -> list[Union[float, int]]:
 		''' Returns f0 as a label. '''
 		return [self.f0] if self.f0 else []
+
+	def updateProperties(self) -> None:
+		''' Randomise f0. '''
+		if self.__random_f0:
+			self.f0 = random.uniform(110, 880)
 
 
 @contextlib.contextmanager

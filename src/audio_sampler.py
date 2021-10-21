@@ -26,6 +26,7 @@ class AudioSampler(ABC):
 	deployed:
 		sampler = AudioSampler()
 		for i in range(n):
+			sampler.updateParameters()
 			sampler.generateWaveform()
 			x = sampler.waveform
 			y = sampler.getLabels()
@@ -57,5 +58,13 @@ class AudioSampler(ABC):
 	def getLabels(self) -> list[Union[float, int]]:
 		'''
 		This method should return the y labels for the generated audio.
+		'''
+		pass
+
+	@abstractmethod
+	def updateProperties(self) -> None:
+		'''
+		This method should be used to update the properties of the sampler
+		when inside a generator loop.
 		'''
 		pass
