@@ -54,6 +54,7 @@ class Settings(TypedDict):
 	dataset_split: tuple[float, float, float]				# size of the training, test and validation sets (must sum to 1.0)
 	input_features: Literal['end2end', 'fft', 'mel', 'cqt']	# how is the data represented when it is fed to the network?
 	normalise_input: bool									# should each sample in the dataset be normalised before training?
+	num_of_epochs: int										# number of epochs when training the network
 	numba_path_2_cuda: str									# absolute filepath to Nvidia's CUDA SDK for use with numba
 	pm_settings: PhysicalModelSettings
 	sample_rate: int										# audio sample rate (hz)
@@ -68,6 +69,7 @@ settings: Settings = {
 	'dataset_split': (0.7, 0.15, 0.15),
 	'input_features': 'end2end',
 	'normalise_input': False,
+	'num_of_epochs': 10,
 	'numba_path_2_cuda': '',
 	'pm_settings': {
 		'allow_concave': True,
