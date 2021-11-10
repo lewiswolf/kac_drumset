@@ -8,32 +8,49 @@ the dataset is either ammended or, if necessary, regenerated entirely.
 
 # core
 import json
+# import math
 import os
 import shutil
 import sys
+# from typing import Any, Literal, TextIO, Type, TypedDict, Union
 from typing import Any, Literal, Type, TypedDict, Union
 
 # dependencies
-import click					# CLI arguments
-import soundfile as sf			# audio read & write
+# import click					# CLI arguments
+# import soundfile as sf			# audio read & write
 import torch					# pytorch
 from tqdm import tqdm			# CLI progress bar
 
 # src
 from audio_sampler import AudioSampler
 from input_features import InputFeatures
+# from settings import settings, Settings, SpectroSettings
 from settings import settings, SpectroSettings
 
 
 tqdm_settings = {
 	'bar_format': '{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt}, Elapsed: {elapsed}, ETA: {remaining}, {rate_fmt}  ',
 	'unit': ' data samples',
-	'total': settings['dataset_size'],
 }
 
 # necessary to enforce dtype throughout the project, see todo.md ->
 # 'Internal types for nested lists, numpy arrays and pytroch tensors'
 torch.set_default_dtype(torch.float64)
+
+
+# class DatasetIncompatible(Exception):
+# 	'''
+# 	This exception is rasied when a loaded dataset cannot be used alongside
+# 	the current project settings. The intended solution for this exception
+# 	is to generate a completely new dataset.
+# 	'''
+# 	pass
+
+
+# class InputIncompatible(Exception):
+# 	'''
+# 	'''
+# 	pass
 
 
 class SampleMetadata(TypedDict, total=False):
@@ -51,15 +68,16 @@ class DatasetMetadata(TypedDict):
 	'''
 	This class is used when exporting and importing the metadata for the dataset. This
 	object and the settings object are compared to ensure a loaded dataset matches the
-	project settings.
+	project settings. The function confirmDatasetSettings relies on the order in which
+	each property is defined below.
 	'''
-	dataset_size: int		 								# how many data samples are there in the dataset?
 	data_length: float										# length of each sample in the dataset (seconds)
-	sample_rate: int										# audio sample rate (hz)
+	dataset_size: int		 								# how many data samples are there in the dataset?
 	input_features: Literal['end2end', 'fft', 'mel', 'cqt']	# how is the data represented when it is fed to the network?
 	normalise_input: bool									# should each sample in the dataset be normalised before training?
-	sampler_settings: dict[str, Any]						# keyword arguments used to set the audio sampler
+	sample_rate: int										# audio sample rate (hz)
 	spectro_settings: SpectroSettings						# spectrogram settings
+	sampler_settings: dict[str, Any]						# keyword arguments used to set the audio sampler
 	data: list[SampleMetadata]								# the dataset itself
 
 
@@ -107,7 +125,51 @@ class TorchDataset(torch.utils.data.Dataset):
 			self.Y[i] = y
 
 
-def parseMetadataToString(sampler_settings: dict[str, Any] = {}) -> str:
+# def confirmDatasetSettings(
+# 	file: TextIO,
+# 	sampler_settings: dict[str, Any],
+# 	s: Settings = settings,
+# ) -> None:
+# 	'''
+# 	This function was abstracted from loadDataset() specifically to be tested seperately.
+# 	This function creates an instance of DatasetMetadata using the current project settings
+# 	and checks whether the imported dataset matches these settings. Under certain conditions,
+# 	the DatasetIncompatible error will we raised. This causes the loop to be exited, and the
+# 	metadata.json file to be closed. In the event that the InputIncompatible error is raised,
+# 	the imported dataset neds to amended before use with this project. To accomodate for this,
+# 	the exception is only raised after reading through all of the metadata, to allow for
+# 	seamless continuation when reading the metadata.json file.
+# 	'''
+
+# 	# to avoid typing errors whilst using a typed dict, we create an uncast instance of DatasetMetadata
+# 	d_keys = DatasetMetadata.__dict__['__annotations__'].keys()
+# 	current_settings = dict([(key, value) for key, value in s.items() if key in d_keys])
+# 	current_settings['sampler_settings'] = sampler_settings
+# 	# skip the initial '{'
+# 	file.readlines(1)
+# 	# confirmation loop
+# 	input_incompatible = False
+# 	for key in d_keys:
+# 		if key == 'data':
+# 			file.readlines(1)
+# 			break
+# 		value = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
+
+# 		# checks
+# 		if key in ['dataset_size', 'data_length', 'sample_rate', 'sampler_settings']:
+# 			if (key == 'dataset_size' and value > current_settings[key]) or value != current_settings[key]:
+# 				file.close()
+# 				raise DatasetIncompatible()
+# 		else:
+# 			if value != current_settings[key]:
+# 				input_incompatible = True
+
+# 	# break out from the main
+# 	if input_incompatible:
+# 		raise InputIncompatible()
+
+
+def parseMetadataToString(dataset_size: int = settings['dataset_size'], sampler_settings: dict[str, Any] = {}) -> str:
 	'''
 	Parse the project metadata, as defined in DatasetMetadata, to a raw JSON string with
 	line breaks.
@@ -124,7 +186,7 @@ def parseMetadataToString(sampler_settings: dict[str, Any] = {}) -> str:
 	d_keys = DatasetMetadata.__dict__['__annotations__'].keys()
 	for key, value in settings.items():
 		if key in d_keys:
-			str += rf'"{key}": {json.dumps(value)},{os.linesep}'
+			str += rf'"{key}": {json.dumps(value) if key != "dataset_size" else dataset_size},{os.linesep}'
 
 	# add any sampler settings
 	str += rf'"sampler_settings": {json.dumps(sampler_settings)},{os.linesep}'
@@ -177,11 +239,15 @@ def generateDataset(
 			os.remove(path)
 
 	print(f'Generating dataset... {"" if sys.platform not in ["linux", "darwin"] else "🎯"}')
-	with open(f'{cwd}/{dataset_dir}/metadata.json', 'at') as new_file:
-		new_file.write(parseMetadataToString(sampler_settings=sampler_settings))
-		with tqdm(**tqdm_settings) as pbar:
+	with open(
+		os.path.normpath(f'{cwd}/{dataset_dir}/metadata.json'),
+		'at',
+	) as new_file:
+		new_file.write(parseMetadataToString(dataset_size=dataset_size, sampler_settings=sampler_settings))
+		with tqdm(total=dataset_size, **tqdm_settings) as pbar:
 			for i in range(dataset_size):
 				# prepare sample
+				sampler.updateProperties()
 				sampler.generateWaveform()
 				x = IF.transform(sampler.waveform)
 				y = sampler.getLabels()
@@ -201,99 +267,135 @@ def generateDataset(
 	return dataset
 
 
-# def loadDataset(DataSample: Type[AudioSample]) -> TorchDataset:
+# def loadDataset(
+# 	DataSample: Type[AudioSampler],
+# 	dataset_dir: str = 'data',
+# 	sampler_settings: dict[str, Any] = {},
+# ) -> TorchDataset:
 # 	'''
 # 	Attempts to load a dataset if one has already been generated. Verifies the metadata
 # 	of the loaded dataset, and ammends the dataset if necessary.
 # 	'''
 
 # 	cwd = os.getcwd()
-
-# 	class DatasetIncompatible(Exception):
-# 		pass
+# 	IF = InputFeatures()
+# 	dataset = TorchDataset(
+# 		settings['dataset_size'],
+# 		IF.transformShape(math.ceil(settings['data_length'] * settings['sample_rate'])),
+# 	)
 
 # 	try:
-# 		with open(f'{cwd}/data/metadata.json') as file:
-# 			# skip the initial '{'
-# 			file.readlines(1)
+# 		with open(f'{cwd}/{dataset_dir}/metadata.json') as file:
+# 			try:
+# 				# raise appropriate exceptions if metadata doesn't match
+# 				confirmDatasetSettings(file, sampler_settings)
 
-# 			# confirm project settings match
-# 			inputIncompatible = False
-# 			for key in DatasetMetadata.__dict__['__annotations__'].keys():
-# 				if key == 'data':
-# 					file.readlines(1)
-# 					break
-# 				value = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
-# 				# TO FIX: see todo.md -> 'Extendable way to loop over TypedDict keys'
-# 				if key == 'DATASET_SIZE' and settings[key] > value:
-# 					raise DatasetIncompatible
-# 				elif (key == 'SAMPLE_RATE' or key == 'DATA_LENGTH') and settings[key] != value:
-# 					raise DatasetIncompatible
-# 				elif settings[key] != value:
-# 					inputIncompatible = True
+# 				# create dataset entirely from metadata
+# 				print(f'Importing dataset... {"" if sys.platform not in ["linux", "darwin"] else "📚"}')
+# 				# with tqdm(**tqdm_settings) as pbar:
+# 				# 	for i in range(settings['DATASET_SIZE']):
+# 				# 		# import relevant information
+# 				# 		file.readlines(2)
+# 				# 		x = torch.as_tensor(
+# 				# 			json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1]),
+# 				# 		)
+# 				# 		y = torch.as_tensor(
+# 				# 			json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:]),
+# 				# 		)
+# 				# 		file.readlines(1)
+# 				# 		# on the initial run, infer the size of dataset.Y
+# 				# 		if i == 0:
+# 				# 			dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
+# 				# 		# append input features to dataset
+# 				# 		dataset.setitem(i, x, y)
+# 				# 		pbar.update(1)
+# 				# file.close()
+# 				return dataset
 
-# 			print(f'Preprocessing dataset... {"" if sys.platform not in ["linux", "darwin"] else "📚"}')
-# 			dataset = TorchDataset()
+# 			except Exception as e:
+# 				if type(e).__name__ == 'InputIncompatible':
+# 					print(f'Preprocessing dataset... {"" if sys.platform not in ["linux", "darwin"] else "📚"}')
+# 					print(file.readlines(1))
+# 				else:
+# 					raise e
 
-# 			# construct dataset from json
-# 			if not inputIncompatible:
-# 				with tqdm(**tqdm_settings) as pbar:
-# 					for i in range(settings['DATASET_SIZE']):
-# 						# import relevant information
-# 						file.readlines(2)
-# 						x = torch.as_tensor(
-# 							json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1]),
-# 						)
-# 						y = torch.as_tensor(
-# 							json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:]),
-# 						)
-# 						file.readlines(1)
-# 						# on the initial run, infer the size of dataset.Y
-# 						if i == 0:
-# 							dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
-# 						# append input features to dataset
-# 						dataset.setitem(i, x, y)
-# 						pbar.update(1)
-# 				file.close()
+# 			# TO FIX: see todo.md -> 'Extendable way to loop over TypedDict keys'
+# 			# if key == 'DATASET_SIZE' and settings[key] > value:
+# 			# 	raise DatasetIncompatible
+# 			# elif (key == 'SAMPLE_RATE' or key == 'DATA_LENGTH') and settings[key] != value:
+# 			# 	raise DatasetIncompatible
+# 			# elif settings[key] != value:
+# 			# 	inputIncompatible = True
 
-# 			# regenerate inputs features and metadata.json
-# 			else:
-# 				with open(f'{cwd}/data/metadata_temp.json', 'at') as newFile:
-# 					newFile.write(parseMetadataToString())
-# 					with tqdm(**tqdm_settings) as pbar:
-# 						for i in range(settings['DATASET_SIZE']):
-# 							# import relevant information
-# 							file.readlines(1)
-# 							relativePath = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
-# 							file.readlines(1)
-# 							x = inputFeatures(sf.read(f'{cwd}/{relativePath}')[0])
-# 							y = torch.as_tensor(
-# 								json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:]),
-# 							)
-# 							file.readlines(1)
-# 							# on the initial run, infer the size of dataset.Y
-# 							if i == 0:
-# 								dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
-# 							# append input features to dataset
-# 							dataset.setitem(i, x, y)
-# 							# export metadata
-# 							newFile.write(parseDataSampleToString(relativePath, x, y, i == settings['DATASET_SIZE'] - 1))
-# 							pbar.update(1)
-# 					file.close()
-# 					os.remove(f'{cwd}/data/metadata.json')
-# 					os.rename(f'{cwd}/data/metadata_temp.json', f'{cwd}/data/metadata.json')
-# 					newFile.close()
-# 		return dataset
+# # 			print(f'Preprocessing dataset... {"" if sys.platform not in ["linux", "darwin"] else "📚"}')
+# # 			dataset = TorchDataset()
 
-# 	# handle exceptions
+# # 			# construct dataset from json
+# # 			if not inputIncompatible:
+# # 				with tqdm(**tqdm_settings) as pbar:
+# # 					for i in range(settings['DATASET_SIZE']):
+# # 						# import relevant information
+# # 						file.readlines(2)
+# # 						x = torch.as_tensor(
+# # 							json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1]),
+# # 						)
+# # 						y = torch.as_tensor(
+# # 							json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:]),
+# # 						)
+# # 						file.readlines(1)
+# # 						# on the initial run, infer the size of dataset.Y
+# # 						if i == 0:
+# # 							dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
+# # 						# append input features to dataset
+# # 						dataset.setitem(i, x, y)
+# # 						pbar.update(1)
+# # 				file.close()
+
+# # 			# regenerate inputs features and metadata.json
+# # 			else:
+# # 				with open(f'{cwd}/data/metadata_temp.json', 'at') as newFile:
+# # 					newFile.write(parseMetadataToString())
+# # 					with tqdm(**tqdm_settings) as pbar:
+# # 						for i in range(settings['DATASET_SIZE']):
+# # 							# import relevant information
+# # 							file.readlines(1)
+# # 							relativePath = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
+# # 							file.readlines(1)
+# # 							x = inputFeatures(sf.read(f'{cwd}/{relativePath}')[0])
+# # 							y = torch.as_tensor(
+# # 								json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:]),
+# # 							)
+# # 							file.readlines(1)
+# # 							# on the initial run, infer the size of dataset.Y
+# # 							if i == 0:
+# # 								dataset.Y = torch.zeros((settings['DATASET_SIZE'],) + tuple(y.shape))
+# # 							# append input features to dataset
+# # 							dataset.setitem(i, x, y)
+# # 							# export metadata
+# # 							newFile.write(parseDataSampleToString(relativePath, x, y, i == settings['DATASET_SIZE'] - 1))
+# # 							pbar.update(1)
+# # 					file.close()
+# # 					os.remove(f'{cwd}/data/metadata.json')
+# # 					os.rename(f'{cwd}/data/metadata_temp.json', f'{cwd}/data/metadata.json')
+# # 					newFile.close()
+# # 		return dataset
+
+# # 	# handle exceptions
 # 	except Exception as e:
+# 		# print helpful info
 # 		if type(e).__name__ == 'DatasetIncompatible':
-# 			print(f'{"" if sys.platform not in ["linux", "darwin"] else "🤷"}')
-# 			print('Imported dataset is incompatible with the current project settings.')
-# 			print('Check data/metadata.json to see your previous project setting.')
+# 			print(
+# 				f'{"" if sys.platform not in ["linux", "darwin"] else "🤷 "}'
+# 				'Imported dataset is incompatible with the current project settings.\n'
+# 				'Check data/metadata.json to see your previous project setting.'
+# 			)
 # 		else:
-# 			print(f'{"" if sys.platform not in ["linux", "darwin"] else "🤷"}')
-# 			print(f'Could not load a dataset.')
+# 			print(
+# 				f'{"" if sys.platform not in ["linux", "darwin"] else "🤷 "}'
+# 				f'Could not load a dataset due to a {type(e).__name__}.'
+# 			)
+
+# 		# regenerate dataset or exit
 # 		if not click.confirm('Do you want to generate a new dataset?', default=None, prompt_suffix=': '):
 # 			sys.exit()
-# 		return generateDataset(DataSample)
+# 		return generateDataset(DataSample, sampler_settings=sampler_settings)

@@ -40,7 +40,7 @@ class AudioSampler(ABC):
 	waveform: npt.NDArray[np.float64] = np.zeros(length)	# the audio sample itself
 
 	# private
-	__sample_count: int = 0									# internal counter to track the amount of samples generated
+	_sample_count: int = 0									# internal counter to track the amount of samples generated
 
 	def __init__(self, **kwargs: Any) -> None:
 		pass
@@ -50,13 +50,6 @@ class AudioSampler(ABC):
 		Write the generated waveform to a file.
 		'''
 		sf.write(absolutePath, self.waveform, self.sr)
-
-	def __countSamplesGenerated__(self) -> None:
-		'''
-		This method is used to update the sample counter. Its intended use is to be included
-		in updateProperties, to keep the sampler agnostic of the loop that it functions within.
-		'''
-		self.__sample_count += 1
 
 	@abstractmethod
 	def generateWaveform(self) -> None:

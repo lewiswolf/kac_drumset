@@ -1,3 +1,6 @@
+'''
+'''
+
 # core
 import math
 import os
@@ -11,7 +14,7 @@ import numpy.typing as npt		# typing for numpy
 
 # src
 from audio_sampler import AudioSampler
-from geometry import RandomPolygon
+from random_polygon import RandomPolygon
 from settings import PhysicalModelSettings, settings
 pm_settings: PhysicalModelSettings = settings['pm_settings']
 
@@ -46,6 +49,7 @@ class DrumModel(AudioSampler):
 	s_0: float					# the first constant used in the FDTD
 	s_1: float					# the second constant used in the FDTD
 	d: float					# decay factor ∈ [0, 1]
+	strike: tuple[int, int]		# where is the drum struck?
 	# classes
 	shape: RandomPolygon		# the shape of the drum
 
@@ -99,27 +103,15 @@ class DrumModel(AudioSampler):
 		'''
 
 		# types 🙇‍♂️
-		strike: tuple[int, int]				# where is the drum struck.
 		u: npt.NDArray[np.float64]			# the FDTD grid
 		u_0: npt.NDArray[np.float64]		# the FDTD grid at t = 0
 		u_1: npt.NDArray[np.float64]		# the FDTD grid at t = 1
 		x_range: tuple[int, int]			# range of the update equation across the x axis
 		y_range: tuple[int, int]			# range of the update equation across the y axis
 
-		# initialise a random drum shape and calculate the initial conditions
-		# relative to the centroid of the drum.
-		self.shape = RandomPolygon(
-			self.max_vertices,
-			grid_size=self.H,
-			allow_concave=self.allow_concave,
-		)
-		strike = (
-			round(self.shape.centroid[0] * self.H),
-			round(self.shape.centroid[1] * self.H),
-		)
 		u = np.zeros((self.H + 2, self.H + 2))
 		u_0 = np.copy(u)
-		u_1 = self.a * raisedCosine((self.H + 2, self.H + 2), strike)
+		u_1 = self.a * raisedCosine((self.H + 2, self.H + 2), self.strike)
 		x_range = (
 			round(np.min(self.shape.vertices[:, 0] * self.H)) + 1,
 			round(np.max(self.shape.vertices[:, 0] * self.H)) + 1,
@@ -143,7 +135,7 @@ class DrumModel(AudioSampler):
 					self.waveform[i] = 0.0
 					continue
 				if i == 1:
-					self.waveform[i] = u_1[strike]
+					self.waveform[i] = u_1[self.strike]
 					continue
 
 				# main loop
@@ -174,7 +166,8 @@ class DrumModel(AudioSampler):
 						self.d,
 					)
 					u_1 = np.copy(u)
-				self.waveform[i] = u[strike]
+				self.waveform[i] = u[self.strike]
+				self._sample_count += 1
 
 		# FDTD w/o GPU
 		else:
@@ -184,7 +177,7 @@ class DrumModel(AudioSampler):
 					self.waveform[i] = 0.0
 					continue
 				if i == 1:
-					self.waveform[i] = u_1[strike]
+					self.waveform[i] = u_1[self.strike]
 					continue
 
 				# main loop
@@ -199,7 +192,7 @@ class DrumModel(AudioSampler):
 								u_1[x + 1, y],
 								u_1[x, y - 1],
 								u_1[x - 1, y],
-							])) + (self.s_1 * u_1[x, y]) - u_0[x, y]
+							])) + (self.s_1 * u_0[x, y]) - (self.d * u_0[x, y])
 					u_0 = np.copy(u)
 
 				if i % 2 == 1:
@@ -216,7 +209,8 @@ class DrumModel(AudioSampler):
 							])) + (self.s_1 * u_0[x, y]) - (self.d * u_1[x, y])
 					u_1 = np.copy(u)
 
-				self.waveform[i] = u[strike]
+				self.waveform[i] = u[self.strike]
+				self._sample_count += 1
 
 	def getLabels(self) -> list[Union[float, int]]:
 		'''
@@ -230,6 +224,26 @@ class DrumModel(AudioSampler):
 			return out.tolist()
 		else:
 			return []
+
+	def updateProperties(self) -> None:
+
+		if self._sample_count % 5 == 0:
+			# initialise a random drum shape and calculate the initial conditions
+			# relative to the centroid of the drum.
+			self.shape = RandomPolygon(
+				self.max_vertices,
+				grid_size=self.H,
+				allow_concave=self.allow_concave,
+			)
+			self.strike = (
+				round(self.shape.centroid[0] * self.H),
+				round(self.shape.centroid[1] * self.H),
+			)
+		else:
+			# random strike
+			self.strike = (0, 0)
+			while not self.shape.mask[self.strike]:
+				self.strike = (np.random.randint(0, self.H), np.random.randint(0, self.H))
 
 	@staticmethod
 	@cuda.jit
