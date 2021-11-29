@@ -37,3 +37,6 @@ jobs:
 
             - name: Run unit tests
               run: pipenv run python test/unit_tests.py
+
+            - name: Assert types
+              run: pipenv run mypy --config-file=test/test.cfg index.py src test
