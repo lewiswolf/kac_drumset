@@ -7,20 +7,20 @@ on:
         branches: [master]
 
 jobs:
-    # installation:
-    #     runs-on: ${{ matrix.os }}
-    #     strategy:
-    #         matrix:
-    #             os: [macos-latest, ubuntu-latest, windows-latest]
+    installation:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [macos-latest, ubuntu-latest, windows-latest]
 
-    #     steps:
-    #         - uses: actions/checkout@master
-    #         - uses: actions/setup-python@v2
-    #           with:
-    #               python-version: "3.9"
+        steps:
+            - uses: actions/checkout@master
+            - uses: actions/setup-python@v2
+              with:
+                  python-version: "3.9"
 
-    #         - name: Test installation
-    #           run: pip install "git+https://github.com/lewiswolf/graphs.git#egg=graphs"
+            - name: Test installation
+              run: pip install "git+https://github.com/lewiswolf/drum-shape-predictor.git@dev#egg=kac_dataset"
 
     unit-tests:
         runs-on: ${{ matrix.os }}
