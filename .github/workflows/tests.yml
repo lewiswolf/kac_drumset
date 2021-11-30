@@ -7,6 +7,21 @@ on:
         branches: [master]
 
 jobs:
+    # installation:
+    #     runs-on: ${{ matrix.os }}
+    #     strategy:
+    #         matrix:
+    #             os: [macos-latest, ubuntu-latest, windows-latest]
+
+    #     steps:
+    #         - uses: actions/checkout@master
+    #         - uses: actions/setup-python@v2
+    #           with:
+    #               python-version: "3.9"
+
+    #         - name: Test installation
+    #           run: pip install "git+https://github.com/lewiswolf/graphs.git#egg=graphs"
+
     unit-tests:
         runs-on: ${{ matrix.os }}
         strategy:
@@ -35,8 +50,11 @@ jobs:
               if: steps.cache-pipenv.outputs.cache-hit != 'true'
               run: pipenv install -d
 
-            - name: Run unit tests
-              run: pipenv run python test/unit_tests.py
+            - name: Lint project
+              run: pipenv run flake8 --config-file=test/test.cfg
 
             - name: Assert types
-              run: pipenv run mypy --config-file=test/test.cfg index.py src test
+              run: pipenv run mypy --config-file=test/test.cfg
+
+            - name: Run unit tests
+              run: pipenv run python test/unit_tests.py

@@ -15,7 +15,7 @@ from typing import Any, Callable, Iterator, Literal, Union
 import numpy as np						# maths
 
 # src
-from audio_sampler import AudioSampler
+from kac_dataset import AudioSampler
 
 
 class TestSweep(AudioSampler):

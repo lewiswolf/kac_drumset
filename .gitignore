@@ -1,7 +1,12 @@
-.vscode
-.DS_Store
+# directories
 .mypy_cache
+.vscode
+build
+*.egg-info
+
+# files
+.DS_Store
 Pipfile.lock
 
 # lew stuff
-/unused
+unused
