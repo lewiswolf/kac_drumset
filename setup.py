@@ -9,32 +9,33 @@ version = '0.0.1'
 short_description = 'A dataset generator for arbitrarily shaped drums.'
 
 # import long description from readme.md
-with codecs.open(os.path.join(this, 'readme.md'), encoding='utf-8') as rm:
-	long_description = '\n' + rm.read()
+with codecs.open(os.path.join(this, 'readme.md'), encoding='utf-8') as readme:
+	long_description = '\n' + readme.read()
 
 # import packages from Pipfile
-with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as pf:
+with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile:
 	packages = []
-	# loop over Pipfile
-	p = pf.readlines(1)
-	pf.close()
-	b = False
-	for line in p:
+	# read the Pipfile
+	pipfile = raw_pipfile.readlines(1)
+	raw_pipfile.close()
+	# loop over the file
+	is_pkg = False
+	for line in pipfile:
 		line = line.replace('\n', '')
 		if not line:
 			continue
 		# find [packages]
 		if line[0] == '[':
 			if line == '[packages]':
-				b = True
+				is_pkg = True
 				continue
 			else:
-				b = False
+				is_pkg = False
 				continue
 		# append package names with required version
-		if b:
-			line = line.split()
-			packages.append(f'{line[0]}{line[2][1:-1] if line[2][1:-1] != "*" else ""}')
+		if is_pkg:
+			line_arr = line.split()
+			packages.append(f'{line_arr[0]}{line_arr[2][1:-1] if line_arr[2][1:-1] != "*" else ""}')
 
 setup(
 	name=name,
