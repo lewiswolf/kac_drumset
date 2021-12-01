@@ -22,7 +22,7 @@ jobs:
             - name: Test installation
               run: pip install "git+https://github.com/lewiswolf/drum-shape-predictor.git@dev#egg=kac_dataset"
 
-    unit-tests:
+    all-tests:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
@@ -51,7 +51,7 @@ jobs:
               run: pipenv install -d
 
             - name: Lint project
-              run: pipenv run flake8 --config-file=test/test.cfg
+              run: pipenv run flake8 --config=test/test.cfg
 
             - name: Assert types
               run: pipenv run mypy --config-file=test/test.cfg
