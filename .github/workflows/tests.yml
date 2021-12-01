@@ -20,7 +20,7 @@ jobs:
                   python-version: "3.9"
 
             - name: Test installation
-              run: pip install "git+https://github.com/lewiswolf/drum-shape-predictor.git@dev#egg=kac_dataset"
+              run: pip install "git+https://github.com/lewiswolf/drum-shape-predictor.git@dev#egg=kac_drumset"
 
     all-tests:
         runs-on: ${{ matrix.os }}
