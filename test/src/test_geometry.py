@@ -6,8 +6,8 @@ import cv2
 import numpy as np
 
 # src
-from kac_dataset import RandomPolygon
-from kac_dataset.geometry import isColinear, isConvex, largestVector
+from kac_drumset import RandomPolygon
+from kac_drumset.geometry import isColinear, isConvex, largestVector
 
 
 class GeometryTests(TestCase):

@@ -1,10 +1,14 @@
+'''
+Custom build script used to import this package's metadata from both the readme and Pipfile.
+'''
+
 # core
 import codecs
 import os
 from setuptools import setup
 
 this = os.path.abspath(os.path.dirname(__file__))
-name = 'kac_dataset'
+name = 'kac_drumset'
 version = '0.0.1'
 short_description = 'A dataset generator for arbitrarily shaped drums.'
 
@@ -44,10 +48,10 @@ setup(
 	description=short_description,
 	long_description_content_type='text/markdown',
 	long_description=long_description,
-	packages=['kac_dataset'],
+	packages=['kac_drumset'],
 	install_requires=packages,
-	package_data={'kac_dataset': ['py.typed']},
-	keywords=['kac_dataset'],
+	package_data={'kac_drumset': ['py.typed']},
+	keywords=['kac_drumset'],
 	classifiers=[
 		'Operating System :: MacOS :: MacOS X',
 		'Operating System :: Microsoft :: Windows',

@@ -19,7 +19,7 @@ tqdm = "*"
 flake8 = "*"
 flake8-commas = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
-kac_dataset = {editable = true, path = "."}
+kac_drumset = {editable = true, path = "."}
 mypy = "*"
 
 [requires]
