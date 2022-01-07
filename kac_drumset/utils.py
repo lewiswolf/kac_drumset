@@ -23,5 +23,6 @@ def printEmojis(s: str) -> None:
 			u'\U0001F900-\U0001F9FF'  # symbols & pictographs II
 			u'\U0001FA70-\U0001FAFF'  # symbols & pictographs III
 			']+',
-			flags=re.UNICODE)
+			flags=re.UNICODE,
+		)
 		print(regex.sub(r'', s).strip())
