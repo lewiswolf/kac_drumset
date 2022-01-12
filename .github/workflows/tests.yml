@@ -28,12 +28,13 @@ jobs:
         strategy:
             matrix:
                 os: [macos-latest, ubuntu-latest, windows-latest]
+                python: ["3.9", "3.10"]
 
         steps:
             - uses: actions/checkout@master
             - uses: actions/setup-python@v2
               with:
-                  python-version: "3.9"
+                  python-version: ${{ matrix.python }}
 
             - name: Install OS specific dependencies
               if: ${{ matrix.os == 'ubuntu-latest' }}
