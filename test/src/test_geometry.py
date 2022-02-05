@@ -12,7 +12,7 @@ from kac_drumset.geometry import isColinear, isConvex, largestVector
 
 class GeometryTests(TestCase):
 	'''
-	Tests used in conjunction with `geometry.py`.
+	Tests used in conjunction with `geometry.py` and `random_polygon.py'.
 	'''
 
 	def test_properties(self) -> None:
@@ -30,10 +30,13 @@ class GeometryTests(TestCase):
 			self.assertEqual(np.min(polygon.vertices), 0.0)
 			self.assertEqual(np.max(polygon.vertices), 1.0)
 
-			# This test asserts that the shoelaceFunction(), used for calculating the area of
-			# a polygon is accurate to at least 6 decimal places. This comparison is bounded
-			# due to the shoelaceFunction() being 64-bit, whilst the comparison function,
-			# cv2.contourArea(), is 32-bit.
+			# This test asserts that the largest vector is of magnitude 1.0.
+			self.assertEqual(largestVector(polygon.vertices)[0], 1.0)
+
+			# This test asserts that the area(), used for calculating the area of a polygon
+			# is accurate to at least 6 decimal places. This comparison is bounded due to
+			# the area() being 64-bit, whilst the comparison function, cv2.contourArea(),
+			# is 32-bit.
 			self.assertAlmostEqual(
 				polygon.area,
 				cv2.contourArea(polygon.vertices.astype('float32')),
@@ -60,6 +63,3 @@ class GeometryTests(TestCase):
 					round(polygon.centroid[0] * 100),
 					round(polygon.centroid[1] * 100),
 				], 1)
-
-				# This test asserts that the largest vector is of magnitude 1.0.
-				self.assertEqual(largestVector(polygon.vertices)[0], 1.0)
