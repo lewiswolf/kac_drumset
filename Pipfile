@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 click = "*"
 librosa = "*"
-numba = "==0.53.1"
+numba = ">=0.55.1"
 numpy = "*"
 opencv-python = "*"
 pydantic = "*"

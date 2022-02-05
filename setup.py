@@ -42,16 +42,7 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 			packages.append(f'{line_arr[0]}{line_arr[2][1:-1] if line_arr[2][1:-1] != "*" else ""}')
 
 setup(
-	name=name,
-	version=version,
 	author='Lewis Wolf',
-	description=short_description,
-	long_description_content_type='text/markdown',
-	long_description=long_description,
-	packages=['kac_drumset'],
-	install_requires=packages,
-	package_data={'kac_drumset': ['py.typed']},
-	keywords=['kac_drumset'],
 	classifiers=[
 		'Operating System :: MacOS :: MacOS X',
 		'Operating System :: Microsoft :: Windows',
@@ -62,4 +53,13 @@ setup(
 		'Programming Language :: Python :: 3.10',
 		'Typing :: Typed',
 	],
+	description=short_description,
+	long_description=long_description,
+	install_requires=packages,
+	keywords=['kac_drumset'],
+	long_description_content_type='text/markdown',
+	name=name,
+	packages=['kac_drumset'],
+	package_data={'kac_drumset': ['py.typed']},
+	version=version,
 )
