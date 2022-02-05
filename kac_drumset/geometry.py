@@ -1,6 +1,6 @@
 '''
 This file contains various functions relating to computational geometry. These include:
-	-	Calulating the area of the polygon.
+	-	Calculating the area of the polygon.
 	-	Creating a discrete matrix representation of the polygon. (boolean mask)
 	- 	Calculating the centroid of a polygon.
 	-	Generating random polygons, which can either be convex or concave.
@@ -56,7 +56,7 @@ def booleanMask(
 	convex: Optional[bool],
 ) -> npt.NDArray[np.int8]:
 	'''
-	This function creates a boolean mask of an input polygon on a grid with dimnensions
+	This function creates a boolean mask of an input polygon on a grid with dimensions
 	R^(grid_size). The input shape should exist within a domain R^G where G ∈ [0, 1].
 	'''
 
@@ -94,7 +94,7 @@ def centroid(vertices: npt.NDArray[np.float64], area: float) -> tuple[float, flo
 
 	n = vertices.shape[0]
 	if n == 3:
-		# Triangles have a much simpler formula, and so these are caluclated seperately.
+		# Triangles have a much simpler formula, and so these are caluclated separately.
 		return (sum(vertices[:, 0]) / 3, sum(vertices[:, 1]) / 3)
 
 	return (
@@ -131,7 +131,7 @@ def generateConcave(n: int) -> npt.NDArray[np.float64]:
 
 def generateConvex(n: int) -> npt.NDArray[np.float64]:
 	'''
-	Generate convex shappes according to Pavel Valtr's 1995 alogrithm. Adapted
+	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted
 	from Sander Verdonschot's Java version, found here:
 		https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
 	'''
@@ -176,35 +176,38 @@ def generateConvex(n: int) -> npt.NDArray[np.float64]:
 # TO FIX: see todo.md => `groupNormalisation`
 def groupNormalisation(
 	vertices: npt.NDArray[np.float64],
-	convex: bool,
+	convex: Optional[bool],
 ) -> npt.NDArray[np.float64]:
 	'''
-	This function uses the longest vector to define a polygon's span across the
+	This function uses the largest vector to define a polygon's span across the
 	y-axis. After finding the largest vector, the polygon is rotated about said
 	vector's midpoint, and finally the entire polygon is normalised to span the
 	unit interval.
 	'''
 
+	if convex is None:
+		convex = isConvex(vertices)
+
+	# rotate around the midpoint of the largest vector
+	_, idx = largestVector(vertices)
+	vertices[:, 0] -= (vertices[idx[0], 0] + vertices[idx[1], 0]) / 2
+	vertices[:, 1] -= (vertices[idx[0], 1] + vertices[idx[1], 1]) / 2
+	theta = 0.0 - np.arctan(vertices[idx[0], 0] / vertices[idx[0], 1])
+	cos_theta, sin_theta = np.cos(theta), np.sin(theta)
+	for i, (x, y) in enumerate(vertices):
+		vertices[i, 0] = (x * cos_theta + y * sin_theta)
+		vertices[i, 1] = (-x * sin_theta + y * cos_theta)
+
 	if convex:
-		# find largest vector
-		_, idx = largestVector(vertices)
-
-		# rotate around the midpoint of the largest vector
-		vertices[:, 0] -= (vertices[idx[0], 0] + vertices[idx[1], 0]) / 2
-		vertices[:, 1] -= (vertices[idx[0], 1] + vertices[idx[1], 1]) / 2
-		theta = 0.0 - np.arctan(vertices[idx[0], 0] / vertices[idx[0], 1])
-		cos_theta, sin_theta = np.cos(theta), np.sin(theta)
-		for i, (x, y) in enumerate(vertices):
-			vertices[i, 0] = (x * cos_theta + y * sin_theta)
-			vertices[i, 1] = (-x * sin_theta + y * cos_theta)
-
-		# normalise to unit interval
-		vertices[:, 0] -= (np.min(vertices[:, 0]) + np.max(vertices[:, 0])) / 2
-		v_min = np.min(vertices)
-		vertices = (vertices - v_min) / (np.max(vertices) - v_min)
-		return vertices
+		pass
 	else:
-		return groupNormalisation(vertices, True)
+		pass
+
+	# normalise to unit interval
+	vertices[:, 0] -= (np.min(vertices[:, 0]) + np.max(vertices[:, 0])) / 2
+	v_min = np.min(vertices)
+	vertices = (vertices - v_min) / (np.max(vertices) - v_min)
+	return vertices
 
 
 def isColinear(vertices: npt.NDArray[np.float64]) -> bool:

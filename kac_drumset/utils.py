@@ -9,7 +9,7 @@ def printEmojis(s: str) -> None:
 	If so, emojis are printed as normal, else they are filtered from the string.
 	'''
 
-	if sys.platform not in ["linux", "darwin"]:
+	if sys.platform in ['linux', 'darwin']:
 		print(s)
 	else:
 		regex = re.compile(

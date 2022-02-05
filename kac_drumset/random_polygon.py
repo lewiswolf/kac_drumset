@@ -11,7 +11,7 @@ from . import geometry as g
 
 class RandomPolygon():
 	'''
-	This class is used to generate a random polygon, normalised and centered between 0.0
+	This class is used to generate a random polygon, normalised and centred between 0.0
 	and 1.0. Various properties relating to this polygon are also attached to this class.
 	'''
 
@@ -43,7 +43,7 @@ class RandomPolygon():
 			self.convex = g.isConvex(self.vertices)
 
 		# normalise
-		self.vertices = g.groupNormalisation(self.vertices, self.convex)
+		self.vertices = g.groupNormalisation(self.vertices, convex=self.convex)
 
 		# calculate other properties
 		self.area = g.area(self.vertices)
