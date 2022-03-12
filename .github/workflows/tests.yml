@@ -55,7 +55,7 @@ jobs:
             - name: Lint project
               run: pipenv run flake8 --config=test/test.cfg
 
-            - name: Assert types for main codeabse
+            - name: Assert types
               run: pipenv run mypy --config-file=test/test.cfg
 
             - name: Run unit tests
