@@ -1,70 +1,131 @@
 ## Dependencies
 
 -   [pipenv](https://formulae.brew.sh/formula/pipenv#default)
--   [CUDA SDK](https://developer.nvidia.com/cuda-downloads)
+<!-- -   [CUDA SDK](https://developer.nvidia.com/cuda-downloads) -->
 
 ## Install
 
-To run this project:
+To install this project:
 
 ```bash
-$ pipenv install
+$ pip ...
 ```
 
 or to install this project for development:
 
 ```bash
+$ git clone ...
 $ pipenv install -d
 ```
 
-In either case, _pytorch_ is installed automatically, and will work fine for all CPU based usages. However, to configure this application for GPU usage, you must reinstall the appropriate version of _pytorch_ for your machine (which can be found [here](https://pytorch.org/get-started/locally/)) via:
+<!-- In either case, _pytorch_ is installed automatically, and will work fine for all CPU based usages. However, to configure this application for GPU usage, you must reinstall the appropriate version of _pytorch_ for your machine (which can be found [here](https://pytorch.org/get-started/locally/)) via:
 
 ```bash
 $ pipenv run pip install torch==1.8.1+cu102 ...
 ```
 
-To ensure that the GPU can be fully utilised by this application, make sure to update the _PATH_2_CUDA_ variable in `src/settings.py`, which should point to your installed version of the CUDA SDK.
+To ensure that the GPU can be fully utilised by this application, make sure to update the _PATH_2_CUDA_ variable in `src/settings.py`, which should point to your installed version of the CUDA SDK. -->
 
 ## Testing
 
 _For development only._
 
-This command first lints the project, and then ensures that all types are correctly handled throughout the codebase. Finally, any unit tests housed in `test/unit_tests.py` are executed.
+This command first lints the project, and then ensures that all types are correctly handled throughout the codebase. Finally, any unit tests housed in `./test` are executed.
 
 ```
 $ pipenv run test
 ```
 
-## Generate Dataset
+## Core Library
 
-When training and evaluating this project, it is necessary to generate a dataset from scratch via:
+### Types
 
-```bash
-$ pipenv run generate
+```python
+class Polygon():
+	'''
+	A base class for a polygon, instantiated with an array of vertices.
+	'''
+
+class RandomPolygon(Polygon):
+	'''
+	This class is used to generate a random polygon, normalised and centred between 0.0
+	and 1.0. The area and the centroid of the polygon are also included in this class.
+	'''
 ```
 
-This command will generate a dataset, which is stored in `/data`. These files will be accessed and reused by subsequent usages of this application. The settings for this dataset can be configured in `/src/settings.py`. Changes made to these settings may require the dataset to be reconstructed from scratch, however most changes will only need minor ammendation to the original files.
+### Geometry
 
-## Train Model
+```python
+def area(vertices: npt.NDArray[np.float64]) -> float:
+	'''
+	An implementation of the shoelace algorithm, first described by Albrecht Ludwig
+	Friedrich Meister, which is used to calculate the area of a polygon. The area
+	of a polygon can also be computed (using Green's theorem directly) using
+	`cv2.contourArea(self.vertices.astype('float32'))`. However, this function
+	requires that the input be of the type float32, resulting in a trade off between
+	(marginal) performance gains and lower precision.
+	'''
 
-Not yet implemented...
+def booleanMask(
+	vertices: npt.NDArray[np.float64],
+	grid_size: int,
+	convex: Optional[bool],
+) -> npt.NDArray[np.int8]:
+	'''
+	This function creates a boolean mask of an input polygon on a grid with dimensions
+	R^(grid_size). The input shape should exist within a domain R^G where G ∈ [0, 1].
+	'''
 
-```bash
-$ pipenv run train
-```
+def centroid(vertices: npt.NDArray[np.float64], area: float) -> tuple[float, float]:
+	'''
+	This algorithm is used to calculate the geometric centroid of a 2D polygon.
+	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and
+	centroid of a polygon'.
+	'''
 
-## Evaluate Model
+def generateConcave(n: int) -> npt.NDArray[np.float64]:
+	'''
+	Generates a random concave shape, with a small probability of also returning a
+	convex shape. It should be noted that this function can not be used to create
+	all possible simple polygons; see todo.md => 'Missing a reliable algorithm to
+	generate all concave shapes'.
+	'''
 
-Not yet implemented...
+def generateConvex(n: int) -> npt.NDArray[np.float64]:
+	'''
+	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted
+	from Sander Verdonschot's Java version, found here:
+		https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
+	'''
 
-```bash
-$ pipenv run evaluate
-```
+def groupNormalisation(
+	vertices: npt.NDArray[np.float64],
+	convex: Optional[bool],
+) -> npt.NDArray[np.float64]:
+	'''
+	This function uses the largest vector to define a polygon's span across the
+	y-axis. After finding the largest vector, the polygon is rotated about said
+	vector's midpoint, and finally the entire polygon is normalised to span the
+	unit interval.
+	'''
 
-## Working with LaTeX
+def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
+	'''
+	Determines whether or not a given set of three vertices are colinear.
+	'''
 
-The paper associated with this project is contained in `/paper`, and can _only_ be updated when the dev packages are installed. The template used for this document can be found [here](https://github.com/lewiswolf/personal-latex-template.git), and is designed for use with one of latex's command line interfaces such as [MacTeX](https://formulae.brew.sh/cask/mactex-no-gui). For convenience, this project is packaged with a helper method that will reconstruct the pdf document from the raw `.tex` files, via:
+def isConvex(vertices: npt.NDArray[np.float64]) -> bool:
+	'''
+	Tests whether or not a given array of vertices forms a convex polygon. This is
+	achieved using the resultant sign of the cross product for each vertex:
+		[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)]
+	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not
+	a polygon (2D) has its vertices ordered clockwise or counter-clockwise'.
+	'''
 
-```bash
-$ pipenv run latex
+def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, int]]:
+	'''
+	This function tests each pair of vertices in a given polygon to find the largest
+	vector, and returns the length of the vector and its indices.
+	'''
 ```
