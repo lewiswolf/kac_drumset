@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy = "*"
-opencv-python = "*"
+numpy = ">=1.22"
+opencv-python = ">=4.5"
 
 [dev-packages]
 flake8 = "*"
