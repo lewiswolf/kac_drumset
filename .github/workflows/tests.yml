@@ -56,10 +56,7 @@ jobs:
               run: pipenv run flake8 --config=test/test.cfg
 
             - name: Assert types for main codeabse
-              run: pipenv run mypy --config-file=test/test.cfg *.py kac_drumset
-
-            - name: Assert types for testing library
-              run: pipenv run mypy --config-file=test/test.cfg test
+              run: pipenv run mypy --config-file=test/test.cfg
 
             - name: Run unit tests
               run: pipenv run python test/test.py

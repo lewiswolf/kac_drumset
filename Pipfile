@@ -13,7 +13,6 @@ flake8-commas = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
 kac_drumset = {editable = true, path = "."}
 mypy = "*"
-test_utils = {editable = true, path = "./test"}
 
 [requires]
 python_version = "3.9"
