@@ -1,9 +1,4 @@
-
-from .random_polygon import RandomPolygon
-
-__all__ = [
-	# classes
-	'RandomPolygon',
-]
+__all__ = []
 # libraries
 __all__.append('geometry')
+__all__.append('types')

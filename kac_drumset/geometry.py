@@ -232,12 +232,21 @@ def isConvex(vertices: npt.NDArray[np.float64]) -> bool:
 	a polygon (2D) has its vertices ordered clockwise or counter-clockwise'.
 	'''
 
-	n = vertices.shape[0]
+	n: int = vertices.shape[0]
+	convex: Optional[bool] = None
 	for i in range(n):
-		if np.cross(
+		# ascertain if the polygon is ordered clockwise or counter-clockwise
+		if convex is None:
+			convex = np.cross(
+				vertices[i] - vertices[i - 1 if i > 0 else n - 1],
+				vertices[(i + 1) % n] - vertices[i],
+			) < 0
+			continue
+		# assert that all other vertices are the same
+		if (np.cross(
 			vertices[i] - vertices[i - 1 if i > 0 else n - 1],
 			vertices[(i + 1) % n] - vertices[i],
-		) < 0:
+		) < 0) != convex:
 			return False
 	return True
 

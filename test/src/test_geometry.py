@@ -6,22 +6,37 @@ import cv2
 import numpy as np
 
 # src
-from kac_drumset import RandomPolygon
-from kac_drumset.geometry import isColinear, isConvex, largestVector
+from kac_drumset.geometry import booleanMask, isColinear, isConvex, largestVector
+from kac_drumset.types import Polygon, RandomPolygon
 
 
 class GeometryTests(TestCase):
 	'''
-	Tests used in conjunction with `geometry.py` and `random_polygon.py'.
+	Tests used in conjunction with `geometry.py` and types Polygon and RandomPolygon.
 	'''
 
-	def test_properties(self) -> None:
+	def test_polygon(self) -> None:
+		'''
+		Test properties of the type Polygon.
+		'''
+
+		for polygon in [
+			Polygon(np.array([[0, 0], [1, 0], [1, 1], [0, 1]])),
+			Polygon(np.array([[0, 0], [0, 1], [1, 1], [1, 0]])),
+		]:
+			# This test asserts that a polygon has the correct number of vertices.
+			self.assertEqual(len(polygon.vertices), polygon.n)
+
+			# This test asserts that isConvex() works for any closed arrangement of vertices.
+			self.assertTrue(isConvex(polygon.vertices))
+
+	def test_random_polygon(self) -> None:
 		'''
 		Stress test multiple properties of the class RandomPolygon.
 		'''
 
 		for i in range(10000):
-			polygon = RandomPolygon(20, grid_size=100, allow_concave=True)
+			polygon = RandomPolygon(20, allow_concave=True)
 
 			# This test asserts that a polygon has the correct number of vertices.
 			self.assertEqual(len(polygon.vertices), polygon.n)
@@ -59,7 +74,8 @@ class GeometryTests(TestCase):
 
 				# This test asserts that the calculated centroid lies within the polygon. For
 				# concave shapes, this test may fail.
-				self.assertEqual(polygon.mask[
+				mask = booleanMask(polygon.vertices, 100, convex=polygon.convex)
+				self.assertEqual(mask[
 					round(polygon.centroid[0] * 100),
 					round(polygon.centroid[1] * 100),
 				], 1)

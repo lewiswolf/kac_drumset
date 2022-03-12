@@ -83,3 +83,7 @@
 -   **groupNormalisation**
 
     Group normalisation is meant to be a function that normalises polygons according to group theory, so as to remove translated variations of polygons. At the moment, for convex shapes, this works to some degree, but shapes can still be arbitrarily flipped across both the y-axis and x-axis. The way to fix this is to construct an algorithm that initially sets the longest vector equal to 1.0 with angle π/2, serving to remove any rotational transformations. Then, the four quadrants of the polygon are compared and given a set translation, which serves to remove any reflective transformations. For concave shapes, the algorithm is more complex, and is currently undetermined.
+
+-	**Add Support for elipses**
+
+	Currently, only simple polygons are supported by this library, and there is a need to extend this to include elliptical shapes as well. This would involve creating a new type, as well as updating the geometry library - functions such as `area()` and `centroid()` - so as to support this alternative geometric construction.
