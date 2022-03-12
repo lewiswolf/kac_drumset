@@ -1,3 +1,8 @@
+'''
+This file contains utility functions used throughout the main codebase. These functions
+are only to be used internally, and are not made public as part of this package.
+'''
+
 # core
 import re
 import sys

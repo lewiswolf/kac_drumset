@@ -1,3 +1,7 @@
+'''
+This file contains the fixed internal types and classes used as part of this package.
+'''
+
 # core
 import random
 
