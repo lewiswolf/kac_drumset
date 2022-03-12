@@ -6,7 +6,7 @@ import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
-from . import geometry as g
+from . import geometry as G
 
 __all__ = [
 	'Polygon',
@@ -51,15 +51,15 @@ class RandomPolygon(Polygon):
 
 		# generate random polygon
 		if not allow_concave or random.getrandbits(1):
-			super().__init__(g.generateConvex(random.randint(3, max_vertices)))
+			super().__init__(G.generateConvex(random.randint(3, max_vertices)))
 			self.convex = True
 		else:
-			super().__init__(g.generateConcave(random.randint(3, max_vertices)))
-			self.convex = g.isConvex(self.vertices)
+			super().__init__(G.generateConcave(random.randint(3, max_vertices)))
+			self.convex = G.isConvex(self.vertices)
 
 		# normalise
-		self.vertices = g.groupNormalisation(self.vertices, convex=self.convex)
+		self.vertices = G.groupNormalisation(self.vertices, convex=self.convex)
 
 		# calculate other properties
-		self.area = g.area(self.vertices)
-		self.centroid = g.centroid(self.vertices, self.area)
+		self.area = G.area(self.vertices)
+		self.centroid = G.centroid(self.vertices, self.area)

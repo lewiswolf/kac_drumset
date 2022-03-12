@@ -41,6 +41,10 @@ $ pipenv run test
 ### Types
 
 ```python
+import kac_drumset.types as T
+```
+
+```python
 class Polygon():
 	'''
 	A base class for a polygon, instantiated with an array of vertices.
@@ -54,6 +58,10 @@ class RandomPolygon(Polygon):
 ```
 
 ### Geometry
+
+```python
+import kac_drumset.geometry as G
+```
 
 ```python
 def area(vertices: npt.NDArray[np.float64]) -> float:
