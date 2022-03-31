@@ -15,8 +15,8 @@ from typing import Any, Callable, Iterator
 
 __all__ = [
 	'clearDirectory',
-	'withoutPrinting',
 	'printEmojis',
+	'withoutPrinting',
 	'withProfiler',
 ]
 
@@ -63,7 +63,7 @@ def printEmojis(s: str) -> None:
 @contextlib.contextmanager
 def withoutPrinting(allow_errors: bool = False) -> Iterator[Any]:
 	'''
-	This wrapper can used around blocks of code to silece calls to print(), as well as
+	This wrapper can used around blocks of code to silence calls to print(), as well as
 	optionally silence error messages.
 	'''
 
