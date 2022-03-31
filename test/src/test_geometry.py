@@ -6,8 +6,7 @@ import cv2
 import numpy as np
 
 # src
-from kac_drumset.geometry import booleanMask, isColinear, isConvex, largestVector
-from kac_drumset.types import Polygon, RandomPolygon
+from kac_drumset.geometry import Polygon, RandomPolygon, booleanMask, isColinear, isConvex, largestVector
 
 
 class GeometryTests(TestCase):
