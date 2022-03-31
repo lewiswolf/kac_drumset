@@ -1,11 +1,38 @@
 '''
 This file contains utility functions used throughout the main codebase. These functions
-are only to be used internally, and are not made public as part of this package.
+are intended for either debugging the package or interfacing with the file system/command line.
 '''
 
 # core
+import contextlib
+import cProfile
+import os
+import pstats
 import re
+import shutil
 import sys
+from typing import Any, Callable, Iterator
+
+__all__ = [
+	'clearDirectory',
+	'withoutPrinting',
+	'printEmojis',
+	'withProfiler',
+]
+
+
+def clearDirectory(absolutePath: str) -> None:
+	'''
+	Completely clears all files and folders from the input directory, except for a .gitignore at
+	the top level of the directory.
+	'''
+
+	for file in os.listdir(absolutePath):
+		path = f'{absolutePath}/{file}'
+		if os.path.isdir(path):
+			shutil.rmtree(path)
+		elif file != '.gitignore':
+			os.remove(path)
 
 
 def printEmojis(s: str) -> None:
@@ -31,3 +58,33 @@ def printEmojis(s: str) -> None:
 			flags=re.UNICODE,
 		)
 		print(regex.sub(r'', s).strip())
+
+
+@contextlib.contextmanager
+def withoutPrinting(allow_errors: bool = False) -> Iterator[Any]:
+	'''
+	This wrapper can used around blocks of code to silece calls to print(), as well as
+	optionally silence error messages.
+	'''
+
+	with open(os.devnull, 'w') as dummy_file:
+		if not allow_errors:
+			sys.stderr = dummy_file
+		sys.stdout = dummy_file
+		yield
+		dummy_file.close()
+	sys.stderr = sys.__stderr__
+	sys.stdout = sys.__stdout__
+
+
+def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
+	'''
+	Calls the input function using cProfile to generate a performance report in the console.
+	Prints the n most costly functions.
+	'''
+
+	with cProfile.Profile() as pr:
+		func(*args, **kwargs)
+	stats = pstats.Stats(pr)
+	stats.sort_stats(pstats.SortKey.TIME)
+	stats.print_stats(n)
