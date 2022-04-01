@@ -1,8 +1,9 @@
 # core
 from abc import ABC, abstractmethod
 import math
-import wave
+import struct
 from typing import Union
+import wave
 
 # dependencies
 import numpy as np				# maths
@@ -43,11 +44,15 @@ class AudioSampler(ABC):
 		'''
 		Write the generated waveform to a file.
 		'''
+
+		wav_format = (struct.pack('<i', int(s * (2 ** 23 - 1))) for s in self.waveform)
 		with wave.open(absolutePath, 'w') as wav:
 			wav.setnchannels(1)
 			wav.setsampwidth(3)
 			wav.setframerate(self.sr)
-			wav.writeframes((self.waveform * (2 ** 23 - 1)).astype("<h").tobytes())
+			for byte in wav_format:
+				wav.writeframes(byte[0:3])
+			wav.close()
 
 	@abstractmethod
 	def generateWaveform(self) -> None:
