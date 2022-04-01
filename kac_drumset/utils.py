@@ -1,6 +1,6 @@
 '''
-This file contains utility functions used throughout the main codebase. These functions
-are intended for either debugging the package or interfacing with the file system/command line.
+This file contains utility functions used throughout the main codebase. These functions are intended for either
+debugging the package or interfacing with the file system/command line.
 '''
 
 # core
@@ -23,8 +23,8 @@ __all__ = [
 
 def clearDirectory(absolutePath: str) -> None:
 	'''
-	Completely clears all files and folders from the input directory, except for a .gitignore at
-	the top level of the directory.
+	Completely clears all files and folders from the input directory, except for a .gitignore at the top level of the
+	directory.
 	'''
 
 	for file in os.listdir(absolutePath):
@@ -37,8 +37,8 @@ def clearDirectory(absolutePath: str) -> None:
 
 def printEmojis(s: str) -> None:
 	'''
-	Checks whether or not the operating system is mac or linux.
-	If so, emojis are printed as normal, else they are filtered from the string.
+	Checks whether or not the operating system is mac or linux. If so, emojis are printed as normal, else they are
+	filtered from the string.
 	'''
 
 	if sys.platform in ['linux', 'darwin']:
@@ -63,8 +63,7 @@ def printEmojis(s: str) -> None:
 @contextlib.contextmanager
 def withoutPrinting(allow_errors: bool = False) -> Iterator[Any]:
 	'''
-	This wrapper can used around blocks of code to silence calls to print(), as well as
-	optionally silence error messages.
+	This wrapper can used around blocks of code to silence calls to print(), as well as optionally silence error messages.
 	'''
 
 	with open(os.devnull, 'w') as dummy_file:
@@ -79,8 +78,8 @@ def withoutPrinting(allow_errors: bool = False) -> Iterator[Any]:
 
 def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
 	'''
-	Calls the input function using cProfile to generate a performance report in the console.
-	Prints the n most costly functions.
+	Calls the input function using cProfile to generate a performance report in the console. Prints the n most costly
+	functions.
 	'''
 
 	with cProfile.Profile() as pr:

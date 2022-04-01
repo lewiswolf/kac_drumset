@@ -35,8 +35,8 @@ class Polygon():
 
 class RandomPolygon(Polygon):
 	'''
-	This class is used to generate a random polygon, normalised and centred between 0.0
-	and 1.0. The area and the centroid of the polygon are also included in this class.
+	This class is used to generate a random polygon, normalised and centred between 0.0 and 1.0. The area and the centroid
+	of the polygon are also included in this class.
 	'''
 
 	area: float							# area of the polygon
@@ -47,9 +47,8 @@ class RandomPolygon(Polygon):
 	def __init__(self, max_vertices: int, allow_concave: bool = True) -> None:
 		'''
 		This function generates a polygon, whilst also calculating its properties.
-		params:
-			max_vertices:	Maximum amount of vertices. The true value is a uniform
-							distribution from 3 to max_vertices.
+		input:
+			max_vertices:	Maximum amount of vertices. The true value is a uniform distribution from 3 to max_vertices.
 			allow_concave:	Is this polygon allowed to be concave?
 		'''
 

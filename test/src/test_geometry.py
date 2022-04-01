@@ -47,10 +47,9 @@ class GeometryTests(TestCase):
 			# This test asserts that the largest vector is of magnitude 1.0.
 			self.assertEqual(largestVector(polygon.vertices)[0], 1.0)
 
-			# This test asserts that the area(), used for calculating the area of a polygon
-			# is accurate to at least 6 decimal places. This comparison is bounded due to
-			# the area() being 64-bit, whilst the comparison function, cv2.contourArea(),
-			# is 32-bit.
+			# This test asserts that the area(), used for calculating the area of a polygon is accurate to at least 6 decimal
+			# places. This comparison is bounded due to the area() being 64-bit, whilst the comparison function,
+			# cv2.contourArea(), is 32-bit.
 			self.assertAlmostEqual(
 				polygon.area,
 				cv2.contourArea(polygon.vertices.astype('float32')),
@@ -66,13 +65,11 @@ class GeometryTests(TestCase):
 				])))
 
 			if polygon.convex:
-				# This test asserts that all supposedly convex polygons are in fact convex.
-				# As a result, if this test passes, we can assume that the generateConvex()
-				# function works as intended.
+				# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
+				# can assume that the generateConvex() function works as intended.
 				self.assertTrue(isConvex(polygon.vertices))
 
-				# This test asserts that the calculated centroid lies within the polygon. For
-				# concave shapes, this test may fail.
+				# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
 				mask = booleanMask(polygon.vertices, 100, convex=polygon.convex)
 				self.assertEqual(mask[
 					round(polygon.centroid[0] * 100),
