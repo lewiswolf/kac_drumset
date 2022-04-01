@@ -1,7 +1,9 @@
-from .sampler import AudioSampler
+from .sampler import AudioSampler, TestSweep, TestTone
 
 __all__ = [
 	'AudioSampler',
+	'TestSweep',
+	'TestTone',
 ]
 
 # libraries
