@@ -26,7 +26,7 @@ class SamplerTests(TestCase):
 
 		class Test(AudioSampler):
 			''' The minimum instantiation requirements of AudioSampler. '''
-			def __init__(self, duration: float, sr: int) -> None:
+			def __init__(self, duration: float, sr: int = 48000) -> None:
 				super().__init__(duration, sr)
 
 			def generateWaveform(self) -> None:
@@ -35,8 +35,13 @@ class SamplerTests(TestCase):
 			def getLabels(self) -> list[Union[float, int]]:
 				pass
 
-		T = Test(1.0, 48000)
 		# This test asserts that the export function exports a wav file.
 		test_wav = f'{self.tmp_dir}/test.wav'
-		T.export(test_wav)
+		Test(1.0).export(test_wav)
 		self.assertTrue(os.path.exists(test_wav))
+
+		# This test asserts that the wav file will export all necessary sample rates and bit depths.
+		for i in [8000, 16000, 22050, 44100, 48000, 88200, 96000]:
+			Test(1.0, sr=i).export(f'{self.tmp_dir}/test-{16}-{i}.wav', bit_depth=16)
+			Test(1.0, sr=i).export(f'{self.tmp_dir}/test-{24}-{i}.wav', bit_depth=24)
+			Test(1.0, sr=i).export(f'{self.tmp_dir}/test-{32}-{i}.wav', bit_depth=32)

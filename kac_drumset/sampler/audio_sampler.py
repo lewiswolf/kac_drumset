@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 import math
 import struct
-from typing import Union
+from typing import Literal, Union
 import wave
 
 # dependencies
@@ -27,8 +27,8 @@ class AudioSampler(ABC):
 	'''
 
 	duration: float						# duration of the audio file (seconds)
-	sr: int								# sample rate (hz)
 	length: int							# length of the audio file (samples)
+	sr: int								# sample rate
 	waveform: npt.NDArray[np.float64]	# the audio sample itself
 
 	def __init__(self, duration: float, sr: int) -> None:
@@ -40,18 +40,18 @@ class AudioSampler(ABC):
 		self.length = math.ceil(duration * sr)
 		self.waveform = np.zeros(self.length)
 
-	def export(self, absolutePath: str) -> None:
+	def export(self, absolutePath: str, bit_depth: Literal[16, 24, 32] = 24) -> None:
 		'''
-		Write the generated waveform to a file.
+		Write the generated waveform to a .wav file.
 		'''
 
-		wav_format = (struct.pack('<i', int(s * (2 ** 23 - 1))) for s in self.waveform)
+		wav_format = (struct.pack('<q', int(s * (2 ** (bit_depth - 1) - 1))) for s in self.waveform)
 		with wave.open(absolutePath, 'w') as wav:
 			wav.setnchannels(1)
-			wav.setsampwidth(3)
+			wav.setsampwidth(bit_depth // 8)
 			wav.setframerate(self.sr)
 			for byte in wav_format:
-				wav.writeframes(byte[0:3])
+				wav.writeframes(byte[0:bit_depth // 8])
 			wav.close()
 
 	@abstractmethod
