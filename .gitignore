@@ -1,10 +1,11 @@
 # directories
+*.egg-info
 .mypy_cache
 .vscode
-build
-*.egg-info
+_skbuild
 
 # files
+*.so
 .DS_Store
 Pipfile.lock
 

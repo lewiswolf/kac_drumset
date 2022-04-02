@@ -10,8 +10,11 @@ from .geometry import (
 	largestVector,
 )
 from .types import Polygon, RandomPolygon
+from ..externals._geometry import generateConvexPolygon
 
 __all__ = [
+	# external
+	'generateConvexPolygon',
 	# geometry
 	'area',
 	'booleanMask',

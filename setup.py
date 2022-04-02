@@ -5,7 +5,9 @@ Custom build script used to import this package's metadata from both the readme 
 # core
 import codecs
 import os
-from setuptools import setup
+from setuptools import find_packages
+from skbuild import setup
+
 
 this = os.path.abspath(os.path.dirname(__file__))
 name = 'kac_drumset'
@@ -41,6 +43,7 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 			line_arr = line.split()
 			packages.append(f'{line_arr[0]}{line_arr[2][1:-1] if line_arr[2][1:-1] != "*" else ""}')
 
+
 setup(
 	author='Lewis Wolf',
 	classifiers=[
@@ -53,13 +56,15 @@ setup(
 		'Programming Language :: Python :: 3.10',
 		'Typing :: Typed',
 	],
+	cmake_install_dir="kac_drumset/externals",
 	description=short_description,
 	long_description=long_description,
+	include_package_data=True,
 	install_requires=packages,
 	keywords=['kac_drumset'],
 	long_description_content_type='text/markdown',
 	name=name,
-	packages=['kac_drumset'],
+	packages=find_packages(),
 	package_data={'kac_drumset': ['py.typed']},
 	version=version,
 )

@@ -1,3 +1,11 @@
+## setup.py
+
+-	**library stub missing for `kac_drumset.externals._geometry`**
+
+-	**__init__.py**
+
+	Not all __init__.py files are recognised by the setup function and stored in the egg-info. These include kac_drumset/__init__.py and kac_drumset/externals/__init__.py.
+
 ## General Codebase
 
 -   **Internal types for nested lists, numpy arrays and pytroch tensors**

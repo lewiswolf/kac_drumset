@@ -13,10 +13,12 @@ flake8-commas = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
 kac_drumset = {editable = true, path = "."}
 mypy = "*"
+scikit-build = "*"
 
 [requires]
 python_version = "3.9"
 
 [scripts]
+build = "python setup.py develop"
 start = "python example/index.py"
 test = "sh ./test/test.sh"

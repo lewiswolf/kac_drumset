@@ -17,13 +17,14 @@ __all__ = [
 class AudioSampler(ABC):
 	'''
 	Template parent class for an audio sampler. The intended use when deployed:
-		sampler = AudioSampler()
-		for i in range(n):
-			sampler.updateParameters()
-			sampler.generateWaveform()
-			x = sampler.waveform
-			y = sampler.getLabels()
-			sampler.export()
+
+	sampler = AudioSampler()
+	for i in range(n):
+		sampler.updateParameters()
+		sampler.generateWaveform()
+		x = sampler.waveform
+		y = sampler.getLabels()
+		sampler.export()
 	'''
 
 	duration: float						# duration of the audio file (seconds)
