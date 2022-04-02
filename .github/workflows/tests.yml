@@ -32,6 +32,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@master
+              with:
+                  submodules: recursive
             - uses: lukka/get-cmake@latest 
             - uses: actions/setup-python@v2
               with:
