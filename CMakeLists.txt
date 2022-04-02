@@ -5,7 +5,7 @@ project(kac_drumset)
 
 # include geometry-cpp
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src")
-file(GLOB GEOMETRY"${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src/geometry.hpp")
+file(GLOB GEOMETRY "${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src/geometry.hpp")
 
 # include pybind as a remote dependency
 include(FetchContent)
