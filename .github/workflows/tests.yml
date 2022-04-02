@@ -32,6 +32,7 @@ jobs:
 
         steps:
             - uses: actions/checkout@master
+            - uses: lukka/get-cmake@latest 
             - uses: actions/setup-python@v2
               with:
                   python-version: ${{ matrix.python }}
@@ -45,7 +46,11 @@ jobs:
                   key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
 
             - name: Install python dependencies
+              if: steps.cache-pipenv.outputs.cache-hit != 'true'
               run: pipenv install -d --python ${{ matrix.python }}
+
+            - name: Build CPP
+              run: pipenv run build
 
             - name: Lint project
               run: pipenv run flake8 --config=test/test.cfg
@@ -54,4 +59,4 @@ jobs:
               run: pipenv run mypy --config-file=test/test.cfg
 
             - name: Run unit tests
-              run: pipenv run ls -a
+              run: pipenv run python test/test.py
