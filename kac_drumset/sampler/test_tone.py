@@ -12,11 +12,15 @@ import numpy as np 	# maths
 # src
 from .audio_sampler import AudioSampler
 
+__all__ = [
+	'TestTone',
+]
+
 
 class TestTone(AudioSampler):
 	'''
-	This class produces an arbitrary test tone, using either a sawtooth, sine, square or
-	triangle waveform.
+	This class produces an arbitrary test tone, using either a sawtooth, sine, square or triangle waveform. If it's
+	initial frequency is not set, it will automatically create random frequencies.
 	'''
 
 	f_0: float										# fundamental frequency (hz)

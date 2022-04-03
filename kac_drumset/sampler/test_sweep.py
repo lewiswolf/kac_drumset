@@ -11,6 +11,10 @@ import numpy as np 			# maths
 # src
 from .audio_sampler import AudioSampler
 
+__all__ = [
+	'TestSweep',
+]
+
 
 class TestSweep(AudioSampler):
 	'''
