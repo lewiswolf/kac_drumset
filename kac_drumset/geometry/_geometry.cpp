@@ -39,12 +39,12 @@ g::Vertices convertVectorToVertices(const std::vector<std::array<double, 2>>& V
 PyBind11 exports.
 */
 
-std::vector<std::array<double, 2>> _generateConvexPolygon(const int& n) {
-	return convertVerticesToVector(g::generateConvexPolygon(n));
+std::vector<std::array<double, 2>> _generateConvexPolygon(const int& N) {
+	return convertVerticesToVector(g::generateConvexPolygon(N));
 }
 
-bool _isConvex(const std::vector<std::array<double, 2>>& v) {
-	return g::isConvex(convertVectorToVertices(v));
+bool _isConvex(const std::vector<std::array<double, 2>>& V) {
+	return g::isConvex(convertVectorToVertices(V));
 }
 
 PYBIND11_MODULE(_geometry, m) {
