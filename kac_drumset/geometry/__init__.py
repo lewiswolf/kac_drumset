@@ -1,3 +1,7 @@
+from ._geometry import (
+	generateConvexPolygon,
+	isConvex,
+)
 from .geometry import (
 	area,
 	booleanMask,
@@ -6,15 +10,15 @@ from .geometry import (
 	generateConvex,
 	groupNormalisation,
 	isColinear,
-	isConvex,
+	isConvexOld,
 	largestVector,
 )
 from .types import Polygon, RandomPolygon
-from ..externals._geometry import generateConvexPolygon
 
 __all__ = [
 	# external
 	'generateConvexPolygon',
+	'isConvex',
 	# geometry
 	'area',
 	'booleanMask',
@@ -23,7 +27,7 @@ __all__ = [
 	'generateConvex',
 	'groupNormalisation',
 	'isColinear',
-	'isConvex',
+	'isConvexOld',
 	'largestVector',
 	# types
 	'Polygon',

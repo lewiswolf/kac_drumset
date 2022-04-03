@@ -12,7 +12,7 @@ namespace g = geometry;
 std::vector<std::array<double, 2>> convertVerticesToVector(const g::Vertices& V
 ) {
 	/*
-	Covert to vector of arrays.
+	Covert to vertices to vector.
 	*/
 
 	std::vector<std::array<double, 2>> out;
@@ -20,11 +20,27 @@ std::vector<std::array<double, 2>> convertVerticesToVector(const g::Vertices& V
 	return out;
 }
 
-std::vector<std::array<double, 2>> generateConvexPolygon(const int& n) {
+g::Vertices convertVectorToVertices(const std::vector<std::array<double, 2>>& V
+) {
+	/*
+	Covert to vector to vertices.
+	*/
+
+	g::Vertices out(V.size());
+	for (int i = 0; i < V.size(); i++) { out[i] = g::Point(V[i][0], V[i][1]); }
+	return out;
+}
+
+std::vector<std::array<double, 2>> _generateConvexPolygon(const int& n) {
 	return convertVerticesToVector(g::generateConvexPolygon(n));
+}
+
+bool _isConvex(const std::vector<std::array<double, 2>>& v) {
+	return g::isConvex(convertVectorToVertices(v));
 }
 
 PYBIND11_MODULE(_geometry, m) {
 	m.doc() = "_geometry";
-	m.def("generateConvexPolygon", &generateConvexPolygon);
+	m.def("_generateConvexPolygon", &_generateConvexPolygon);
+	m.def("_isConvex", &_isConvex);
 }

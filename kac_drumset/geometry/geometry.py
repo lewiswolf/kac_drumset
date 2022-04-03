@@ -19,6 +19,9 @@ import cv2					# image processing
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
+# src
+from . import _geometry as _G
+
 __all__ = [
 	'area',
 	'booleanMask',
@@ -27,7 +30,7 @@ __all__ = [
 	'generateConvex',
 	'groupNormalisation',
 	'isColinear',
-	'isConvex',
+	'isConvexOld',
 	'largestVector',
 ]
 
@@ -61,7 +64,7 @@ def booleanMask(
 	'''
 
 	if convex is None:
-		convex = isConvex(vertices)
+		convex = _G.isConvex(vertices)
 
 	mask = np.zeros((grid_size, grid_size), 'int8')
 	if convex:
@@ -186,7 +189,7 @@ def groupNormalisation(
 	'''
 
 	if convex is None:
-		convex = isConvex(vertices)
+		convex = _G.isConvex(vertices)
 
 	# rotate around the midpoint of the largest vector
 	_, idx = largestVector(vertices)
@@ -223,7 +226,7 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	)
 
 
-def isConvex(vertices: npt.NDArray[np.float64]) -> bool:
+def isConvexOld(vertices: npt.NDArray[np.float64]) -> bool:
 	'''
 	Tests whether or not a given array of vertices forms a convex polygon. This is
 	achieved using the resultant sign of the cross product for each vertex:

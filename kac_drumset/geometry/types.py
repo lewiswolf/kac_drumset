@@ -10,6 +10,7 @@ import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
+from . import _geometry as _G
 from . import geometry as G
 
 __all__ = [
@@ -54,11 +55,11 @@ class RandomPolygon(Polygon):
 
 		# generate random polygon
 		if not allow_concave or random.getrandbits(1):
-			super().__init__(G.generateConvex(random.randint(3, max_vertices)))
+			super().__init__(_G.generateConvexPolygon(random.randint(3, max_vertices)))
 			self.convex = True
 		else:
 			super().__init__(G.generateConcave(random.randint(3, max_vertices)))
-			self.convex = G.isConvex(self.vertices)
+			self.convex = _G.isConvex(self.vertices)
 
 		# normalise
 		self.vertices = G.groupNormalisation(self.vertices, convex=self.convex)
