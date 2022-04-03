@@ -7,10 +7,8 @@ from .geometry import (
 	booleanMask,
 	centroid,
 	generateConcave,
-	generateConvex,
 	groupNormalisation,
 	isColinear,
-	isConvexOld,
 	largestVector,
 )
 from .types import Polygon, RandomPolygon
@@ -24,10 +22,8 @@ __all__ = [
 	'booleanMask',
 	'centroid',
 	'generateConcave',
-	'generateConvex',
 	'groupNormalisation',
 	'isColinear',
-	'isConvexOld',
 	'largestVector',
 	# types
 	'Polygon',

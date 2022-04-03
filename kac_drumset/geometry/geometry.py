@@ -11,7 +11,6 @@ This file contains various functions relating to computational geometry. These i
 '''
 
 # core
-import random
 from typing import Optional
 
 # dependencies
@@ -27,10 +26,8 @@ __all__ = [
 	'booleanMask',
 	'centroid',
 	'generateConcave',
-	'generateConvex',
 	'groupNormalisation',
 	'isColinear',
-	'isConvexOld',
 	'largestVector',
 ]
 
@@ -132,50 +129,6 @@ def generateConcave(n: int) -> npt.NDArray[np.float64]:
 	return vertices
 
 
-def generateConvex(n: int) -> npt.NDArray[np.float64]:
-	'''
-	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted
-	from Sander Verdonschot's Java version, found here:
-		https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
-	'''
-
-	# initialise random coordinates
-	X, Y = np.zeros(n), np.zeros(n)
-	X_rand, Y_rand = np.sort(np.random.random(n)), np.sort(np.random.random(n))
-
-	# divide the interior points into two chains
-	last_true, last_false = 0, 0
-	for i in range(1, n):
-		if i != n - 1:
-			if random.getrandbits(1):
-				X[i] = X_rand[i] - X_rand[last_true]
-				Y[i] = Y_rand[i] - Y_rand[last_true]
-				last_true = i
-			else:
-				X[i] = X_rand[last_false] - X_rand[i]
-				Y[i] = Y_rand[last_false] - Y_rand[i]
-				last_false = i
-		else:
-			X[0] = X_rand[i] - X_rand[last_true]
-			Y[0] = Y_rand[i] - Y_rand[last_true]
-			X[i] = X_rand[last_false] - X_rand[i]
-			Y[i] = Y_rand[last_false] - Y_rand[i]
-
-	# randomly combine x and y and sort by polar angle
-	np.random.shuffle(Y)
-	vertices = np.stack((X, Y), axis=-1)
-	vertices = vertices[np.argsort(np.arctan2(vertices[:, 1], vertices[:, 0]))]
-
-	# arrange points end to end to form a polygon
-	vertices = np.cumsum(vertices, axis=0)
-
-	# center around the origin
-	x_max, y_max = np.max(vertices[:, 0]), np.max(vertices[:, 1])
-	vertices[:, 0] += ((x_max - np.min(vertices[:, 0])) / 2) - x_max
-	vertices[:, 1] += ((y_max - np.min(vertices[:, 1])) / 2) - y_max
-	return vertices
-
-
 # TO FIX: see todo.md => `groupNormalisation`
 def groupNormalisation(
 	vertices: npt.NDArray[np.float64],
@@ -224,34 +177,6 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 		(vertices[2, 1] - vertices[1, 1]) * (vertices[1, 0] - vertices[0, 0])
 		== (vertices[1, 1] - vertices[0, 1]) * (vertices[2, 0] - vertices[1, 0])
 	)
-
-
-def isConvexOld(vertices: npt.NDArray[np.float64]) -> bool:
-	'''
-	Tests whether or not a given array of vertices forms a convex polygon. This is
-	achieved using the resultant sign of the cross product for each vertex:
-		[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)]
-	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not
-	a polygon (2D) has its vertices ordered clockwise or counter-clockwise'.
-	'''
-
-	n: int = vertices.shape[0]
-	convex: Optional[bool] = None
-	for i in range(n):
-		# ascertain if the polygon is ordered clockwise or counter-clockwise
-		if convex is None:
-			convex = np.cross(
-				vertices[i] - vertices[i - 1 if i > 0 else n - 1],
-				vertices[(i + 1) % n] - vertices[i],
-			) < 0
-			continue
-		# assert that all other vertices are the same
-		if (np.cross(
-			vertices[i] - vertices[i - 1 if i > 0 else n - 1],
-			vertices[(i + 1) % n] - vertices[i],
-		) < 0) != convex:
-			return False
-	return True
 
 
 def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, int]]:
