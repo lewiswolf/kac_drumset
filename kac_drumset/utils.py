@@ -11,6 +11,7 @@ import pstats
 import re
 import shutil
 import sys
+import time
 from typing import Any, Callable, Iterator
 
 __all__ = [
@@ -18,6 +19,7 @@ __all__ = [
 	'printEmojis',
 	'withoutPrinting',
 	'withProfiler',
+	'withTimer',
 ]
 
 
@@ -87,3 +89,9 @@ def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
 	stats = pstats.Stats(pr)
 	stats.sort_stats(pstats.SortKey.TIME)
 	stats.print_stats(n)
+
+
+def withTimer(func: Callable, *args: Any, **kwargs: Any) -> None:
+	t1 = time.time_ns()
+	func(*args, **kwargs)
+	print(f'{(time.time_ns() - t1) / (10 ** 9):.10f}')
