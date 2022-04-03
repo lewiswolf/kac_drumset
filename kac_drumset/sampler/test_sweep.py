@@ -1,5 +1,5 @@
 '''
-Utility functions for use whilst developing, as well as part of unit_tests.py.
+An AudioSampler() used for generating a sinusoidal sweep of the audio spectrum.
 '''
 
 # core
@@ -21,7 +21,7 @@ class TestSweep(AudioSampler):
 	This class produces a sine wave sweep across the audio spectrum, from 20hz to f_s / 2.
 	'''
 
-	def __init__(self, duration: float = 1.0, sr: int = 44100) -> None:
+	def __init__(self, duration: float = 1.0, sr: int = 48000) -> None:
 		'''
 		Render the sinusoidal sweep.
 		'''

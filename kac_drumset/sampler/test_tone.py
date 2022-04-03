@@ -1,5 +1,5 @@
 '''
-Utility functions for use whilst developing, as well as part of unit_tests.py.
+An AudioSampler() used for generating a random waveform.
 '''
 
 # core
@@ -31,7 +31,7 @@ class TestTone(AudioSampler):
 		self,
 		duration: float = 1.0,
 		f_0: float = 0.0,
-		sr: int = 44100,
+		sr: int = 48000,
 		waveshape: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin',
 	) -> None:
 		'''

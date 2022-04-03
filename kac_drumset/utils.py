@@ -92,6 +92,10 @@ def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
 
 
 def withTimer(func: Callable, *args: Any, **kwargs: Any) -> None:
+	'''
+	Calls the input function and posts its runtime to the console.
+	'''
+
 	t1 = time.time_ns()
 	func(*args, **kwargs)
 	print(f'{(time.time_ns() - t1) / (10 ** 9):.10f}')
