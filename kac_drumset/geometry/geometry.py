@@ -27,7 +27,6 @@ __all__ = [
 	'centroid',
 	'generateConcave',
 	'groupNormalisation',
-	'isColinear',
 	'largestVector',
 ]
 
@@ -164,19 +163,6 @@ def groupNormalisation(
 	v_min = np.min(vertices)
 	vertices = (vertices - v_min) / (np.max(vertices) - v_min)
 	return vertices
-
-
-def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
-	'''
-	Determines whether or not a given set of three vertices are colinear.
-	'''
-
-	if vertices.shape != (3, 2):
-		raise ValueError('isColinear() only supports an input of vertices with shape (3, 2).')
-	return (
-		(vertices[2, 1] - vertices[1, 1]) * (vertices[1, 0] - vertices[0, 0])
-		== (vertices[1, 1] - vertices[0, 1]) * (vertices[2, 0] - vertices[1, 0])
-	)
 
 
 def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, int]]:

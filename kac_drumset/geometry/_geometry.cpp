@@ -41,6 +41,14 @@ std::vector<std::array<double, 2>> _generateConvexPolygon(const int& N) {
 	return convertVerticesToVector(g::generateConvexPolygon(N));
 }
 
+bool _isColinear(const std::array<std::array<double, 2>, 3>& V) {
+	return g::isColinear(
+		g::Point(V[0][0], V[0][1]),
+		g::Point(V[1][0], V[1][1]),
+		g::Point(V[2][0], V[2][1])
+	);
+}
+
 bool _isConvex(const std::vector<std::array<double, 2>>& V) {
 	return g::isConvex(convertVectorToVertices(V));
 }
@@ -48,5 +56,6 @@ bool _isConvex(const std::vector<std::array<double, 2>>& V) {
 PYBIND11_MODULE(_geometry, m) {
 	m.doc() = "_geometry";
 	m.def("_generateConvexPolygon", &_generateConvexPolygon);
+	m.def("_isColinear", &_isColinear);
 	m.def("_isConvex", &_isConvex);
 }
