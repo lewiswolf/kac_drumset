@@ -26,6 +26,58 @@ from kac_drumset import (
 ```
 
 ```python
+class SpectrogramSettings(TypedDict, total=False):
+	'''
+	These settings deal strictly with the input representations of the data. For FFT, this is calculated using the
+	provided n_bins for the number of frequency bins, window_length and hop_length. The mel representation uses the same
+	settings as the FFT, with the addition of n_mels, the number of mel frequency bins.
+	'''
+
+	hop_length: int				# hop length in samples
+	n_bins: int					# number of frequency bins for the spectral density function
+	n_mels: int					# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
+	window_length: int			# window length in samples
+
+
+class InputFeatures():
+	'''
+	This class is used to convert a raw waveform into a user defined input representation, which includes end2end, the
+	fourier transform, and a mel spectrogram. The intended use of this class when deployed:
+		IF = InputFeatures()
+		X = np.zeros((n,) + IF.transformShape(len(waveform))))
+		for i in range(n):
+			X[i] = IF.transform(waveform)
+	'''
+
+	def __init__(
+		self,
+		feature_type: Literal['end2end', 'fft', 'mel'],
+		sr: int,
+		normalise_input: bool = True,
+		spectrogram_settings: SpectrogramSettings = {},
+	) -> None:
+		'''
+		InputFeatures works by creating a variably defined method self.transform. This method uses the input settings to
+		generate the correct input representation of the data.
+		'''
+
+	@staticmethod
+	def normalise(waveform: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+		'''
+		Normalise an audio waveform, such that x ∈ [-1.0, 1.0]
+		'''
+		
+	def transform(self, npt.NDArray[np.float64]) -> torch.Tensor:
+		'''
+		Return a representation of the input material after applying the audio transform. 
+		'''
+
+	def transformShape(self, data_length: int) -> tuple[int, ...]:
+		'''
+		Helper method used for precomputing the shape of an individual input feature.
+		params:
+			data_length		Length of the audio file (samples).
+		'''
 ```
 
 ### Sampler

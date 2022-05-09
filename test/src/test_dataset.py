@@ -45,6 +45,6 @@ class DatasetTests(TestCase):
 
 	def test_normalise(self) -> None:
 		# This test asserts that a normalised waveform is always bounded by [-1.0, 1.0].
-		norm = InputFeatures.__normalise__(self.tone.waveform)
+		norm = InputFeatures.normalise(self.tone.waveform)
 		self.assertEqual(np.max(norm), 1.0)
 		self.assertEqual(np.min(norm), -1.0)

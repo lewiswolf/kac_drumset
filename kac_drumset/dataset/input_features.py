@@ -1,6 +1,6 @@
 '''
 This file is used to transform arrays of raw audio into various input types ready for training a neural network. This
-file also includes other helper methods relating to the size of the input data and normalising audio.
+file also includes other helper methods such as calculating the size of the input data and normalising the input audio.
 '''
 
 # core
@@ -27,28 +27,32 @@ class SpectrogramSettings(TypedDict, total=False):
 	'''
 	These settings deal strictly with the input representations of the data. For FFT, this is calculated using the
 	provided n_bins for the number of frequency bins, window_length and hop_length. The mel representation uses the same
-	settings as the FFT, with the addition of n_mels, the number of mel frequency bins. And lastly, constant q transform
-	makes use of only the number of bins, as well as the hop_length (there is no overlapping window functionality
-	currently supported). n_bins is used to indicate the maximum amount of bins to be used, whereas in reality this is
-	altered to ensure that there are an even amount of bins per octave.
+	settings as the FFT, with the addition of n_mels, the number of mel frequency bins.
 	'''
 
-	f_min: float											# minimum frequency of transform, cqt only (hz)
-	hop_length: int											# hop length in samples
-	n_bins: int												# number of frequency bins for the spectral density function
-	n_mels: int												# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
-	window_length: int										# window length in samples
+	f_min: float				# minimum frequency of the transform in hertz (mel only)
+	hop_length: int				# hop length in samples
+	n_bins: int					# number of frequency bins for the spectral density function
+	n_mels: int					# number of mel frequency bins (mel only)
+	window_length: int			# window length in samples
 
 
 class InputFeatures():
 	'''
-	This class is used to convert a raw waveform into a user defined input representation, which includes the fourier
-	transform, mel spectrogram and constant q transform. The intended use of this class when deployed:
+	This class is used to convert a raw waveform into a user defined input representation, which includes end2end, the
+	fourier transform, and a mel spectrogram. The intended use of this class when deployed:
 		IF = InputFeatures()
 		X = np.zeros((n,) + IF.transformShape(len(waveform))))
 		for i in range(n):
 			X[i] = IF.transform(waveform)
 	'''
+
+	# for an explanation of why this type is Any, see
+	# todo.md => `Assigning class methods to class variables`.
+	# __normalise__: Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]]
+	# transform: Callable[[Any, npt.NDArray[np.float64]], torch.Tensor]
+	__normalise__: Any
+	transform: Any
 
 	bins_per_octave: int
 	f_min: float
@@ -56,12 +60,7 @@ class InputFeatures():
 	hop_length: int
 	n_bins: int
 	n_mels: int
-	normalise_input: bool
 	sr: int
-	# for an explanation of why this type is Any, see
-	# todo.md => `Assigning class methods to class variables`.
-	# transform: Callable[[Any, npt.NDArray[np.float64]], torch.Tensor]
-	transform: Any
 	transformer: torch.nn.Module
 	window_length: int
 
@@ -69,12 +68,12 @@ class InputFeatures():
 		self,
 		feature_type: Literal['end2end', 'fft', 'mel'],
 		sr: int,
-		normalise_input: bool = False,
+		normalise_input: bool = True,
 		spectrogram_settings: SpectrogramSettings = {},
 	) -> None:
 		'''
-		This method sets up the class ready to produce input features. Based on the type of output/spectrogram, the internal
-		settings are also configured.
+		InputFeatures works by creating a variably defined method self.transform. This method uses the input settings to
+		generate the correct input representation of the data.
 		'''
 
 		# initialise default settings
@@ -89,13 +88,11 @@ class InputFeatures():
 		default_settings.update(spectrogram_settings)
 		spectrogram_settings = default_settings
 		self.feature_type = feature_type
-		self.normalise_input = normalise_input
 		self.sr = sr
-
+		self.__normalise__ = self.normalise if normalise_input else lambda x: x
 		# configure end2end
 		if self.feature_type == 'end2end':
 			self.transform = self.__end2end__
-
 		# configure fft
 		if self.feature_type == 'fft':
 			self.hop_length = spectrogram_settings['hop_length']
@@ -108,7 +105,6 @@ class InputFeatures():
 				win_length=self.window_length,
 			)
 			self.transform = self.__withTransformer__
-
 		# configure mel
 		if self.feature_type == 'mel':
 			self.f_min = spectrogram_settings['f_min']
@@ -129,25 +125,26 @@ class InputFeatures():
 
 	def __end2end__(self, waveform: npt.NDArray[np.float64]) -> torch.Tensor:
 		'''
-		Convert a numpy array into a pytorch tensor.
+		Convert a numpy array into a PyTorch tensor.
 		'''
-		waveform = self.__normalise__(waveform) if self.normalise_input else waveform
-		return torch.as_tensor(waveform)
 
-	@staticmethod
-	def __normalise__(waveform: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-		'''
-		Normalise an audio waveform, such that x ∈ [-1.0, 1.0]
-		'''
-		x_min = np.min(waveform)
-		return 2.0 * (waveform - x_min) / (np.max(waveform) - x_min) - 1.0
+		return torch.as_tensor(self.__normalise__(waveform))
 
 	def __withTransformer__(self, waveform: npt.NDArray[np.float64]) -> torch.Tensor:
 		'''
 		Calculate a spectrogram output using a transformer (torch.nn.Module).
 		'''
-		waveform = self.__normalise__(waveform) if self.normalise_input else waveform
-		return self.transformer(torch.as_tensor(waveform))
+
+		return self.transformer(torch.as_tensor(self.__normalise__(waveform)))
+
+	@staticmethod
+	def normalise(waveform: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+		'''
+		Normalise an audio waveform, such that x ∈ [-1.0, 1.0]
+		'''
+
+		x_min = np.min(waveform)
+		return 2.0 * (waveform - x_min) / (np.max(waveform) - x_min) - 1.0
 
 	def transformShape(self, data_length: int) -> tuple[int, ...]:
 		'''
