@@ -1,5 +1,9 @@
 ## General Codebase
 
+-	**Dependency conflicts**
+
+	torchaudio does not support python 3.10.
+
 -   **Internal types for nested lists, numpy arrays and pytroch tensors**
 
     So far, most datatypes have been well documented throughout this codebase. However, when it comes to various 'array-like' datatypes, ensuring the correct _internal_ datatype for each array has quickly become a complex and difficult task.
