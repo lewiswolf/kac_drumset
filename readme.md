@@ -16,6 +16,18 @@ To ensure that the GPU can be fully utilised by this application, make sure to u
 
 ## Core Library
 
+### Dataset
+
+```python
+from kac_drumset import (
+	InputFeatures,
+	SpectrogramSettings,
+)
+```
+
+```python
+```
+
 ### Sampler
 
 ```python

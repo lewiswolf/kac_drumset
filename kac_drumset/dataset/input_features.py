@@ -10,7 +10,6 @@ from typing import Any, Literal, TypedDict
 # dependencies
 import numpy as np 				# maths
 import numpy.typing as npt		# typing for numpy
-import librosa					# numpy audio manipulation
 import torch					# pytorch
 import torchaudio				# tensor audio manipulation
 
@@ -53,7 +52,7 @@ class InputFeatures():
 
 	bins_per_octave: int
 	f_min: float
-	feature_type: Literal['end2end', 'fft', 'mel', 'cqt']
+	feature_type: Literal['end2end', 'fft', 'mel']
 	hop_length: int
 	n_bins: int
 	n_mels: int
@@ -68,7 +67,7 @@ class InputFeatures():
 
 	def __init__(
 		self,
-		feature_type: Literal['end2end', 'fft', 'mel', 'cqt'],
+		feature_type: Literal['end2end', 'fft', 'mel'],
 		sr: int,
 		normalise_input: bool = False,
 		spectrogram_settings: SpectrogramSettings = {},
@@ -128,32 +127,6 @@ class InputFeatures():
 			)
 			self.transform = self.__withTransformer__
 
-		# configure cqt
-		if self.feature_type == 'cqt':
-			self.f_min = spectrogram_settings['f_min']
-			self.hop_length = spectrogram_settings['hop_length']
-			# recalculate n_bins to form the closest match to the original kwarg
-			max_octaves = math.log2((self.sr * 0.5) / self.f_min)
-			self.bins_per_octave = math.floor(spectrogram_settings['n_bins'] / max_octaves)
-			self.n_bins = math.floor(self.bins_per_octave * max_octaves)
-			self.transform = self.__cqt__
-
-	def __cqt__(self, waveform: npt.NDArray[np.float64]) -> torch.Tensor:
-		'''
-		Calculate the constant q transform using librosa.
-		TO ADD: see todo.md -> 'Port librosa.vqt() to PyTorch'.
-		'''
-		waveform = self.__normalise__(waveform) if self.normalise_input else waveform
-		return torch.as_tensor(np.abs(librosa.cqt(
-			self.__normalise__(waveform),
-			sr=self.sr,
-			n_bins=self.n_bins,
-			bins_per_octave=self.bins_per_octave,
-			fmin=self.f_min,
-			hop_length=self.hop_length,
-			dtype=np.float64,
-		)))
-
 	def __end2end__(self, waveform: npt.NDArray[np.float64]) -> torch.Tensor:
 		'''
 		Convert a numpy array into a pytorch tensor.
@@ -191,5 +164,3 @@ class InputFeatures():
 				return (self.n_bins // 2 + 1, temporalWidth)
 			if self.feature_type == 'mel':
 				return (self.n_mels, temporalWidth)
-			if self.feature_type == 'cqt':
-				return (self.n_bins, temporalWidth)

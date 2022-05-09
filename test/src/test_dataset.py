@@ -6,11 +6,10 @@ import numpy as np
 import torch
 
 # src
-from kac_drumset.dataset import InputFeatures
+from kac_drumset import InputFeatures
 
 # test
 from kac_drumset import TestSweep
-from kac_drumset.utils import withoutPrinting
 
 
 class DatasetTests(TestCase):
@@ -40,16 +39,6 @@ class DatasetTests(TestCase):
 		# A low n_mels suits the test tone.
 		IF = InputFeatures(feature_type='mel', spectrogram_settings={'n_mels': 32}, sr=self.tone.sr)
 		spectrogram = IF.transform(self.tone.waveform)
-		# This test asserts that the output tensor is the correct shape and type.
-		self.assertEqual(spectrogram.shape, IF.transformShape(self.tone.length))
-		self.assertEqual(spectrogram.dtype, torch.float64)
-
-	def test_cqt(self) -> None:
-		# librosa.cqt() has a number of dependency issues, which clog up the console.
-		# There is a warning about n_fft sizes however that should be looked into.
-		with withoutPrinting():
-			IF = InputFeatures(feature_type='cqt', sr=self.tone.sr)
-			spectrogram = IF.transform(self.tone.waveform)
 		# This test asserts that the output tensor is the correct shape and type.
 		self.assertEqual(spectrogram.shape, IF.transformShape(self.tone.length))
 		self.assertEqual(spectrogram.dtype, torch.float64)
