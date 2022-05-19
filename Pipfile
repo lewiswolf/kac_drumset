@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 numpy = ">=1.22"
 opencv-python = ">=4.5"
-soundfile = ">=1.15"
+soundfile = "*"
 torch = ">=1.11"
 torchaudio = ">=0.11"
 tqdm = ">=4.64"
