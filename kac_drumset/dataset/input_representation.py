@@ -15,7 +15,7 @@ import torchaudio				# tensor audio manipulation
 
 __all__ = [
 	'InputRepresentation',
-	'SpectrogramSettings',
+	'RepresentationSettings',
 ]
 
 # necessary to enforce dtype throughout the project, see todo.md ->
@@ -23,18 +23,24 @@ __all__ = [
 torch.set_default_dtype(torch.float64)
 
 
-class SpectrogramSettings(TypedDict, total=False):
+class RepresentationSettings(TypedDict, total=False):
 	'''
 	These settings deal strictly with the input representations of the data. For FFT, this is calculated using the
 	provided n_bins for the number of frequency bins, window_length and hop_length. The mel representation uses the same
 	settings as the FFT, with the addition of n_mels, the number of mel frequency bins.
 	'''
 
-	f_min: float				# minimum frequency of the transform in hertz (mel only)
-	hop_length: int				# hop length in samples
-	n_bins: int					# number of frequency bins for the spectral density function
-	n_mels: int					# number of mel frequency bins (mel only)
-	window_length: int			# window length in samples
+	f_min: float					# minimum frequency of the transform in hertz (mel only)
+	hop_length: int					# hop length in samples
+	n_bins: int						# number of frequency bins for the spectral density function
+	n_mels: int						# number of mel frequency bins (mel only)
+	normalise_input: bool			# should the input be normalised
+	representation_type: Literal[	# representation type
+		'end2end',
+		'fft',
+		'mel',
+	]
+	window_length: int				# window length in samples
 
 
 class InputRepresentation():
@@ -53,23 +59,13 @@ class InputRepresentation():
 	# transform: Callable[[Any, npt.NDArray[np.float64]], torch.Tensor]
 	__normalise__: Any
 	transform: Any
-
-	bins_per_octave: int
-	f_min: float
-	hop_length: int
-	n_bins: int
-	n_mels: int
-	representation_type: Literal['end2end', 'fft', 'mel']
-	sr: int
+	settings: RepresentationSettings
 	transformer: torch.nn.Module
-	window_length: int
 
 	def __init__(
 		self,
-		representation_type: Literal['end2end', 'fft', 'mel'],
 		sr: int,
-		normalise_input: bool = True,
-		spectrogram_settings: SpectrogramSettings = {},
+		settings: RepresentationSettings = {},
 	) -> None:
 		'''
 		InputRepresentation works by creating a variably defined method self.transform. This method uses the input settings to
@@ -77,49 +73,41 @@ class InputRepresentation():
 		'''
 
 		# initialise default settings
-		default_settings: SpectrogramSettings = {
+		default_settings: RepresentationSettings = {
 			'f_min': 22.05,
 			'hop_length': 256,
 			'n_bins': 512,
-			'n_mels': 128,
+			'n_mels': 32,
+			'normalise_input': True,
+			'representation_type': 'end2end',
 			'window_length': 512,
 		}
-		default_settings.update(spectrogram_settings)
-		spectrogram_settings = default_settings
-		# initialise user defined variables
-		self.representation_type = representation_type
+		default_settings.update(settings)
+		self.settings = default_settings
 		self.sr = sr
-		self.__normalise__ = self.normalise if normalise_input else lambda x: x
+		self.__normalise__ = self.normalise if self.settings['normalise_input'] else lambda x: x
 		# configure end2end
-		if self.representation_type == 'end2end':
+		if self.settings['representation_type'] == 'end2end':
 			self.transform = self.__end2end__
 		# configure fft
-		if self.representation_type == 'fft':
-			self.hop_length = spectrogram_settings['hop_length']
-			self.n_bins = spectrogram_settings['n_bins']
-			self.window_length = spectrogram_settings['window_length']
+		if self.settings['representation_type'] == 'fft':
 			self.transformer = torchaudio.transforms.Spectrogram(
-				hop_length=self.hop_length,
-				n_fft=self.n_bins,
+				hop_length=self.settings['hop_length'],
+				n_fft=self.settings['n_bins'],
 				power=2.0,
-				win_length=self.window_length,
+				win_length=self.settings['window_length'],
 			)
 			self.transform = self.__withTransformer__
 		# configure mel
-		if self.representation_type == 'mel':
-			self.f_min = spectrogram_settings['f_min']
-			self.hop_length = spectrogram_settings['hop_length']
-			self.n_bins = spectrogram_settings['n_bins']
-			self.n_mels = spectrogram_settings['n_mels']
-			self.window_length = spectrogram_settings['window_length']
+		if self.settings['representation_type'] == 'mel':
 			self.transformer = torchaudio.transforms.MelSpectrogram(
-				f_min=self.f_min,
-				hop_length=self.hop_length,
-				n_fft=self.n_bins,
-				n_mels=self.n_mels,
+				f_min=self.settings['f_min'],
+				hop_length=self.settings['hop_length'],
+				n_fft=self.settings['n_bins'],
+				n_mels=self.settings['n_mels'],
 				power=2.0,
 				sample_rate=self.sr,
-				win_length=self.window_length,
+				win_length=self.settings['window_length'],
 			)
 			self.transform = self.__withTransformer__
 
@@ -153,20 +141,11 @@ class InputRepresentation():
 			data_length		Length of the audio file (samples).
 		'''
 
-		if self.representation_type == 'end2end':
+		if self.settings['representation_type'] == 'end2end':
 			return (data_length, )
 		else:
-			temporalWidth = math.ceil((data_length + 1) / self.hop_length)
-			if self.representation_type == 'fft':
-				return (self.n_bins // 2 + 1, temporalWidth)
-			if self.representation_type == 'mel':
-				return (self.n_mels, temporalWidth)
-
-	def settings(self) -> SpectrogramSettings:
-		return {
-			'f_min': self.f_min if hasattr(self, 'f_min') else 22.05,
-			'hop_length': self.hop_length if hasattr(self, 'hop_length') else 256,
-			'n_bins': self.n_bins if hasattr(self, 'n_bins') else 512,
-			'n_mels': self.n_mels if hasattr(self, 'n_mels') else 128,
-			'window_length': self.window_length if hasattr(self, 'window_length') else 512,
-		}
+			temporalWidth = math.ceil((data_length + 1) / self.settings['hop_length'])
+			if self.settings['representation_type'] == 'fft':
+				return (self.settings['n_bins'] // 2 + 1, temporalWidth)
+			if self.settings['representation_type'] == 'mel':
+				return (self.settings['n_mels'], temporalWidth)

@@ -1,6 +1,6 @@
+from .dataset import TorchDataset
 from .generate_dataset import generateDataset
-from .input_representation import InputRepresentation, SpectrogramSettings
-from .types import DatasetSettings, TorchDataset
+from .input_representation import InputRepresentation, RepresentationSettings
 
 __all__ = [
 	# methods
@@ -8,7 +8,6 @@ __all__ = [
 	# classes
 	'InputRepresentation',
 	# types
-	'DatasetSettings',
-	'SpectrogramSettings',
+	'RepresentationSettings',
 	'TorchDataset',
 ]

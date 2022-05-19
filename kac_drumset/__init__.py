@@ -1,4 +1,4 @@
-from .dataset import InputRepresentation, SpectrogramSettings, generateDataset
+from .dataset import InputRepresentation, RepresentationSettings, generateDataset
 from .sampler import AudioSampler, SamplerSettings, TestSweep, TestTone
 
 __all__ = [
@@ -7,8 +7,7 @@ __all__ = [
 	# dataset classes
 	'InputRepresentation',
 	# dataset types
-	'DatasetSettings',
-	'SpectrogramSettings',
+	'RepresentationSettings',
 	'TorchDataset',
 	# sampler types
 	'AudioSampler',

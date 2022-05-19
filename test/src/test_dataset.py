@@ -32,10 +32,8 @@ class DatasetTests(TestCase):
 		with withoutPrinting():
 			dataset = generateDataset(
 				TestSweep,
-				dataset_settings={
-					'dataset_size': 10,
-					'dataset_dir': self.tmp_dir,
-				},
+				dataset_dir=self.tmp_dir,
+				dataset_size=10,
 				sampler_settings=TestSweep.Settings({'duration': 1.0, 'sr': 48000}),
 			)
 
@@ -45,7 +43,10 @@ class DatasetTests(TestCase):
 		self.assertEqual(len(os.listdir(f'{os.getcwd()}/test/tmp')) - 2, 10)
 
 	def test_IR_end2end(self) -> None:
-		IR = InputRepresentation(normalise_input=False, representation_type='end2end', sr=self.tone.sr)
+		IR = InputRepresentation(self.tone.sr, {
+			'normalise_input': False,
+			'representation_type': 'end2end',
+		})
 		T = IR.transform(self.tone.waveform)
 		# This test asserts that the input waveform and the transform are equivalent.
 		self.assertTrue(np.array_equal(self.tone.waveform, T.detach().numpy()))
@@ -54,7 +55,7 @@ class DatasetTests(TestCase):
 		self.assertEqual(T.dtype, torch.float64)
 
 	def test_IR_fft(self) -> None:
-		IR = InputRepresentation(representation_type='fft', sr=self.tone.sr)
+		IR = InputRepresentation(self.tone.sr, {'representation_type': 'fft'})
 		spectrogram = IR.transform(self.tone.waveform)
 		# This test asserts that the output tensor is the correct shape and type.
 		self.assertEqual(spectrogram.shape, IR.transformShape(self.tone.length))
@@ -62,7 +63,7 @@ class DatasetTests(TestCase):
 
 	def test_IR_mel(self) -> None:
 		# A low n_mels suits the test tone.
-		IR = InputRepresentation(representation_type='mel', spectrogram_settings={'n_mels': 32}, sr=self.tone.sr)
+		IR = InputRepresentation(self.tone.sr, {'representation_type': 'mel'})
 		spectrogram = IR.transform(self.tone.waveform)
 		# This test asserts that the output tensor is the correct shape and type.
 		self.assertEqual(spectrogram.shape, IR.transformShape(self.tone.length))

@@ -1,35 +1,13 @@
-# core
-from typing import Literal, TypedDict
-
 # dependencies
 import torch				# pytorch
 
+# src
+from .input_representation import RepresentationSettings
+from ..sampler import SamplerSettings
+
 __all__ = [
-	'DatasetSettings',
-	'SampleMetadata',
 	'TorchDataset',
 ]
-
-
-class DatasetSettings(TypedDict, total=False):
-	'''
-	'''
-
-	dataset_dir: str
-	dataset_size: int
-	normalise_input: bool
-	representation_type: Literal['end2end', 'fft', 'mel']
-
-
-class SampleMetadata(TypedDict, total=False):
-	'''
-	Metadata format for each audio sample. Each audio sample consists of a wav file stored
-	on disk alongside its respective input data (x) and labels (y). The implementation of
-	this class assumes that the labels (y) are not always present.
-	'''
-	filepath: str											# location of .wav file, relative to project directory
-	x: list													# input data for the network
-	y: list													# labels for each sample
 
 
 class TorchDataset(torch.utils.data.Dataset):
@@ -38,14 +16,29 @@ class TorchDataset(torch.utils.data.Dataset):
 	into a tensor self.X, and the labels, if present, into a tensor self.Y.
 	'''
 
-	X: torch.Tensor		# data
-	Y: torch.Tensor		# labels
+	X: torch.Tensor
+	Y: torch.Tensor
+	dataset_dir: str
+	dataset_size: int
+	representation_settings: RepresentationSettings
+	sampler: str
+	sampler_settings: SamplerSettings
 
-	def __init__(self, dataset_size: int, x_size: tuple[int, ...]) -> None:
+	def __init__(
+		self,
+		x_size: tuple[int, ...],
+		dataset_size: int,
+		sampler: str,
+		representation_settings: RepresentationSettings,
+		sampler_settings: SamplerSettings,
+	) -> None:
 		'''
-		Initialise self.X.
+		Initialise dataset.
 		'''
 		self.X = torch.zeros((dataset_size,) + x_size)
+		self.sampler = sampler
+		self.representation_settings = representation_settings
+		self.sampler_settings = sampler_settings
 
 	def __getitem__(self, i: int) -> tuple[torch.Tensor, torch.Tensor]:
 		'''
