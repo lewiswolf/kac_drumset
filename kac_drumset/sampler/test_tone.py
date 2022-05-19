@@ -3,14 +3,13 @@ An AudioSampler() used for generating a random waveform.
 '''
 
 # core
-import random
 from typing import Literal, Union
 
 # dependencies
 import numpy as np 	# maths
 
 # src
-from .audio_sampler import AudioSampler
+from .audio_sampler import AudioSampler, SamplerSettings
 
 __all__ = [
 	'TestTone',
@@ -29,9 +28,9 @@ class TestTone(AudioSampler):
 
 	def __init__(
 		self,
-		duration: float = 1.0,
+		duration: float,
+		sr: int,
 		f_0: float = 0.0,
-		sr: int = 48000,
 		waveshape: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin',
 	) -> None:
 		'''
@@ -65,7 +64,11 @@ class TestTone(AudioSampler):
 		''' Returns f_0 as a label. '''
 		return [self.f_0] if self.f_0 else []
 
-	def updateProperties(self) -> None:
-		''' Randomise f_0. '''
-		if self.__random_f_0:
-			self.f_0 = random.uniform(110, 880)
+	# def updateProperties(self) -> None:
+	# 	''' Randomise f_0. '''
+	# 	if self.__random_f_0:
+	# 		self.f_0 = random.uniform(110, 880)
+
+	class settings(SamplerSettings, total=False):
+		f_0: float
+		waveshape: Literal['saw', 'sin', 'sqr', 'tri']

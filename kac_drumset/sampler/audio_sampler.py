@@ -1,8 +1,14 @@
+'''
+This file contain the parent or abstract class for any AudioSampler. Using this class, A custom AudioSampler can be
+created to work the the dataset generator. This file has been designed such that each custom AudioSampler will maintain
+type and functionality consistency throughout the codebase.
+'''
+
 # core
 from abc import ABC, abstractmethod
 import math
 import struct
-from typing import Literal, Union
+from typing import Literal, TypedDict, Union
 import wave
 
 # dependencies
@@ -11,7 +17,17 @@ import numpy.typing as npt		# typing for numpy
 
 __all__ = [
 	'AudioSampler',
+	'SamplerSettings',
 ]
+
+
+class SamplerSettings(TypedDict, total=True):
+	'''
+	These are the minimum requirements for the AudioSampler __init__() method. This type is used to maintain type safety
+	when using a custom AudioSampler.
+	'''
+	duration: float
+	sr: int
 
 
 class AudioSampler(ABC):
@@ -66,6 +82,14 @@ class AudioSampler(ABC):
 	def getLabels(self) -> list[Union[float, int]]:
 		'''
 		This method should return the y labels for the generated audio.
+		'''
+		pass
+
+	@abstractmethod
+	class Settings(SamplerSettings, total=False):
+		'''
+		This is an abstract TypedDict used to mirror the type declaration for the __init__() method. This allows for type
+		safety when using a custom AudioSampler.
 		'''
 		pass
 

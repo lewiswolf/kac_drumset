@@ -4,7 +4,7 @@ from typing import Union
 from unittest import TestCase
 
 # src
-from kac_drumset import AudioSampler
+from kac_drumset import AudioSampler, SamplerSettings
 from kac_drumset.utils import clearDirectory
 
 
@@ -33,6 +33,9 @@ class SamplerTests(TestCase):
 				pass
 
 			def getLabels(self) -> list[Union[float, int]]:
+				pass
+
+			class Settings(SamplerSettings):
 				pass
 
 		# This test asserts that the export function exports a wav file.

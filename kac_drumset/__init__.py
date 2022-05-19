@@ -1,5 +1,5 @@
 from .dataset import InputFeatures, SpectrogramSettings
-from .sampler import AudioSampler, TestSweep, TestTone
+from .sampler import AudioSampler, SamplerSettings, TestSweep, TestTone
 
 __all__ = [
 	# dataset
@@ -7,6 +7,7 @@ __all__ = [
 	'SpectrogramSettings',
 	# sampler
 	'AudioSampler',
+	'SamplerSettings',
 	'TestSweep',
 	'TestTone',
 ]

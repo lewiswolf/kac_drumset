@@ -9,7 +9,7 @@ from typing import Union
 import numpy as np 			# maths
 
 # src
-from .audio_sampler import AudioSampler
+from .audio_sampler import AudioSampler, SamplerSettings
 
 __all__ = [
 	'TestSweep',
@@ -21,7 +21,7 @@ class TestSweep(AudioSampler):
 	This class produces a sine wave sweep across the audio spectrum, from 20hz to f_s / 2.
 	'''
 
-	def __init__(self, duration: float = 1.0, sr: int = 48000) -> None:
+	def __init__(self, duration: float, sr: int) -> None:
 		'''
 		Render the sinusoidal sweep.
 		'''
@@ -43,5 +43,8 @@ class TestSweep(AudioSampler):
 	def getLabels(self) -> list[Union[float, int]]:
 		return []
 
-	def updateProperties(self) -> None:
+	# def updateProperties(self) -> None:
+	# 	pass
+
+	class Settings(SamplerSettings):
 		pass
