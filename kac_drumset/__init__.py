@@ -1,13 +1,19 @@
-from .dataset import InputFeatures, SpectrogramSettings
+from .dataset import InputRepresentation, SpectrogramSettings, generateDataset
 from .sampler import AudioSampler, SamplerSettings, TestSweep, TestTone
 
 __all__ = [
-	# dataset
-	'InputFeatures',
+	# dataset methods
+	'generateDataset',
+	# dataset classes
+	'InputRepresentation',
+	# dataset types
+	'DatasetSettings',
 	'SpectrogramSettings',
-	# sampler
+	'TorchDataset',
+	# sampler types
 	'AudioSampler',
 	'SamplerSettings',
+	# sampler tests
 	'TestSweep',
 	'TestTone',
 ]

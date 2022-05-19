@@ -6,6 +6,10 @@ To install this project:
 pip ...
 ```
 
+### Dependencies
+
+-   [libsndfile](https://github.com/libsndfile/libsndfile)
+
 <!-- In either case, _pytorch_ is installed automatically, and will work fine for all CPU based usages. However, to configure this application for GPU usage, you must reinstall the appropriate version of _pytorch_ for your machine (which can be found [here](https://pytorch.org/get-started/locally/)) via:
 
 ```bash

@@ -7,13 +7,12 @@ type and functionality consistency throughout the codebase.
 # core
 from abc import ABC, abstractmethod
 import math
-import struct
 from typing import Literal, TypedDict, Union
-import wave
 
 # dependencies
 import numpy as np				# maths
 import numpy.typing as npt		# typing for numpy
+import soundfile as sf			# audio read & write
 
 __all__ = [
 	'AudioSampler',
@@ -61,15 +60,7 @@ class AudioSampler(ABC):
 		'''
 		Write the generated waveform to a .wav file.
 		'''
-
-		wav_format = (struct.pack('<q', int(s * (2 ** (bit_depth - 1) - 1))) for s in self.waveform)
-		with wave.open(absolutePath, 'w') as wav:
-			wav.setnchannels(1)
-			wav.setsampwidth(bit_depth // 8)
-			wav.setframerate(self.sr)
-			for byte in wav_format:
-				wav.writeframes(byte[0:bit_depth // 8])
-			wav.close()
+		sf.write(absolutePath, self.waveform, self.sr, subtype=f'PCM_{bit_depth}')
 
 	@abstractmethod
 	def generateWaveform(self) -> None:
