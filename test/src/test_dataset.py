@@ -17,7 +17,7 @@ class DatasetTests(TestCase):
 	Tests used in conjunction with `/dataset`.
 	'''
 
-	tone = TestSweep()
+	tone = TestSweep(duration=1.0, sr=48000)
 
 	def test_end2end(self) -> None:
 		IF = InputFeatures(feature_type='end2end', normalise_input=False, sr=self.tone.sr)
