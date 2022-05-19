@@ -40,7 +40,7 @@ jobs:
                   python-version: ${{ matrix.python }}
 
             - name: Install OS specific dependencies
-              if: ${{ matrix.os == 'ubuntu-latest' ]}}
+              if: ${{ matrix.os == 'ubuntu-latest' }}
               run: sudo apt-get install libsndfile1
 
             - name: Install pipenv
