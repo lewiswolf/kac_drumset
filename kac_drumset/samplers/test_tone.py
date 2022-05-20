@@ -9,7 +9,7 @@ from typing import Literal, Union
 import numpy as np 	# maths
 
 # src
-from .audio_sampler import AudioSampler, SamplerSettings
+from ..dataset import AudioSampler, SamplerSettings
 
 __all__ = [
 	'TestTone',
@@ -29,7 +29,7 @@ class TestTone(AudioSampler):
 	def __init__(
 		self,
 		duration: float,
-		sr: int,
+		sample_rate: int,
 		f_0: float = 0.0,
 		waveshape: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin',
 	) -> None:
@@ -40,7 +40,7 @@ class TestTone(AudioSampler):
 			waveshape 	Shape of the waveform.
 		'''
 
-		super().__init__(duration, sr)
+		super().__init__(duration, sample_rate)
 		self.f_0 = f_0
 		self.__random_f_0 = not bool(f_0)
 		self.waveshape = waveshape
@@ -50,7 +50,7 @@ class TestTone(AudioSampler):
 		Renders a specified waveform to a numpy array.
 		'''
 
-		f_t = self.f_0 * (np.arange(self.length) / self.sr)
+		f_t = self.f_0 * (np.arange(self.length) / self.sample_rate)
 		if self.waveshape == 'saw':
 			self.waveform = 2.0 * np.array([i % 1 for i in f_t]) - 1.0
 		if self.waveshape == 'sin':
@@ -69,6 +69,6 @@ class TestTone(AudioSampler):
 	# 	if self.__random_f_0:
 	# 		self.f_0 = random.uniform(110, 880)
 
-	class settings(SamplerSettings, total=False):
+	class Settings(SamplerSettings, total=False):
 		f_0: float
 		waveshape: Literal['saw', 'sin', 'sqr', 'tri']

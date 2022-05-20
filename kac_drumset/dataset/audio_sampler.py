@@ -26,7 +26,7 @@ class SamplerSettings(TypedDict, total=True):
 	when using a custom AudioSampler.
 	'''
 	duration: float
-	sr: int
+	sample_rate: int
 
 
 class AudioSampler(ABC):
@@ -44,23 +44,23 @@ class AudioSampler(ABC):
 
 	duration: float						# duration of the audio file (seconds)
 	length: int							# length of the audio file (samples)
-	sr: int								# sample rate
+	sample_rate: int								# sample rate
 	waveform: npt.NDArray[np.float64]	# the audio sample itself
 
-	def __init__(self, duration: float, sr: int) -> None:
+	def __init__(self, duration: float, sample_rate: int) -> None:
 		'''
 		Initialise sampler.
 		'''
 		self.duration = duration
-		self.sr = sr
-		self.length = math.ceil(duration * sr)
+		self.sample_rate = sample_rate
+		self.length = math.ceil(duration * sample_rate)
 		self.waveform = np.zeros(self.length)
 
 	def export(self, absolutePath: str, bit_depth: Literal[16, 24, 32] = 24) -> None:
 		'''
 		Write the generated waveform to a .wav file.
 		'''
-		sf.write(absolutePath, self.waveform, self.sr, subtype=f'PCM_{bit_depth}')
+		sf.write(absolutePath, self.waveform, self.sample_rate, subtype=f'PCM_{bit_depth}')
 
 	@abstractmethod
 	def generateWaveform(self) -> None:

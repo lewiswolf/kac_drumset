@@ -2,8 +2,8 @@
 import torch				# pytorch
 
 # src
+from .audio_sampler import SamplerSettings
 from .input_representation import RepresentationSettings
-from ..sampler import SamplerSettings
 
 __all__ = [
 	'TorchDataset',

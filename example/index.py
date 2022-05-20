@@ -1,5 +1,18 @@
+from kac_drumset import generateDataset
+from kac_drumset import TestTone
+
+
 def main() -> None:
-	pass
+	generateDataset(
+		TestTone,
+		representation_settings={'output_type': 'end2end'},
+		sampler_settings=TestTone.Settings({
+			'duration': 1.0,
+			'f_0': 440.0,
+			'waveshape': 'sin',
+			'sample_rate': 48000,
+		}),
+	)
 
 
 if __name__ == '__main__':

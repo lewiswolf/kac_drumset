@@ -11,9 +11,9 @@ from tqdm import tqdm			# CLI progress bar
 import torch					# pytorch
 
 # src
+from .audio_sampler import AudioSampler, SamplerSettings
 from .input_representation import InputRepresentation, RepresentationSettings
 from .dataset import TorchDataset
-from ..sampler import AudioSampler, SamplerSettings
 from ..utils import clearDirectory, printEmojis
 
 __all__ = [
@@ -27,7 +27,7 @@ tqdm_settings = {
 }
 
 # necessary to enforce dtype throughout the project, see todo.md ->
-# 'Internal types for nested lists, numpy arrays and pytroch tensors'
+# 'Internal types for nested lists, numpy arrays and pytorch tensors'
 torch.set_default_dtype(torch.float64)
 
 
@@ -46,7 +46,7 @@ def generateDataset(
 
 	# initialise classes
 	IR = InputRepresentation(
-		sampler_settings['sr'],
+		sampler_settings['sample_rate'],
 		representation_settings,
 	)
 	sampler = Sampler(**sampler_settings)

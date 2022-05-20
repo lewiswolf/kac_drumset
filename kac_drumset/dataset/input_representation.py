@@ -35,7 +35,7 @@ class RepresentationSettings(TypedDict, total=False):
 	n_bins: int						# number of frequency bins for the spectral density function
 	n_mels: int						# number of mel frequency bins (mel only)
 	normalise_input: bool			# should the input be normalised
-	representation_type: Literal[	# representation type
+	output_type: Literal[	# representation type
 		'end2end',
 		'fft',
 		'mel',
@@ -79,7 +79,7 @@ class InputRepresentation():
 			'n_bins': 512,
 			'n_mels': 32,
 			'normalise_input': True,
-			'representation_type': 'end2end',
+			'output_type': 'end2end',
 			'window_length': 512,
 		}
 		default_settings.update(settings)
@@ -87,10 +87,10 @@ class InputRepresentation():
 		self.sr = sr
 		self.__normalise__ = self.normalise if self.settings['normalise_input'] else lambda x: x
 		# configure end2end
-		if self.settings['representation_type'] == 'end2end':
+		if self.settings['output_type'] == 'end2end':
 			self.transform = self.__end2end__
 		# configure fft
-		if self.settings['representation_type'] == 'fft':
+		if self.settings['output_type'] == 'fft':
 			self.transformer = torchaudio.transforms.Spectrogram(
 				hop_length=self.settings['hop_length'],
 				n_fft=self.settings['n_bins'],
@@ -99,7 +99,7 @@ class InputRepresentation():
 			)
 			self.transform = self.__withTransformer__
 		# configure mel
-		if self.settings['representation_type'] == 'mel':
+		if self.settings['output_type'] == 'mel':
 			self.transformer = torchaudio.transforms.MelSpectrogram(
 				f_min=self.settings['f_min'],
 				hop_length=self.settings['hop_length'],
@@ -141,11 +141,11 @@ class InputRepresentation():
 			data_length		Length of the audio file (samples).
 		'''
 
-		if self.settings['representation_type'] == 'end2end':
+		if self.settings['output_type'] == 'end2end':
 			return (data_length, )
 		else:
 			temporalWidth = math.ceil((data_length + 1) / self.settings['hop_length'])
-			if self.settings['representation_type'] == 'fft':
+			if self.settings['output_type'] == 'fft':
 				return (self.settings['n_bins'] // 2 + 1, temporalWidth)
-			if self.settings['representation_type'] == 'mel':
+			if self.settings['output_type'] == 'mel':
 				return (self.settings['n_mels'], temporalWidth)

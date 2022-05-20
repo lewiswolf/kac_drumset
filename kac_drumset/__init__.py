@@ -1,18 +1,24 @@
-from .dataset import InputRepresentation, RepresentationSettings, generateDataset
-from .sampler import AudioSampler, SamplerSettings, TestSweep, TestTone
+from .dataset import (
+	AudioSampler,
+	InputRepresentation,
+	RepresentationSettings,
+	SamplerSettings,
+	TorchDataset,
+	generateDataset,
+)
+from .samplers import TestSweep, TestTone
 
 __all__ = [
 	# dataset methods
 	'generateDataset',
 	# dataset classes
+	'AudioSampler',
 	'InputRepresentation',
 	# dataset types
+	'SamplerSettings',
 	'RepresentationSettings',
 	'TorchDataset',
-	# sampler types
-	'AudioSampler',
-	'SamplerSettings',
-	# sampler tests
+	# samplers - tests
 	'TestSweep',
 	'TestTone',
 ]
