@@ -35,6 +35,9 @@ class SamplerTests(TestCase):
 			def getLabels(self) -> list[Union[float, int]]:
 				pass
 
+			def updateProperties(self, i: int) -> None:
+				pass
+
 			class Settings(SamplerSettings):
 				pass
 

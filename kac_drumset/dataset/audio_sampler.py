@@ -77,22 +77,17 @@ class AudioSampler(ABC):
 		pass
 
 	@abstractmethod
+	def updateProperties(self, i: int) -> None:
+		'''
+		This method should be used to update the properties of the sampler
+		when inside a generator loop.
+		'''
+		pass
+
+	@abstractmethod
 	class Settings(SamplerSettings, total=False):
 		'''
 		This is an abstract TypedDict used to mirror the type declaration for the __init__() method. This allows for type
 		safety when using a custom AudioSampler.
 		'''
 		pass
-
-	# @abstractmethod
-	# def updateProperties(self) -> None:
-	# 	'''
-	# 	This method should be used to update the properties of the sampler
-	# 	when inside a generator loop.
-	# 	'''
-	# 	pass
-
-	# private
-	# self._sample_count = 0
-	# private
-	# _sample_count: int					# internal counter to track the amount of samples generated

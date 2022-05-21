@@ -3,6 +3,7 @@ An AudioSampler() used for generating a random waveform.
 '''
 
 # core
+import random
 from typing import Literal, Union
 
 # dependencies
@@ -64,10 +65,10 @@ class TestTone(AudioSampler):
 		''' Returns f_0 as a label. '''
 		return [self.f_0] if self.f_0 else []
 
-	# def updateProperties(self) -> None:
-	# 	''' Randomise f_0. '''
-	# 	if self.__random_f_0:
-	# 		self.f_0 = random.uniform(110, 880)
+	def updateProperties(self, i: int) -> None:
+		''' Randomise f_0. '''
+		if self.__random_f_0:
+			self.f_0 = random.uniform(110, 880)
 
 	class Settings(SamplerSettings, total=False):
 		f_0: float

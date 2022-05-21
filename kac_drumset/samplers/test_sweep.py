@@ -43,8 +43,8 @@ class TestSweep(AudioSampler):
 	def getLabels(self) -> list[Union[float, int]]:
 		return []
 
-	# def updateProperties(self) -> None:
-	# 	pass
+	def updateProperties(self, i: int) -> None:
+		pass
 
 	class Settings(SamplerSettings):
 		pass

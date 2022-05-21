@@ -35,7 +35,7 @@ class RepresentationSettings(TypedDict, total=False):
 	n_bins: int						# number of frequency bins for the spectral density function
 	n_mels: int						# number of mel frequency bins (mel only)
 	normalise_input: bool			# should the input be normalised
-	output_type: Literal[	# representation type
+	output_type: Literal[			# representation type
 		'end2end',
 		'fft',
 		'mel',
@@ -64,7 +64,7 @@ class InputRepresentation():
 
 	def __init__(
 		self,
-		sr: int,
+		sample_rate: int,
 		settings: RepresentationSettings = {},
 	) -> None:
 		'''
@@ -84,7 +84,7 @@ class InputRepresentation():
 		}
 		default_settings.update(settings)
 		self.settings = default_settings
-		self.sr = sr
+		self.sample_rate = sample_rate
 		self.__normalise__ = self.normalise if self.settings['normalise_input'] else lambda x: x
 		# configure end2end
 		if self.settings['output_type'] == 'end2end':
@@ -106,7 +106,7 @@ class InputRepresentation():
 				n_fft=self.settings['n_bins'],
 				n_mels=self.settings['n_mels'],
 				power=2.0,
-				sample_rate=self.sr,
+				sample_rate=self.sample_rate,
 				win_length=self.settings['window_length'],
 			)
 			self.transform = self.__withTransformer__

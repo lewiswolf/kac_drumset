@@ -51,43 +51,38 @@ def generateDataset(
 	)
 	sampler = Sampler(**sampler_settings)
 	dataset = TorchDataset(
-		IR.transformShape(sampler.length),
-		dataset_size,
-		Sampler.__name__,
-		representation_settings,
-		sampler_settings,
+		dataset_size=dataset_size,
+		representation_settings=representation_settings,
+		sampler=Sampler.__name__,
+		sampler_settings=sampler_settings,
+		x_size=IR.transformShape(sampler.length),
 	)
-
 	# housekeeping
 	clearDirectory(dataset_dir)
 	printEmojis('Generating dataset... 🎯')
-
 	# generation loop
 	with open(
 		os.path.normpath(f'{dataset_dir}/metadata.json'),
 		'at',
 	) as new_file:
-		# initial line
-		new_file.write(r'{' + f'{os.linesep}')
 		# add metadata
+		new_file.write(r'{' + f'{os.linesep}')
 		new_file.write(rf'"dataset_size": {dataset_size},{os.linesep}')
 		new_file.write(rf'"sampler_settings": {json.dumps(sampler_settings)},{os.linesep}')
 		new_file.write(rf'"representation_settings": {json.dumps(IR.settings)},{os.linesep}')
 		# add data
 		new_file.write(rf'"data": [{os.linesep}')
-
 		with tqdm(total=dataset_size, **tqdm_settings) as bar:
 			for i in range(dataset_size):
 				# prepare sample
-				# sampler.updateProperties()
+				sampler.updateProperties(i)
 				sampler.generateWaveform()
 				x = IR.transform(sampler.waveform)
 				y = sampler.getLabels()
 				# append input features to dataset
 				dataset.__setitem__(i, x, torch.as_tensor(y))
 				# bounce the raw audio
-				filepath = f'{dataset_dir}/sample_{i:05d}.wav'
-				sampler.export(filepath)
+				sampler.export(f'{dataset_dir}/sample_{i:05d}.wav')
 				# export metadata
 				new_file.write(r'{' + f'{os.linesep}')
 				new_file.write(rf'"x": {x.tolist()},{os.linesep}')

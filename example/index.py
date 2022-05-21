@@ -8,7 +8,6 @@ def main() -> None:
 		representation_settings={'output_type': 'end2end'},
 		sampler_settings=TestTone.Settings({
 			'duration': 1.0,
-			'f_0': 440.0,
 			'waveshape': 'sin',
 			'sample_rate': 48000,
 		}),
