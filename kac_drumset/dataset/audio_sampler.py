@@ -77,7 +77,7 @@ class AudioSampler(ABC):
 		pass
 
 	@abstractmethod
-	def updateProperties(self, i: int) -> None:
+	def updateProperties(self, i: Union[int, None]) -> None:
 		'''
 		This method should be used to update the properties of the sampler
 		when inside a generator loop.

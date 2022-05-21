@@ -47,6 +47,9 @@ class DatasetTests(TestCase):
 		self.assertEqual(len(dataset.Y), 10)
 		self.assertEqual(dataset.__len__(), 10)
 		self.assertEqual(len(os.listdir(f'{os.getcwd()}/test/tmp')) - 2, 10)
+		# this test asserts the correct data type
+		self.assertEqual(dataset.X.dtype, torch.float64)
+		self.assertEqual(dataset.Y.dtype, torch.float64)
 
 	def test_IR_end2end(self) -> None:
 		IR = InputRepresentation(self.tone.sample_rate, {
