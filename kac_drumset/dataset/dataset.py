@@ -26,24 +26,26 @@ class TorchDataset(torch.utils.data.Dataset):
 
 	def __init__(
 		self,
-		x_size: tuple[int, ...],
 		dataset_size: int,
-		sampler: str,
 		representation_settings: RepresentationSettings,
+		sampler: str,
 		sampler_settings: SamplerSettings,
+		x_size: tuple[int, ...],
 	) -> None:
 		'''
 		Initialise dataset.
 		'''
 		self.X = torch.zeros((dataset_size,) + x_size)
-		self.sampler = sampler
 		self.representation_settings = representation_settings
+		self.sampler = sampler
 		self.sampler_settings = sampler_settings
 
 	def __getitem__(self, i: int) -> tuple[torch.Tensor, torch.Tensor]:
 		'''
 		Return the data and its labels, if they exist.
 		'''
+		if not hasattr(self, 'Y'):
+			raise ValueError('Dataset contains no data.')
 		return self.X[i], self.Y[i]
 
 	def __len__(self) -> int:
@@ -57,7 +59,7 @@ class TorchDataset(torch.utils.data.Dataset):
 		Set self.X and self.Y at a specific index. If self.Y doesn't already exist,
 		it is initialised here.
 		'''
-		# if self.Y doesn't yet exist, and a label is given, create the shape for Y
+		# if self.Y does not yet exist, create the shape for Y
 		if not hasattr(self, 'Y'):
 			self.Y = torch.zeros((self.__len__(), ) + y.shape)
 		# add data samples to self
