@@ -10,7 +10,7 @@ from kac_drumset.utils import clearDirectory
 
 class SamplerTests(TestCase):
 	'''
-	Tests used in conjunction with `/sampler`.
+	Tests used in conjunction with `/samplers`.
 	'''
 
 	tmp_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../tmp')
@@ -21,7 +21,7 @@ class SamplerTests(TestCase):
 
 	def test_abstract_sampler(self) -> None:
 		'''
-		Tests used in conjunction with `sampler/audio_sampler`.
+		Tests used in conjunction with `dataset/audio_sampler`.
 		'''
 
 		class Test(AudioSampler):

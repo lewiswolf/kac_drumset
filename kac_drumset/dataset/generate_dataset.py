@@ -14,21 +14,12 @@ import torch					# pytorch
 from .audio_sampler import AudioSampler, SamplerSettings
 from .input_representation import InputRepresentation, RepresentationSettings
 from .dataset import TorchDataset
+from .utils import tqdm_settings
 from ..utils import clearDirectory, printEmojis
 
 __all__ = [
 	'generateDataset',
 ]
-
-
-tqdm_settings = {
-	'bar_format': '{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt}, Elapsed: {elapsed}, ETA: {remaining}, {rate_fmt}  ',
-	'unit': ' data samples',
-}
-
-# necessary to enforce dtype throughout the project, see todo.md ->
-# 'Internal types for nested lists, numpy arrays and pytorch tensors'
-torch.set_default_dtype(torch.float64)
 
 
 def generateDataset(
@@ -55,7 +46,7 @@ def generateDataset(
 		representation_settings=representation_settings,
 		sampler=Sampler.__name__,
 		sampler_settings=sampler_settings,
-		x_size=IR.transformShape(sampler.length),
+		x_size=IR.transformShape(sampler.length, IR.settings),
 	)
 	# housekeeping
 	clearDirectory(dataset_dir)
@@ -68,8 +59,9 @@ def generateDataset(
 		# add metadata
 		new_file.write(r'{' + f'{os.linesep}')
 		new_file.write(rf'"dataset_size": {dataset_size},{os.linesep}')
-		new_file.write(rf'"sampler_settings": {json.dumps(sampler_settings)},{os.linesep}')
 		new_file.write(rf'"representation_settings": {json.dumps(IR.settings)},{os.linesep}')
+		new_file.write(rf'"sampler": {Sampler.__name__},{os.linesep}')
+		new_file.write(rf'"sampler_settings": {json.dumps(sampler_settings)},{os.linesep}')
 		# add data
 		new_file.write(rf'"data": [{os.linesep}')
 		with tqdm(total=dataset_size, **tqdm_settings) as bar:

@@ -5,12 +5,14 @@ from .dataset import (
 	SamplerSettings,
 	TorchDataset,
 	generateDataset,
+	loadDataset,
 )
 from .samplers import TestSweep, TestTone
 
 __all__ = [
 	# dataset methods
 	'generateDataset',
+	'loadDataset',
 	# dataset classes
 	'AudioSampler',
 	'InputRepresentation',

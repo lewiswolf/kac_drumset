@@ -134,18 +134,19 @@ class InputRepresentation():
 		x_min = np.min(waveform)
 		return 2.0 * (waveform - x_min) / (np.max(waveform) - x_min) - 1.0
 
-	def transformShape(self, data_length: int) -> tuple[int, ...]:
+	@staticmethod
+	def transformShape(data_length: int, settings: RepresentationSettings) -> tuple[int, ...]:
 		'''
 		Helper method used for precomputing the shape of an individual input feature.
 		params:
 			data_length		Length of the audio file (samples).
 		'''
 
-		if self.settings['output_type'] == 'end2end':
+		if settings['output_type'] == 'end2end':
 			return (data_length, )
 		else:
-			temporalWidth = math.ceil((data_length + 1) / self.settings['hop_length'])
-			if self.settings['output_type'] == 'fft':
-				return (self.settings['n_bins'] // 2 + 1, temporalWidth)
-			if self.settings['output_type'] == 'mel':
-				return (self.settings['n_mels'], temporalWidth)
+			temporalWidth = math.ceil((data_length + 1) / settings['hop_length'])
+			if settings['output_type'] == 'fft':
+				return (settings['n_bins'] // 2 + 1, temporalWidth)
+			if settings['output_type'] == 'mel':
+				return (settings['n_mels'], temporalWidth)
