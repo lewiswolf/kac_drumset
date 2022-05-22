@@ -57,13 +57,13 @@ def generateDataset(
 		'at',
 	) as new_file:
 		# add metadata
-		new_file.write(r'{' + f'{os.linesep}')
-		new_file.write(rf'"dataset_size": {dataset_size},{os.linesep}')
-		new_file.write(rf'"representation_settings": {json.dumps(IR.settings)},{os.linesep}')
-		new_file.write(rf'"sampler": {Sampler.__name__},{os.linesep}')
-		new_file.write(rf'"sampler_settings": {json.dumps(sampler_settings)},{os.linesep}')
+		new_file.write(r'{' + '\n')
+		new_file.write(rf'"dataset_size": {dataset_size},' + '\n')
+		new_file.write(rf'"representation_settings": {json.dumps(IR.settings)},' + '\n')
+		new_file.write(rf'"sampler": "{Sampler.__name__}",' + '\n')
+		new_file.write(rf'"sampler_settings": {json.dumps(sampler_settings)},' + '\n')
 		# add data
-		new_file.write(rf'"data": [{os.linesep}')
+		new_file.write(r'"data": [' + '\n')
 		with tqdm(total=dataset_size, **tqdm_settings) as bar:
 			for i in range(dataset_size):
 				# prepare sample
@@ -76,10 +76,10 @@ def generateDataset(
 				# bounce the raw audio
 				sampler.export(f'{dataset_dir}/sample_{i:05d}.wav')
 				# export metadata
-				new_file.write(r'{' + f'{os.linesep}')
-				new_file.write(rf'"x": {x.tolist()},{os.linesep}')
-				new_file.write(rf'"y": {y},{os.linesep}')
-				new_file.write(r'}]}' if i == dataset_size - 1 else r'},' + f'{os.linesep}')
+				new_file.write(r'{' + '\n')
+				new_file.write(rf'"x": {x.tolist()},' + '\n')
+				new_file.write(rf'"y": {y},' + '\n')
+				new_file.write(r'}]}' if i == dataset_size - 1 else r'}' + '\n')
 				bar.update(1)
 		new_file.close()
 	return dataset

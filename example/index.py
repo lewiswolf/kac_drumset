@@ -1,4 +1,4 @@
-from kac_drumset import generateDataset
+from kac_drumset import generateDataset, loadDataset
 from kac_drumset import TestTone
 
 
@@ -12,6 +12,7 @@ def main() -> None:
 			'sample_rate': 48000,
 		}),
 	)
+	loadDataset()
 
 
 if __name__ == '__main__':

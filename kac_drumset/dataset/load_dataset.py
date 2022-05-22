@@ -20,7 +20,7 @@ __all__ = [
 
 class DatasetIncompatible(Exception):
 	'''
-	This exception is rasied when a loaded dataset cannot be used alongside
+	This exception is raised when a loaded dataset cannot be used alongside
 	the current project settings. The intended solution for this exception
 	is to generate a completely new dataset.
 	'''
@@ -34,10 +34,10 @@ def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)
 		try:
 			# import metadata
 			file.readlines(1)
-			dataset_size = int(file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1])
-			representation_settings = json.loads(file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1])
-			sampler = file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1]
-			sampler_settings = json.loads(file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1])
+			dataset_size = int(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
+			representation_settings = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
+			sampler = file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1]
+			sampler_settings = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
 			file.readlines(1)
 
 			dataset = TorchDataset(
@@ -57,10 +57,10 @@ def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)
 					# import relevant information
 					file.readlines(1)
 					x = torch.as_tensor(json.loads(
-						file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1],
+						file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1],
 					))
 					y = torch.as_tensor(json.loads(
-						file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1],
+						file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1],
 					))
 					file.readlines(1)
 					# append input features to dataset
