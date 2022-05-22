@@ -57,10 +57,10 @@ def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)
 					# import relevant information
 					file.readlines(1)
 					x = torch.as_tensor(json.loads(
-						file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1],
+						file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1],
 					))
 					y = torch.as_tensor(json.loads(
-						file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1],
+						file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1],
 					))
 					file.readlines(1)
 					# append input features to dataset
