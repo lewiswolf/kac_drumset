@@ -34,10 +34,10 @@ def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)
 		try:
 			# import metadata
 			file.readlines(1)
-			dataset_size = int(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
-			representation_settings = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
-			sampler = file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1]
-			sampler_settings = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
+			dataset_size = int(file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1])
+			representation_settings = json.loads(file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1])
+			sampler = file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1]
+			sampler_settings = json.loads(file.readlines(1)[0].replace(os.linesep, '').split(':', 1)[1][1:-1])
 			file.readlines(1)
 
 			dataset = TorchDataset(
