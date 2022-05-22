@@ -80,8 +80,6 @@ class DatasetTests(TestCase):
 			)
 			loadDataset(dataset_dir=self.tmp_dir)
 
-		self.assertRaises(FileNotFoundError, loadDataset, {'dataset_dir': '/'})
-
 	def test_IR_end2end(self) -> None:
 		IR = InputRepresentation(self.tone.sample_rate, {
 			'normalise_input': False,
