@@ -1,4 +1,5 @@
 '''
+This file contains the generateDataset method.
 '''
 
 # core
@@ -30,9 +31,8 @@ def generateDataset(
 	representation_settings: RepresentationSettings = {},
 ) -> TorchDataset:
 	'''
-	Generates a dataset of audio samples. The generated dataset, including the individual
-	.wav files and the metadata.json, are saved in the directory specified by dataset_dir,
-	which is a path relative to the current working directory.
+	Generates a dataset of audio samples. The generated dataset, including the individual .wav files and the metadata.json,
+	are saved in the directory specified by the absolute filepath dataset_dir.
 	'''
 
 	# initialise classes

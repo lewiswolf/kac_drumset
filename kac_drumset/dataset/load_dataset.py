@@ -1,3 +1,7 @@
+'''
+This file contains the loadDataset method.
+'''
+
 # core
 import json
 import math
@@ -20,6 +24,7 @@ __all__ = [
 
 def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../../data')) -> TorchDataset:
 	'''
+	loadDataset imports a kac_drumset dataset from the directory specified by the absolute path dataset_dir.
 	'''
 
 	with open(os.path.normpath(f'{dataset_dir}/metadata.json')) as file:
@@ -30,7 +35,7 @@ def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)
 		sampler = file.readlines(1)[0].replace('\n', '').split(':', 1)[1][2:-2]
 		sampler_settings = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
 		file.readlines(1)
-
+		# create dataset
 		dataset = TorchDataset(
 			dataset_dir=dataset_dir,
 			dataset_size=dataset_size,
@@ -42,7 +47,7 @@ def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)
 				representation_settings,
 			),
 		)
-
+		# import loop
 		printEmojis('Importing dataset... 📚')
 		with tqdm(total=dataset_size, **tqdm_settings) as bar:
 			for i in range(dataset_size):

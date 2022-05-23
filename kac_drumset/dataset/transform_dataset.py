@@ -1,3 +1,7 @@
+'''
+This file contains the transformDataset method.
+'''
+
 # core
 import json
 import math
@@ -20,16 +24,19 @@ __all__ = [
 
 
 def transformDataset(dataset: TorchDataset, representation_settings: RepresentationSettings) -> TorchDataset:
+	'''
+	transformDataset is used to transform the input representation of a loaded dataset. This method rewrites the
+	metadata.json for the dataset, such that the dataset will be loaded with the new settings upon future use.
+	'''
 
+	# create new input representation
 	IR = InputRepresentation(
 		dataset.sampler_settings['sample_rate'],
 		representation_settings,
 	)
-
 	# check that the dataset actually needs transforming
 	if (IR.settings == dataset.representation_settings):
 		return dataset
-
 	# remove metadata and dataset.X
 	os.remove(f'{dataset.dataset_dir}/metadata.json')
 	dataset.representation_settings = IR.settings
@@ -37,7 +44,7 @@ def transformDataset(dataset: TorchDataset, representation_settings: Representat
 		math.ceil(dataset.sampler_settings['duration'] * dataset.sampler_settings['sample_rate']),
 		IR.settings,
 	))
-
+	# generation loop
 	printEmojis('Transforming dataset... 🛠')
 	with open(
 		os.path.normpath(f'{dataset.dataset_dir}/metadata.json'),

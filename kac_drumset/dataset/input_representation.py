@@ -25,31 +25,35 @@ torch.set_default_dtype(torch.float64)
 
 class RepresentationSettings(TypedDict, total=False):
 	'''
-	These settings deal strictly with the input representations of the data. For FFT, this is calculated using the
-	provided n_bins for the number of frequency bins, window_length and hop_length. The mel representation uses the same
-	settings as the FFT, with the addition of n_mels, the number of mel frequency bins.
+	These settings are used to specify the data representation of audio, providing the option for end to end data, as well
+	as Fourier and Mel transformations. An FFT is calculated using n_bins for the number of frequency bins, as well as
+	window_length and hop_length for the size of the bins. The Mel representation uses the same settings as the FFT, with
+	the addition of n_mels, the number of mel frequency bins, and f_min, the minimum frequency of the transform.
 	'''
 
-	f_min: float					# minimum frequency of the transform in hertz (mel only)
-	hop_length: int					# hop length in samples
-	n_bins: int						# number of frequency bins for the spectral density function
-	n_mels: int						# number of mel frequency bins (mel only)
-	normalise_input: bool			# should the input be normalised
-	output_type: Literal[			# representation type
+	f_min: float			# minimum frequency of the transform in hertz (mel only)
+	hop_length: int			# hop length in samples
+	n_bins: int				# number of frequency bins for the spectral density function
+	n_mels: int				# number of mel frequency bins (mel only)
+	normalise_input: bool	# should the input be normalised
+	output_type: Literal[	# representation type
 		'end2end',
 		'fft',
 		'mel',
 	]
-	window_length: int				# window length in samples
+	window_length: int		# window length in samples
 
 
 class InputRepresentation():
 	'''
 	This class is used to convert a raw waveform into a user defined input representation, which includes end2end, the
 	fourier transform, and a mel spectrogram. The intended use of this class when deployed:
-		IR = InputRepresentation()
-		X = np.zeros((n,) + IR.transformShape(len(waveform))))
-		for i in range(n):
+		IR = InputRepresentation(
+			sampler_rate,
+			representation_settings={},
+		)
+		X = np.zeros((N,) + IR.transformShape(len(waveform)), IR.settings))
+		for i in range(N):
 			X[i] = IR.transform(waveform)
 	'''
 
@@ -62,11 +66,7 @@ class InputRepresentation():
 	settings: RepresentationSettings
 	transformer: torch.nn.Module
 
-	def __init__(
-		self,
-		sample_rate: int,
-		settings: RepresentationSettings = {},
-	) -> None:
+	def __init__(self, sample_rate: int, settings: RepresentationSettings = {}) -> None:
 		'''
 		InputRepresentation works by creating a variably defined method self.transform. This method uses the input settings to
 		generate the correct input representation of the data.
@@ -112,36 +112,22 @@ class InputRepresentation():
 			self.transform = self.__withTransformer__
 
 	def __end2end__(self, waveform: npt.NDArray[np.float64]) -> torch.Tensor:
-		'''
-		Convert a numpy array into a PyTorch tensor.
-		'''
-
+		''' Convert a numpy array into a PyTorch tensor. '''
 		return torch.as_tensor(self.__normalise__(waveform))
 
 	def __withTransformer__(self, waveform: npt.NDArray[np.float64]) -> torch.Tensor:
-		'''
-		Calculate a spectrogram output using a transformer (torch.nn.Module).
-		'''
-
+		''' Calculate a spectrogram output using a transformer (torch.nn.Module). '''
 		return self.transformer(torch.as_tensor(self.__normalise__(waveform)))
 
 	@staticmethod
 	def normalise(waveform: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-		'''
-		Normalise an audio waveform, such that x ∈ [-1.0, 1.0]
-		'''
-
+		''' Normalise an audio waveform, such that x ∈ [-1.0, 1.0] '''
 		x_min = np.min(waveform)
 		return 2.0 * (waveform - x_min) / (np.max(waveform) - x_min) - 1.0
 
 	@staticmethod
 	def transformShape(data_length: int, settings: RepresentationSettings) -> tuple[int, ...]:
-		'''
-		Helper method used for precomputing the shape of an individual input feature.
-		params:
-			data_length		Length of the audio file (samples).
-		'''
-
+		''' This method uses the length of the incoming audio data to calculate the size of the transform's output. '''
 		if settings['output_type'] == 'end2end':
 			return (data_length, )
 		else:

@@ -65,7 +65,7 @@ class TestTone(AudioSampler):
 		''' Returns f_0 as a label. '''
 		return [self.f_0] if self.f_0 else []
 
-	def updateProperties(self, i: Union[int, None]) -> None:
+	def updateProperties(self, i: Union[int, None] = None) -> None:
 		''' Randomise f_0. '''
 		if self.__random_f_0:
 			self.f_0 = random.uniform(110, 880)

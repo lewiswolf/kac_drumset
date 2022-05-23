@@ -6,7 +6,7 @@ To install this project:
 pip ...
 ```
 
-## Dependencies
+### Dependencies
 
 -   [libsndfile](https://github.com/libsndfile/libsndfile)
 
@@ -20,7 +20,8 @@ To ensure that the GPU can be fully utilised by this application, make sure to u
 
 # Core Library
 
-<details><summary>Dataset</summary>
+<details>
+<summary>Dataset</summary>
 
 ```python
 from kac_drumset import (
@@ -38,24 +39,45 @@ from kac_drumset import (
 )
 ```
 
+### Methods
+
+```python
+def generateDataset(
+	Sampler: Type[AudioSampler],
+	sampler_settings: SamplerSettings,
+	dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../../data'),
+	dataset_size: int = 10,
+	representation_settings: RepresentationSettings = {},
+) -> TorchDataset:
+	'''
+	Generates a dataset of audio samples. The generated dataset, including the individual .wav files and the metadata.json,
+	are saved in the directory specified by the absolute filepath dataset_dir.
+	'''
+
+
+def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../../data')) -> TorchDataset:
+	'''
+	loadDataset imports a kac_drumset dataset from the directory specified by the absolute path dataset_dir.
+	'''
+
+
+def transformDataset(dataset: TorchDataset, representation_settings: RepresentationSettings) -> TorchDataset:
+	'''
+	transformDataset is used to transform the input representation of a loaded dataset. This method rewrites the
+	metadata.json for the dataset, such that the dataset will be loaded with the new settings upon future use.
+	'''
+```
+
 ### Classes
 
 ```python
 class AudioSampler(ABC):
-	'''
-	Abstract parent class for an audio sampler. The intended use when deployed:
+	''' Abstract parent class for an audio sampler. '''
 
-	sampler = AudioSampler()
-	for i in range(N):
-		sampler.updateParameters(i)
-		sampler.generateWaveform()
-		x = sampler.waveform
-		y = sampler.getLabels()
-		sampler.export('/absolute/filepath/')
-	'''
-
-	def __init__(self, duration: float, sample_rate: int) -> None:
-		''' Initialise sampler. '''
+	duration: float						# duration of the audio file (seconds)
+	length: int							# length of the audio file (samples)
+	sample_rate: int					# sample rate
+	waveform: npt.NDArray[np.float64]	# the audio sample itself
 
 	def export(self, absolutePath: str, bit_depth: Literal[16, 24, 32] = 24) -> None:
 		''' Write the generated waveform to a .wav file. '''
@@ -78,18 +100,82 @@ class AudioSampler(ABC):
 		This is an abstract TypedDict used to mirror the type declaration for the customised __init__() method. This allows
 		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
 		'''
+	
+
+class InputRepresentation():
+	'''
+	This class is used to convert a raw waveform into a user defined input representation, which includes end2end, the
+	fourier transform, and a mel spectrogram.
+	'''
+
+	settings: RepresentationSettings
+
+	def __init__(self, sample_rate: int, settings: RepresentationSettings = {}) -> None:
+		'''
+		InputRepresentation works by creating a variably defined method self.transform. This method uses the input settings to
+		generate the correct input representation of the data.
+		'''
+
+	def transform(self, waveform: npt.NDArray[np.float64]) -> torch.Tensor:
+		''' Produce the output representation. '''
+
+	@staticmethod
+	def normalise(waveform: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+		''' Normalise an audio waveform, such that x ∈ [-1.0, 1.0] '''
+
+	@staticmethod
+	def transformShape(data_length: int, settings: RepresentationSettings) -> tuple[int, ...]:
+		''' This method uses the length of the incoming audio data to calculate the size of the transform's output. '''
 ```
 
 ### Types
 
 ```python
+class RepresentationSettings(TypedDict, total=False):
+	'''
+	These settings are used to specify the data representation of audio, providing the option for end to end data, as well
+	as Fourier and Mel transformations. An FFT is calculated using n_bins for the number of frequency bins, as well as
+	window_length and hop_length for the size of the bins. The Mel representation uses the same settings as the FFT, with
+	the addition of n_mels, the number of mel frequency bins, and f_min, the minimum frequency of the transform.
+	'''
+
+	f_min: float			# minimum frequency of the transform in hertz (mel only)
+	hop_length: int			# hop length in samples
+	n_bins: int				# number of frequency bins for the spectral density function
+	n_mels: int				# number of mel frequency bins (mel only)
+	normalise_input: bool	# should the input be normalised
+	output_type: Literal[	# representation type
+		'end2end',
+		'fft',
+		'mel',
+	]
+	window_length: int		# window length in samples
+
+
 class SamplerSettings(TypedDict, total=True):
 	'''
 	These are the minimum requirements for the AudioSampler __init__() method. This type is used to maintain type safety
 	when using a custom AudioSampler.
 	'''
-	duration: float
-	sample_rate: int
+	duration: float		# duration of the audio file (seconds)
+	sample_rate: int	# sample rate
+
+
+class TorchDataset(torch.utils.data.Dataset):
+	''' PyTorch wrapper for a dataset. '''
+
+	dataset_dir: str									# dataset directory
+	representation_settings: RepresentationSettings		# settings for InputRepresentation
+	sampler: str										# the name of the sampler used to generate the dataset
+	sampler_settings: SamplerSettings					# settings for the sampler
+	X: torch.Tensor										# data
+	Y: torch.Tensor										# labels
+
+	def __getitem__(self, i: int) -> tuple[torch.Tensor, torch.Tensor]:
+		''' Return the data and its labels at index i. '''
+
+	def __len__(self) -> int:
+		''' Return the dataset size. '''
 ```
 </details>
 
@@ -191,34 +277,37 @@ def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, 
 
 # Development
 
-## Dependencies
+### Dependencies
 
 -   [pipenv](https://formulae.brew.sh/formula/pipenv#default)
 -	[cmake](https://formulae.brew.sh/formula/cmake)
 <!-- -   [CUDA SDK](https://developer.nvidia.com/cuda-downloads) -->
 
-## Install
+### Install
 
 ```bash
 git clone ...
 pipenv install -d
 ```
 
-## Build 
+### Build 
 
 ```bash
 pipenv run build
 ```
+### Example
 
-## Test
+```
+pipenv run start
+```
+
+### Test
 
 ```
 pipenv run test
 ```
 
-## Testing Library
-
-<details><summary>Helper Methods</summary>
+<details><summary>Testing Library</summary>
 
 ```python
 from kac_drumset import (
@@ -242,6 +331,8 @@ class TestTone(AudioSampler):
 	'''
 	This class produces an arbitrary test tone, using either a sawtooth, sine, square or triangle waveform. If it's initial frequency is not set, it will automatically create random frequencies.
 	'''
+	f_0: float										# fundamental frequency (hz)
+	waveshape: Literal['saw', 'sin', 'sqr', 'tri']	# shape of the waveform
 
 def withoutPrinting(allow_errors: bool = False) -> Iterator[Any]:
 	'''

@@ -40,38 +40,6 @@
 
     This issue, specifically with pytorch, has also affected testing, as placing `torch.set_default_dtype(dtype)` somewhere within the code affects every function and file thereafter. I have not been able to find a way of running dedcated tests on idividual files, in an attempt to minimise these issues in the event that the library was to be separated/partially reused, without having to split the tests across multiple files and run them individually.
 
--   **`pydantic.create_model_from_typeddict` has an incompatible type error**
-
-    See [here](https://github.com/samuelcolvin/pydantic/issues/3008) for details.
-
-## `dataset.py`
-
--   **Extendable way to loop over TypedDict keys**
-
-    When using the `TypedDict`, it is sometimes necessary to access its various properties using a variable. This methodology allows for extendable code which loops over the object properties contained within the dict. However, when type checked with mypy, this will return the error `TypedDict key must be a string literal`. This issue is well documented [here](https://github.com/python/mypy/issues/6262), and can be recreated using the code shown below on both an instantiated and an uninstantiated dict. In my mind, this issue is trivial, as of course, when used correctly, we can ensure that a variable key can only ever contain the correct values.
-
-    ```python
-    from typing import TypedDict
-
-    class SomeDict(TypedDict):
-    	key1: int
-    	ket2: float
-    	key3: str
-
-    test: SomeDict = {
-    	key1: 1,
-    	key2: 3.1415,
-    	key3: 'test',
-    }
-
-    for key in test.keys():
-    	print(test[key])
-    ```
-
--   **Dataset may be needlessly regenerated**
-
-    Given a dataset of N samples, where N > M, if the dataset size is changed to M in `settings.py`, this may cause unwarranted behaviour as a result of line 177. Elsewhere, when the dataset metadata does need to be regenerated, due to both the dataset size being changed to M and some other parameter, information about the extra samples may be lost when regenerating the metadata. This is so far untested, but should be looked in to before the code is deployed. An example of how this issue might cause problems: given a dataset of size N, after which some setting is changed that causes the metadata to be regenerated as well as the dataset size being changed to M, if the dataset size was changed back to N, the system would require the dataset be _fully regenerated_ from scratch, even though the correct number of audio samples exists.
-
 ## `input_features.py`
 
 -   **Port `librosa.vqt()` to PyTorch**

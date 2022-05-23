@@ -2,8 +2,8 @@
 from unittest import TestCase
 
 # dependencies
-import cv2
-import numpy as np
+import cv2					# image processing
+import numpy as np 			# maths
 
 # src
 from kac_drumset.geometry import Polygon, RandomPolygon, booleanMask, isColinear, isConvex, largestVector
