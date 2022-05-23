@@ -16,6 +16,7 @@ class TorchDataset(torch.utils.data.Dataset):
 	into a tensor self.X, and the labels, if present, into a tensor self.Y.
 	'''
 
+	dataset_dir: str
 	representation_settings: RepresentationSettings
 	sampler: str
 	sampler_settings: SamplerSettings
@@ -24,15 +25,15 @@ class TorchDataset(torch.utils.data.Dataset):
 
 	def __init__(
 		self,
+		dataset_dir: str,
 		dataset_size: int,
 		representation_settings: RepresentationSettings,
 		sampler: str,
 		sampler_settings: SamplerSettings,
 		x_size: tuple[int, ...],
 	) -> None:
-		'''
-		Initialise dataset.
-		'''
+		''' Initialise dataset. '''
+		self.dataset_dir = dataset_dir
 		self.representation_settings = representation_settings
 		self.sampler = sampler
 		self.sampler_settings = sampler_settings

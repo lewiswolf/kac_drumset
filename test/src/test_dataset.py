@@ -7,9 +7,7 @@ import numpy as np 				# maths
 import torch					# pytorch
 
 # src
-from kac_drumset import InputRepresentation, generateDataset, loadDataset
-
-# test
+from kac_drumset import InputRepresentation, generateDataset, loadDataset, transformDataset
 from kac_drumset import TestSweep, TestTone
 from kac_drumset.utils import clearDirectory, withoutPrinting
 
@@ -79,6 +77,37 @@ class DatasetTests(TestCase):
 				}),
 			)
 			loadDataset(dataset_dir=self.tmp_dir)
+
+	def test_transform_dataset(self) -> None:
+
+		with withoutPrinting():
+			dataset = generateDataset(
+				TestSweep,
+				dataset_dir=self.tmp_dir,
+				dataset_size=10,
+				sampler_settings=TestSweep.Settings({
+					'duration': 1.0,
+					'sample_rate': 48000,
+				}),
+			)
+		self.assertEqual(dataset.representation_settings['output_type'], 'end2end')
+		self.assertEqual(
+			dataset.__getitem__(0)[0].shape,
+			InputRepresentation.transformShape(
+				48000,
+				dataset.representation_settings,
+			),
+		)
+		with withoutPrinting():
+			dataset = transformDataset(dataset, {'output_type': 'fft'})
+		self.assertEqual(dataset.representation_settings['output_type'], 'fft')
+		self.assertEqual(
+			dataset.__getitem__(0)[0].shape,
+			InputRepresentation.transformShape(
+				48000,
+				dataset.representation_settings,
+			),
+		)
 
 	def test_IR_end2end(self) -> None:
 		IR = InputRepresentation(self.tone.sample_rate, {

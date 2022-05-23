@@ -42,8 +42,9 @@ def generateDataset(
 	)
 	sampler = Sampler(**sampler_settings)
 	dataset = TorchDataset(
+		dataset_dir=dataset_dir,
 		dataset_size=dataset_size,
-		representation_settings=representation_settings,
+		representation_settings=IR.settings,
 		sampler=Sampler.__name__,
 		sampler_settings=sampler_settings,
 		x_size=IR.transformShape(sampler.length, IR.settings),

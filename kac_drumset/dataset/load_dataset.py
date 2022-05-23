@@ -22,16 +22,17 @@ def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)
 	'''
 	'''
 
-	with open(f'{dataset_dir}/metadata.json') as file:
+	with open(os.path.normpath(f'{dataset_dir}/metadata.json')) as file:
 		# import metadata
 		file.readlines(1)
 		dataset_size = int(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
 		representation_settings = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
-		sampler = file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1]
+		sampler = file.readlines(1)[0].replace('\n', '').split(':', 1)[1][2:-2]
 		sampler_settings = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
 		file.readlines(1)
 
 		dataset = TorchDataset(
+			dataset_dir=dataset_dir,
 			dataset_size=dataset_size,
 			representation_settings=representation_settings,
 			sampler=sampler,
