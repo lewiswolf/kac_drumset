@@ -1,17 +1,16 @@
-from kac_drumset import (
-	RepresentationSettings,	# typing for the representation_settings
-	TestTone,				# an AudioSampler used for generating raw waveforms.
-	TorchDataset,			# the dataset class.
-	generateDataset,
-	loadDataset,
-	transformDataset,
-)
-
-
 def dataset() -> None:
 	'''
 	This example demonstrates all of the methods used to generate, load, and modify a dataset.
 	'''
+
+	from kac_drumset import (
+		RepresentationSettings,	# typing for the representation_settings
+		TestTone,				# an AudioSampler used for generating raw waveforms.
+		TorchDataset,			# the dataset class.
+		generateDataset,
+		loadDataset,
+		transformDataset,
+	)
 
 	# Generating a dataset takes as its first argument an AudioSampler, each of which has its own customised settings
 	# constructor. To configure the representation settings, an dict of type RepresentationSettings is passed to the
