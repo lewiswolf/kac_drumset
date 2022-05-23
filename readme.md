@@ -1,4 +1,4 @@
-## Install
+# Install
 
 To install this project:
 
@@ -6,7 +6,7 @@ To install this project:
 pip ...
 ```
 
-### Dependencies
+## Dependencies
 
 -   [libsndfile](https://github.com/libsndfile/libsndfile)
 
@@ -18,84 +18,85 @@ pipenv run pip install torch==1.8.1+cu102 ...
 
 To ensure that the GPU can be fully utilised by this application, make sure to update the _PATH_2_CUDA_ variable in `src/settings.py`, which should point to your installed version of the CUDA SDK. -->
 
-## Core Library
+# Core Library
 
-### Dataset
-
-```python
-from kac_drumset import (
-	InputFeatures,
-	SpectrogramSettings,
-)
-```
-
-```python
-class SpectrogramSettings(TypedDict, total=False):
-	'''
-	These settings deal strictly with the input representations of the data. For FFT, this is calculated using the
-	provided n_bins for the number of frequency bins, window_length and hop_length. The mel representation uses the same
-	settings as the FFT, with the addition of n_mels, the number of mel frequency bins.
-	'''
-
-	hop_length: int				# hop length in samples
-	n_bins: int					# number of frequency bins for the spectral density function
-	n_mels: int					# number of mel frequency bins (used when INPUT_FEATURES == 'mel')
-	window_length: int			# window length in samples
-
-
-class InputFeatures():
-	'''
-	This class is used to convert a raw waveform into a user defined input representation, which includes end2end, the
-	fourier transform, and a mel spectrogram. The intended use of this class when deployed:
-		IF = InputFeatures()
-		X = np.zeros((n,) + IF.transformShape(len(waveform))))
-		for i in range(n):
-			X[i] = IF.transform(waveform)
-	'''
-
-	def __init__(
-		self,
-		feature_type: Literal['end2end', 'fft', 'mel'],
-		sr: int,
-		normalise_input: bool = True,
-		spectrogram_settings: SpectrogramSettings = {},
-	) -> None:
-		'''
-		InputFeatures works by creating a variably defined method self.transform. This method uses the input settings to
-		generate the correct input representation of the data.
-		'''
-
-	@staticmethod
-	def normalise(waveform: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-		'''
-		Normalise an audio waveform, such that x ∈ [-1.0, 1.0]
-		'''
-		
-	def transform(self, npt.NDArray[np.float64]) -> torch.Tensor:
-		'''
-		Return a representation of the input material after applying the audio transform. 
-		'''
-
-	def transformShape(self, data_length: int) -> tuple[int, ...]:
-		'''
-		Helper method used for precomputing the shape of an individual input feature.
-		params:
-			data_length		Length of the audio file (samples).
-		'''
-```
-
-### Sampler
+<details><summary>Dataset</summary>
 
 ```python
 from kac_drumset import (
+	# Methods
+	generateDataset,
+	loadDataset,
+	transformDataset,
+	# Classes
 	AudioSampler,
+	InputRepresentation,
+	# Types
+	RepresentationSettings,
+	SamplerSettings,
+	TorchDataset,
 )
 ```
 
+### Classes
+
 ```python
+class AudioSampler(ABC):
+	'''
+	Abstract parent class for an audio sampler. The intended use when deployed:
+
+	sampler = AudioSampler()
+	for i in range(N):
+		sampler.updateParameters(i)
+		sampler.generateWaveform()
+		x = sampler.waveform
+		y = sampler.getLabels()
+		sampler.export('/absolute/filepath/')
+	'''
+
+	def __init__(self, duration: float, sample_rate: int) -> None:
+		''' Initialise sampler. '''
+
+	def export(self, absolutePath: str, bit_depth: Literal[16, 24, 32] = 24) -> None:
+		''' Write the generated waveform to a .wav file. '''
+
+	@abstractmethod
+	def generateWaveform(self) -> None:
+		''' This method should be used to generate and set self.waveform. '''
+
+	@abstractmethod
+	def getLabels(self) -> list[Union[float, int]]:
+		''' This method should return the y labels for the generated audio. '''
+
+	@abstractmethod
+	def updateProperties(self, i: Union[int, None]) -> None:
+		''' This method should be used to update the properties of the sampler when inside a generator loop. '''
+
+	@abstractmethod
+	class Settings(SamplerSettings, total=False):
+		'''
+		This is an abstract TypedDict used to mirror the type declaration for the customised __init__() method. This allows
+		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
+		'''
 ```
 
-### Geometry
+### Types
+
+```python
+class SamplerSettings(TypedDict, total=True):
+	'''
+	These are the minimum requirements for the AudioSampler __init__() method. This type is used to maintain type safety
+	when using a custom AudioSampler.
+	'''
+	duration: float
+	sample_rate: int
+```
+</details>
+
+<details><summary>Samplers</summary>
+</details>
+
+<details><summary>Geometry</summary>
 
 ```python
 import kac_drumset.geometry as G
@@ -186,35 +187,38 @@ def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, 
 	vector, and returns the length of the vector and its indices.
 	'''
 ```
+</details>
 
-## Development
+# Development
 
-### Dependencies
+## Dependencies
 
 -   [pipenv](https://formulae.brew.sh/formula/pipenv#default)
 -	[cmake](https://formulae.brew.sh/formula/cmake)
 <!-- -   [CUDA SDK](https://developer.nvidia.com/cuda-downloads) -->
 
-### Install
+## Install
 
 ```bash
 git clone ...
 pipenv install -d
 ```
 
-### Build 
+## Build 
 
 ```bash
 pipenv run build
 ```
 
-### Test
+## Test
 
 ```
 pipenv run test
 ```
 
-### Helper Methods
+## Testing Library
+
+<details><summary>Helper Methods</summary>
 
 ```python
 from kac_drumset import (
@@ -254,3 +258,4 @@ def withTimer(func: Callable, *args: Any, **kwargs: Any) -> None:
 	Calls the input function and posts its runtime to the console.
 	'''
 ```
+</details>
