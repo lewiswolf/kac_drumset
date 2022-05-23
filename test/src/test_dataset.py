@@ -100,12 +100,6 @@ class DatasetTests(TestCase):
 		# This test asserts that the sampler name is correct.
 		self.assertEqual(dataset.sampler, 'TestSweep')
 
-		# This test asserts that the SamplerSettings were copied correctly.
-		self.assertEqual(dataset.sampler_settings, {
-			'duration': 1.0,
-			'sample_rate': 48000,
-		})
-
 	def test_transform_dataset(self) -> None:
 		'''
 		Tests used in conjunction with `/dataset/transform_dataset.py`.
@@ -150,6 +144,12 @@ class DatasetTests(TestCase):
 				dataset.representation_settings,
 			),
 		)
+
+		# This test asserts that the dataset directory is correct.
+		self.assertEqual(dataset.dataset_dir, self.tmp_dir)
+
+		# This test asserts that the sampler name is correct.
+		self.assertEqual(dataset.sampler, 'TestSweep')
 
 	def test_input_representation(self) -> None:
 		'''
