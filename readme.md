@@ -289,10 +289,10 @@ def raisedCosine(
 	'''
 	This function creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
 	params:
-			matrix_size		A tuple representing the size of the output matrix.
-			mu				The coordinate used to represent the centre of the
-							cosine distribution.
-			sigma			The radius of the distribution.
+		matrix_size		A tuple representing the size of the output matrix.
+		mu				The coordinate used to represent the centre of the
+						cosine distribution.
+		sigma			The radius of the distribution.
 	'''
 ```
 
