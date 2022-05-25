@@ -11,16 +11,16 @@ import numpy.typing as npt	# typing for numpy
 
 
 def raisedCosine(
-	mu: tuple[int, ...],
 	matrix_size: tuple[int, ...],
+	mu: tuple[int, ...],
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
-	This functions creates a raised cosine distribution, centred at the mu. Only 1D and 2D distributions are supported.
+	This function creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
 	params:
+			matrix_size		A tuple representing the size of the output matrix.
 			mu				The coordinate used to represent the centre of the
 							cosine distribution.
-			matrix_size		A tuple representing the size of the output matrix.
 			sigma			The radius of the distribution.
 	'''
 
@@ -28,12 +28,12 @@ def raisedCosine(
 		# handle dimensions > 2 and incompatible inputs
 		raise ValueError('raisedCosine() only supports one or two dimensional inputs.')
 	if len(mu) == 1:
-		return np.array(_raisedCosine1D(mu[0], matrix_size[0], sigma))
+		return np.array(_raisedCosine1D(matrix_size[0], mu[0], sigma))
 	else:
 		return np.array(_raisedCosine2D(
-			mu[0],
-			mu[1],
 			matrix_size[0],
 			matrix_size[1],
+			mu[0],
+			mu[1],
 			sigma,
 		))

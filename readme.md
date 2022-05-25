@@ -179,10 +179,8 @@ class TorchDataset(torch.utils.data.Dataset):
 ```
 </details>
 
-<details><summary>Samplers</summary>
-</details>
-
-<details><summary>Geometry</summary>
+<details>
+<summary>Geometry</summary>
 
 ```python
 import kac_drumset.geometry as G
@@ -273,6 +271,34 @@ def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, 
 	vector, and returns the length of the vector and its indices.
 	'''
 ```
+</details>
+
+<details>
+<summary>Physics</summary>
+
+```python
+from kac_drumset.physics import raisedCosine
+```
+
+```python
+def raisedCosine(
+	matrix_size: tuple[int, ...],
+	mu: tuple[int, ...],
+	sigma: float = 0.5,
+) -> npt.NDArray[np.float64]:
+	'''
+	This function creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
+	params:
+			matrix_size		A tuple representing the size of the output matrix.
+			mu				The coordinate used to represent the centre of the
+							cosine distribution.
+			sigma			The radius of the distribution.
+	'''
+```
+
+</details>
+
+<details><summary>Samplers</summary>
 </details>
 
 # Development

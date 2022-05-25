@@ -7,7 +7,7 @@ namespace py = pybind11;
 namespace g = geometry;
 
 g::Matrix_1D
-raisedCosine1D(const int& mu, const int& size, const double& sigma) {
+raisedCosine1D(const int& size, const int& mu, const double& sigma) {
 	/*
 	Calculate a two dimensional raised cosine transform. See Bilbao, S. -
 	Numerical Sound Synthesis p.121.
@@ -33,10 +33,10 @@ raisedCosine1D(const int& mu, const int& size, const double& sigma) {
 }
 
 g::Matrix_2D raisedCosine2D(
-	const int& mu_x,
-	const int& mu_y,
 	const int& size_X,
 	const int& size_Y,
+	const int& mu_x,
+	const int& mu_y,
 	const double& sigma
 ) {
 	/*

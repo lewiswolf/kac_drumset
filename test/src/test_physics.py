@@ -20,13 +20,13 @@ class PhysicsTests(TestCase):
 		'''
 
 		# This test asserts that the one dimensional case has the correct peaks.
-		rc = raisedCosine((50, ), (100, ), sigma=10)
+		rc = raisedCosine((100, ), (50, ), sigma=10)
 		self.assertEqual(rc[50], 1.0)
 		self.assertEqual(np.max(rc), 1.0)
 		self.assertEqual(np.min(rc), 0.0)
 
 		# This test asserts that the two dimensional case has the correct peaks.
-		rc = raisedCosine((50, 50), (100, 100), sigma=10)
+		rc = raisedCosine((100, 100), (50, 50), sigma=10)
 		self.assertEqual(rc[50, 50], 1.0)
 		self.assertEqual(np.max(rc), 1.0)
 		self.assertEqual(np.min(rc), 0.0)
