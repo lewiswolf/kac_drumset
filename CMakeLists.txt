@@ -33,4 +33,5 @@ endif()
 
 # build modules
 pybind11_add_module(_geometry MODULE ${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/geometry/_geometry.cpp)
-install(TARGETS _geometry DESTINATION .)
+pybind11_add_module(_physics MODULE ${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/physics/_physics.cpp)
+install(TARGETS _geometry _physics DESTINATION .)

@@ -11,7 +11,7 @@ from kac_drumset.geometry import Polygon, RandomPolygon, booleanMask, isColinear
 
 class GeometryTests(TestCase):
 	'''
-	Tests used in conjunction with `geometry.py` and types Polygon and RandomPolygon.
+	Tests used in conjunction with `/geometry`.
 	'''
 
 	def test_polygon(self) -> None:
