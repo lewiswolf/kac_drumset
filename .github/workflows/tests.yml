@@ -35,7 +35,7 @@ jobs:
               with:
                   submodules: recursive
             - uses: lukka/get-cmake@latest 
-            - uses: actions/setup-python@latest
+            - uses: actions/setup-python@v3
               with:
                   python-version: ${{ matrix.python }}
 
@@ -46,7 +46,7 @@ jobs:
             - name: Install pipenv
               run: python -m pip install --upgrade pipenv wheel
             - id: cache-pipenv
-              uses: actions/cache@latest
+              uses: actions/cache@v3
               with:
                   path: ~/.local/share/virtualenvs
                   key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
