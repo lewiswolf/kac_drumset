@@ -17,7 +17,7 @@ class Polygon():
 	'''
 
 	n: int								# number of vertices
-	vertices: npt.NDArray[np.float64]	# cartesian products representing the corners of a shape
+	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
 
 	def __init__(self, vertices: npt.NDArray[np.float64]) -> None:
 		if (vertices.ndim != 2 or vertices.shape[1] != 2):

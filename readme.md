@@ -312,6 +312,9 @@ class Polygon():
 	'''
 	A base class for a polygon, instantiated with an array of vertices.
 	'''
+
+	n: int								# number of vertices
+	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
 ```
 </details>
 
