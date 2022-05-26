@@ -9,6 +9,7 @@ pip ...
 ### Dependencies
 
 -   [libsndfile](https://github.com/libsndfile/libsndfile)
+<!-- -   [CUDA SDK](https://developer.nvidia.com/cuda-downloads) -->
 
 <!-- In either case, _pytorch_ is installed automatically, and will work fine for all CPU based usages. However, to configure this application for GPU usage, you must reinstall the appropriate version of _pytorch_ for your machine (which can be found [here](https://pytorch.org/get-started/locally/)) via:
 
@@ -22,6 +23,8 @@ To ensure that the GPU can be fully utilised by this application, make sure to u
 
 <details>
 <summary>Dataset</summary>
+
+### Import
 
 ```python
 from kac_drumset import (
@@ -182,22 +185,30 @@ class TorchDataset(torch.utils.data.Dataset):
 <details>
 <summary>Geometry</summary>
 
+### Import
+
 ```python
-import kac_drumset.geometry as G
+from kac_drumset.geometry import (
+	# Methods
+	'area',
+	'booleanMask',
+	'centroid',
+	'generateConcave',
+	'generateConvexPolygon',
+	'groupNormalisation',
+	'isColinear',
+	'isConvex',
+	'largestVector',
+	# Classes
+	'RandomPolygon',
+	# Types
+	'Polygon',
+)
 ```
 
+### Methods
+
 ```python
-class Polygon():
-	'''
-	A base class for a polygon, instantiated with an array of vertices.
-	'''
-
-class RandomPolygon(Polygon):
-	'''
-	This class is used to generate a random polygon, normalised and centred between 0.0
-	and 1.0. The area and the centroid of the polygon are also included in this class.
-	'''
-
 def area(vertices: npt.NDArray[np.float64]) -> float:
 	'''
 	An implementation of the shoelace algorithm, first described by Albrecht Ludwig
@@ -271,14 +282,49 @@ def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, 
 	vector, and returns the length of the vector and its indices.
 	'''
 ```
+
+### Classes
+
+```python
+class RandomPolygon(Polygon):
+	'''
+	This class is used to generate a random polygon, normalised and centred between 0.0
+	and 1.0. The area and the centroid of the polygon are also included in this class.
+	'''
+
+	area: float							# area of the polygon
+	centroid: tuple[float, float]		# coordinate pair representing the centroid of the polygon
+	convex: bool						# is the polygon convex?
+
+	def __init__(self, max_vertices: int, allow_concave: bool = False) -> None:
+		'''
+		This function generates a polygon, whilst also calculating its properties.
+		input:
+			max_vertices:	Maximum amount of vertices. The true value is a uniform distribution from 3 to max_vertices.
+			allow_concave:	Is this polygon allowed to be concave?
+		'''
+```
+
+### Types
+
+```python
+class Polygon():
+	'''
+	A base class for a polygon, instantiated with an array of vertices.
+	'''
+```
 </details>
 
 <details>
 <summary>Physics</summary>
 
+### Import
+
 ```python
 from kac_drumset.physics import raisedCosine
 ```
+
+### Methods
 
 ```python
 def raisedCosine(
@@ -307,7 +353,6 @@ def raisedCosine(
 
 -   [pipenv](https://formulae.brew.sh/formula/pipenv#default)
 -	[cmake](https://formulae.brew.sh/formula/cmake)
-<!-- -   [CUDA SDK](https://developer.nvidia.com/cuda-downloads) -->
 
 ### Install
 
@@ -321,6 +366,7 @@ pipenv install -d
 ```bash
 pipenv run build
 ```
+
 ### Example
 
 ```
@@ -335,31 +381,25 @@ pipenv run test
 
 <details><summary>Testing Library</summary>
 
+### Import
+
 ```python
-from kac_drumset import (
-	TestSweep,
-	TestTone,
-)
+# Methods
 from kac_drumset.utils import (
 	withoutPrinting,
 	withProfiler,
 	withTimer,
 )
+# Samplers
+from kac_drumset import (
+	TestSweep,
+	TestTone,
+)
 ```
 
-```python
-class TestSweep(AudioSampler):
-	'''
-	This class produces a sine wave sweep across the audio spectrum, from 20hz to f_s / 2.
-	'''
-		
-class TestTone(AudioSampler):
-	'''
-	This class produces an arbitrary test tone, using either a sawtooth, sine, square or triangle waveform. If it's initial frequency is not set, it will automatically create random frequencies.
-	'''
-	f_0: float										# fundamental frequency (hz)
-	waveshape: Literal['saw', 'sin', 'sqr', 'tri']	# shape of the waveform
+### Methods
 
+```python
 def withoutPrinting(allow_errors: bool = False) -> Iterator[Any]:
 	'''
 	This wrapper can used around blocks of code to silence calls to print(), as well as optionally silence error messages.
@@ -374,5 +414,21 @@ def withTimer(func: Callable, *args: Any, **kwargs: Any) -> None:
 	'''
 	Calls the input function and posts its runtime to the console.
 	'''
+```
+
+### Samplers
+
+```python
+class TestSweep(AudioSampler):
+	'''
+	This class produces a sine wave sweep across the audio spectrum, from 20hz to f_s / 2.
+	'''
+		
+class TestTone(AudioSampler):
+	'''
+	This class produces an arbitrary test tone, using either a sawtooth, sine, square or triangle waveform. If it's initial frequency is not set, it will automatically create random frequencies.
+	'''
+	f_0: float										# fundamental frequency (hz)
+	waveshape: Literal['saw', 'sin', 'sqr', 'tri']	# shape of the waveform
 ```
 </details>

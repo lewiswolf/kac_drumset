@@ -11,21 +11,23 @@ from .geometry import (
 	groupNormalisation,
 	largestVector,
 )
-from .types import Polygon, RandomPolygon
+from .random_polygon import RandomPolygon
+from .types import Polygon
 
 __all__ = [
-	# external
+	# external methods
 	'generateConvexPolygon',
 	'isColinear',
 	'isConvex',
-	# geometry
+	# methods
 	'area',
 	'booleanMask',
 	'centroid',
 	'generateConcave',
 	'groupNormalisation',
 	'largestVector',
+	# classes
+	'RandomPolygon',
 	# types
 	'Polygon',
-	'RandomPolygon',
 ]
