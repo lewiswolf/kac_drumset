@@ -8,7 +8,7 @@ from .dataset import (
 	loadDataset,
 	transformDataset,
 )
-from .samplers import TestSweep, TestTone
+from .samplers import FDTDModel, TestSweep, TestTone
 
 __all__ = [
 	# dataset methods
@@ -22,6 +22,8 @@ __all__ = [
 	'SamplerSettings',
 	'RepresentationSettings',
 	'TorchDataset',
+	# samplers
+	'FDTDModel',
 	# samplers - tests
 	'TestSweep',
 	'TestTone',
