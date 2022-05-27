@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 set(CMAKE_CXX_STANDARD 11)
+include(FetchContent)
 
 project(kac_drumset)
 
@@ -8,7 +9,6 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src")
 file(GLOB GEOMETRY "${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src/geometry.hpp")
 
 # include pybind as a remote dependency
-include(FetchContent)
 FetchContent_Declare(
     pybind11
     GIT_REPOSITORY https://github.com/pybind/pybind11
@@ -18,6 +18,18 @@ if(NOT pybind11_POPULATED)
     FetchContent_Populate(pybind11)
     add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
 endif()
+
+# include boost::math as a remote dependency
+include(FetchContent)
+FetchContent_Declare(
+    Boost
+    PREFIX external_dependencies/boost
+    GIT_REPOSITORY https://github.com/boostorg/boost.git
+    GIT_SUBMODULES libs/math
+)   
+FIND_PACKAGE(Boost COMPONENTS math)
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # Scikit-Build does not add your site-packages to the search path
 # automatically, so we need to add it _or_ the pybind11 specific directory

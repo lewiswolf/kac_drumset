@@ -1,12 +1,11 @@
 // dependencies
-#include "geometry.hpp"			  // my geometry cpp library
-#include <pybind11/pybind11.h>	  // python bindings
-#include <pybind11/stl.h>		  // type conversion
+#include "boost/math/special_functions/bessel.hpp"	  // bessel functions
+#include <pybind11/pybind11.h>						  // python bindings
+#include <pybind11/stl.h>							  // type conversion
 
 namespace py = pybind11;
-namespace g = geometry;
 
-g::Matrix_1D
+std::vector<double>
 raisedCosine1D(const int& size, const int& mu, const double& sigma) {
 	/*
 	Calculate a two dimensional raised cosine transform. See Bilbao, S. -
@@ -22,7 +21,7 @@ raisedCosine1D(const int& size, const int& mu, const double& sigma) {
 		}
 	*/
 
-	g::Matrix_1D raised_cosine(size);
+	std::vector<double> raised_cosine(size);
 	for (unsigned int x = 0; x < size; x++) {
 		double x_diff = x - mu;
 		if (x_diff <= sigma) {
@@ -32,7 +31,7 @@ raisedCosine1D(const int& size, const int& mu, const double& sigma) {
 	return raised_cosine;
 }
 
-g::Matrix_2D raisedCosine2D(
+std::vector<std::vector<double>> raisedCosine2D(
 	const int& size_X,
 	const int& size_Y,
 	const int& mu_x,
@@ -54,7 +53,9 @@ g::Matrix_2D raisedCosine2D(
 		}
 	*/
 
-	g::Matrix_2D raised_cosine(size_X, g::Matrix_1D(size_Y, 0));
+	std::vector<std::vector<double>> raised_cosine(
+		size_X, std::vector<double>(size_Y, 0)
+	);
 	for (unsigned int x = 0; x < size_X; x++) {
 		for (unsigned int y = 0; y < size_Y; y++) {
 			double l2_norm = sqrt(pow((x - mu_x), 2) + pow((y - mu_y), 2));
@@ -66,8 +67,18 @@ g::Matrix_2D raisedCosine2D(
 	return raised_cosine;
 }
 
+double besselJ(const double& n, const double& m) {
+	return boost::math::cyl_bessel_j(n, m);
+}
+
+double besselJZero(const double& n, const int& m) {
+	return boost::math::cyl_bessel_j_zero(n, m);
+}
+
 PYBIND11_MODULE(_physics, m) {
 	m.doc() = "_physics";
 	m.def("_raisedCosine1D", &raisedCosine1D);
 	m.def("_raisedCosine2D", &raisedCosine2D);
+	m.def("besselJ", &besselJ);
+	m.def("besselJZero", &besselJZero);
 }
