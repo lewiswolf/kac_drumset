@@ -4,10 +4,6 @@ include(FetchContent)
 
 project(kac_drumset)
 
-# include geometry-cpp
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src")
-file(GLOB GEOMETRY "${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src/geometry.hpp")
-
 # include pybind as a remote dependency
 FetchContent_Declare(
 	pybind11
@@ -29,6 +25,14 @@ if(SKBUILD)
 	)
 	list(APPEND CMAKE_PREFIX_PATH "${_tmp_dir}")
 endif()
+
+# include geometry-cpp
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src")
+file(GLOB GEOMETRY "${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src/geometry.hpp")
+
+# include src files
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/geometry")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/physics")
 
 # build modules
 pybind11_add_module(_geometry MODULE ${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/geometry/_geometry.cpp)
