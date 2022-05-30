@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
 set(CMAKE_CXX_STANDARD 11)
-include(FetchContent)
 
 project(kac_drumset)
 
@@ -9,6 +8,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src")
 file(GLOB GEOMETRY "${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src/geometry.hpp")
 
 # include pybind as a remote dependency
+include(FetchContent)
 FetchContent_Declare(
 	pybind11
 	GIT_REPOSITORY https://github.com/pybind/pybind11
