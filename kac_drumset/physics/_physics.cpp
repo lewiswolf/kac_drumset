@@ -1,7 +1,6 @@
 // dependencies
-#include "boost/math/special_functions/bessel.hpp"	  // bessel functions
-#include <pybind11/pybind11.h>						  // python bindings
-#include <pybind11/stl.h>							  // type conversion
+#include <pybind11/pybind11.h>	  // python bindings
+#include <pybind11/stl.h>		  // type conversion
 
 namespace py = pybind11;
 
@@ -67,18 +66,8 @@ std::vector<std::vector<double>> raisedCosine2D(
 	return raised_cosine;
 }
 
-double besselJ(const double& n, const double& m) {
-	return boost::math::cyl_bessel_j(n, m);
-}
-
-double besselJZero(const double& n, const int& m) {
-	return boost::math::cyl_bessel_j_zero(n, m);
-}
-
 PYBIND11_MODULE(_physics, m) {
 	m.doc() = "_physics";
 	m.def("_raisedCosine1D", &raisedCosine1D);
 	m.def("_raisedCosine2D", &raisedCosine2D);
-	m.def("besselJ", &besselJ);
-	m.def("besselJZero", &besselJZero);
 }

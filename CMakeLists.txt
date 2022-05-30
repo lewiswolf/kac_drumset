@@ -15,25 +15,12 @@ FetchContent_Declare(
 )
 FetchContent_GetProperties(pybind11)
 if(NOT pybind11_POPULATED)
-    FetchContent_Populate(pybind11)
-    add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
+	FetchContent_Populate(pybind11)
+	add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
 endif()
 
-# include boost::math as a remote dependency
-include(FetchContent)
-FetchContent_Declare(
-    Boost
-    PREFIX external_dependencies/boost
-    GIT_REPOSITORY https://github.com/boostorg/boost.git
-    GIT_SUBMODULES libs/math
-)   
-FIND_PACKAGE(Boost COMPONENTS math)
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-
-# Scikit-Build does not add your site-packages to the search path
-# automatically, so we need to add it _or_ the pybind11 specific directory
-# here.
+# scikit-build does not add site-packages to the search path automatically,
+# so it _or_ the pybind11 specific directory needs to be added here.
 if(SKBUILD)
 	execute_process(
     	COMMAND "${PYTHON_EXECUTABLE}" -c "import pybind11; print(pybind11.get_cmake_dir())"

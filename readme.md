@@ -324,7 +324,9 @@ class Polygon():
 ### Import
 
 ```python
-from kac_drumset.physics import raisedCosine
+from kac_drumset.physics import (
+	raisedCosine,
+)
 ```
 
 ### Methods
