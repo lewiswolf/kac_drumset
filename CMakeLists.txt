@@ -10,8 +10,8 @@ file(GLOB GEOMETRY "${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src/geometry.hp
 
 # include pybind as a remote dependency
 FetchContent_Declare(
-    pybind11
-    GIT_REPOSITORY https://github.com/pybind/pybind11
+	pybind11
+	GIT_REPOSITORY https://github.com/pybind/pybind11
 )
 FetchContent_GetProperties(pybind11)
 if(NOT pybind11_POPULATED)
@@ -23,9 +23,9 @@ endif()
 # so it _or_ the pybind11 specific directory needs to be added here.
 if(SKBUILD)
 	execute_process(
-    	COMMAND "${PYTHON_EXECUTABLE}" -c "import pybind11; print(pybind11.get_cmake_dir())"
-    	OUTPUT_VARIABLE _tmp_dir
-    	OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ECHO STDOUT
+		COMMAND "${PYTHON_EXECUTABLE}" -c "import pybind11; print(pybind11.get_cmake_dir())"
+		OUTPUT_VARIABLE _tmp_dir
+		OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ECHO STDOUT
 	)
 	list(APPEND CMAKE_PREFIX_PATH "${_tmp_dir}")
 endif()
