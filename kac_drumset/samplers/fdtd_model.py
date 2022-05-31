@@ -1,4 +1,6 @@
 '''
+This sampler is used to produce physically modelled, arbitrarily shaped drums. This is achieved using a randomly
+generated polygon, which is used to define the boundary conditions, and an FDTD simulation.
 '''
 
 # core
@@ -6,14 +8,13 @@ import math
 from typing import Union
 
 # dependencies
-# from numba import cuda	# GPU acceleration
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..geometry import RandomPolygon, booleanMask
-# from ..physics import raisedCosine
+from ..physics import FDTDWaveform2D, raisedCosine
 
 
 class FDTDModel(AudioSampler):
@@ -61,16 +62,18 @@ class FDTDModel(AudioSampler):
 		duration: float,
 		sample_rate: int,
 		amplitude: float = 1.0,
-		decay_time: float = 1.0,
+		decay_time: float = 2.0,
 		drum_size: float = 0.3,
 		material_density: float = 0.26,
 		max_vertices: int = 10,
 		tension: float = 2000.0,
 	) -> None:
-		''' Initialise sampler. '''
+		'''
+		When the class is first instantiated, all of its physical properties are inferred from the user parameters.
+		'''
 
-		super().__init__(duration, sample_rate)
 		# initialise user defined variables
+		super().__init__(duration, sample_rate)
 		self.a = amplitude
 		self.L = drum_size
 		self.max_vertices = max_vertices
@@ -85,14 +88,55 @@ class FDTDModel(AudioSampler):
 		self.h = 1 / self.H
 		self.cfl = self.gamma * self.k / self.h
 		self.s_0 = self.cfl ** 2
-		self.s_1 = 2 - 4 * self.cfl ** 2
+		self.s_1 = 2 * (1 - 2 * (self.cfl ** 2))
 		self.d = (1 - (6 * np.log(10) / self.t_60) * self.k) / (1 + (6 * np.log(10) / self.t_60) * self.k)
 
 	def generateWaveform(self) -> None:
-		pass
+		'''
+		Calculate the FDTD for a 2D polygon.
+		'''
+
+		# initialise the fdtd grid at t = 0
+		u_0: npt.NDArray[np.float64] = np.zeros(
+			(self.H + 2, self.H + 2),
+		)
+		# initialise the fdtd grid at t = 1
+		u_1: npt.NDArray[np.float64] = self.a * raisedCosine(
+			(self.H + 2, self.H + 2),
+			self.strike,
+		)
+		# range of the update equation across the x axis accounting for dirichlet boundary conditions.
+		x_range: tuple[int, int] = (
+			round(np.min(self.shape.vertices[:, 0] * self.H)) + 1,
+			round(np.max(self.shape.vertices[:, 0] * self.H)) + 1,
+		)
+		# range of the update equation across the y axis accounting for dirichlet boundary conditions.
+		y_range: tuple[int, int] = (
+			round(np.min(self.shape.vertices[:, 1] * self.H)) + 1,
+			round(np.max(self.shape.vertices[:, 1] * self.H)) + 1,
+		)
+
+		self.waveform = FDTDWaveform2D(
+			u_0,
+			u_1,
+			np.pad(self.B, 1, mode='constant'),
+			self.s_0,
+			self.s_1,
+			self.d,
+			self.length,
+			x_range,
+			y_range,
+			(
+				round(self.shape.centroid[0] * self.H),
+				round(self.shape.centroid[1] * self.H),
+			),
+		)
 
 	def getLabels(self) -> list[Union[float, int]]:
-		''' This method should return the y labels for the generated audio. '''
+		'''
+		This method returns the vertices for the drum's arbitrary shaped, padded with zeros to equal the length of
+		self.max_vertices.
+		'''
 
 		if hasattr(self, 'shape'):
 			return np.pad(

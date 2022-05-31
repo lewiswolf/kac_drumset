@@ -3,6 +3,9 @@ import os
 from typing import Union
 from unittest import TestCase
 
+# dependencies
+import numpy as np 			# maths
+
 # src
 from kac_drumset import AudioSampler, FDTDModel, SamplerSettings
 from kac_drumset.utils import clearDirectory
@@ -69,7 +72,11 @@ class SamplerTests(TestCase):
 
 		# This test asserts that the labels default to an empty array when no waveform has been generated.
 		self.assertEqual(model.getLabels(), [])
+		# This test asserts that The Courant number λ = γk/h, which is used to confirm that the CFL stability criterion is
+		# upheld. If λ > 1 / (dimensionality)^0.5, the resultant simulation will be unstable.
+		self.assertLessEqual(model.cfl, 1 / (2 ** 0.5))
 
+		# generate a random shape and dirichlet boundary conditions.
 		model.updateProperties()
 
 		# This test asserts that a shape was properly defined after updating the model's properties.
@@ -83,6 +90,12 @@ class SamplerTests(TestCase):
 			model.shape.vertices.tolist(),
 		)
 
-		# This test asserts that The Courant number λ = γk/h, which is used to confirm that the CFL stability criterion is
-		# upheld. If λ > 1 / (dimensionality)^0.5, the resultant simulation will be unstable.
-		self.assertLessEqual(model.cfl, 1 / (2 ** 0.5))
+		# perform the physical modelling simulation
+		model.generateWaveform()
+
+		# # This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
+		# # itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
+		# # simulation.
+		self.assertFalse(np.isnan(model.waveform).any())
+		self.assertLessEqual(np.max(model.waveform), 1.0)
+		self.assertGreaterEqual(np.min(model.waveform), -1.0)

@@ -325,6 +325,7 @@ class Polygon():
 
 ```python
 from kac_drumset.physics import (
+	FDTDWaveform2D,
 	raisedCosine,
 )
 ```
@@ -332,6 +333,37 @@ from kac_drumset.physics import (
 ### Methods
 
 ```python
+def FDTDWaveform2D(
+	u_0: npt.NDArray[np.float64],
+	u_1: npt.NDArray[np.float64],
+	B: npt.NDArray[np.int8],
+	c_0: float,
+	c_1: float,
+	d: float,
+	T: int,
+	x_range: tuple[int, int],
+	y_range: tuple[int, int],
+	w: tuple[float, float],
+) -> npt.NDArray[np.float64]:
+	'''
+	Generates a waveform using a 2 dimensional FDTD scheme.
+	input:
+		u_0 = initial fdtd grid at t = 0
+		u_1 = initial fdtd grid at t = 1
+		B = boundary conditions
+		c_0 = first fdtd coefficient related to the courant number
+		c_1 = second fdtd coefficient related to the courant number
+		d = decay coefficient
+		T = length of simulation in samples.
+		x_range = tuple representing the range across the x axis to update
+		y_range = tuple representing the range across the y axis to update
+		w = the coordinate at which the waveform is sampled.
+	output:
+		waveform = W[n] ∈  (λ ** 2)(
+								u_n_x+1_y + u_n_x-1_y + u_n_x_y+1 + u_n_x_y-1
+							) + 2(1 - 2(λ ** 2))u_n_x_y - d(u_n-1_x_y) ∀ u ∈ R^2
+	'''
+
 def raisedCosine(
 	matrix_size: tuple[int, ...],
 	mu: tuple[int, ...],
@@ -339,7 +371,7 @@ def raisedCosine(
 ) -> npt.NDArray[np.float64]:
 	'''
 	This function creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
-	params:
+	input:
 		matrix_size		A tuple representing the size of the output matrix.
 		mu				The coordinate used to represent the centre of the
 						cosine distribution.
@@ -350,6 +382,37 @@ def raisedCosine(
 </details>
 
 <details><summary>Samplers</summary>
+
+### Import
+
+```python
+from kac_drumset import (
+	FDTDModel,
+)
+```
+
+### Classes
+
+```python
+class FDTDModel(AudioSampler):
+	'''
+	This class creates a 2D simulation of an arbitrarily shaped drum, calculated
+	using a FDTD scheme.
+	'''
+
+	class Settings(SamplerSettings, total=False):
+		'''
+		This is an abstract TypedDict used to mirror the type declaration for the customised __init__() method. This allows
+		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
+		'''
+
+		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
+		decay_time: float			# how long will the simulation take to decay?
+		drum_size: float			# size of the drum, spanning both the horizontal and vertical axes (m)
+		material_density: float		# material density of the simulated drum membrane (kg/m^2)
+		max_vertices: int			# maximum amount of vertices for a given drum
+		tension: float				# tension at rest (N/m)
+```
 </details>
 
 # Development

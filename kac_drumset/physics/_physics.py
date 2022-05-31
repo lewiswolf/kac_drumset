@@ -3,11 +3,41 @@ Import functions from external C++ library and configure python type conversions
 '''
 
 # src
-from ..externals._physics import _raisedCosine1D, _raisedCosine2D
+from ..externals._physics import _FDTDWaveform2D, _raisedCosine1D, _raisedCosine2D
 
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
+
+
+def FDTDWaveform2D(
+	u_0: npt.NDArray[np.float64],
+	u_1: npt.NDArray[np.float64],
+	B: npt.NDArray[np.int8],
+	c_0: float,
+	c_1: float,
+	d: float,
+	T: int,
+	x_range: tuple[int, int],
+	y_range: tuple[int, int],
+	w: tuple[float, float],
+) -> npt.NDArray[np.float64]:
+	'''
+	Generates a waveform using a 2 dimensional FDTD scheme. See `fdtd.hpp` for a parameter description.
+	'''
+
+	return np.array(_FDTDWaveform2D(
+		u_0.tolist(),
+		u_1.tolist(),
+		B.tolist(),
+		c_0,
+		c_1,
+		d,
+		T,
+		x_range,
+		y_range,
+		w,
+	))
 
 
 def raisedCosine(
@@ -17,7 +47,7 @@ def raisedCosine(
 ) -> npt.NDArray[np.float64]:
 	'''
 	This function creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
-	params:
+	input:
 		matrix_size		A tuple representing the size of the output matrix.
 		mu				The coordinate used to represent the centre of the
 						cosine distribution.
