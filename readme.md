@@ -8,16 +8,8 @@ pip ...
 
 ### Dependencies
 
+-	[cmake](https://formulae.brew.sh/formula/cmake)
 -   [libsndfile](https://github.com/libsndfile/libsndfile)
-<!-- -   [CUDA SDK](https://developer.nvidia.com/cuda-downloads) -->
-
-<!-- In either case, _pytorch_ is installed automatically, and will work fine for all CPU based usages. However, to configure this application for GPU usage, you must reinstall the appropriate version of _pytorch_ for your machine (which can be found [here](https://pytorch.org/get-started/locally/)) via:
-
-```bash
-pipenv run pip install torch==1.8.1+cu102 ...
-```
-
-To ensure that the GPU can be fully utilised by this application, make sure to update the _PATH_2_CUDA_ variable in `src/settings.py`, which should point to your installed version of the CUDA SDK. -->
 
 # Core Library
 
@@ -421,7 +413,6 @@ class FDTDModel(AudioSampler):
 ### Dependencies
 
 -   [pipenv](https://formulae.brew.sh/formula/pipenv#default)
--	[cmake](https://formulae.brew.sh/formula/cmake)
 
 ### Install
 
