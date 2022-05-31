@@ -45,45 +45,41 @@ std::vector<double> FDTDWaveform2D(
 	if (u_0.size() != B.size() || u_0[0].size() != B[0].size()) {
 		throw std::invalid_argument("u_0 and B differ in size.");
 	}
-	// initialise variables
-	std::vector<double> waveform(T);	   // output waveform
-	std::vector<std::vector<double>> u(	   // the fdtd grid
-		u_0.size(),
-		std::vector<double>(u_0[0].size(), 0.)
-	);
-	// handle initial events
+	// initialise output
+	std::vector<double> waveform(T);
 	waveform[0] = u_0[w[0]][w[1]];
 	waveform[1] = u_1[w[0]][w[1]];
 	// main loop
 	for (unsigned int t = 2; t < T; t++) {
+		// branching maintains memory efficiency, meaning that only two
+		// matrices need to be in memory at one time
 		if ((t % 2) == 0) {
 			for (unsigned int x = x_range[0]; x < x_range[1]; x++) {
 				for (unsigned int y = y_range[0]; y < y_range[1]; y++) {
 					// dirichlet boundary conditions
 					if (B[x][y] != 0) {
-						u[x][y] = (u_1[x][y + 1] + u_1[x + 1][y] + u_1[x][y - 1]
-								   + u_1[x - 1][y])
+						u_0[x][y] = (u_1[x][y + 1] + u_1[x + 1][y]
+									 + u_1[x][y - 1] + u_1[x - 1][y])
 								* c_0
 							+ c_1 * u_1[x][y] - d * u_0[x][y];
 					}
 				};
 			};
-			u_0 = u;
+			waveform[t] = u_0[w[0]][w[1]];
 		} else {
 			for (unsigned int x = x_range[0]; x < x_range[1]; x++) {
 				for (unsigned int y = y_range[0]; y < y_range[1]; y++) {
 					// dirichlet boundary conditions
 					if (B[x][y] != 0) {
-						u[x][y] = (u_0[x][y + 1] + u_0[x + 1][y] + u_0[x][y - 1]
-								   + u_0[x - 1][y])
+						u_1[x][y] = (u_0[x][y + 1] + u_0[x + 1][y]
+									 + u_0[x][y - 1] + u_0[x - 1][y])
 								* c_0
 							+ c_1 * u_0[x][y] - d * u_1[x][y];
 					}
 				};
 			};
-			u_1 = u;
+			waveform[t] = u_1[w[0]][w[1]];
 		}
-		waveform[t] = u[w[0]][w[1]];
 	}
 	return waveform;
 }
