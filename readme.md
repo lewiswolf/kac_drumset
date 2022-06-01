@@ -421,7 +421,7 @@ class FDTDModel(AudioSampler):
 ### Install
 
 ```bash
-git clone ...
+git clone --recursive ...
 pipenv install -d
 ```
 
