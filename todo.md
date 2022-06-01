@@ -1,5 +1,13 @@
 ## General Codebase
 
+-	**Dependency conflicts**
+
+	torchaudio does not support python 3.10.
+
+-	**EasyInstallDeprecationWarning**
+
+	When running `pipenv run build', the above warning is raised due to the now outdated `setup.py develop` command being called. It is recommended to instead run `pip install -e .`, which works the same, however this command runs `setup.py develop` implicitly, raising the exact same warning.
+
 -   **Internal types for nested lists, numpy arrays and pytroch tensors**
 
     So far, most datatypes have been well documented throughout this codebase. However, when it comes to various 'array-like' datatypes, ensuring the correct _internal_ datatype for each array has quickly become a complex and difficult task.
@@ -36,46 +44,22 @@
 
     This issue, specifically with pytorch, has also affected testing, as placing `torch.set_default_dtype(dtype)` somewhere within the code affects every function and file thereafter. I have not been able to find a way of running dedcated tests on idividual files, in an attempt to minimise these issues in the event that the library was to be separated/partially reused, without having to split the tests across multiple files and run them individually.
 
--   **`pydantic.create_model_from_typeddict` has an incompatible type error**
-
-    See [here](https://github.com/samuelcolvin/pydantic/issues/3008) for details.
-
-## `dataset.py`
-
--   **Extendable way to loop over TypedDict keys**
-
-    When using the `TypedDict`, it is sometimes necessary to access its various properties using a variable. This methodology allows for extendable code which loops over the object properties contained within the dict. However, when type checked with mypy, this will return the error `TypedDict key must be a string literal`. This issue is well documented [here](https://github.com/python/mypy/issues/6262), and can be recreated using the code shown below on both an instantiated and an uninstantiated dict. In my mind, this issue is trivial, as of course, when used correctly, we can ensure that a variable key can only ever contain the correct values.
-
-    ```python
-    from typing import TypedDict
-
-    class SomeDict(TypedDict):
-    	key1: int
-    	ket2: float
-    	key3: str
-
-    test: SomeDict = {
-    	key1: 1,
-    	key2: 3.1415,
-    	key3: 'test',
-    }
-
-    for key in test.keys():
-    	print(test[key])
-    ```
-
--   **Dataset may be needlessly regenerated**
-
-    Given a dataset of N samples, where N > M, if the dataset size is changed to M in `settings.py`, this may cause unwarranted behaviour as a result of line 177. Elsewhere, when the dataset metadata does need to be regenerated, due to both the dataset size being changed to M and some other parameter, information about the extra samples may be lost when regenerating the metadata. This is so far untested, but should be looked in to before the code is deployed. An example of how this issue might cause problems: given a dataset of size N, after which some setting is changed that causes the metadata to be regenerated as well as the dataset size being changed to M, if the dataset size was changed back to N, the system would require the dataset be _fully regenerated_ from scratch, even though the correct number of audio samples exists.
-
 ## `input_features.py`
 
 -   **Port `librosa.vqt()` to PyTorch**
 
-    The `librosa.vqt` function is written solely in python, whereas a pytorch version would be written with a c++ backend, using python bindings. This would be much quicker to use, as the CQT/VQT is a slow algorithm to begin with. This would also remove the need to import librosa altogether.
+    The `librosa.vqt` function is written solely in python, whereas a pytorch version would be written with a c++ backend, using python bindings. This would be much quicker to use, as the CQT/VQT is a slow algorithm to begin with. This would also remove the need to import librosa altogether. Librosa also depends on libsndfile to be installed, which is not the default in Linux. 
 
 ## `geometry.py`
 
 -   **Missing a reliable algorithm to generate all concave shapes**
 
     Currently, convex shapes can be deterministically created with an efficient algorithm, as well as some concave shapes. However, due to the algorithm chosen to create concave shapes, not _all_ possible concave shapes can be created. The concave algorithm works by centering a collection of random points around the origin, and connecting them according to their polar angle. More complex concave shapes do not share this property, as it is possible for concave shapes to not obey this ordering, whilst maintaining that there are no line crossings. The best solution I have found so far is [scikit-geometry's](https://github.com/scikit-geometry/scikit-geometry) python wrapper around CGAL's [random_polygon_2()](https://doc.cgal.org/latest/Generator/group__PkgGeneratorsRef.html#gaa8cb58e4cc9ab9e225808799b1a61174), which uses a 2-opt approach to configuring the polygon. Due to scikit-geometry needing to be built from source, this has not yet been implemented.
+
+-   **groupNormalisation**
+
+    Group normalisation is meant to be a function that normalises polygons according to group theory, so as to remove translated variations of polygons. At the moment, for convex shapes, this works to some degree, but shapes can still be arbitrarily flipped across both the y-axis and x-axis. The way to fix this is to construct an algorithm that initially sets the longest vector equal to 1.0 with angle π/2, serving to remove any rotational transformations. Then, the four quadrants of the polygon are compared and given a set translation, which serves to remove any reflective transformations. For concave shapes, the algorithm is more complex, and is currently undetermined.
+
+-	**Add Support for ellipses**
+
+	Currently, only simple polygons are supported by this library, and there is a need to extend this to include elliptical shapes as well. This would involve creating a new type, as well as updating the geometry library - functions such as `area()` and `centroid()` - so as to support this alternative geometric construction.

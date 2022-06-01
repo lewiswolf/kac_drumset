@@ -4,30 +4,25 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-click = "*"
-librosa = "*"
-numba = "==0.53.1"
-numpy = "*"
-opencv-python = "*"
-pydantic = "*"
+numpy = ">=1.22"
+opencv-python = ">=4.5"
 soundfile = "*"
-torch = "*"
-torchaudio = "*"
-tqdm = "*"
+torch = ">=1.11"
+torchaudio = ">=0.11"
+tqdm = ">=4.64"
 
 [dev-packages]
 flake8 = "*"
 flake8-commas = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
+kac_drumset = {editable = true, path = "."}
 mypy = "*"
-pygments = "*"
+scikit-build = "*"
 
 [requires]
 python_version = "3.9"
 
 [scripts]
-evaluate = "python index.py -e"
-generate = "python index.py -g"
-latex = "sh ./paper/build_latex.sh"
+build = "python setup.py develop"
+start = "python example/index.py"
 test = "sh ./test/test.sh"
-train = "python index.py -t"
