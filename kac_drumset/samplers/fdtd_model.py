@@ -1,6 +1,6 @@
 '''
 This sampler is used to produce physically modelled, arbitrarily shaped drums. This is achieved using a randomly
-generated polygon, which is used to define the boundary conditions, and an FDTD simulation.
+generated polygon, which is used to define the boundary conditions, and a finite difference time domain simulation.
 '''
 
 # core
@@ -15,6 +15,10 @@ import numpy.typing as npt	# typing for numpy
 from ..dataset import AudioSampler, SamplerSettings
 from ..geometry import RandomPolygon, booleanMask
 from ..physics import FDTDWaveform2D, raisedCosine
+
+__all__ = [
+	'FDTDModel',
+]
 
 
 class FDTDModel(AudioSampler):
@@ -96,36 +100,22 @@ class FDTDModel(AudioSampler):
 		Calculate the FDTD for a 2D polygon.
 		'''
 
-		# initialise the fdtd grid at t = 0
-		u_0: npt.NDArray[np.float64] = np.zeros(
-			(self.H + 2, self.H + 2),
-		)
-		# initialise the fdtd grid at t = 1
-		u_1: npt.NDArray[np.float64] = self.a * raisedCosine(
-			(self.H + 2, self.H + 2),
-			self.strike,
-		)
-		# range of the update equation across the x axis accounting for dirichlet boundary conditions.
-		x_range: tuple[int, int] = (
-			round(np.min(self.shape.vertices[:, 0] * self.H)) + 1,
-			round(np.max(self.shape.vertices[:, 0] * self.H)) + 1,
-		)
-		# range of the update equation across the y axis accounting for dirichlet boundary conditions.
-		y_range: tuple[int, int] = (
-			round(np.min(self.shape.vertices[:, 1] * self.H)) + 1,
-			round(np.max(self.shape.vertices[:, 1] * self.H)) + 1,
-		)
-
 		self.waveform = FDTDWaveform2D(
-			u_0,
-			u_1,
+			np.zeros((self.H + 2, self.H + 2)),
+			raisedCosine((self.H + 2, self.H + 2), self.strike) * self.a,
 			np.pad(self.B, 1, mode='constant'),
 			self.s_0,
 			self.s_1,
 			self.d,
 			self.length,
-			x_range,
-			y_range,
+			(
+				round(np.min(self.shape.vertices[:, 0] * self.H)) + 1,
+				round(np.max(self.shape.vertices[:, 0] * self.H)) + 1,
+			),
+			(
+				round(np.min(self.shape.vertices[:, 1] * self.H)) + 1,
+				round(np.max(self.shape.vertices[:, 1] * self.H)) + 1,
+			),
 			(
 				round(self.shape.centroid[0] * self.H),
 				round(self.shape.centroid[1] * self.H),

@@ -11,8 +11,8 @@ from skbuild import setup
 
 this = os.path.abspath(os.path.dirname(__file__))
 name = 'kac_drumset'
-version = '0.0.1'
-short_description = 'A dataset generator for arbitrarily shaped drums.'
+version = '0.9.0'
+short_description = 'Analysis tools and a dataset generator for arbitrarily shaped drums.'
 
 # import long description from readme.md
 with codecs.open(os.path.join(this, 'readme.md'), encoding='utf-8') as readme:

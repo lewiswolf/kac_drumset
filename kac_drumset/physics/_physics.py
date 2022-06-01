@@ -9,6 +9,11 @@ from ..externals._physics import _FDTDWaveform2D, _raisedCosine1D, _raisedCosine
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
+__all__ = [
+	'FDTDWaveform2D',
+	'raisedCosine',
+]
+
 
 def FDTDWaveform2D(
 	u_0: npt.NDArray[np.float64],

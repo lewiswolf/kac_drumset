@@ -1,4 +1,8 @@
-![Kac-Drumming](https://user-images.githubusercontent.com/55607290/169860844-7f3f3d6d-4366-4410-8a30-5ee9472c2864.png)
+<!-- ![Kac-Drumming](https://user-images.githubusercontent.com/55607290/169860844-7f3f3d6d-4366-4410-8a30-5ee9472c2864.png) -->
+
+# kac_drumset
+
+Analysis tools and dataset generator for arbitrarily shaped drums.
 
 # Install
 
