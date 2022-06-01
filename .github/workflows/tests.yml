@@ -7,21 +7,21 @@ on:
         branches: [master]
 
 jobs:
-    # installation:
-    #     runs-on: ${{ matrix.os }}
-    #     strategy:
-    #         matrix:
-    #             os: [macos-latest, ubuntu-latest, windows-latest]
-    #             python: ["3.9", "3.10"]
+    installation:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [macos-latest, ubuntu-latest, windows-latest]
+                python: ["3.9"]
 
-    #     steps:
-    #         - uses: actions/checkout@master
-    #         - uses: actions/setup-python@v2
-    #           with:
-    #               python-version: ${{ matrix.python }}
+        steps:
+            - uses: actions/checkout@master
+            - uses: actions/setup-python@v3
+              with:
+                  python-version: ${{ matrix.python }}
 
-    #         - name: Test installation
-    #           run: pip install "git+https://github.com/lewiswolf/drum-shape-predictor.git@dev#egg=kac_drumset"
+            - name: Test installation
+              run: pip install "git+https://github.com/lewiswolf/kac_drumset.git@dev#egg=kac_drumset"
 
     all-tests:
         runs-on: ${{ matrix.os }}
