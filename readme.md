@@ -424,19 +424,16 @@ class FDTDModel(AudioSampler):
 git clone --recursive ...
 pipenv install -d
 ```
-
 ### Build 
 
 ```bash
 pipenv run build
 ```
-
 ### Example
 
 ```
 pipenv run start
 ```
-
 ### Test
 
 ```

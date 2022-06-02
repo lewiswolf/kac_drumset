@@ -6,7 +6,7 @@
 
 -	**EasyInstallDeprecationWarning**
 
-	When running `pipenv run build', the above warning is raised due to the now outdated `setup.py develop` command being called. It is recommended to instead run `pip install -e .`, which works the same, however this command runs `setup.py develop` implicitly, raising the exact same warning.
+	When running `pipenv run build`, the above warning is raised due to the now outdated `setup.py develop` command being called. It is recommended to instead run `pip install -e .`, which works the same, however this command runs `setup.py develop` implicitly, raising the exact same warning.
 
 -   **Internal types for nested lists, numpy arrays and pytroch tensors**
 

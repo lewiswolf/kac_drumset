@@ -8,7 +8,7 @@ conversions.
 #include <vector>
 
 // dependencies
-#include "geometry.hpp"			  // my geometry cpp library
+#include <kac_core.hpp>
 #include <pybind11/pybind11.h>	  // python bindings
 #include <pybind11/stl.h>		  // type conversion
 

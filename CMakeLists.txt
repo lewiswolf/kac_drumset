@@ -26,9 +26,8 @@ if(SKBUILD)
 	list(APPEND CMAKE_PREFIX_PATH "${_tmp_dir}")
 endif()
 
-# include geometry-cpp
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src")
-file(GLOB GEOMETRY "${CMAKE_CURRENT_SOURCE_DIR}/lib/geometry-cpp/src/geometry.hpp")
+# include kac_core
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/kac_core)
 
 # include src files
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/geometry")
@@ -37,4 +36,6 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/physics")
 # build modules
 pybind11_add_module(_geometry MODULE ${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/geometry/_geometry.cpp)
 pybind11_add_module(_physics MODULE ${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/physics/_physics.cpp)
+target_link_libraries(_geometry PRIVATE kac_core)
+target_link_libraries(_physics PRIVATE kac_core)
 install(TARGETS _geometry _physics DESTINATION .)

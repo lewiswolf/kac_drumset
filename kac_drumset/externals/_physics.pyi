@@ -1,6 +1,8 @@
 # core
 from typing import List
 
+def besselJ(n: float, m: float) -> float: ...
+def besselJZero(n: float, m: int) -> float: ...
 def _FDTDWaveform2D(
 	u_0: List[List[float, ...]],
 	u_1: List[List[float, ...]],

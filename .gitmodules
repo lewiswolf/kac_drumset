@@ -1,3 +1,3 @@
-[submodule "lib/geometry-cpp"]
-	path = lib/geometry-cpp
-	url = https://github.com/lewiswolf/geometry-cpp.git
+[submodule "kac_core"]
+	path = kac_core
+	url = https://github.com/lewiswolf/kac_core.git
