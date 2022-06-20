@@ -2,7 +2,7 @@
 
 # kac_drumset
 
-Analysis tools and dataset generator for arbitrarily shaped drums.
+Python based analysis tools and dataset generator for arbitrarily shaped drums.
 
 # Install
 
