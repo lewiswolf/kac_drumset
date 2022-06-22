@@ -348,9 +348,7 @@ def FDTDWaveform2D(
 	c_1: float,
 	d: float,
 	T: int,
-	x_range: tuple[int, int],
-	y_range: tuple[int, int],
-	w: tuple[float, float],
+	w: tuple[int, int],
 ) -> npt.NDArray[np.float64]:
 	'''
 	Generates a waveform using a 2 dimensional FDTD scheme.
@@ -362,8 +360,6 @@ def FDTDWaveform2D(
 		c_1 = second fdtd coefficient related to the courant number.
 		d = decay coefficient.
 		T = length of simulation in samples.
-		x_range = tuple representing the range across the x axis to update.
-		y_range = tuple representing the range across the y axis to update.
 		w = the coordinate at which the waveform is sampled.
 	output:
 		waveform = W[n] ∈

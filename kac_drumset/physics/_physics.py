@@ -27,6 +27,20 @@ def FDTDWaveform2D(
 ) -> npt.NDArray[np.float64]:
 	'''
 	Generates a waveform using a 2 dimensional FDTD scheme. See `fdtd.hpp` for a parameter description.
+	input:
+		u_0 = initial fdtd grid at t = 0.
+		u_1 = initial fdtd grid at t = 1.
+		B = boundary conditions.
+		c_0 = first fdtd coefficient related to the courant number.
+		c_1 = second fdtd coefficient related to the courant number.
+		d = decay coefficient.
+		T = length of simulation in samples.
+		w = the coordinate at which the waveform is sampled.
+	output:
+		waveform = W[n] ∈
+			(λ ** 2)(
+				u_n_x+1_y + u_n_x-1_y + u_n_x_y+1 + u_n_x_y-1
+			) + 2(1 - 2(λ ** 2))u_n_x_y - d(u_n-1_x_y) ∀ u ∈ R^2
 	'''
 
 	return np.array(_FDTDWaveform2D(
