@@ -5,8 +5,8 @@ This file contains various functions relating to computational geometry. These i
 	- 	Calculating the centroid of a polygon.
 	-	Generating random polygons, which can either be convex or concave.
 	-	Normalisation based on group theory transformations.
-	-	Determing whether or a not a set of three vertices are colinear.
-	- 	Determing whether or not a given polygon is convex.
+	-	Determine whether or a not a set of three vertices are colinear.
+	- 	Determine whether or not a given polygon is convex.
 	- 	Calculating the largest vector within a polygon.
 '''
 

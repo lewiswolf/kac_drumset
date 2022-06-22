@@ -2,7 +2,7 @@
 
 # kac_drumset
 
-Analysis tools and dataset generator for arbitrarily shaped drums.
+Python based analysis tools and dataset generator for arbitrarily shaped drums.
 
 # Install
 
@@ -329,6 +329,17 @@ from kac_drumset.physics import (
 ### Methods
 
 ```python
+def besselJ(n: float, m: float) -> float:
+	'''
+	Calculate the bessel function of the first kind. This method is a clone boost::math::cyl_bessel_j.
+	'''
+
+def besselJZero(n: float, m: int) -> float:
+	'''
+	Calculate the mth zero crossing of the nth bessel function of the first kind. This method is a clone of
+	boost::math::cyl_bessel_j_zero.
+	'''
+
 def FDTDWaveform2D(
 	u_0: npt.NDArray[np.float64],
 	u_1: npt.NDArray[np.float64],
@@ -424,19 +435,16 @@ class FDTDModel(AudioSampler):
 git clone --recursive ...
 pipenv install -d
 ```
-
 ### Build 
 
 ```bash
 pipenv run build
 ```
-
 ### Example
 
 ```
 pipenv run start
 ```
-
 ### Test
 
 ```
