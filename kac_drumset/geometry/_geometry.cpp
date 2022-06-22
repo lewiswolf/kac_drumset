@@ -13,23 +13,24 @@ conversions.
 #include <pybind11/stl.h>		  // type conversion
 
 namespace py = pybind11;
-namespace g = geometry;
+namespace g = kac_core::geometry;
+namespace T = kac_core::types;
 
 /*
 Type conversions.
 */
 
-std::vector<std::array<double, 2>> convertVerticesToVector(const g::Vertices& V
+std::vector<std::array<double, 2>> convertVerticesToVector(const T::Vertices& V
 ) {
 	std::vector<std::array<double, 2>> out;
 	for (int i = 0; i < V.size(); i++) { out.push_back({{V[i].x, V[i].y}}); }
 	return out;
 }
 
-g::Vertices convertVectorToVertices(const std::vector<std::array<double, 2>>& V
+T::Vertices convertVectorToVertices(const std::vector<std::array<double, 2>>& V
 ) {
-	g::Vertices out(V.size());
-	for (int i = 0; i < V.size(); i++) { out[i] = g::Point(V[i][0], V[i][1]); }
+	T::Vertices out(V.size());
+	for (int i = 0; i < V.size(); i++) { out[i] = T::Point(V[i][0], V[i][1]); }
 	return out;
 }
 
@@ -43,9 +44,9 @@ std::vector<std::array<double, 2>> _generateConvexPolygon(const int& N) {
 
 bool _isColinear(const std::array<std::array<double, 2>, 3>& V) {
 	return g::isColinear(
-		g::Point(V[0][0], V[0][1]),
-		g::Point(V[1][0], V[1][1]),
-		g::Point(V[2][0], V[2][1])
+		T::Point(V[0][0], V[0][1]),
+		T::Point(V[1][0], V[1][1]),
+		T::Point(V[2][0], V[2][1])
 	);
 }
 

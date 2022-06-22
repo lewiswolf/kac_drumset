@@ -23,9 +23,7 @@ def FDTDWaveform2D(
 	c_1: float,
 	d: float,
 	T: int,
-	x_range: tuple[int, int],
-	y_range: tuple[int, int],
-	w: tuple[float, float],
+	w: tuple[int, int],
 ) -> npt.NDArray[np.float64]:
 	'''
 	Generates a waveform using a 2 dimensional FDTD scheme. See `fdtd.hpp` for a parameter description.
@@ -39,8 +37,6 @@ def FDTDWaveform2D(
 		c_1,
 		d,
 		T,
-		x_range,
-		y_range,
 		w,
 	))
 

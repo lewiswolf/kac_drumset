@@ -102,20 +102,16 @@ class FDTDModel(AudioSampler):
 
 		self.waveform = FDTDWaveform2D(
 			np.zeros((self.H + 2, self.H + 2)),
-			raisedCosine((self.H + 2, self.H + 2), self.strike) * self.a,
+			np.pad(
+				raisedCosine((self.H, self.H), self.strike) * self.a,
+				1,
+				mode='constant',
+			),
 			np.pad(self.B, 1, mode='constant'),
 			self.s_0,
 			self.s_1,
 			self.d,
 			self.length,
-			(
-				round(np.min(self.shape.vertices[:, 0] * self.H)) + 1,
-				round(np.max(self.shape.vertices[:, 0] * self.H)) + 1,
-			),
-			(
-				round(np.min(self.shape.vertices[:, 1] * self.H)) + 1,
-				round(np.max(self.shape.vertices[:, 1] * self.H)) + 1,
-			),
 			(
 				round(self.shape.centroid[0] * self.H),
 				round(self.shape.centroid[1] * self.H),
@@ -151,6 +147,8 @@ class FDTDModel(AudioSampler):
 				round(self.shape.centroid[0] * self.H),
 				round(self.shape.centroid[1] * self.H),
 			)
+			while not self.B[self.strike]:
+				self.strike = (np.random.randint(0, self.H), np.random.randint(0, self.H))
 		else:
 			# otherwise update the strike location to be a random location.
 			self.strike = (0, 0)

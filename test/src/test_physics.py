@@ -47,8 +47,6 @@ class PhysicsTests(TestCase):
 			c_1=2 * (1 - 2 * (cfl ** 2)),
 			d=1.,
 			T=10,
-			x_range=(1, 9),
-			y_range=(1, 9),
 			w=(4, 4),
 		)
 
