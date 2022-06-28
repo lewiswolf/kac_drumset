@@ -42,8 +42,8 @@ class RandomPolygon(Polygon):
 			self.convex = _G.isConvex(self.vertices)
 
 		# normalise
-		self.vertices = G.groupNormalisation(self.vertices, convex=self.convex)
+		self.vertices = _G.convexNormalisation(self.vertices) if self.convex else G.concaveNormalisation(self.vertices)
 
 		# calculate other properties
-		self.area = G.area(self.vertices)
-		self.centroid = G.centroid(self.vertices, self.area)
+		self.area = _G.polygonArea(self.vertices)
+		self.centroid = _G.centroid(self.vertices, self.area)

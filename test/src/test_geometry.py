@@ -6,7 +6,15 @@ import cv2					# image processing
 import numpy as np 			# maths
 
 # src
-from kac_drumset.geometry import Polygon, RandomPolygon, booleanMask, isColinear, isConvex, largestVector
+from kac_drumset.geometry import (
+	booleanMask,
+	convexNormalisation,
+	isColinear,
+	isConvex,
+	largestVector,
+	RandomPolygon,
+	Polygon,
+)
 
 
 class GeometryTests(TestCase):
@@ -19,15 +27,46 @@ class GeometryTests(TestCase):
 		Test properties of the type Polygon.
 		'''
 
-		for polygon in [
+		squares = [
 			Polygon(np.array([[0, 0], [1, 0], [1, 1], [0, 1]])),
 			Polygon(np.array([[0, 0], [0, 1], [1, 1], [1, 0]])),
-		]:
+		]
+
+		for polygon in squares:
 			# This test asserts that a polygon has the correct number of vertices.
 			self.assertEqual(len(polygon.vertices), polygon.n)
 
 			# This test asserts that isConvex() works for any closed arrangement of vertices.
 			self.assertTrue(isConvex(polygon.vertices))
+
+		# This test asserts that after convexNormalisation, one of the above squares produces the correct output.
+		self.assertFalse(False in np.equal(
+			convexNormalisation(squares[0].vertices),
+			np.array([
+				[0., 0.5],
+				[0.5, 1.],
+				[1., 0.5],
+				[0.5, 0.],
+			]),
+		))
+
+		# This test asserts that after convexNormalisation, the two squares produce the same output.
+		# The two squares have opposite vertex order.
+		self.assertFalse(False in np.equal(
+			convexNormalisation(squares[0].vertices),
+			convexNormalisation(squares[1].vertices),
+		))
+
+		# This test asserts that after convexNormalisation, the two quads produce the same output.
+		# The two quads have opposite vertex order.
+		quads = [
+			Polygon(np.array([[0, 0], [1.1, 0], [1, 1], [0, 1]])),
+			Polygon(np.array([[0, 0], [0, 1], [1, 1], [1.1, 0]])),
+		]
+		self.assertFalse(False in np.equal(
+			convexNormalisation(quads[0].vertices),
+			convexNormalisation(quads[1].vertices),
+		))
 
 	def test_random_polygon(self) -> None:
 		'''
@@ -36,6 +75,7 @@ class GeometryTests(TestCase):
 
 		for i in range(10000):
 			polygon = RandomPolygon(20, allow_concave=True)
+			LV = largestVector(polygon.vertices)
 
 			# This test asserts that a polygon has the correct number of vertices.
 			self.assertEqual(len(polygon.vertices), polygon.n)
@@ -45,7 +85,7 @@ class GeometryTests(TestCase):
 			self.assertEqual(np.max(polygon.vertices), 1.0)
 
 			# This test asserts that the largest vector is of magnitude 1.0.
-			self.assertEqual(largestVector(polygon.vertices)[0], 1.0)
+			self.assertEqual(LV[0], 1.0)
 
 			# This test asserts that the area(), used for calculating the area of a polygon is accurate to at least 6 decimal
 			# places. This comparison is bounded due to the area() being 64-bit, whilst the comparison function,
@@ -66,8 +106,12 @@ class GeometryTests(TestCase):
 
 			if polygon.convex:
 				# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
-				# can assume that the generateConvex() function works as intended.
+				# can assume that the generateConvexPolygon() function works as intended.
 				self.assertTrue(isConvex(polygon.vertices))
+
+				# This test asserts that the largest vector lies across the x-axis.
+				self.assertTrue(polygon.vertices[LV[1][0]][0] == 0.)
+				self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
 
 				# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
 				mask = booleanMask(polygon.vertices, 100, convex=polygon.convex)
