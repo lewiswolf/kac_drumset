@@ -1,31 +1,33 @@
 from ._geometry import (
+	centroid,
+	convexNormalisation,
 	generateConvexPolygon,
 	isColinear,
 	isConvex,
+	largestVector,
+	polygonArea,
 )
 from .geometry import (
-	area,
 	booleanMask,
-	centroid,
+	concaveNormalisation,
 	generateConcave,
-	groupNormalisation,
-	largestVector,
 )
 from .random_polygon import RandomPolygon
 from .types import Polygon
 
 __all__ = [
 	# external methods
+	'centroid',
+	'convexNormalisation',
 	'generateConvexPolygon',
 	'isColinear',
 	'isConvex',
-	# methods
-	'area',
-	'booleanMask',
-	'centroid',
-	'generateConcave',
-	'groupNormalisation',
 	'largestVector',
+	'polygonArea',
+	# methods
+	'booleanMask',
+	'generateConcave',
+	'concaveNormalisation',
 	# classes
 	'RandomPolygon',
 	# types

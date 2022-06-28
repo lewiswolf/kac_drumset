@@ -186,15 +186,14 @@ class TorchDataset(torch.utils.data.Dataset):
 ```python
 from kac_drumset.geometry import (
 	# Methods
-	'area',
 	'booleanMask',
 	'centroid',
-	'generateConcave',
+	'convexNormalisation',
 	'generateConvexPolygon',
-	'groupNormalisation',
 	'isColinear',
 	'isConvex',
 	'largestVector',
+	'polygonArea',
 	# Classes
 	'RandomPolygon',
 	# Types
@@ -205,57 +204,38 @@ from kac_drumset.geometry import (
 ### Methods
 
 ```python
-def area(vertices: npt.NDArray[np.float64]) -> float:
-	'''
-	An implementation of the shoelace algorithm, first described by Albrecht Ludwig
-	Friedrich Meister, which is used to calculate the area of a polygon. The area
-	of a polygon can also be computed (using Green's theorem directly) using
-	`cv2.contourArea(self.vertices.astype('float32'))`. However, this function
-	requires that the input be of the type float32, resulting in a trade off between
-	(marginal) performance gains and lower precision.
-	'''
-
 def booleanMask(
 	vertices: npt.NDArray[np.float64],
 	grid_size: int,
 	convex: Optional[bool],
 ) -> npt.NDArray[np.int8]:
 	'''
-	This function creates a boolean mask of an input polygon on a grid with dimensions
-	R^(grid_size). The input shape should exist within a domain R^G where G ∈ [0, 1].
+	This function creates a boolean mask of an input polygon on a grid with dimensions R^(grid_size). The input shape
+	should exist within a domain R^G where G ∈ [0, 1].
 	'''
 
 def centroid(vertices: npt.NDArray[np.float64], area: float) -> tuple[float, float]:
 	'''
-	This algorithm is used to calculate the geometric centroid of a 2D polygon.
-	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and
-	centroid of a polygon'.
+	This algorithm is used to calculate the geometric centroid of a 2D polygon. 
+	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
 	'''
 
-def generateConcave(n: int) -> npt.NDArray[np.float64]:
+def generateConvexPolygon(n: int) -> npt.NDArray[np.float64]:
 	'''
-	Generates a random concave shape, with a small probability of also returning a
-	convex shape. It should be noted that this function can not be used to create
-	all possible simple polygons; see todo.md => 'Missing a reliable algorithm to
-	generate all concave shapes'.
+	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted from Sander Verdonschot's Java version,
+	found here: https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
 	'''
 
-def generateConvex(n: int) -> npt.NDArray[np.float64]:
-	'''
-	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted
-	from Sander Verdonschot's Java version, found here:
-		https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
-	'''
-
-def groupNormalisation(
+def convexNormalisation(
 	vertices: npt.NDArray[np.float64],
-	convex: Optional[bool],
 ) -> npt.NDArray[np.float64]:
 	'''
-	This function uses the largest vector to define a polygon's span across the
-	y-axis. After finding the largest vector, the polygon is rotated about said
-	vector's midpoint, and finally the entire polygon is normalised to span the
-	unit interval.
+	This algorithm produces an identity polygon for each unique polygon given as input. This method normalises an input
+	polygon to the unit interval such that x ∈ [0, 1] && y ∈ [0, 1], reducing each input polygon by isometric and
+	similarity transformations. This is achieved by first enforcing that the vertices of a polygon are ordered clockwise.
+	Then, the largest vector is used to determine the lower and upper bounds across the x-axis. Next, the polygon is split
+	into quadrants, the largest of whose area determines the rotation/reflection of the polygon. Finally, the points are
+	normalised, and ordered such that V[0] = [0., y].
 	'''
 
 def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
@@ -265,17 +245,22 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 
 def isConvex(vertices: npt.NDArray[np.float64]) -> bool:
 	'''
-	Tests whether or not a given array of vertices forms a convex polygon. This is
-	achieved using the resultant sign of the cross product for each vertex:
-		[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)]
-	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not
-	a polygon (2D) has its vertices ordered clockwise or counter-clockwise'.
+	Tests whether or not a given array of vertices forms a convex polygon. This is achieved using the resultant sign of
+	the cross product for each vertex: [(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)].
+	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
+	clockwise or counter-clockwise'.
 	'''
 
 def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, int]]:
 	'''
-	This function tests each pair of vertices in a given polygon to find the largest
-	vector, and returns the length of the vector and its indices.
+	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the
+	vector and its indices.
+	'''
+
+def polygonArea(vertices: npt.NDArray[np.float64]) -> float:
+	'''
+	An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
+	calculate the area of a polygon.
 	'''
 ```
 
@@ -284,8 +269,8 @@ def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, 
 ```python
 class RandomPolygon(Polygon):
 	'''
-	This class is used to generate a random polygon, normalised and centred between 0.0
-	and 1.0. The area and the centroid of the polygon are also included in this class.
+	This class is used to generate a random polygon, normalised and centred between 0.0 and 1.0. The area and the centroid
+	of the polygon are also included in this class.
 	'''
 
 	area: float							# area of the polygon
@@ -321,6 +306,8 @@ class Polygon():
 
 ```python
 from kac_drumset.physics import (
+	besselJ,
+	besselJZero,
 	FDTDWaveform2D,
 	raisedCosine,
 )
