@@ -8,7 +8,7 @@ numpy = ">=1.22"
 opencv-python = ">=4.5"
 soundfile = "*"
 torch = ">=1.11"
-torchaudio = ">=0.11"
+torchaudio = ">=0.12"
 tqdm = ">=4.64"
 
 [dev-packages]
