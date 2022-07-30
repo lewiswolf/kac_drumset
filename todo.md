@@ -1,5 +1,9 @@
 ## General Codebase
 
+-	**KacCore is failing on Windows?**
+
+	See https://github.com/lewiswolf/kac_drumset/runs/7590632801?check_suite_focus=true.
+
 - 	**BoostDeprecation**
 
 	Soon Boost.Math will require c++14, and so the project will need to be updated from c++11.
