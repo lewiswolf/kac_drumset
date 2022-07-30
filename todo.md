@@ -1,9 +1,5 @@
 ## General Codebase
 
-- 	**BoostDeprecation**
-
-	Soon Boost.Math will require c++14, and so the project will need to be updated from c++11.
-
 -	**EasyInstallDeprecationWarning**
 
 	When running `pipenv run build`, the above warning is raised due to the now outdated `setup.py develop` command being called. It is recommended to instead run `pip install -e .`, which works the same, however this command runs `setup.py develop` implicitly, raising the exact same warning.
