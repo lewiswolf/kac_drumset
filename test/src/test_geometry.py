@@ -57,16 +57,21 @@ class GeometryTests(TestCase):
 			convexNormalisation(squares[1].vertices),
 		))
 
-		# This test asserts that after convexNormalisation, the two quads produce the same output.
-		# The two quads have opposite vertex order.
+		# This test asserts that after convexNormalisation, the quads produce the same output.
+		# The first two quads have opposite vertex order.
+		# The second two quads have their x and y coordinates swapped.
 		quads = [
 			Polygon(np.array([[0, 0], [1.1, 0], [1, 1], [0, 1]])),
 			Polygon(np.array([[0, 0], [0, 1], [1, 1], [1.1, 0]])),
+			Polygon(np.array([[0, 0], [0, 1.1], [1, 1], [1, 0]])),
+			Polygon(np.array([[0, 0], [1, 0], [1, 1], [0, 1.1]])),
 		]
-		self.assertFalse(False in np.equal(
-			convexNormalisation(quads[0].vertices),
-			convexNormalisation(quads[1].vertices),
-		))
+		for quad in quads:
+			quad.vertices = convexNormalisation(quad.vertices)
+		self.assertFalse(False in np.equal(quads[0].vertices, quads[1].vertices))
+		# np.allclose is used, as opposed to np.equal, to account for floating point errors.
+		self.assertTrue(np.allclose(quads[0].vertices, quads[2].vertices))
+		self.assertTrue(np.allclose(quads[0].vertices, quads[3].vertices))
 
 	def test_random_polygon(self) -> None:
 		'''
@@ -93,7 +98,7 @@ class GeometryTests(TestCase):
 			self.assertAlmostEqual(
 				polygon.area,
 				cv2.contourArea(polygon.vertices.astype('float32')),
-				places=6,
+				places=7,
 			)
 
 			# This test asserts that no 3 adjacent vertices are colinear.
@@ -119,3 +124,7 @@ class GeometryTests(TestCase):
 					round(polygon.centroid[0] * 100),
 					round(polygon.centroid[1] * 100),
 				], 1)
+
+				# This test asserts that convexNormalisation does not continuously alter the polygon.
+				# np.allclose is used, as opposed to np.equal, to account for floating point errors.
+				self.assertTrue(np.allclose(polygon.vertices, convexNormalisation(polygon.vertices)))
