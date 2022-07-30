@@ -5,7 +5,6 @@ This file contains the generateDataset method.
 # core
 import json
 import os
-from typing import Type
 
 # dependencies
 from tqdm import tqdm			# CLI progress bar
@@ -24,7 +23,7 @@ __all__ = [
 
 
 def generateDataset(
-	Sampler: Type[AudioSampler],
+	Sampler: type[AudioSampler],
 	sampler_settings: SamplerSettings,
 	dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../../data'),
 	dataset_size: int = 10,
