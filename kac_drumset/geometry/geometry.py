@@ -1,13 +1,5 @@
 '''
-This file contains various functions relating to computational geometry. These include:
-	-	Calculating the area of the polygon.
-	-	Creating a discrete matrix representation of the polygon. (boolean mask)
-	- 	Calculating the centroid of a polygon.
-	-	Generating random polygons, which can either be convex or concave.
-	-	Normalisation based on group theory transformations.
-	-	Determine whether or a not a set of three vertices are colinear.
-	- 	Determine whether or not a given polygon is convex.
-	- 	Calculating the largest vector within a polygon.
+This file contains various functions relating to computational geometry.
 '''
 
 # core
