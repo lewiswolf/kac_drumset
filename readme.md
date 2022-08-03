@@ -335,7 +335,7 @@ def FDTDWaveform2D(
 	B: npt.NDArray[np.int8],
 	c_0: float,
 	c_1: float,
-	d: float,
+	c_2: float,
 	T: int,
 	w: tuple[int, int],
 ) -> npt.NDArray[np.float64]:
@@ -345,9 +345,9 @@ def FDTDWaveform2D(
 		u_0 = initial fdtd grid at t = 0.
 		u_1 = initial fdtd grid at t = 1.
 		B = boundary conditions.
-		c_0 = first fdtd coefficient related to the courant number.
-		c_1 = second fdtd coefficient related to the courant number.
-		d = decay coefficient.
+		c_0 = first fdtd coefficient related to the decay term and the courant number.
+		c_1 = second fdtd coefficient related to the decay term and the courant number.
+		c_2 = third fdtd coefficient related to the decay term.
 		T = length of simulation in samples.
 		w = the coordinate at which the waveform is sampled.
 	output:
@@ -389,8 +389,7 @@ from kac_drumset import (
 ```python
 class FDTDModel(AudioSampler):
 	'''
-	This class creates a 2D simulation of an arbitrarily shaped drum, calculated
-	using a FDTD scheme.
+	This class creates a 2D simulation of an arbitrarily shaped drum, calculated using a FDTD scheme.
 	'''
 
 	class Settings(SamplerSettings, total=False):

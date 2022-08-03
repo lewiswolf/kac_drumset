@@ -23,8 +23,7 @@ __all__ = [
 
 class FDTDModel(AudioSampler):
 	'''
-	This class creates a 2D simulation of an arbitrarily shaped drum, calculated
-	using a FDTD scheme.
+	This class creates a 2D simulation of an arbitrarily shaped drum, calculated using a FDTD scheme.
 	'''
 
 	# user-defined variables
