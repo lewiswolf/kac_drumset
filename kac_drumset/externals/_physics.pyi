@@ -6,7 +6,7 @@ def _FDTDWaveform2D(
 	B: [[int, ...]],
 	c_0: float,
 	c_1: float,
-	d: float,
+	c_2: float,
 	T: int,
 	w: tuple[int, int],
 ) -> [float, ...]: ...

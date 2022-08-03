@@ -45,7 +45,7 @@ class PhysicsTests(TestCase):
 			B=np.pad(np.ones((8, 8), dtype=np.int8), 1, mode='constant'),
 			c_0=cfl ** 2,
 			c_1=2 * (1 - 2 * (cfl ** 2)),
-			d=1.,
+			c_2=1.,
 			T=10,
 			w=(4, 4),
 		)

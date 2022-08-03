@@ -29,6 +29,7 @@ class FDTDModel(AudioSampler):
 
 	# user-defined variables
 	a: float					# maximum amplitude of the simulation ∈ [0, 1]
+	d_60: float					# decay time (seconds)
 	L: float					# size of the drum, spanning both the horizontal and vertical axes (m)
 	max_vertices: int			# maximum amount of vertices for a given drum
 	p: float					# material density of the simulated drum membrane (kg/m^2)
@@ -40,9 +41,10 @@ class FDTDModel(AudioSampler):
 	H: int						# number of grid points across each dimension, for the domain U ∈ [0, 1]
 	h: float					# length of each grid step
 	cfl: float					# courant number
-	s_0: float					# the first constant used in the FDTD
-	s_1: float					# the second constant used in the FDTD
-	d: float					# decay factor ∈ [0, 1]
+	# FDTD update coefficients
+	c_0: float					# first coefficient
+	c_1: float					# second coefficient
+	c_2: float					# third coefficient
 	# drum properties
 	B: npt.NDArray[np.int8]		# boolean matrix define the boundary conditions for the drum
 	shape: RandomPolygon		# the shape of the drum
@@ -55,7 +57,7 @@ class FDTDModel(AudioSampler):
 		'''
 
 		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
-		decay_time: float			# how long will the simulation take to decay?
+		decay_time: float			# how long will the simulation take to decay? (seconds)
 		drum_size: float			# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		max_vertices: int			# maximum amount of vertices for a given drum
@@ -79,11 +81,11 @@ class FDTDModel(AudioSampler):
 		# initialise user defined variables
 		super().__init__(duration, sample_rate)
 		self.a = amplitude
+		self.d_60 = decay_time
 		self.L = drum_size
 		self.max_vertices = max_vertices
 		self.p = material_density
 		self.t = tension
-		self.t_60 = decay_time
 		# initialise inferences
 		self.k = 1 / self.sample_rate
 		self.c = (self.t / self.p) ** 0.5
@@ -91,9 +93,11 @@ class FDTDModel(AudioSampler):
 		self.H = math.floor((1 / (2 ** 0.5)) / (self.gamma * self.k))
 		self.h = 1 / self.H
 		self.cfl = self.gamma * self.k / self.h
-		self.s_0 = self.cfl ** 2
-		self.s_1 = 2 * (1 - 2 * (self.cfl ** 2))
-		self.d = (1 - (6 * np.log(10) / self.t_60) * self.k) / (1 + (6 * np.log(10) / self.t_60) * self.k)
+		# FDTD update coefficients
+		log_decay = self.k * 6 * np.log(10) / self.d_60
+		self.c_0 = (self.cfl ** 2) / (1 + log_decay)
+		self.c_1 = (2 - 4 * (self.cfl ** 2)) / (1 + log_decay)
+		self.c_2 = (1 - log_decay) / (1 + log_decay)
 
 	def generateWaveform(self) -> None:
 		'''
@@ -108,9 +112,9 @@ class FDTDModel(AudioSampler):
 				mode='constant',
 			),
 			np.pad(self.B, 1, mode='constant'),
-			self.s_0,
-			self.s_1,
-			self.d,
+			self.c_0,
+			self.c_1,
+			self.c_2,
 			self.length,
 			(
 				round(self.shape.centroid[0] * self.H),

@@ -72,9 +72,6 @@ class SamplerTests(TestCase):
 
 		# This test asserts that the labels default to an empty array when no waveform has been generated.
 		self.assertEqual(model.getLabels(), [])
-		# This test asserts that The Courant number λ = γk/h, which is used to confirm that the CFL stability criterion is
-		# upheld. If λ > 1 / (dimensionality)^0.5, the resultant simulation will be unstable.
-		self.assertLessEqual(model.cfl, 1 / (2 ** 0.5))
 
 		# generate a random shape and dirichlet boundary conditions.
 		model.updateProperties()
@@ -90,12 +87,31 @@ class SamplerTests(TestCase):
 			model.shape.vertices.tolist(),
 		)
 
-		# perform the physical modelling simulation
-		model.generateWaveform()
+		# generate a distribution of drums to assert that the sampler works with various configurations
+		drum_size = [0.9, 0.7, 0.5, 0.3, 0.1]
+		material_density = [0.75, 0.5, 0.25, 0.125, 0.0625]
+		tension = [3000.0, 2000.0, 1500.0, 1000.0]
+		for i in range(len(drum_size)):
+			for j in range(len(material_density)):
+				for k in range(len(tension)):
+					model = FDTDModel(
+						duration=0.02,
+						sample_rate=48000,
+						drum_size=drum_size[i],
+						material_density=material_density[j],
+						tension=tension[k],
+					)
+					model.updateProperties()
+					model.generateWaveform()
 
-		# # This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
-		# # itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
-		# # simulation.
-		self.assertFalse(np.isnan(model.waveform).any())
-		self.assertLessEqual(np.max(model.waveform), 1.0)
-		self.assertGreaterEqual(np.min(model.waveform), -1.0)
+					# This test asserts that The Courant number λ = γk/h, which is used to confirm that the
+					# CFL stability criterion is upheld. If λ > 1 / (dimensionality)^0.5, the resultant
+					# simulation will be unstable.
+					self.assertLessEqual(model.cfl, 1 / (2 ** 0.5))
+
+					# This test asserts that the conservation law of energy is upheld. This is here naively
+					# tested, using the waveform itself, but should also be confirmed by comparing expected
+					# bounds on the Hamiltonian energy throughout the simulation.
+					self.assertFalse(np.isnan(model.waveform).any())
+					self.assertLessEqual(np.max(model.waveform), 1.0)
+					self.assertGreaterEqual(np.min(model.waveform), -1.0)
