@@ -38,9 +38,9 @@ def FDTDWaveform2D(
 		w = the coordinate at which the waveform is sampled.
 	output:
 		waveform = W[n] ∈
-			(λ ** 2)(
+			c_0 * (
 				u_n_x+1_y + u_n_x-1_y + u_n_x_y+1 + u_n_x_y-1
-			) + 2(1 - 2(λ ** 2))u_n_x_y - d(u_n-1_x_y) ∀ u ∈ R^2
+			) + c_1 * u_n_x_y - c_2 * (u_n-1_x_y) ∀ u ∈ R^2
 	'''
 
 	return np.array(_FDTDWaveform2D(
