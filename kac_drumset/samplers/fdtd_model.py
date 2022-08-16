@@ -103,38 +103,41 @@ class FDTDModel(AudioSampler):
 		Calculate the FDTD for a 2D polygon.
 		'''
 
-		self.waveform = FDTDWaveform2D(
-			np.zeros((self.H + 2, self.H + 2)),
-			np.pad(
-				raisedCosine((self.H, self.H), self.strike) * self.a,
-				1,
-				mode='constant',
-			),
-			np.pad(self.B, 1, mode='constant'),
-			self.c_0,
-			self.c_1,
-			self.c_2,
-			self.length,
-			(
-				round(self.shape.centroid[0] * self.H),
-				round(self.shape.centroid[1] * self.H),
-			),
-		)
+		if hasattr(self, 'shape'):
+			self.waveform = FDTDWaveform2D(
+				np.zeros((self.H + 2, self.H + 2)),
+				np.pad(
+					raisedCosine((self.H, self.H), self.strike) * self.a,
+					1,
+					mode='constant',
+				),
+				np.pad(self.B, 1, mode='constant'),
+				self.c_0,
+				self.c_1,
+				self.c_2,
+				self.length,
+				(
+					round(self.shape.centroid[0] * self.H),
+					round(self.shape.centroid[1] * self.H),
+				),
+			)
 
-	def getLabels(self) -> list[Union[float, int]]:
+	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		'''
 		This method returns the vertices for the drum's arbitrary shaped, padded with zeros to equal the length of
 		self.max_vertices.
 		'''
 
 		if hasattr(self, 'shape'):
-			return np.pad(
-				self.shape.vertices,
-				[(0, self.max_vertices - self.shape.n), (0, 0)],
-				mode='constant',
-			).tolist()
+			return {
+				'strike_location': [
+					self.strike[0] / (self.H - 1),
+					self.strike[1] / (self.H - 1),
+				],
+				'vertices': self.shape.vertices.tolist(),
+			}
 		else:
-			return []
+			return {}
 
 	def updateProperties(self, i: Union[int, None] = None) -> None:
 		'''
@@ -147,8 +150,8 @@ class FDTDModel(AudioSampler):
 			self.shape = RandomPolygon(self.max_vertices)
 			self.B = booleanMask(self.shape.vertices, self.H, self.shape.convex)
 			self.strike = (
-				round(self.shape.centroid[0] * self.H),
-				round(self.shape.centroid[1] * self.H),
+				round(self.shape.centroid[0] * (self.H - 1)),
+				round(self.shape.centroid[1] * (self.H - 1)),
 			)
 			while not self.B[self.strike]:
 				self.strike = (np.random.randint(0, self.H), np.random.randint(0, self.H))

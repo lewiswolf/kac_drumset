@@ -14,7 +14,7 @@ import torch					# pytorch
 # src
 from .dataset import TorchDataset
 from .input_representation import InputRepresentation
-from .utils import tqdm_settings
+from .utils import tqdm_settings, listToTensor
 from ..utils import printEmojis
 
 __all__ = [
@@ -56,8 +56,8 @@ def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)
 				x = torch.as_tensor(json.loads(
 					file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1],
 				))
-				y = torch.as_tensor(json.loads(
-					file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1],
+				y = listToTensor(json.loads(
+					file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:],
 				))
 				file.readlines(1)
 				# append input features to dataset

@@ -64,7 +64,7 @@ class AudioSampler(ABC):
 		pass
 
 	@abstractmethod
-	def getLabels(self) -> list[Union[float, int]]:
+	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		''' This method should return the y labels for the generated audio. '''
 		pass
 

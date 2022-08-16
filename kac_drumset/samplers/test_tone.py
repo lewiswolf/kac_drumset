@@ -61,9 +61,9 @@ class TestTone(AudioSampler):
 		if self.waveshape == 'tri':
 			self.waveform = 4.0 * np.array([1 - (i % 1) if i % 1 > 0.5 else i % 1 for i in f_t]) - 1.0
 
-	def getLabels(self) -> list[Union[float, int]]:
+	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		''' Returns f_0 as a label. '''
-		return [self.f_0] if self.f_0 else []
+		return {'f_0': [self.f_0]} if self.f_0 else {}
 
 	def updateProperties(self, i: Union[int, None] = None) -> None:
 		''' Randomise f_0. '''
