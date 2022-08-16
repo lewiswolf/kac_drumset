@@ -48,7 +48,7 @@ def generateDataset(
 		x_size=IR.transformShape(sampler.length, IR.settings),
 	)
 	# housekeeping
-	clearDirectory(dataset_dir)
+	clearDirectory(dataset_dir) if os.path.isdir(dataset_dir) else os.makedirs(dataset_dir)
 	printEmojis('Generating dataset... 🎯')
 	# generation loop
 	with open(
