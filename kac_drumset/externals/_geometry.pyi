@@ -1,4 +1,4 @@
-# src
+# core
 from typing import Annotated
 
 Point = Annotated[list[float], len(2)]

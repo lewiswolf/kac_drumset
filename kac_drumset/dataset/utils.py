@@ -21,6 +21,7 @@ tqdm_settings = {
 
 
 def listToTensor(d: dict[str, list[Union[float, int]]]) -> dict[str, torch.Tensor]:
+	''' Convert a dictionary of lists to a dictionary of tensors. '''
 	t = {}
 	for k, v in d.items():
 		t[k] = torch.as_tensor(v)
@@ -28,6 +29,7 @@ def listToTensor(d: dict[str, list[Union[float, int]]]) -> dict[str, torch.Tenso
 
 
 def tensorToList(t: dict[str, torch.Tensor]) -> dict[str, list[Union[float, int]]]:
+	''' Convert a dictionary of tensors to a dictionary of lists. '''
 	d = {}
 	for k, v in t.items():
 		d[k] = v.tolist()

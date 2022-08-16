@@ -18,8 +18,8 @@ __all__ = [
 	'RepresentationSettings',
 ]
 
-# necessary to enforce dtype throughout the project, see todo.md ->
-# 'Internal types for nested lists, numpy arrays and pytorch tensors'
+# necessary to enforce dtype throughout the project.
+# See -> https://github.com/pytorch/audio/issues/1753
 torch.set_default_dtype(torch.float64)
 
 
@@ -57,8 +57,7 @@ class InputRepresentation():
 			X[i] = IR.transform(waveform)
 	'''
 
-	# for an explanation of why this type is Any, see
-	# todo.md => `Assigning class methods to class variables`.
+	# when using the correct types here, mypy throws an error.
 	# __normalise__: Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]]
 	# transform: Callable[[Any, npt.NDArray[np.float64]], torch.Tensor]
 	__normalise__: Any
