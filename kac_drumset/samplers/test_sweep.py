@@ -40,8 +40,8 @@ class TestSweep(AudioSampler):
 	def generateWaveform(self) -> None:
 		pass
 
-	def getLabels(self) -> list[Union[float, int]]:
-		return []
+	def getLabels(self) -> dict[str, list[Union[float, int]]]:
+		return {}
 
 	def updateProperties(self, i: Union[int, None] = None) -> None:
 		pass

@@ -88,7 +88,7 @@ class AudioSampler(ABC):
 		''' This method should be used to generate and set self.waveform. '''
 
 	@abstractmethod
-	def getLabels(self) -> list[Union[float, int]]:
+	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		''' This method should return the y labels for the generated audio. '''
 
 	@abstractmethod
@@ -170,9 +170,9 @@ class TorchDataset(torch.utils.data.Dataset):
 	sampler: str										# the name of the sampler used to generate the dataset
 	sampler_settings: SamplerSettings					# settings for the sampler
 	X: torch.Tensor										# data
-	Y: torch.Tensor										# labels
+	Y: list[dict[str, torch.Tensor]]					# labels
 
-	def __getitem__(self, i: int) -> tuple[torch.Tensor, torch.Tensor]:
+	def __getitem__(self, i: int) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
 		''' Return the data and its labels at index i. '''
 
 	def __len__(self) -> int:

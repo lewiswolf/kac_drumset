@@ -22,7 +22,7 @@ class TorchDataset(torch.utils.data.Dataset):
 	sampler: str										# the name of the sampler used to generate the dataset
 	sampler_settings: SamplerSettings					# settings for the sampler
 	X: torch.Tensor										# data
-	Y: torch.Tensor										# labels
+	Y: list[dict[str, torch.Tensor]]					# labels
 
 	def __init__(
 		self,
@@ -39,8 +39,9 @@ class TorchDataset(torch.utils.data.Dataset):
 		self.sampler = sampler
 		self.sampler_settings = sampler_settings
 		self.X = torch.zeros((dataset_size,) + x_size)
+		self.Y = [{} for _ in range(dataset_size)]
 
-	def __getitem__(self, i: int) -> tuple[torch.Tensor, torch.Tensor]:
+	def __getitem__(self, i: int) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
 		''' Return the data and its labels at index i. '''
 		if not hasattr(self, 'Y'):
 			raise ValueError('Dataset contains no data.')
@@ -50,9 +51,7 @@ class TorchDataset(torch.utils.data.Dataset):
 		''' Return the dataset size. '''
 		return self.X.shape[0]
 
-	def __setitem__(self, i: int, x: torch.Tensor, y: torch.Tensor) -> None:
-		''' Set self.X and self.Y at a specific index. If self.Y does not already exist, it is initialised here. '''
-		if not hasattr(self, 'Y'):
-			self.Y = torch.zeros((self.__len__(), ) + y.shape)
+	def __setitem__(self, i: int, x: torch.Tensor, y: dict[str, torch.Tensor]) -> None:
+		''' Set self.X and self.Y at a specific index. '''
 		self.X[i] = x
 		self.Y[i] = y

@@ -62,7 +62,8 @@ class DatasetTests(TestCase):
 
 		# This test asserts that the data is the correct data type.
 		self.assertEqual(dataset.X.dtype, torch.float64)
-		self.assertEqual(dataset.Y.dtype, torch.float64)
+		for v in dataset.Y[0].values():
+			self.assertEqual(v.dtype, torch.float64)
 
 		# This test asserts that the dataset directory is correct.
 		self.assertEqual(dataset.dataset_dir, self.tmp_dir)

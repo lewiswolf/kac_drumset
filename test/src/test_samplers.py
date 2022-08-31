@@ -35,7 +35,7 @@ class SamplerTests(TestCase):
 			def generateWaveform(self) -> None:
 				pass
 
-			def getLabels(self) -> list[Union[float, int]]:
+			def getLabels(self) -> dict[str, list[Union[float, int]]]:
 				pass
 
 			def updateProperties(self, i: Union[int, None] = None) -> None:
@@ -71,7 +71,7 @@ class SamplerTests(TestCase):
 		model = FDTDModel(**settings)
 
 		# This test asserts that the labels default to an empty array when no waveform has been generated.
-		self.assertEqual(model.getLabels(), [])
+		self.assertEqual(model.getLabels(), {})
 
 		# generate a random shape and dirichlet boundary conditions.
 		model.updateProperties()
@@ -80,12 +80,9 @@ class SamplerTests(TestCase):
 		self.assertTrue(hasattr(model, 'shape'))
 		# This test asserts that a boolean mask was properly defined after updating the model's properties.
 		self.assertEqual(model.B[model.strike], 1.0)
-		# This test asserts that the model returns the vertices of the shape as its labels.
-		self.assertEqual(len(model.getLabels()), model.max_vertices)
-		self.assertEqual(
-			model.getLabels()[:model.shape.n],
-			model.shape.vertices.tolist(),
-		)
+		# This test asserts that the model returns the vertices and the strike location as its labels.
+		self.assertLessEqual(len(model.getLabels()['strike_location']), 2)
+		self.assertLessEqual(len(model.getLabels()['vertices']), model.max_vertices)
 
 		# generate a distribution of drums to assert that the sampler works with various configurations
 		drum_size = [0.9, 0.7, 0.5, 0.3, 0.1]

@@ -39,10 +39,10 @@ T::Vertices convertVectorToVertices(const std::vector<std::array<double, 2>>& V
 PyBind11 exports.
 */
 
-std::pair<double, double>
+std::array<double, 2>
 _centroid(const std::vector<std::array<double, 2>>& V, double area) {
 	T::Point c = g::centroid(convertVectorToVertices(V), area);
-	return std::make_pair(c.x, c.y);
+	return {c.x, c.y};
 }
 
 std::vector<std::array<double, 2>>

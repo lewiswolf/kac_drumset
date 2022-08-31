@@ -8,13 +8,12 @@ import os
 
 # dependencies
 from tqdm import tqdm			# CLI progress bar
-import torch					# pytorch
 
 # src
 from .audio_sampler import AudioSampler, SamplerSettings
 from .input_representation import InputRepresentation, RepresentationSettings
 from .dataset import TorchDataset
-from .utils import tqdm_settings
+from .utils import tqdm_settings, listToTensor
 from ..utils import clearDirectory, printEmojis
 
 __all__ = [
@@ -49,7 +48,7 @@ def generateDataset(
 		x_size=IR.transformShape(sampler.length, IR.settings),
 	)
 	# housekeeping
-	clearDirectory(dataset_dir)
+	clearDirectory(dataset_dir) if os.path.isdir(dataset_dir) else os.makedirs(dataset_dir)
 	printEmojis('Generating dataset... 🎯')
 	# generation loop
 	with open(
@@ -72,14 +71,14 @@ def generateDataset(
 				x = IR.transform(sampler.waveform)
 				y = sampler.getLabels()
 				# append input features to dataset
-				dataset.__setitem__(i, x, torch.as_tensor(y))
+				dataset.__setitem__(i, x, listToTensor(y))
 				# bounce the raw audio
 				sampler.export(f'{dataset_dir}/sample_{i:05d}.wav')
 				# export metadata
 				new_file.write(r'{' + '\n')
 				new_file.write(rf'"x": {x.tolist()},' + '\n')
-				new_file.write(rf'"y": {y},' + '\n')
-				new_file.write(r'}]}' if i == dataset_size - 1 else r'}' + '\n')
+				new_file.write(rf'"y": {json.dumps(y)}' + '\n')
+				new_file.write(r'}]}' if i == dataset_size - 1 else r'},' + '\n')
 				bar.update(1)
 		new_file.close()
 	return dataset

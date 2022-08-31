@@ -15,7 +15,7 @@ import torch					# pytorch
 # src
 from .dataset import TorchDataset
 from .input_representation import InputRepresentation, RepresentationSettings
-from .utils import tqdm_settings
+from .utils import tqdm_settings, tensorToList
 from ..utils import printEmojis
 
 __all__ = [
@@ -67,8 +67,8 @@ def transformDataset(dataset: TorchDataset, representation_settings: Representat
 				# export metadata
 				new_file.write(r'{' + '\n')
 				new_file.write(rf'"x": {x.tolist()},' + '\n')
-				new_file.write(rf'"y": {y.tolist()},' + '\n')
-				new_file.write(r'}]}' if i == dataset.__len__() - 1 else r'}' + '\n')
+				new_file.write(rf'"y": {json.dumps(tensorToList(y))}' + '\n')
+				new_file.write(r'}]}' if i == dataset.__len__() - 1 else r'},' + '\n')
 				bar.update(1)
 			new_file.close()
 	return dataset
