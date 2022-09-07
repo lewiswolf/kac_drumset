@@ -24,7 +24,7 @@ __all__ = [
 def generateDataset(
 	Sampler: type[AudioSampler],
 	sampler_settings: SamplerSettings,
-	dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../../data'),
+	dataset_dir: str,
 	dataset_size: int = 10,
 	representation_settings: RepresentationSettings = {},
 ) -> TorchDataset:

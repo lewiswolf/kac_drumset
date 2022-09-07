@@ -46,7 +46,7 @@ from kac_drumset import (
 def generateDataset(
 	Sampler: Type[AudioSampler],
 	sampler_settings: SamplerSettings,
-	dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../../data'),
+	dataset_dir: str,
 	dataset_size: int = 10,
 	representation_settings: RepresentationSettings = {},
 ) -> TorchDataset:
@@ -56,7 +56,7 @@ def generateDataset(
 	'''
 
 
-def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../../data')) -> TorchDataset:
+def loadDataset(dataset_dir: str) -> TorchDataset:
 	'''
 	loadDataset imports a kac_drumset dataset from the directory specified by the absolute path dataset_dir.
 	'''

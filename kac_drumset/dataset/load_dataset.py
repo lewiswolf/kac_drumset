@@ -22,7 +22,7 @@ __all__ = [
 ]
 
 
-def loadDataset(dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../../data')) -> TorchDataset:
+def loadDataset(dataset_dir: str) -> TorchDataset:
 	'''
 	loadDataset imports a kac_drumset dataset from the directory specified by the absolute path dataset_dir.
 	'''
