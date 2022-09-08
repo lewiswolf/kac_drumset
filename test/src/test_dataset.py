@@ -7,7 +7,7 @@ import numpy as np 				# maths
 import torch					# pytorch
 
 # src
-from kac_drumset import InputRepresentation, generateDataset, loadDataset, transformDataset
+from kac_drumset import InputRepresentation, generateDataset, loadDataset, regenerateEntries, transformDataset
 from kac_drumset import TestSweep, TestTone
 from kac_drumset.utils import clearDirectory, withoutPrinting
 
@@ -100,6 +100,37 @@ class DatasetTests(TestCase):
 
 		# This test asserts that the sampler name is correct.
 		self.assertEqual(dataset.sampler, 'TestSweep')
+
+	def test_regenerate_dataset(self) -> None:
+		'''
+		Tests used in conjunction with `/dataset/regenerate_dataset.py`.
+		'''
+
+		# Generate a dataset for subsequent tests.
+		with withoutPrinting():
+			dataset = generateDataset(
+				TestTone,
+				dataset_dir=self.tmp_dir,
+				dataset_size=10,
+				sampler_settings=TestTone.Settings({
+					'duration': 1.0,
+					'sample_rate': 48000,
+				}),
+			)
+
+		# This test assets that the respective dataset entries get properly updated.
+		old_dataset = [dataset.__getitem__(i)[1]['f_0'] for i in range(dataset.__len__())]
+		with withoutPrinting():
+			regenerateEntries(dataset, TestTone, [0])
+		self.assertNotEqual(
+			old_dataset[0],
+			dataset.__getitem__(0)[1]['f_0'],
+		)
+		for i in range(1, dataset.__len__()):
+			self.assertEqual(
+				old_dataset[i],
+				dataset.__getitem__(i)[1]['f_0'],
+			)
 
 	def test_transform_dataset(self) -> None:
 		'''

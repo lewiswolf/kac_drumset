@@ -29,6 +29,7 @@ from kac_drumset import (
 	# Methods
 	generateDataset,
 	loadDataset,
+	regenerateEntries,
 	transformDataset,
 	# Classes
 	AudioSampler,
@@ -61,6 +62,10 @@ def loadDataset(dataset_dir: str) -> TorchDataset:
 	loadDataset imports a kac_drumset dataset from the directory specified by the absolute path dataset_dir.
 	'''
 
+def regenerateEntries() -> TorchDataset:
+	'''
+	This method regenerates specific indices of a dataset.
+	'''
 
 def transformDataset(dataset: TorchDataset, representation_settings: RepresentationSettings) -> TorchDataset:
 	'''
