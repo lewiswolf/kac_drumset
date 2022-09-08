@@ -6,6 +6,7 @@ from .dataset import (
 	TorchDataset,
 	generateDataset,
 	loadDataset,
+	regenerateDataPoints,
 	transformDataset,
 )
 from .samplers import FDTDModel, TestSweep, TestTone
@@ -15,6 +16,7 @@ __all__ = [
 	'generateDataset',
 	'loadDataset',
 	'transformDataset',
+	'regenerateDataPoints',
 	# dataset classes
 	'AudioSampler',
 	'InputRepresentation',

@@ -70,5 +70,5 @@ def transformDataset(dataset: TorchDataset, representation_settings: Representat
 				new_file.write(rf'"y": {json.dumps(tensorToList(y))}' + '\n')
 				new_file.write(r'}]}' if i == dataset.__len__() - 1 else r'},' + '\n')
 				bar.update(1)
-			new_file.close()
+		new_file.close()
 	return dataset
