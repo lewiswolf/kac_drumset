@@ -3,14 +3,14 @@ from .dataset import TorchDataset
 from .generate_dataset import generateDataset
 from .input_representation import InputRepresentation, RepresentationSettings
 from .load_dataset import loadDataset
-from .regenerate_entries import regenerateEntries
+from .regenerate_data_points import regenerateDataPoints
 from .transform_dataset import transformDataset
 
 __all__ = [
 	# methods
 	'generateDataset',
 	'loadDataset',
-	'regenerateEntries',
+	'regenerateDataPoints',
 	'transformDataset',
 	# classes
 	'AudioSampler',

@@ -7,7 +7,7 @@ import numpy as np 				# maths
 import torch					# pytorch
 
 # src
-from kac_drumset import InputRepresentation, generateDataset, loadDataset, regenerateEntries, transformDataset
+from kac_drumset import InputRepresentation, generateDataset, loadDataset, regenerateDataPoints, transformDataset
 from kac_drumset import TestSweep, TestTone
 from kac_drumset.utils import clearDirectory, withoutPrinting
 
@@ -103,7 +103,7 @@ class DatasetTests(TestCase):
 
 	def test_regenerate_dataset(self) -> None:
 		'''
-		Tests used in conjunction with `/dataset/regenerate_dataset.py`.
+		Tests used in conjunction with `/dataset/regenerate_data_points.py`.
 		'''
 
 		# Generate a dataset for subsequent tests.
@@ -121,7 +121,7 @@ class DatasetTests(TestCase):
 		# This test assets that the respective dataset entries get properly updated.
 		old_dataset = [dataset.__getitem__(i)[1]['f_0'] for i in range(dataset.__len__())]
 		with withoutPrinting():
-			regenerateEntries(dataset, TestTone, [0])
+			regenerateDataPoints(dataset, TestTone, [0])
 		self.assertNotEqual(
 			old_dataset[0],
 			dataset.__getitem__(0)[1]['f_0'],

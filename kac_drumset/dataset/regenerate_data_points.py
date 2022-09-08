@@ -1,5 +1,5 @@
 '''
-This file contains the regenerateEntries method.
+This file contains the regenerateDataPoints method.
 '''
 
 # core
@@ -17,7 +17,7 @@ from .utils import tqdm_settings, listToTensor, tensorToList
 from ..utils import printEmojis
 
 
-def regenerateEntries(dataset: TorchDataset, Sampler: type[AudioSampler], entries: list[int]) -> TorchDataset:
+def regenerateDataPoints(dataset: TorchDataset, Sampler: type[AudioSampler], entries: list[int]) -> TorchDataset:
 	'''
 	This method regenerates specific indices of a dataset.
 	'''
@@ -28,7 +28,7 @@ def regenerateEntries(dataset: TorchDataset, Sampler: type[AudioSampler], entrie
 	if (Sampler.__name__ != dataset.sampler):
 		raise TypeError(f'${Sampler.__name__} is not compatible with this dataset.')
 	if (dataset.__len__() < max(entries) or min(entries) < 0):
-		raise ValueError('Cannot replace all specified entries.')
+		raise ValueError('Cannot replace all specified indices.')
 	# sort entries, remove metadata, load generators
 	entries.sort()
 	os.remove(f'{dataset.dataset_dir}/metadata.json')
@@ -38,7 +38,7 @@ def regenerateEntries(dataset: TorchDataset, Sampler: type[AudioSampler], entrie
 	)
 	sampler = Sampler(**dataset.sampler_settings)
 	# generation loop
-	printEmojis('Regenerating Entries... 🛠')
+	printEmojis('Regenerating data points... 🛠')
 	with open(
 		os.path.normpath(f'{dataset.dataset_dir}/metadata.json'),
 		'at',
