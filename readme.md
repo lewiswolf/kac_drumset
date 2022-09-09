@@ -3,6 +3,9 @@
 # kac_drumset
 
 ![python version](https://img.shields.io/badge/python-3.9%20%7C%203.10-blue)
+<a href="https://doi.org/10.5281/zenodo.7057219">
+![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.7057219-blue)
+</a>
 
 Python based analysis tools and dataset generator for arbitrarily shaped drums.
 
