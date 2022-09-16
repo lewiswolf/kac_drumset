@@ -51,7 +51,7 @@ class TestTone(AudioSampler):
 		Renders a specified waveform to a numpy array.
 		'''
 
-		f_t = self.f_0 * (np.arange(self.length) / self.sample_rate)
+		f_t = self.f_0 * np.arange(self.length) / self.sample_rate
 		if self.waveshape == 'saw':
 			self.waveform = 2.0 * np.array([i % 1 for i in f_t]) - 1.0
 		if self.waveshape == 'sin':

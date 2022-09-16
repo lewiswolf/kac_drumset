@@ -9,7 +9,12 @@ from .dataset import (
 	regenerateDataPoints,
 	transformDataset,
 )
-from .samplers import FDTDModel, TestSweep, TestTone
+from .samplers import (
+	BesselModel,
+	FDTDModel,
+	TestSweep,
+	TestTone,
+)
 
 __all__ = [
 	# dataset methods
@@ -25,6 +30,7 @@ __all__ = [
 	'RepresentationSettings',
 	'TorchDataset',
 	# samplers
+	'BesselModel',
 	'FDTDModel',
 	# samplers - tests
 	'TestSweep',

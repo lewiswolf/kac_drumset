@@ -3,16 +3,35 @@ Import functions from external C++ library and configure python type conversions
 '''
 
 # src
-from ..externals._physics import _FDTDWaveform2D, _raisedCosine1D, _raisedCosine2D
+from ..externals._physics import (
+	_calculateCircularSeries,
+	_FDTDWaveform2D,
+	_raisedCosine1D,
+	_raisedCosine2D,
+)
 
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 __all__ = [
+	'calculateCircularSeries',
 	'FDTDWaveform2D',
 	'raisedCosine',
 ]
+
+
+def calculateCircularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the eigenmodes of a circle.
+	input:
+		N = number of modal orders
+		M = number of modes per order
+	output:
+		S = { z_nm | s ∈ ℝ, J_n(z_nm) = 0, n < N, 0 < m <= M }
+	'''
+
+	return np.array(_calculateCircularSeries(N, M))
 
 
 def FDTDWaveform2D(

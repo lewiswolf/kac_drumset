@@ -4,16 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy = ">=1.22"
-opencv-python = ">=4.5"
+numpy = ">=1.23"
+opencv-python = ">=4.6"
 soundfile = "*"
-torch = ">=1.11"
+torch = ">=1.12"
 torchaudio = ">=0.12"
 tqdm = ">=4.64"
 
 [dev-packages]
 flake8 = "*"
 flake8-commas = "*"
+flake8-pyi = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
 kac_drumset = {editable = true, path = "."}
 mypy = "*"
