@@ -4,6 +4,7 @@ Import functions from external C++ library and configure python type conversions
 
 # src
 from ..externals._physics import (
+	_calculateCircularAmplitudes,
 	_calculateCircularSeries,
 	_FDTDWaveform2D,
 	_raisedCosine1D,
@@ -15,10 +16,28 @@ import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 __all__ = [
+	'calculateCircularAmplitudes',
 	'calculateCircularSeries',
 	'FDTDWaveform2D',
 	'raisedCosine',
 ]
+
+
+def calculateCircularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the amplitudes of the circular eigenmodes relative to a polar
+	strike location.
+	input:
+		(r, θ) = polar strike location
+		S = { z_nm | s ∈ ℝ, J_n(z_nm) = 0, 0 <= n < N, 0 < m <= M }
+	output:
+		A = {
+			J_n(z_nm * r) * (2 ** 0.5) * sin(nθπ/4)
+			| a ∈ ℝ, J_n(z_nm) = 0, 0 <= n < N, 0 < m <= M
+		}
+	'''
+
+	return np.array(_calculateCircularAmplitudes(r, theta, S.tolist()))
 
 
 def calculateCircularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
