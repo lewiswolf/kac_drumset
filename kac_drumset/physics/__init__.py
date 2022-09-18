@@ -5,6 +5,8 @@ from ..externals._physics import (
 from ._physics import (
 	calculateCircularAmplitudes,
 	calculateCircularSeries,
+	calculateRectangularAmplitudes,
+	calculateRectangularSeries,
 	FDTDWaveform2D,
 	raisedCosine,
 )
@@ -14,6 +16,8 @@ __all__ = [
 	'besselJZero',
 	'calculateCircularAmplitudes',
 	'calculateCircularSeries',
+	'calculateRectangularAmplitudes',
+	'calculateRectangularSeries',
 	'FDTDWaveform2D',
 	'raisedCosine',
 ]

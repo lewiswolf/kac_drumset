@@ -1,5 +1,5 @@
 '''
-This sampler is used to produce a linear model of a circular membrane.
+This sampler is used to produce a linear model of a rectangular membrane.
 '''
 
 # core
@@ -12,16 +12,16 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from ..dataset import AudioSampler, SamplerSettings
-from ..physics import calculateCircularAmplitudes, calculateCircularSeries
+from ..physics import calculateRectangularAmplitudes, calculateRectangularSeries
 
 __all__ = [
-	'BesselModel',
+	'PoissonModel',
 ]
 
 
-class BesselModel(AudioSampler):
+class PoissonModel(AudioSampler):
 	'''
-	A linear model of a circular membrane using bessel equations of the first kind.
+	A linear model of a rectangular membrane using poisson equations of the first kind.
 	'''
 
 	# user defined variables
@@ -38,7 +38,8 @@ class BesselModel(AudioSampler):
 	k: float						# sample length (ms)
 	series: npt.NDArray[np.float64]	# array of eigenmodes z_nm
 	# drum properties
-	L: float						# diameter of the drum (m)
+	epsilon: float					# aspect ratio
+	L: float						# size of the drum (m)
 	strike: tuple[float, float]		# strike location in cartesian coordinates
 
 	class Settings(SamplerSettings, total=False):
@@ -81,24 +82,23 @@ class BesselModel(AudioSampler):
 		self.c = (self.t / self.p) ** 0.5
 		self.k = 1. / self.sample_rate
 		self.decay = -1 * self.k * 6 * np.log(10) / self.d_60
-		self.series = calculateCircularSeries(N, M)
 
 	def generateWaveform(self) -> None:
 		'''
 		Using additive synthesis, generate the waveform for the linear model.
 		'''
 
-		# 2016 - Chaigne & Kergomard, p.154
-		omega = (self.gamma * self.series).flatten() # eigenfrequencies
-		omega *= 2 * np.pi * self.k # rate of phase
-		A = self.a * np.abs(calculateCircularAmplitudes(*self.strike, self.series)).flatten()
-		for i in range(self.length):
-			# 2009 - Bilbao , pp.65-66
-			self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * np.max(A))
+		if hasattr(self, 'L'):
+			A = self.a * np.abs(calculateRectangularAmplitudes(self.strike, self.N, self.M, self.epsilon)).flatten()
+			omega = (self.gamma * self.series).flatten() # eigenfrequencies
+			omega *= 2 * np.pi * self.k # rate of phase
+			for i in range(self.length):
+				# 2009 - Bilbao , pp.65-66
+				self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * np.max(A))
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		'''
-		Return the labels of the bessel model.
+		Return the labels of the poisson model.
 		'''
 
 		return {'drum_size': [self.L], 'strike_location': [self.strike[0], self.strike[1]]} if hasattr(self, 'L') else {}
@@ -111,12 +111,15 @@ class BesselModel(AudioSampler):
 
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
+			# self.epsilon = random.uniform(0.25, 4.)
+			self.epsilon = 1.
 			self.L = random.uniform(0.1, 2.)
 			self.gamma = self.c / self.L
-			self.strike = (0., 0.)
+			self.series = calculateRectangularSeries(self.N, self.M, self.epsilon)
+			self.strike = (0.5, 0.5)
 		else:
 			# otherwise update the strike location to be a random location.
 			self.strike = (
-				random.uniform(-1., 1.),
-				random.uniform(0., np.pi),
+				random.uniform(0., 1.),
+				random.uniform(0., 1.),
 			)
