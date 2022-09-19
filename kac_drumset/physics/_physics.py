@@ -68,7 +68,7 @@ def calculateRectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsil
 		epsilon = aspect ratio of the rectangle
 	output:
 		A = {
-			sin(nyπ / (epsilon ** 0.5)) sin(mxπ / (epsilon ** 0.5))
+			sin(mxπ / (Є ** 0.5)) sin(nyπ (Є ** 0.5))
 			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
 		}
 	'''
@@ -91,7 +91,7 @@ def calculateRectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np
 		epsilon = aspect ratio of the rectangle
 	output:
 		S = {
-			((m / epsilon)^2 + (n * epsilon)^2) ** 0.5
+			((m^2 / Є) + (Єn^2)) ** 0.5
 			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
 		}
 	'''

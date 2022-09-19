@@ -21,7 +21,7 @@ __all__ = [
 
 class PoissonModel(AudioSampler):
 	'''
-	A linear model of a rectangular membrane using poisson equations of the first kind.
+	A linear model of a unit area rectangle with aspect ratio Є, using poisson equations of the first kind.
 	'''
 
 	# user defined variables
@@ -101,7 +101,11 @@ class PoissonModel(AudioSampler):
 		Return the labels of the poisson model.
 		'''
 
-		return {'drum_size': [self.L], 'strike_location': [self.strike[0], self.strike[1]]} if hasattr(self, 'L') else {}
+		return {
+			'aspect_ratio': [self.epsilon],
+			'drum_size': [self.L],
+			'strike_location': [*self.strike],
+		} if hasattr(self, 'L') else {}
 
 	def updateProperties(self, i: Union[int, None] = None) -> None:
 		'''
@@ -111,8 +115,7 @@ class PoissonModel(AudioSampler):
 
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
-			# self.epsilon = random.uniform(0.25, 4.)
-			self.epsilon = 1.
+			self.epsilon = random.uniform(0.25, 4.)
 			self.L = random.uniform(0.1, 2.)
 			self.gamma = self.c / self.L
 			self.series = calculateRectangularSeries(self.N, self.M, self.epsilon)
@@ -120,6 +123,6 @@ class PoissonModel(AudioSampler):
 		else:
 			# otherwise update the strike location to be a random location.
 			self.strike = (
-				random.uniform(0., 1.),
-				random.uniform(0., 1.),
+				random.uniform(0., self.epsilon ** 0.5),
+				random.uniform(0., 1 / (self.epsilon ** 0.5)),
 			)
