@@ -31,10 +31,15 @@ jobs:
                 python: ["3.9", "3.10"]
 
         steps:
-            - uses: actions/checkout@master
+            - uses: actions/checkout@v3
               with:
                   submodules: recursive
-            - uses: lukka/get-cmake@latest 
+            - uses: actions/cache@v3
+              id: cache-pipenv
+              with:
+                  path: ~/.local/share/virtualenvs
+                  key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+            - uses: lukka/get-cmake@latest
             - uses: actions/setup-python@v4
               with:
                   python-version: ${{ matrix.python }}
@@ -44,12 +49,7 @@ jobs:
               run: sudo apt-get install libsndfile1
 
             - name: Install pipenv
-              run: python -m pip install --upgrade pipenv wheel
-            - id: cache-pipenv
-              uses: actions/cache@v3
-              with:
-                  path: ~/.local/share/virtualenvs
-                  key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+              run: python -m pip install --upgrade pip pipenv setuptools wheel
 
             - name: Install python dependencies
               run: pipenv install -d --python ${{ matrix.python }}
