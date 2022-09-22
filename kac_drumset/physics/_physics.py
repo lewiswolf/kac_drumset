@@ -29,8 +29,7 @@ __all__ = [
 
 def calculateCircularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
 	'''
-	Calculate the amplitudes of the circular eigenmodes relative to a polar
-	strike location.
+	Calculate the amplitudes of the circular eigenmodes relative to a polar strike location.
 	input:
 		( r, θ ) = polar strike location
 		S = { z_nm | s ∈ ℝ, J_n(z_nm) = 0, 0 <= n < N, 0 < m <= M }
@@ -59,8 +58,7 @@ def calculateCircularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 
 def calculateRectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
 	'''
-	Calculate the amplitudes of the rectangular eigenmodes relative to a
-	cartesian strike location.
+	Calculate the amplitudes of the rectangular eigenmodes relative to a cartesian strike location.
 	input:
 		( x , y ) = cartesian product
 		N = number of modal orders
