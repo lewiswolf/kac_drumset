@@ -119,7 +119,7 @@ class PoissonModel(AudioSampler):
 			self.L = random.uniform(0.1, 2.)
 			self.gamma = self.c / self.L
 			self.series = calculateRectangularSeries(self.N, self.M, self.epsilon)
-			self.strike = (0.5, 0.5)
+			self.strike = (0.5 * (self.epsilon ** 0.5), 0.5 / (self.epsilon ** 0.5))
 		else:
 			# otherwise update the strike location to be a random location.
 			self.strike = (
