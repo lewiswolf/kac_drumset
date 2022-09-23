@@ -65,7 +65,7 @@ def loadDataset(dataset_dir: str) -> TorchDataset:
 	loadDataset imports a kac_drumset dataset from the directory specified by the absolute path dataset_dir.
 	'''
 
-def regenerateDataPoints() -> TorchDataset:
+def regenerateDataPoints(dataset: TorchDataset, Sampler: type[AudioSampler], entries: list[int]) -> TorchDataset:
 	'''
 	This method regenerates specific indices of a dataset.
 	'''
@@ -318,6 +318,10 @@ class Polygon():
 from kac_drumset.physics import (
 	besselJ,
 	besselJZero,
+	calculateCircularAmplitudes,
+	calculateCircularSeries,
+	calculateRectangularAmplitudes,
+	calculateRectangularSeries,
 	FDTDWaveform2D,
 	raisedCosine,
 )
@@ -328,13 +332,65 @@ from kac_drumset.physics import (
 ```python
 def besselJ(n: float, m: float) -> float:
 	'''
-	Calculate the bessel function of the first kind. This method is a clone boost::math::cyl_bessel_j.
+	Calculate the bessel function of the first kind. This method is a clone of boost::math::cyl_bessel_j.
 	'''
 
 def besselJZero(n: float, m: int) -> float:
 	'''
 	Calculate the mth zero crossing of the nth bessel function of the first kind. This method is a clone of
 	boost::math::cyl_bessel_j_zero.
+	'''
+
+def calculateCircularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the amplitudes of the circular eigenmodes relative to a polar strike location.
+	input:
+		( r, θ ) = polar strike location
+		S = { z_nm | s ∈ ℝ, J_n(z_nm) = 0, 0 <= n < N, 0 < m <= M }
+	output:
+		A = {
+			J_n(z_nm * r) * (2 ** 0.5) * sin(nθπ/4)
+			| a ∈ ℝ, J_n(z_nm) = 0, 0 <= n < N, 0 < m <= M
+		}
+	'''
+
+def calculateCircularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the eigenmodes of a circle.
+	input:
+		N = number of modal orders
+		M = number of modes per order
+	output:
+		S = { z_nm | s ∈ ℝ, J_n(z_nm) = 0, n < N, 0 < m <= M }
+	'''
+
+def calculateRectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the amplitudes of the rectangular eigenmodes relative to a cartesian strike location.
+	input:
+		( x , y ) = cartesian product
+		N = number of modal orders
+		M = number of modes per order
+		epsilon = aspect ratio of the rectangle
+	output:
+		A = {
+			sin(mxπ / (Є ** 0.5)) sin(nyπ (Є ** 0.5))
+			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
+		}
+	'''
+
+def calculateRectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the eigenmodes of a rectangle.
+	input:
+		N = number of modal orders
+		M = number of modes per order
+		epsilon = aspect ratio of the rectangle
+	output:
+		S = {
+			((m^2 / Є) + (Єn^2)) ** 0.5
+			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
+		}
 	'''
 
 def FDTDWaveform2D(
@@ -388,29 +444,53 @@ def raisedCosine(
 
 ```python
 from kac_drumset import (
+	BesselModel,
 	FDTDModel,
+	PoissonModel,
 )
 ```
 
 ### Classes
 
 ```python
+class BesselModel(AudioSampler):
+	'''
+	A linear model of a circular membrane using bessel equations of the first kind.
+	'''
+
+	class Settings(SamplerSettings, total=False):
+		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
+		decay_time: float			# how long will the simulation take to decay? (seconds)
+		M: int						# number of mth modes
+		material_density: float		# material density of the simulated drum membrane (kg/m^2)
+		N: int						# number of nth modes
+		tension: float				# tension at rest (N/m)	'''
+
+
 class FDTDModel(AudioSampler):
 	'''
 	This class creates a 2D simulation of an arbitrarily shaped drum, calculated using a FDTD scheme.
 	'''
 
 	class Settings(SamplerSettings, total=False):
-		'''
-		This is an abstract TypedDict used to mirror the type declaration for the customised __init__() method. This allows
-		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
-		'''
-
 		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
 		decay_time: float			# how long will the simulation take to decay?
 		drum_size: float			# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		max_vertices: int			# maximum amount of vertices for a given drum
+		tension: float				# tension at rest (N/m)
+
+class PoissonModel(AudioSampler):
+	'''
+	A linear model of a unit area rectangle with aspect ratio Є, using poisson equations of the first kind.
+	'''
+
+	class Settings(SamplerSettings, total=False):
+		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
+		decay_time: float			# how long will the simulation take to decay? (seconds)
+		M: int						# number of mth modes
+		material_density: float		# material density of the simulated drum membrane (kg/m^2)
+		N: int						# number of nth modes
 		tension: float				# tension at rest (N/m)
 ```
 </details>
@@ -492,7 +572,9 @@ class TestTone(AudioSampler):
 	'''
 	This class produces an arbitrary test tone, using either a sawtooth, sine, square or triangle waveform. If it's initial frequency is not set, it will automatically create random frequencies.
 	'''
-	f_0: float										# fundamental frequency (hz)
-	waveshape: Literal['saw', 'sin', 'sqr', 'tri']	# shape of the waveform
+
+	class Settings(SamplerSettings, total=False):
+		f_0: float										# fundamental frequency (hz)
+		waveshape: Literal['saw', 'sin', 'sqr', 'tri']	# shape of the waveform
 ```
 </details>

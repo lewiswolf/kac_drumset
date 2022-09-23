@@ -3,6 +3,10 @@ from ..externals._physics import (
 	besselJZero,
 )
 from ._physics import (
+	calculateCircularAmplitudes,
+	calculateCircularSeries,
+	calculateRectangularAmplitudes,
+	calculateRectangularSeries,
 	FDTDWaveform2D,
 	raisedCosine,
 )
@@ -10,6 +14,10 @@ from ._physics import (
 __all__ = [
 	'besselJ',
 	'besselJZero',
+	'calculateCircularAmplitudes',
+	'calculateCircularSeries',
+	'calculateRectangularAmplitudes',
+	'calculateRectangularSeries',
 	'FDTDWaveform2D',
 	'raisedCosine',
 ]

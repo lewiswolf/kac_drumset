@@ -1,7 +1,9 @@
 # core
 from typing import Annotated
+from typing_extensions import TypeAlias
 
-Point = Annotated[list[float], len(2)]
+Point: TypeAlias = Annotated[list[float], len(2)]
+
 
 def _centroid(V: list[Point], a: float) -> Point: ...
 def _convexNormalisation(V: list[Point]) -> list[Point]: ...
