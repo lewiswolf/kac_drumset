@@ -5,7 +5,13 @@ from unittest import TestCase
 import numpy as np 			# maths
 
 # src
-from kac_drumset.physics import FDTDWaveform2D, raisedCosine
+from kac_drumset.physics import (
+	calculateCircularAmplitudes,
+	calculateCircularSeries,
+	calculateRectangularAmplitudes,
+	FDTDWaveform2D,
+	raisedCosine,
+)
 
 
 class PhysicsTests(TestCase):
@@ -13,23 +19,20 @@ class PhysicsTests(TestCase):
 	Tests used in conjunction with `/physics`.
 	'''
 
-	def test_raised_cosine(self) -> None:
+	def test_bessel(self) -> None:
 		'''
-		The raised cosine transform is used as the activation function for a physical model. These tests assert that the
-		raised cosine works as intended, both in the 1 and 2 dimensional cases.
+		Tests used in conjunction with circular_modes.hpp.
 		'''
 
-		# This test asserts that the one dimensional case has the correct peaks.
-		rc = raisedCosine((100, ), (50, ), sigma=10)
-		self.assertEqual(rc[50], 1.0)
-		self.assertEqual(np.max(rc), 1.0)
-		self.assertEqual(np.min(rc), 0.0)
-
-		# This test asserts that the two dimensional case has the correct peaks.
-		rc = raisedCosine((100, 100), (50, 50), sigma=10)
-		self.assertEqual(rc[50, 50], 1.0)
-		self.assertEqual(np.max(rc), 1.0)
-		self.assertEqual(np.min(rc), 0.0)
+		# This test asserts that the epsilon value is programmed correctly.
+		series = calculateCircularSeries(10, 10)
+		for r in [1., -1.]:
+			for theta in [0., np.pi / 2, np.pi, np.pi * 2]:
+				self.assertAlmostEqual(
+					float(np.max(calculateCircularAmplitudes(r, theta, series))),
+					0.,
+					places=15,
+				)
 
 	def test_fdtd(self) -> None:
 		'''
@@ -56,3 +59,51 @@ class PhysicsTests(TestCase):
 		self.assertFalse(np.isnan(waveform).any())
 		self.assertLessEqual(np.max(waveform), 1.0)
 		self.assertGreaterEqual(np.min(waveform), -1.0)
+
+	def test_poisson(self) -> None:
+		'''
+		Tests used in conjunction with rectangular_modes.hpp.
+		'''
+
+		# This test asserts that the epsilon value is programmed correctly.
+		for e in [1., 1.5, 2.]:
+			e_root = e ** 0.5
+			e_inv = 1 / (e ** 0.5)
+			self.assertAlmostEqual(
+				float(np.max(calculateRectangularAmplitudes((0., 0.), 10, 10, e))),
+				0.,
+				places=28,
+			)
+			self.assertAlmostEqual(
+				float(np.max(calculateRectangularAmplitudes((e_root, 0.), 10, 10, e))),
+				0.,
+				places=28,
+			)
+			self.assertAlmostEqual(
+				float(np.max(calculateRectangularAmplitudes((0., e_inv), 10, 10, e))),
+				0.,
+				places=28,
+			)
+			self.assertAlmostEqual(
+				float(np.max(calculateRectangularAmplitudes((e_root, e_inv), 10, 10, e))),
+				0.,
+				places=28,
+			)
+
+	def test_raised_cosine(self) -> None:
+		'''
+		The raised cosine transform is used as the activation function for a physical model. These tests assert that the
+		raised cosine works as intended, both in the 1 and 2 dimensional cases.
+		'''
+
+		# This test asserts that the one dimensional case has the correct peaks.
+		rc = raisedCosine((100, ), (50, ), sigma=10)
+		self.assertEqual(rc[50], 1.0)
+		self.assertEqual(np.max(rc), 1.0)
+		self.assertEqual(np.min(rc), 0.0)
+
+		# This test asserts that the two dimensional case has the correct peaks.
+		rc = raisedCosine((100, 100), (50, 50), sigma=10)
+		self.assertEqual(rc[50, 50], 1.0)
+		self.assertEqual(np.max(rc), 1.0)
+		self.assertEqual(np.min(rc), 0.0)
