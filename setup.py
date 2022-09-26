@@ -53,6 +53,7 @@ setup(
 		'Programming Language :: Python :: 3',
 		'Programming Language :: Python :: 3 :: Only',
 		'Programming Language :: Python :: 3.9',
+		'Programming Language :: Python :: 3.10',
 		'Typing :: Typed',
 	],
 	cmake_install_dir="kac_drumset/externals",
