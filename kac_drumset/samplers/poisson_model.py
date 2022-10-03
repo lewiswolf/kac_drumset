@@ -89,7 +89,15 @@ class PoissonModel(AudioSampler):
 		'''
 
 		if hasattr(self, 'L'):
-			A = self.a * np.abs(calculateRectangularAmplitudes(self.strike, self.N, self.M, self.epsilon)).flatten()
+			A = self.a * np.abs(calculateRectangularAmplitudes(
+				(
+					self.strike[0] * (self.epsilon ** 0.5),
+					self.strike[1] / (self.epsilon ** 0.5),
+				),
+				self.N,
+				self.M,
+				self.epsilon,
+			)).flatten()
 			omega = (self.gamma * self.series).flatten() # eigenfrequencies
 			omega *= 2 * np.pi * self.k # rate of phase
 			for i in range(self.length):
@@ -119,10 +127,7 @@ class PoissonModel(AudioSampler):
 			self.L = random.uniform(0.1, 2.)
 			self.gamma = self.c / self.L
 			self.series = calculateRectangularSeries(self.N, self.M, self.epsilon)
-			self.strike = (0.5 * (self.epsilon ** 0.5), 0.5 / (self.epsilon ** 0.5))
+			self.strike = (0.5, 0.5)
 		else:
 			# otherwise update the strike location to be a random location.
-			self.strike = (
-				random.uniform(0., self.epsilon ** 0.5),
-				random.uniform(0., 1 / (self.epsilon ** 0.5)),
-			)
+			self.strike = (random.uniform(0., 1.), random.uniform(0., 1.))
