@@ -16,6 +16,10 @@ from .dataset import TorchDataset
 from .utils import tqdm_settings, listToTensor, tensorToList
 from ..utils import printEmojis
 
+__all__ = [
+	'regenerateDataPoints',
+]
+
 
 def regenerateDataPoints(dataset: TorchDataset, Sampler: type[AudioSampler], entries: list[int]) -> TorchDataset:
 	'''
