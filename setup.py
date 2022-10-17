@@ -40,9 +40,8 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 				continue
 		# append package names with required version
 		if is_pkg:
-			line_arr = line.split()
-			packages.append(f'{line_arr[0]}{line_arr[2][1:-1] if line_arr[2][1:-1] != "*" else ""}')
-
+			pkg_name, _, *spec = line.split()
+			packages.append(pkg_name if spec[0] == '"*"' else f'{pkg_name}{spec[0][1:-1]}')
 
 setup(
 	author='Lewis Wolf',
