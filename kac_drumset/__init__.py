@@ -1,13 +1,13 @@
 from .dataset import (
+	generateDataset,
+	loadDataset,
+	regenerateDataPoints,
+	transformDataset,
 	AudioSampler,
 	InputRepresentation,
 	RepresentationSettings,
 	SamplerSettings,
 	TorchDataset,
-	generateDataset,
-	loadDataset,
-	regenerateDataPoints,
-	transformDataset,
 )
 from .samplers import (
 	BesselModel,
@@ -27,8 +27,8 @@ __all__ = [
 	'AudioSampler',
 	'InputRepresentation',
 	# dataset types
-	'SamplerSettings',
 	'RepresentationSettings',
+	'SamplerSettings',
 	'TorchDataset',
 	# samplers
 	'BesselModel',
