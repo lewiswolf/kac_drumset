@@ -18,7 +18,7 @@ class DatasetTests(TestCase):
 	'''
 
 	tmp_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/../tmp')
-	tone = TestSweep(1.0, 48000)
+	tone = TestSweep(1., 48000)
 
 	def tearDown(self) -> None:
 		''' destructor '''
@@ -36,8 +36,8 @@ class DatasetTests(TestCase):
 				dataset_dir=self.tmp_dir,
 				dataset_size=10,
 				sampler_settings=TestTone.Settings({
-					'duration': 1.0,
-					'f_0': 440.0,
+					'duration': 1.,
+					'f_0': 440.,
 					'sample_rate': 48000,
 					'waveshape': 'sin',
 				}),
@@ -50,7 +50,7 @@ class DatasetTests(TestCase):
 				dataset_dir=self.tmp_dir,
 				dataset_size=10,
 				sampler_settings=TestSweep.Settings({
-					'duration': 1.0,
+					'duration': 1.,
 					'sample_rate': 48000,
 				}),
 			)
@@ -73,9 +73,71 @@ class DatasetTests(TestCase):
 
 		# This test asserts that the SamplerSettings were copied correctly.
 		self.assertEqual(dataset.sampler_settings, {
-			'duration': 1.0,
+			'duration': 1.,
 			'sample_rate': 48000,
 		})
+
+	def test_input_representation(self) -> None:
+		'''
+		Tests used in conjunction with `/dataset/input_representation.py`.
+		'''
+
+		# This test asserts that a normalised waveform is always bounded by [-1., 1.].
+		norm = InputRepresentation.normalise(self.tone.waveform)
+		self.assertEqual(np.max(norm), 1.)
+		self.assertEqual(np.min(norm), -1.)
+
+		# Test an end to end input representation.
+		IR = InputRepresentation(self.tone.sample_rate, {
+			'normalise_input': False,
+			'output_type': 'end2end',
+		})
+		representation = IR.transform(self.tone.waveform)
+
+		# This test asserts that the RepresentationSettings are as expected.
+		test_settings = {
+			'complex_output': False,
+			'f_min': 22.05,
+			'hop_length': 256,
+			'n_bins': 512,
+			'n_mels': 32,
+			'normalise_input': False,
+			'output_type': 'end2end',
+			'window_length': 512,
+		}
+		self.assertEqual(IR.settings, test_settings)
+
+		# This test asserts that the input waveform and the transform are equivalent.
+		self.assertTrue(np.array_equal(self.tone.waveform, representation.detach().numpy()))
+
+		# This test asserts that the output tensor is the correct shape and type.
+		self.assertEqual(representation.shape, IR.transformShape(self.tone.length, IR.settings))
+		self.assertEqual(representation.dtype, torch.float64)
+
+		# Test an FFT input representation.
+		IR = InputRepresentation(self.tone.sample_rate, {'output_type': 'fft'})
+		representation = IR.transform(self.tone.waveform)
+
+		# This test asserts that the RepresentationSettings are as expected.
+		test_settings['normalise_input'] = True
+		test_settings['output_type'] = 'fft'
+		self.assertEqual(IR.settings, test_settings)
+
+		# This test asserts that the output tensor is the correct shape and type.
+		self.assertEqual(representation.shape, IR.transformShape(self.tone.length, IR.settings))
+		self.assertEqual(representation.dtype, torch.float64)
+
+		# Test a Mel input representation.
+		IR = InputRepresentation(self.tone.sample_rate, {'output_type': 'mel'})
+		representation = IR.transform(self.tone.waveform)
+
+		# This test asserts that the RepresentationSettings are as expected.
+		test_settings['output_type'] = 'mel'
+		self.assertEqual(IR.settings, test_settings)
+
+		# This test asserts that the output tensor is the correct shape and type.
+		self.assertEqual(representation.shape, IR.transformShape(self.tone.length, IR.settings))
+		self.assertEqual(representation.dtype, torch.float64)
 
 	def test_load_dataset(self) -> None:
 		'''
@@ -89,7 +151,7 @@ class DatasetTests(TestCase):
 				dataset_dir=self.tmp_dir,
 				dataset_size=10,
 				sampler_settings=TestSweep.Settings({
-					'duration': 1.0,
+					'duration': 1.,
 					'sample_rate': 48000,
 				}),
 			)
@@ -113,7 +175,7 @@ class DatasetTests(TestCase):
 				dataset_dir=self.tmp_dir,
 				dataset_size=10,
 				sampler_settings=TestTone.Settings({
-					'duration': 1.0,
+					'duration': 1.,
 					'sample_rate': 48000,
 				}),
 			)
@@ -144,7 +206,7 @@ class DatasetTests(TestCase):
 				dataset_dir=self.tmp_dir,
 				dataset_size=10,
 				sampler_settings=TestSweep.Settings({
-					'duration': 1.0,
+					'duration': 1.,
 					'sample_rate': 48000,
 				}),
 			)
@@ -182,76 +244,3 @@ class DatasetTests(TestCase):
 
 		# This test asserts that the sampler name is correct.
 		self.assertEqual(dataset.sampler, 'TestSweep')
-
-	def test_input_representation(self) -> None:
-		'''
-		Tests used in conjunction with `/dataset/input_representation.py`.
-		'''
-
-		# This test asserts that a normalised waveform is always bounded by [-1.0, 1.0].
-		norm = InputRepresentation.normalise(self.tone.waveform)
-		self.assertEqual(np.max(norm), 1.0)
-		self.assertEqual(np.min(norm), -1.0)
-
-		# Test an end to end input representation.
-		IR = InputRepresentation(self.tone.sample_rate, {
-			'normalise_input': False,
-			'output_type': 'end2end',
-		})
-		representation = IR.transform(self.tone.waveform)
-
-		# This test asserts that the RepresentationSettings are as expected.
-		self.assertEqual(IR.settings, {
-			'f_min': 22.05,
-			'hop_length': 256,
-			'n_bins': 512,
-			'n_mels': 32,
-			'normalise_input': False,
-			'output_type': 'end2end',
-			'window_length': 512,
-		})
-
-		# This test asserts that the input waveform and the transform are equivalent.
-		self.assertTrue(np.array_equal(self.tone.waveform, representation.detach().numpy()))
-
-		# This test asserts that the output tensor is the correct shape and type.
-		self.assertEqual(representation.shape, IR.transformShape(self.tone.length, IR.settings))
-		self.assertEqual(representation.dtype, torch.float64)
-
-		# Test an FFT input representation.
-		IR = InputRepresentation(self.tone.sample_rate, {'output_type': 'fft'})
-		representation = IR.transform(self.tone.waveform)
-
-		# This test asserts that the RepresentationSettings are as expected.
-		self.assertEqual(IR.settings, {
-			'f_min': 22.05,
-			'hop_length': 256,
-			'n_bins': 512,
-			'n_mels': 32,
-			'normalise_input': True,
-			'output_type': 'fft',
-			'window_length': 512,
-		})
-
-		# This test asserts that the output tensor is the correct shape and type.
-		self.assertEqual(representation.shape, IR.transformShape(self.tone.length, IR.settings))
-		self.assertEqual(representation.dtype, torch.float64)
-
-		# Test a Mel input representation.
-		IR = InputRepresentation(self.tone.sample_rate, {'output_type': 'mel'})
-		representation = IR.transform(self.tone.waveform)
-
-		# This test asserts that the RepresentationSettings are as expected.
-		self.assertEqual(IR.settings, {
-			'f_min': 22.05,
-			'hop_length': 256,
-			'n_bins': 512,
-			'n_mels': 32,
-			'normalise_input': True,
-			'output_type': 'mel',
-			'window_length': 512,
-		})
-
-		# This test asserts that the output tensor is the correct shape and type.
-		self.assertEqual(representation.shape, IR.transformShape(self.tone.length, IR.settings))
-		self.assertEqual(representation.dtype, torch.float64)
