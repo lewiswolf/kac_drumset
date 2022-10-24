@@ -96,7 +96,6 @@ class DatasetTests(TestCase):
 
 		# This test asserts that the RepresentationSettings are as expected.
 		test_settings = {
-			'complex_output': False,
 			'f_min': 22.05,
 			'hop_length': 256,
 			'n_bins': 512,
