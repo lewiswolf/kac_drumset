@@ -86,8 +86,8 @@ class GeometryTests(TestCase):
 			self.assertEqual(len(polygon.vertices), polygon.n)
 
 			# This test asserts that the vertices are strictly bounded between 0.0 and 1.0.
-			self.assertEqual(np.min(polygon.vertices), 0.0)
-			self.assertEqual(np.max(polygon.vertices), 1.0)
+			self.assertEqual(np.min(polygon.vertices), 0.)
+			self.assertEqual(np.max(polygon.vertices), 1.)
 
 			# This test asserts that the largest vector is of magnitude 1.0.
 			self.assertEqual(LV[0], 1.0)

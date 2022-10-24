@@ -9,6 +9,8 @@ from typing import Union
 import torch					# pytorch
 
 __all__ = [
+	'listToTensor',
+	'tensorToList',
 	'tqdm_settings',
 ]
 

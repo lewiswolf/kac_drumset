@@ -24,7 +24,7 @@ class PhysicsTests(TestCase):
 		Tests used in conjunction with circular_modes.hpp.
 		'''
 
-		# This test asserts that the epsilon value is programmed correctly.
+		# This test asserts that the amplitude calculation is programmed correctly.
 		series = calculateCircularSeries(10, 10)
 		for r in [1., -1.]:
 			for theta in [0., np.pi / 2, np.pi, np.pi * 2]:
@@ -65,7 +65,7 @@ class PhysicsTests(TestCase):
 		Tests used in conjunction with rectangular_modes.hpp.
 		'''
 
-		# This test asserts that the epsilon value is programmed correctly.
+		# This test asserts that the amplitude calculation is programmed correctly.
 		for e in [1., 1.5, 2.]:
 			e_root = e ** 0.5
 			e_inv = 1 / (e ** 0.5)
@@ -98,12 +98,12 @@ class PhysicsTests(TestCase):
 
 		# This test asserts that the one dimensional case has the correct peaks.
 		rc = raisedCosine((100, ), (50, ), sigma=10)
-		self.assertEqual(rc[50], 1.0)
-		self.assertEqual(np.max(rc), 1.0)
+		self.assertEqual(rc[50], 1.)
+		self.assertEqual(np.max(rc), 1.)
 		self.assertEqual(np.min(rc), 0.0)
 
 		# This test asserts that the two dimensional case has the correct peaks.
 		rc = raisedCosine((100, 100), (50, 50), sigma=10)
-		self.assertEqual(rc[50, 50], 1.0)
-		self.assertEqual(np.max(rc), 1.0)
+		self.assertEqual(rc[50, 50], 1.)
+		self.assertEqual(np.max(rc), 1.)
 		self.assertEqual(np.min(rc), 0.0)
