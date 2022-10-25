@@ -45,6 +45,7 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 
 setup(
 	author='Lewis Wolf',
+	author_email='lewiswolstanholme@gmail.com',
 	classifiers=[
 		'Operating System :: MacOS :: MacOS X',
 		'Operating System :: Microsoft :: Windows',
