@@ -44,7 +44,7 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 			packages.append(pkg_name if spec[0] == '"*"' else f'{pkg_name}{spec[0][1:-1]}')
 
 setup(
-	author='Lewis Wolf',
+	author='Lewis Wolstanholme',
 	author_email='lewiswolstanholme@gmail.com',
 	classifiers=[
 		'Operating System :: MacOS :: MacOS X',
