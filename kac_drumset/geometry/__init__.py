@@ -1,17 +1,15 @@
-from ._geometry import (
+from ._generate_polygon import generateConvexPolygon
+from ._morphisms import convexNormalisation
+from ._polygon_properties import (
 	centroid,
-	convexNormalisation,
-	generateConvexPolygon,
 	isColinear,
 	isConvex,
 	largestVector,
 )
-from .geometry import (
-	booleanMask,
-	concaveNormalisation,
-	generateConcave,
-)
-from .isospectral import weylCondition
+from .generate_polygon import generateConcavePolygon
+from .isospectrality import weylCondition
+from .morphisms import concaveNormalisation
+from .projections import booleanMask
 from .random_polygon import RandomPolygon
 from .types import Polygon, Shape
 
@@ -23,11 +21,11 @@ __all__ = [
 	'isColinear',
 	'isConvex',
 	'largestVector',
-	'weylCondition',
 	# methods
 	'booleanMask',
-	'generateConcave',
+	'generateConcavePolygon',
 	'concaveNormalisation',
+	'weylCondition',
 	# classes
 	'RandomPolygon',
 	# types
