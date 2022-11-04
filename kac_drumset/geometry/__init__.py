@@ -11,8 +11,9 @@ from .geometry import (
 	concaveNormalisation,
 	generateConcave,
 )
+from .isospectral import weylCondition
 from .random_polygon import RandomPolygon
-from .types import Polygon
+from .types import Polygon, Shape
 
 __all__ = [
 	# external methods
@@ -22,7 +23,7 @@ __all__ = [
 	'isColinear',
 	'isConvex',
 	'largestVector',
-	'polygonArea',
+	'weylCondition',
 	# methods
 	'booleanMask',
 	'generateConcave',
@@ -31,4 +32,5 @@ __all__ = [
 	'RandomPolygon',
 	# types
 	'Polygon',
+	'Shape',
 ]

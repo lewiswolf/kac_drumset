@@ -1,13 +1,14 @@
 '''
+Methods to derive spectral geometry properties.
 '''
 
 # src
-from .types import Polygon
+from .types import Shape
 
 
-def WeylCondition(P1: Polygon, P2: Polygon) -> bool:
+def weylCondition(S_1: Shape, S_2: Shape) -> bool:
 	'''
 	Using Weyl's asymptotic law, determine whether two polygons may be isospectral.
 	https://en.wikipedia.org/wiki/Weyl_law
 	'''
-	return P1.area() != P2.area()
+	return S_1.area() == S_2.area()
