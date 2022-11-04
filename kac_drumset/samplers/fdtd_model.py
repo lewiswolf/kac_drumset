@@ -148,7 +148,7 @@ class FDTDModel(AudioSampler):
 		if i is None or i % 5 == 0:
 			# initialise a random drum shape and calculate the initial conditions relative to the centroid of the drum.
 			self.shape = RandomPolygon(self.max_vertices)
-			self.B = booleanMask(self.shape.vertices, self.H, self.shape.convex)
+			self.B = booleanMask(self.shape, self.H, self.shape.convex)
 			self.strike = (
 				round(self.shape.centroid[0] * (self.H - 1)),
 				round(self.shape.centroid[1] * (self.H - 1)),

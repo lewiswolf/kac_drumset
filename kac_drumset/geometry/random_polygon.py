@@ -21,7 +21,6 @@ class RandomPolygon(Polygon):
 	of the polygon are also included in this class.
 	'''
 
-	area: float							# area of the polygon
 	centroid: tuple[float, float]		# coordinate pair representing the centroid of the polygon
 	convex: bool						# is the polygon convex?
 
@@ -39,11 +38,10 @@ class RandomPolygon(Polygon):
 			self.convex = True
 		else:
 			super().__init__(G.generateConcave(random.randint(3, max_vertices)))
-			self.convex = _G.isConvex(self.vertices)
+			self.convex = _G.isConvex(self)
 
 		# normalise
-		self.vertices = _G.convexNormalisation(self.vertices) if self.convex else G.concaveNormalisation(self.vertices)
+		self.vertices = _G.convexNormalisation(self) if self.convex else G.concaveNormalisation(self)
 
 		# calculate other properties
-		self.area = _G.polygonArea(self.vertices)
-		self.centroid = _G.centroid(self.vertices, self.area)
+		self.centroid = _G.centroid(self, self.area())

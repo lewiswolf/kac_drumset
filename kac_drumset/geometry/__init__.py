@@ -5,7 +5,6 @@ from ._geometry import (
 	isColinear,
 	isConvex,
 	largestVector,
-	polygonArea,
 )
 from .geometry import (
 	booleanMask,
