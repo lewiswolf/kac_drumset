@@ -208,19 +208,20 @@ from kac_drumset.geometry import (
 	'RandomPolygon',
 	# Types
 	'Polygon',
+	'Shape',
 )
 ```
 
 ### Methods
 
 ```python
-def booleanMask(P: Polygon, grid_size: int, convex: Optional[bool]) -> npt.NDArray[np.int8]:
+def booleanMask(P: Polygon, grid_size: int, convex: Optional[bool] = None) -> npt.NDArray[np.int8]:
 	'''
 	This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
 	exist within a domain R^G where G ∈ [0, 1].
 	'''
 
-def centroid(P: Polygon, area: Optional[float]) -> tuple[float, float]:
+def centroid(P: Polygon, area: Optional[float] = None) -> tuple[float, float]:
 	'''
 	This algorithm is used to calculate the geometric centroid of a 2D polygon. 
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
@@ -256,7 +257,7 @@ def isConvex(P: Polygon) -> bool:
 	clockwise or counter-clockwise'.
 	'''
 
-def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]:
+def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]):
 	'''
 	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the
 	vector and its indices.

@@ -26,7 +26,7 @@ __all__ = [
 ]
 
 
-def centroid(P: Polygon, area: Optional[float]) -> tuple[float, float]:
+def centroid(P: Polygon, area: Optional[float] = None) -> tuple[float, float]:
 	'''
 	This algorithm is used to calculate the geometric centroid of a 2D polygon.
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.

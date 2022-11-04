@@ -17,7 +17,7 @@ from .types import Polygon
 __all__ = ['booleanMask']
 
 
-def booleanMask(P: Polygon, grid_size: int, convex: Optional[bool]) -> npt.NDArray[np.int8]:
+def booleanMask(P: Polygon, grid_size: int, convex: Optional[bool] = None) -> npt.NDArray[np.int8]:
 	'''
 	This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
 	exist within a domain R^G where G ∈ [0, 1].
