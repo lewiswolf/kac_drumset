@@ -14,7 +14,7 @@ BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeTernaryOperators: true
-ColumnLimit: 120
+ColumnLimit: 100
 CompactNamespaces: true
 Cpp11BracedListStyle: true
 EmptyLineAfterAccessModifier: Never

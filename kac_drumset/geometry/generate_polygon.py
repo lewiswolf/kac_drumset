@@ -12,8 +12,8 @@ __all__ = ['generateConcavePolygon']
 # TO FIX: see todo.md => `Missing a reliable algorithm to generate all concave shapes`
 def generateConcavePolygon(N: int) -> npt.NDArray[np.float64]:
 	'''
-	Generates a random concave shape, with a small probability of also returning a convex shape.
-	It should be noted that this function can not be used to create all possible simple polygons;
+	Generates a random concave polygon, with a small probability of also returning a convex shape.
+	It should be noted that this function cannot be used to create all possible simple polygons;
 	see todo.md => 'Missing a reliable algorithm to generate all concave shapes'.
 	'''
 

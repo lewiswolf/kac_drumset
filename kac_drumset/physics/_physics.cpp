@@ -10,9 +10,7 @@ PYBIND11_MODULE(_physics, m) {
 	m.doc() = "_physics";
 	m.def("_calculateCircularAmplitudes", &p::calculateCircularAmplitudes);
 	m.def("_calculateCircularSeries", &p::calculateCircularSeries);
-	m.def(
-		"_calculateRectangularAmplitudes", &p::calculateRectangularAmplitudes
-	);
+	m.def("_calculateRectangularAmplitudes", &p::calculateRectangularAmplitudes);
 	m.def("_calculateRectangularSeries", &p::calculateRectangularSeries);
 	m.def("_FDTDWaveform2D", &p::FDTDWaveform2D);
 	m.def("_raisedCosine1D", &p::raisedCosine1D);

@@ -20,8 +20,8 @@ __all__ = [
 
 class RandomPolygon(Polygon):
 	'''
-	This class is used to generate a random polygon, normalised and centred between 0.0 and 1.0. The area and the centroid
-	of the polygon are also included in this class.
+	This class is used to generate a random polygon, normalised and centred between 0.0 and 1.0. The convexity and the
+	centroid of the polygon are also included in this class.
 	'''
 
 	centroid: tuple[float, float]		# coordinate pair representing the centroid of the polygon

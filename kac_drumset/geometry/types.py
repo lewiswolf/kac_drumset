@@ -20,7 +20,7 @@ __all__ = [
 
 class Shape(ABC):
 	'''
-	An abstract base class for a shape in Euclidean Geometry.
+	An abstract base class for a shape in Euclidean geometry.
 	'''
 
 	def __init__(self) -> None:

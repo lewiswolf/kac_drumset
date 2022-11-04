@@ -42,7 +42,8 @@ std::array<double, 2> _centroid(const std::vector<std::array<double, 2>>& V, dou
 	return {c.x, c.y};
 }
 
-std::vector<std::array<double, 2>> _convexNormalisation(const std::vector<std::array<double, 2>>& V) {
+std::vector<std::array<double, 2>> _convexNormalisation(const std::vector<std::array<double, 2>>& V
+) {
 	return convertPolygonToVector(g::convexNormalisation(convertVectorToPolygon(V)));
 }
 
@@ -51,16 +52,22 @@ std::vector<std::array<double, 2>> _generateConvexPolygon(const int& N) {
 }
 
 bool _isColinear(const std::array<std::array<double, 2>, 3>& V) {
-	return g::isColinear(T::Point(V[0][0], V[0][1]), T::Point(V[1][0], V[1][1]), T::Point(V[2][0], V[2][1]));
+	return g::isColinear(
+		T::Point(V[0][0], V[0][1]), T::Point(V[1][0], V[1][1]), T::Point(V[2][0], V[2][1])
+	);
 }
 
-bool _isConvex(const std::vector<std::array<double, 2>>& V) { return g::isConvex(convertVectorToPolygon(V)); }
+bool _isConvex(const std::vector<std::array<double, 2>>& V) {
+	return g::isConvex(convertVectorToPolygon(V));
+}
 
 std::pair<double, std::pair<int, int>> _largestVector(const std::vector<std::array<double, 2>>& V) {
 	return g::largestVector(convertVectorToPolygon(V));
 }
 
-double _polygonArea(const std::vector<std::array<double, 2>>& V) { return g::polygonArea(convertVectorToPolygon(V)); }
+double _polygonArea(const std::vector<std::array<double, 2>>& V) {
+	return g::polygonArea(convertVectorToPolygon(V));
+}
 
 /*
 PyBind11 config.
