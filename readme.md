@@ -243,7 +243,7 @@ def convexNormalisation(P: Polygon) -> npt.NDArray[np.float64]:
 	normalised, and ordered such that V[0] = [0., y].
 	'''
 
-def isColinear(P: Polygon) -> bool:
+def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	'''
 	Determines whether or not a given set of three vertices are colinear.
 	'''
