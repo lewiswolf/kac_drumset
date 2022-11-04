@@ -10,8 +10,6 @@ soundfile = "*"
 torch = ">=1.12"
 torchaudio = ">=0.12"
 tqdm = ">=4.64"
-librosa = "*"
-scipy = "*"
 
 [dev-packages]
 flake8 = "*"
