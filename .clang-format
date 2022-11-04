@@ -14,6 +14,7 @@ BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeTernaryOperators: true
+ColumnLimit: 100
 CompactNamespaces: true
 Cpp11BracedListStyle: true
 EmptyLineAfterAccessModifier: Never
@@ -30,6 +31,7 @@ IndentPPDirectives: BeforeHash
 IndentRequires: false
 IndentWidth: 4
 IndentWrappedFunctionNames: false
+InsertBraces: false
 InsertTrailingCommas: Wrapped
 JavaScriptQuotes: Single
 JavaScriptWrapImports: true
@@ -39,8 +41,10 @@ MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 PPIndentWidth: 4
 PointerAlignment: Left
+QualifierAlignment: Left
 ReferenceAlignment: Pointer
 ReflowComments: true
+SeparateDefinitionBlocks: Leave
 SortIncludes: CaseInsensitive
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false

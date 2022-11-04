@@ -6,8 +6,11 @@ RandomPolygon is used to generate a random drum shape alongside computing some o
 import random
 
 # src
-from . import _geometry as _G
-from . import geometry as G
+from ._generate_polygon import generateConvexPolygon
+from ._morphisms import convexNormalisation
+from .generate_polygon import generateConcavePolygon
+from .morphisms import concaveNormalisation
+from ._polygon_properties import centroid, isConvex
 from .types import Polygon
 
 __all__ = [
@@ -17,11 +20,10 @@ __all__ = [
 
 class RandomPolygon(Polygon):
 	'''
-	This class is used to generate a random polygon, normalised and centred between 0.0 and 1.0. The area and the centroid
-	of the polygon are also included in this class.
+	This class is used to generate a random polygon, normalised and centred between 0.0 and 1.0. The convexity and the
+	centroid of the polygon are also included in this class.
 	'''
 
-	area: float							# area of the polygon
 	centroid: tuple[float, float]		# coordinate pair representing the centroid of the polygon
 	convex: bool						# is the polygon convex?
 
@@ -35,15 +37,14 @@ class RandomPolygon(Polygon):
 
 		# generate random polygon
 		if not allow_concave or random.getrandbits(1):
-			super().__init__(_G.generateConvexPolygon(random.randint(3, max_vertices)))
+			super().__init__(generateConvexPolygon(random.randint(3, max_vertices)))
 			self.convex = True
 		else:
-			super().__init__(G.generateConcave(random.randint(3, max_vertices)))
-			self.convex = _G.isConvex(self.vertices)
+			super().__init__(generateConcavePolygon(random.randint(3, max_vertices)))
+			self.convex = isConvex(self)
 
 		# normalise
-		self.vertices = _G.convexNormalisation(self.vertices) if self.convex else G.concaveNormalisation(self.vertices)
+		self.vertices = convexNormalisation(self) if self.convex else concaveNormalisation(self)
 
 		# calculate other properties
-		self.area = _G.polygonArea(self.vertices)
-		self.centroid = _G.centroid(self.vertices, self.area)
+		self.centroid = centroid(self, self.area())
