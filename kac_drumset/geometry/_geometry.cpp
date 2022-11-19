@@ -21,16 +21,14 @@ namespace T = kac_core::types;
 Type conversions.
 */
 
-std::vector<std::array<double, 2>> convertVerticesToVector(const T::Vertices& V
-) {
+std::vector<std::array<double, 2>> convertPolygonToVector(const T::Polygon& P) {
 	std::vector<std::array<double, 2>> out;
-	for (int i = 0; i < V.size(); i++) { out.push_back({{V[i].x, V[i].y}}); }
+	for (int i = 0; i < P.size(); i++) { out.push_back({{P[i].x, P[i].y}}); }
 	return out;
 }
 
-T::Vertices convertVectorToVertices(const std::vector<std::array<double, 2>>& V
-) {
-	T::Vertices out(V.size());
+T::Polygon convertVectorToPolygon(const std::vector<std::array<double, 2>>& V) {
+	T::Polygon out(V.size());
 	for (int i = 0; i < V.size(); i++) { out[i] = T::Point(V[i][0], V[i][1]); }
 	return out;
 }
@@ -39,42 +37,36 @@ T::Vertices convertVectorToVertices(const std::vector<std::array<double, 2>>& V
 PyBind11 exports.
 */
 
-std::array<double, 2>
-_centroid(const std::vector<std::array<double, 2>>& V, double area) {
-	T::Point c = g::centroid(convertVectorToVertices(V), area);
+std::array<double, 2> _centroid(const std::vector<std::array<double, 2>>& V, double area) {
+	T::Point c = g::centroid(convertVectorToPolygon(V), area);
 	return {c.x, c.y};
 }
 
-std::vector<std::array<double, 2>>
-_convexNormalisation(const std::vector<std::array<double, 2>>& V) {
-	return convertVerticesToVector(
-		g::convexNormalisation(convertVectorToVertices(V))
-	);
+std::vector<std::array<double, 2>> _convexNormalisation(const std::vector<std::array<double, 2>>& V
+) {
+	return convertPolygonToVector(g::convexNormalisation(convertVectorToPolygon(V)));
 }
 
 std::vector<std::array<double, 2>> _generateConvexPolygon(const int& N) {
-	return convertVerticesToVector(g::generateConvexPolygon(N));
+	return convertPolygonToVector(g::generateConvexPolygon(N));
 }
 
 bool _isColinear(const std::array<std::array<double, 2>, 3>& V) {
 	return g::isColinear(
-		T::Point(V[0][0], V[0][1]),
-		T::Point(V[1][0], V[1][1]),
-		T::Point(V[2][0], V[2][1])
+		T::Point(V[0][0], V[0][1]), T::Point(V[1][0], V[1][1]), T::Point(V[2][0], V[2][1])
 	);
 }
 
 bool _isConvex(const std::vector<std::array<double, 2>>& V) {
-	return g::isConvex(convertVectorToVertices(V));
+	return g::isConvex(convertVectorToPolygon(V));
 }
 
-std::pair<double, std::pair<int, int>>
-_largestVector(const std::vector<std::array<double, 2>>& V) {
-	return g::largestVector(convertVectorToVertices(V));
+std::pair<double, std::pair<int, int>> _largestVector(const std::vector<std::array<double, 2>>& V) {
+	return g::largestVector(convertVectorToPolygon(V));
 }
 
 double _polygonArea(const std::vector<std::array<double, 2>>& V) {
-	return g::polygonArea(convertVectorToVertices(V));
+	return g::polygonArea(convertVectorToPolygon(V));
 }
 
 /*
