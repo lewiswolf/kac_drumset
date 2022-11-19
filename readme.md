@@ -442,10 +442,9 @@ def raisedCosine(
 	'''
 	This function creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
 	input:
-		matrix_size		A tuple representing the size of the output matrix.
-		mu				The coordinate used to represent the centre of the
-						cosine distribution.
-		sigma			The radius of the distribution.
+		matrix_size = A tuple representing the size of the output matrix.
+		mu = The coordinate used to represent the centre of the cosine distribution.
+		sigma = The radius of the distribution.
 	'''
 ```
 
@@ -454,7 +453,7 @@ def raisedCosine(
 ```python
 class FDTD_2D():
 	'''
-	Class implementation of a two dimensional FDTD equation. This method is designed to be used as a =n iterator:
+	Class implementation of a two dimensional FDTD equation. This method is designed to be used as an iterator:
 	for u in FDTD(*args):
 		print(u)
 	input:

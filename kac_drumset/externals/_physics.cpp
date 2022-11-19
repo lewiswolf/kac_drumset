@@ -1,3 +1,7 @@
+/*
+Generate python bindings for functions in `/kac_core/physics`.
+*/
+
 // dependencies
 #include <kac_core.hpp>
 #include <pybind11/pybind11.h>	  // python bindings
