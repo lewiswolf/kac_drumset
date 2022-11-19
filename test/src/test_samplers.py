@@ -42,7 +42,7 @@ class SamplerTests(TestCase):
 				pass
 
 			def getLabels(self) -> dict[str, list[Union[float, int]]]:
-				pass
+				return {}
 
 			def updateProperties(self, i: Union[int, None] = None) -> None:
 				pass
