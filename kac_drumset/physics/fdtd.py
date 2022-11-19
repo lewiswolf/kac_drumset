@@ -2,6 +2,10 @@
 Import FDTD functions from external C++ library and configure python type conversions.
 '''
 
+# dependencies
+import numpy as np 			# maths
+import numpy.typing as npt	# typing for numpy
+
 # src
 from ..externals._physics import (
 	_FDTDUpdate2D,
@@ -9,10 +13,6 @@ from ..externals._physics import (
 	_raisedCosine1D,
 	_raisedCosine2D,
 )
-
-# dependencies
-import numpy as np 			# maths
-import numpy.typing as npt	# typing for numpy
 
 __all__ = [
 	# methods
@@ -25,7 +25,7 @@ __all__ = [
 
 class FDTD_2D():
 	'''
-	Class implementation of a two dimensional FDTD equation. This method is designed to be used as a =n iterator:
+	Class implementation of a two dimensional FDTD equation. This method is designed to be used as an iterator:
 	for u in FDTD(*args):
 		print(u)
 	input:
@@ -95,9 +95,8 @@ class FDTD_2D():
 		self.x_range = (x_range[0], x_range[1])
 		self.y_range = (y_range[0], y_range[1])
 
-	def __iter__(self) -> "FDTD_2D":
+	def __iter__(self) -> 'FDTD_2D':
 		''' Return the iterator. '''
-
 		self._n = 0
 		return self
 
@@ -182,10 +181,9 @@ def raisedCosine(
 	'''
 	This function creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
 	input:
-		matrix_size		A tuple representing the size of the output matrix.
-		mu				The coordinate used to represent the centre of the
-						cosine distribution.
-		sigma			The radius of the distribution.
+		matrix_size = A tuple representing the size of the output matrix.
+		mu = The coordinate used to represent the centre of the cosine distribution.
+		sigma = The radius of the distribution.
 	'''
 
 	if len(mu) > 2 or len(mu) != len(matrix_size):

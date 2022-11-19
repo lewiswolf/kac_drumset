@@ -1,6 +1,5 @@
 /*
-Generate python bindings for functions in `/lib` and configure C++ type
-conversions.
+Generate python bindings for functions in `/kac_core/geometry` and configure C++ type conversions.
 */
 
 // core

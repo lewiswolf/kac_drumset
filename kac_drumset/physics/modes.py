@@ -2,6 +2,10 @@
 Import modal functions from external C++ library and configure python type conversions.
 '''
 
+# dependencies
+import numpy as np 			# maths
+import numpy.typing as npt	# typing for numpy
+
 # src
 from ..externals._physics import (
 	_calculateCircularAmplitudes,
@@ -9,10 +13,6 @@ from ..externals._physics import (
 	_calculateRectangularAmplitudes,
 	_calculateRectangularSeries,
 )
-
-# dependencies
-import numpy as np 			# maths
-import numpy.typing as npt	# typing for numpy
 
 __all__ = [
 	'calculateCircularAmplitudes',
