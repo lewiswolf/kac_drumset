@@ -326,6 +326,7 @@ class Shape(ABC):
 
 ```python
 from kac_drumset.physics import (
+	# methods
 	besselJ,
 	besselJZero,
 	calculateCircularAmplitudes,
@@ -334,6 +335,8 @@ from kac_drumset.physics import (
 	calculateRectangularSeries,
 	FDTDWaveform2D,
 	raisedCosine,
+	# classes
+	FDTD_2D
 )
 ```
 
@@ -444,6 +447,46 @@ def raisedCosine(
 						cosine distribution.
 		sigma			The radius of the distribution.
 	'''
+```
+
+### Classes
+
+```python
+class FDTD_2D():
+	'''
+	Class implementation of a two dimensional FDTD equation. This method is designed to be used as a =n iterator:
+	for u in FDTD(*args):
+		print(u)
+	input:
+		u_0 = initial fdtd grid at t = 0.
+		u_1 = initial fdtd grid at t = 1.
+		B = B conditions.
+		c_0 = first fdtd coefficient related to the decay term and the courant number.
+		c_1 = second fdtd coefficient related to the decay term and the courant number.
+		c_2 = third fdtd coefficient related to the decay term.
+		T = length of simulation.
+	output:
+		u[n] = c_0 * (
+			u_x+1_y + u_0_x-1_y + u_0_x_y+1 + u_0_x_y-1
+		) + c_1 * u_0_x_y - c_2 * (u_1_x_y)
+	'''
+	def __init__(
+		self,
+		u_0: list[list[float]],
+		u_1: list[list[float]],
+		B: list[list[int]],
+		c_0: float,
+		c_1: float,
+		c_2: float,
+		T: int,
+	) -> None:
+		''' Initialise FDTD iterator. '''
+	
+	def __iter__(self) -> "FDTD_2D":
+		''' Return the iterator. '''
+
+	def __next__(self) -> npt.NDArray[np.float64]:
+		''' Compute the FDTD update equation at every iteration. '''
 ```
 
 </details>

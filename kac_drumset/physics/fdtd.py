@@ -36,8 +36,6 @@ class FDTD_2D():
 		c_1 = second fdtd coefficient related to the decay term and the courant number.
 		c_2 = third fdtd coefficient related to the decay term.
 		T = length of simulation.
-		x_range = range across the x-axis of the boundary condition (for optimisation).
-		y_range = range across the y-axis of the boundary condition (for optimisation).
 	output:
 		u[n] = c_0 * (
 			u_x+1_y + u_0_x-1_y + u_0_x_y+1 + u_0_x_y-1
@@ -65,6 +63,8 @@ class FDTD_2D():
 		c_2: float,
 		T: int,
 	) -> None:
+		''' Initialise FDTD iterator. '''
+
 		# initialise domains
 		self.u_0 = u_0
 		self.u_1 = u_1
@@ -96,10 +96,14 @@ class FDTD_2D():
 		self.y_range = (y_range[0], y_range[1])
 
 	def __iter__(self) -> "FDTD_2D":
+		''' Return the iterator. '''
+
 		self._n = 0
 		return self
 
 	def __next__(self) -> npt.NDArray[np.float64]:
+		''' Compute the FDTD update equation at every iteration. '''
+
 		if self._n <= self.T:
 			self._n += 1
 			if self._n % 2 == 0:
