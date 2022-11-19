@@ -12,6 +12,7 @@ PYBIND11_MODULE(_physics, m) {
 	m.def("_calculateCircularSeries", &p::calculateCircularSeries);
 	m.def("_calculateRectangularAmplitudes", &p::calculateRectangularAmplitudes);
 	m.def("_calculateRectangularSeries", &p::calculateRectangularSeries);
+	m.def("_FDTDUpdate2D", &p::FDTDUpdate2D);
 	m.def("_FDTDWaveform2D", &p::FDTDWaveform2D);
 	m.def("_raisedCosine1D", &p::raisedCosine1D);
 	m.def("_raisedCosine2D", &p::raisedCosine2D);

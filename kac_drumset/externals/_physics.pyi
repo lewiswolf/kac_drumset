@@ -5,6 +5,18 @@ Matrix_1D: TypeAlias = list[float]
 Matrix_2D: TypeAlias = list[list[float]]
 
 
+def _FDTDUpdate2D(
+	u_0: Matrix_2D,
+	u_1: Matrix_2D,
+	B: list[list[int]],
+	c_0: float,
+	c_1: float,
+	c_2: float,
+	x_range: tuple[int, int],
+	y_range: tuple[int, int],
+) -> Matrix_2D: ...
+
+
 def _FDTDWaveform2D(
 	u_0: Matrix_2D,
 	u_1: Matrix_2D,
@@ -15,6 +27,8 @@ def _FDTDWaveform2D(
 	T: int,
 	w: tuple[int, int],
 ) -> Matrix_1D: ...
+
+
 def _calculateCircularAmplitudes(r: float, theta: float, S: Matrix_2D) -> Matrix_2D: ...
 def _calculateCircularSeries(N: int, M: int) -> Matrix_2D: ...
 def _calculateRectangularAmplitudes(x: float, y: float, N: int, M: int, epsilon: float) -> Matrix_2D: ...
