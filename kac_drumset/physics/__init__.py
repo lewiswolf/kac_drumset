@@ -2,16 +2,20 @@ from ..externals._physics import (
 	besselJ,
 	besselJZero,
 )
-from ._physics import (
+from .fdtd import (
+	FDTD_2D,
+	FDTDWaveform2D,
+	raisedCosine,
+)
+from .modes import (
 	calculateCircularAmplitudes,
 	calculateCircularSeries,
 	calculateRectangularAmplitudes,
 	calculateRectangularSeries,
-	FDTDWaveform2D,
-	raisedCosine,
 )
 
 __all__ = [
+	# methods
 	'besselJ',
 	'besselJZero',
 	'calculateCircularAmplitudes',
@@ -20,4 +24,6 @@ __all__ = [
 	'calculateRectangularSeries',
 	'FDTDWaveform2D',
 	'raisedCosine',
+	# classes
+	'FDTD_2D',
 ]
