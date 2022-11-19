@@ -459,7 +459,7 @@ class FDTD_2D():
 	input:
 		u_0 = initial fdtd grid at t = 0.
 		u_1 = initial fdtd grid at t = 1.
-		B = B conditions.
+		B = boundary condition.
 		c_0 = first fdtd coefficient related to the decay term and the courant number.
 		c_1 = second fdtd coefficient related to the decay term and the courant number.
 		c_2 = third fdtd coefficient related to the decay term.
