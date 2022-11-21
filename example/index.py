@@ -30,7 +30,7 @@ def dataset() -> None:
 		dataset_size=10,
 		representation_settings=representation_settings,
 		sampler_settings=FDTDModel.Settings({
-			'duration': 1.0,
+			'duration': 1.,
 			'sample_rate': 48000,
 		}),
 	)

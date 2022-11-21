@@ -90,7 +90,7 @@ class GeometryTests(TestCase):
 			self.assertEqual(np.max(polygon.vertices), 1.)
 
 			# This test asserts that the largest vector is of magnitude 1.0.
-			self.assertEqual(LV[0], 1.0)
+			self.assertEqual(LV[0], 1.)
 
 			# This test asserts that the area(), used for calculating the area of a polygon is accurate to at least 6 decimal
 			# places. This comparison is bounded due to the area() being 64-bit, whilst the comparison function,

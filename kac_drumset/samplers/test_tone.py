@@ -31,7 +31,7 @@ class TestTone(AudioSampler):
 		self,
 		duration: float,
 		sample_rate: int,
-		f_0: float = 0.0,
+		f_0: float = 0.,
 		waveshape: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin',
 	) -> None:
 		'''
@@ -53,13 +53,13 @@ class TestTone(AudioSampler):
 
 		f_t = self.f_0 * np.arange(self.length) / self.sample_rate
 		if self.waveshape == 'saw':
-			self.waveform = 2.0 * np.array([i % 1 for i in f_t]) - 1.0
+			self.waveform = 2. * np.array([i % 1 for i in f_t]) - 1.
 		if self.waveshape == 'sin':
 			self.waveform = np.sin(2 * np.pi * f_t)
 		if self.waveshape == 'sqr':
 			self.waveform = np.array([-0.95 if i < 0 else 0.95 for i in np.sin(2 * np.pi * f_t)])
 		if self.waveshape == 'tri':
-			self.waveform = 4.0 * np.array([1 - (i % 1) if i % 1 > 0.5 else i % 1 for i in f_t]) - 1.0
+			self.waveform = 4. * np.array([1 - (i % 1) if i % 1 > 0.5 else i % 1 for i in f_t]) - 1.
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		''' Returns f_0 as a label. '''

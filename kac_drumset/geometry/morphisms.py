@@ -26,7 +26,7 @@ def concaveNormalisation(P: Polygon) -> npt.NDArray[np.float64]:
 	_, idx = largestVector(P)
 	vertices[:, 0] -= (vertices[idx[0], 0] + vertices[idx[1], 0]) / 2
 	vertices[:, 1] -= (vertices[idx[0], 1] + vertices[idx[1], 1]) / 2
-	theta = 0.0 - np.arctan(vertices[idx[0], 0] / vertices[idx[0], 1])
+	theta = 0. - np.arctan(vertices[idx[0], 0] / vertices[idx[0], 1])
 	cos_theta, sin_theta = np.cos(theta), np.sin(theta)
 	for i, (x, y) in enumerate(vertices):
 		vertices[i, 0] = (x * cos_theta + y * sin_theta)

@@ -27,7 +27,7 @@ class TestSweep(AudioSampler):
 		'''
 
 		super().__init__(duration, sample_rate)
-		phi = 0.0
+		phi = 0.
 		s_l = 1 / sample_rate
 		two_pi = 2 * np.pi
 
