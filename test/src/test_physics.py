@@ -60,6 +60,9 @@ class PhysicsTests(TestCase):
 			c_2=c_2,
 			T=20,
 		):
+			# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
+			# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
+			# simulation.
 			self.assertFalse(np.isnan(u).any())
 			self.assertLessEqual(np.max(u), 1.)
 			self.assertGreaterEqual(np.min(u), -1.)
@@ -75,7 +78,6 @@ class PhysicsTests(TestCase):
 			T=10,
 			w=(4, 4),
 		)
-
 		# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 		# simulation.
