@@ -103,7 +103,7 @@ class FDTD_2D():
 	def __next__(self) -> npt.NDArray[np.float64]:
 		''' Compute the FDTD update equation at every iteration. '''
 
-		if self._n <= self.T:
+		if self._n < self.T:
 			self._n += 1
 			if self._n % 2 == 0:
 				self.u_1 = _FDTDUpdate2D(
