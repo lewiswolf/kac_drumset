@@ -49,7 +49,7 @@ def loadDataset(dataset_dir: str) -> TorchDataset:
 		)
 		# import loop
 		printEmojis('Importing dataset... 📚')
-		with tqdm(total=dataset_size, **tqdm_settings) as bar:
+		with tqdm(total=dataset_size, bar_format=tqdm_settings['bar_format'], unit=tqdm_settings['unit']) as bar:
 			for i in range(dataset_size):
 				# import relevant information
 				file.readlines(1)

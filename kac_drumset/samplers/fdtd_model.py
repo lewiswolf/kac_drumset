@@ -66,12 +66,12 @@ class FDTDModel(AudioSampler):
 		self,
 		duration: float,
 		sample_rate: int,
-		amplitude: float = 1.0,
-		decay_time: float = 2.0,
+		amplitude: float = 1.,
+		decay_time: float = 2.,
 		drum_size: float = 0.3,
-		material_density: float = 0.26,
+		material_density: float = 0.2,
 		max_vertices: int = 10,
-		tension: float = 2000.0,
+		tension: float = 2000.,
 	) -> None:
 		'''
 		When the class is first instantiated, all of its physical properties are inferred from the user parameters.

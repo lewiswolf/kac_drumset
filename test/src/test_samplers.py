@@ -35,7 +35,7 @@ class SamplerTests(TestCase):
 
 		class Test(AudioSampler):
 			''' The minimum instantiation requirements of AudioSampler. '''
-			def __init__(self, duration: float = 1.0, sample_rate: int = 48000) -> None:
+			def __init__(self, duration: float = 1., sample_rate: int = 48000) -> None:
 				super().__init__(duration, sample_rate)
 
 			def generateWaveform(self) -> None:
@@ -73,7 +73,7 @@ class SamplerTests(TestCase):
 		'''
 
 		# This test asserts that model correctly mounts with both its minimum requirements and type safety.
-		settings: BesselModel.Settings = {'duration': 1.0, 'sample_rate': 48000, 'decay_time': np.inf}
+		settings: BesselModel.Settings = {'duration': 1., 'sample_rate': 48000, 'decay_time': np.inf}
 		model = BesselModel(**settings)
 
 		# This test asserts that the labels default to an empty array when no waveform has been generated.
@@ -107,7 +107,7 @@ class SamplerTests(TestCase):
 		'''
 
 		# This test asserts that model correctly mounts with both its minimum requirements and type safety.
-		settings: FDTDModel.Settings = {'duration': 1.0, 'sample_rate': 48000, 'decay_time': np.inf}
+		settings: FDTDModel.Settings = {'duration': 1., 'sample_rate': 48000, 'decay_time': np.inf}
 		model = FDTDModel(**settings)
 
 		# This test asserts that the labels default to an empty array when no waveform has been generated.
@@ -117,14 +117,14 @@ class SamplerTests(TestCase):
 		self.assertEqual(model.c_2, 1.)
 
 		# generate a random shape and dirichlet boundary conditions.
-		settings = {'duration': 1.0, 'sample_rate': 48000}
+		settings = {'duration': 1., 'sample_rate': 48000}
 		model = FDTDModel(**settings)
 		model.updateProperties()
 
 		# This test asserts that a shape was properly defined after updating the model's properties.
 		self.assertTrue(hasattr(model, 'shape'))
 		# This test asserts that a boolean mask was properly defined after updating the model's properties.
-		self.assertEqual(model.B[model.strike], 1.0)
+		self.assertEqual(model.B[model.strike], 1.)
 		# This test asserts that the model returns the vertices and the strike location as its labels.
 		self.assertEqual(len(model.getLabels()['strike_location']), 2)
 		self.assertLessEqual(len(model.getLabels()['vertices']), model.max_vertices)
@@ -132,7 +132,7 @@ class SamplerTests(TestCase):
 		# generate a distribution of drums to assert that the sampler works with various configurations
 		drum_size = [0.9, 0.7, 0.5, 0.3, 0.1]
 		material_density = [0.75, 0.5, 0.25, 0.125, 0.0625]
-		tension = [3000.0, 2000.0, 1500.0, 1000.0]
+		tension = [3000., 2000., 1500., 1000.]
 		for i in range(len(drum_size)):
 			for j in range(len(material_density)):
 				for k in range(len(tension)):
@@ -155,8 +155,8 @@ class SamplerTests(TestCase):
 					# tested, using the waveform itself, but should also be confirmed by comparing expected
 					# bounds on the Hamiltonian energy throughout the simulation.
 					self.assertFalse(np.isnan(model.waveform).any())
-					self.assertLessEqual(np.max(model.waveform), 1.0)
-					self.assertGreaterEqual(np.min(model.waveform), -1.0)
+					self.assertLessEqual(np.max(model.waveform), 1.)
+					self.assertGreaterEqual(np.min(model.waveform), -1.)
 
 	def test_poisson(self) -> None:
 		'''
@@ -164,7 +164,7 @@ class SamplerTests(TestCase):
 		'''
 
 		# This test asserts that model correctly mounts with both its minimum requirements and type safety.
-		settings: PoissonModel.Settings = {'duration': 1.0, 'sample_rate': 48000, 'decay_time': np.inf}
+		settings: PoissonModel.Settings = {'duration': 1., 'sample_rate': 48000, 'decay_time': np.inf}
 		model = PoissonModel(**settings)
 
 		# This test asserts that the labels default to an empty array when no waveform has been generated.

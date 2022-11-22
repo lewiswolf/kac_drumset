@@ -58,7 +58,7 @@ def transformDataset(dataset: TorchDataset, representation_settings: Representat
 		new_file.write(rf'"sampler_settings": {json.dumps(dataset.sampler_settings)},' + '\n')
 		# add data
 		new_file.write(r'"data": [' + '\n')
-		with tqdm(total=dataset.__len__(), **tqdm_settings) as bar:
+		with tqdm(total=dataset.__len__(), bar_format=tqdm_settings['bar_format'], unit=tqdm_settings['unit']) as bar:
 			for i in range(dataset.__len__()):
 				# process data
 				x = IR.transform(sf.read(f'{dataset.dataset_dir}/sample_{i:05d}.wav')[0])

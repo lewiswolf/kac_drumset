@@ -123,7 +123,7 @@ class PoissonModel(AudioSampler):
 
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
-			self.epsilon = random.uniform(0.25, 4.)
+			self.epsilon = random.uniform(1., 4.)
 			self.L = random.uniform(0.1, 2.)
 			self.gamma = self.c / self.L
 			self.series = calculateRectangularSeries(self.N, self.M, self.epsilon)

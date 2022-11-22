@@ -481,7 +481,7 @@ class FDTD_2D():
 	) -> None:
 		''' Initialise FDTD iterator. '''
 	
-	def __iter__(self) -> "FDTD_2D":
+	def __iter__(self) -> 'FDTD_2D':
 		''' Return the iterator. '''
 
 	def __next__(self) -> npt.NDArray[np.float64]:
