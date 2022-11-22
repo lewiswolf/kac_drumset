@@ -84,8 +84,13 @@ class DatasetTests(TestCase):
 
 		# This test asserts that a normalised waveform is always bounded by [-1., 1.].
 		norm = InputRepresentation.normalise(self.tone.waveform)
-		self.assertEqual(np.max(norm), 1.)
-		self.assertEqual(np.min(norm), -1.)
+		self.assertEqual(norm.max(), 1.)
+		self.assertEqual(norm.min(), -1.)
+
+		# This test asserts that a DC signal can be normalised
+		norm = InputRepresentation.normalise(np.ones(100))
+		self.assertEqual(norm.max(), 0.)
+		self.assertEqual(norm.min(), 0.)
 
 		# Test an end to end input representation.
 		IR = InputRepresentation(self.tone.sample_rate, {
