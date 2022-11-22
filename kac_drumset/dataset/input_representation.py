@@ -121,8 +121,12 @@ class InputRepresentation():
 	@staticmethod
 	def normalise(waveform: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
 		''' Normalise an audio waveform, such that x ∈ [-1.0, 1.0] '''
-		x_min = np.min(waveform)
-		return 2.0 * (waveform - x_min) / (np.max(waveform) - x_min) - 1.0
+		x_min = waveform.min()
+		x_max = waveform.max()
+		if x_max - x_min != 0.:
+			return 2. * (waveform - x_min) / (x_max - x_min) - 1.
+		else:
+			return waveform - x_max
 
 	@staticmethod
 	def transformShape(data_length: int, settings: RepresentationSettings) -> tuple[int, ...]:
