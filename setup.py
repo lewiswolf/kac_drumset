@@ -11,7 +11,7 @@ from skbuild import setup
 
 this = os.path.abspath(os.path.dirname(__file__))
 name = 'kac_drumset'
-version = '1.0.0'
+version = '1.1.0'
 short_description = 'Analysis tools and a dataset generator for arbitrarily shaped drums.'
 
 # import long description from readme.md
