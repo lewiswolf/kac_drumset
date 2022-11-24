@@ -61,7 +61,7 @@ def geometry() -> None:
 		[1., 0.],
 	]))
 	print(f'This is a square: \n \n {square.vertices} \n')
-	print(f'It, of course, has {square.n} sides.')
+	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
 	assert square.area() == 1.
 	print(f"Its area is {square.area()}.")
@@ -78,7 +78,7 @@ def geometry() -> None:
 	polygon = G.Polygon(G.generateConvexPolygon(5))
 	# Normalise the polygon to the unit interval, and remove isometric and similarity transformations.
 	polygon.vertices = G.convexNormalisation(polygon)
-	print(f'\nThis is a {polygon.n} sided polygon: \n \n {polygon.vertices} \n')
+	print(f'\nThis is a {polygon.N} sided polygon: \n \n {polygon.vertices} \n')
 	# Assess its area.
 	print(f"Its area is {polygon.area()}.")
 	# Compute its convexity.
