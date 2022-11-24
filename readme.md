@@ -227,7 +227,7 @@ def centroid(P: Polygon, area: Optional[float] = None) -> tuple[float, float]:
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
 	'''
 
-def generateConvexPolygon(n: int) -> npt.NDArray[np.float64]:
+def generateConvexPolygon(N: int) -> npt.NDArray[np.float64]:
 	'''
 	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted from Sander Verdonschot's Java version,
 	found here: https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
@@ -299,7 +299,7 @@ class Polygon(Shape):
 	A base class for a polygon, instantiated with an array of vertices.
 	'''
 
-	n: int								# number of vertices
+	N: int								# number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
 
 	def area(self) -> float:
