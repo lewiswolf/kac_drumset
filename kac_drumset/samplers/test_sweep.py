@@ -10,6 +10,7 @@ import numpy as np 			# maths
 
 # src
 from ..dataset import AudioSampler, SamplerSettings
+from ..dataset.utils import classLocalsToKwargs
 
 __all__ = [
 	'TestSweep',
@@ -26,7 +27,7 @@ class TestSweep(AudioSampler):
 		Render the sinusoidal sweep.
 		'''
 
-		super().__init__(duration, sample_rate)
+		super().__init__(**classLocalsToKwargs(locals()))
 		phi = 0.
 		s_l = 1 / sample_rate
 		two_pi = 2 * np.pi

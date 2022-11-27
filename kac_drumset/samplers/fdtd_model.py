@@ -13,6 +13,7 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from ..dataset import AudioSampler, SamplerSettings
+from ..dataset.utils import classLocalsToKwargs
 from ..geometry import RandomPolygon, booleanMask
 from ..physics import FDTDWaveform2D, raisedCosine
 
@@ -78,7 +79,7 @@ class FDTDModel(AudioSampler):
 		'''
 
 		# initialise user defined variables
-		super().__init__(duration, sample_rate)
+		super().__init__(**classLocalsToKwargs(locals()))
 		self.a = amplitude
 		self.d_60 = decay_time
 		self.L = drum_size

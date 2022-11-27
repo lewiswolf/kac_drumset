@@ -35,7 +35,7 @@ def transformDataset(dataset: TorchDataset, representation_settings: Representat
 		representation_settings,
 	)
 	# check that the dataset actually needs transforming
-	if (IR.settings == dataset.representation_settings):
+	if IR.settings == dataset.representation_settings:
 		return dataset
 	# remove metadata and dataset.X
 	os.remove(f'{dataset.dataset_dir}/metadata.json')

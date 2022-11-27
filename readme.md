@@ -39,6 +39,7 @@ from kac_drumset import (
 	InputRepresentation,
 	# Types
 	RepresentationSettings,
+	SamplerInfo,
 	SamplerSettings,
 	TorchDataset,
 )
@@ -161,6 +162,14 @@ class RepresentationSettings(TypedDict, total=False):
 	window_length: int		# window length in samples
 
 
+class SamplerInfo(TypedDict, total=True):
+	'''
+	Information about the sampler used to generate a specific dataset.
+	'''
+	name: str		# name of the sampler
+	version: str	# version of kac_drumset when the sampler was generated
+
+
 class SamplerSettings(TypedDict, total=True):
 	'''
 	These are the minimum requirements for the AudioSampler __init__() method. This type is used to maintain type safety
@@ -175,8 +184,8 @@ class TorchDataset(torch.utils.data.Dataset):
 
 	dataset_dir: str									# dataset directory
 	representation_settings: RepresentationSettings		# settings for InputRepresentation
-	sampler: str										# the name of the sampler used to generate the dataset
-	sampler_settings: SamplerSettings					# settings for the sampler
+	sampler: SamplerInfo								# the name of the sampler used to generate the dataset
+	sampler_settings: dict[str, Any]					# settings for the sampler
 	X: torch.Tensor										# data
 	Y: list[dict[str, torch.Tensor]]					# labels
 

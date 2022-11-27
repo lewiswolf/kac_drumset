@@ -1,4 +1,4 @@
-from .audio_sampler import AudioSampler, SamplerSettings
+from .audio_sampler import AudioSampler, SamplerInfo, SamplerSettings
 from .dataset import TorchDataset
 from .generate_dataset import generateDataset
 from .input_representation import InputRepresentation, RepresentationSettings
@@ -17,6 +17,7 @@ __all__ = [
 	'InputRepresentation',
 	# types
 	'RepresentationSettings',
+	'SamplerInfo',
 	'SamplerSettings',
 	'TorchDataset',
 ]
