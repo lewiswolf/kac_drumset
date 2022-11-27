@@ -1,4 +1,4 @@
-def dataset() -> None:
+def DatasetExample() -> None:
 	'''
 	This example demonstrates all of the methods used to generate, load, and modify a dataset.
 	'''
@@ -42,7 +42,7 @@ def dataset() -> None:
 	dataset = transformDataset(dataset, representation_settings)
 
 
-def geometry() -> None:
+def GeometryExample() -> None:
 	'''
 	This example demonstrates all of the methods used to explore geometric analysis of drums.
 	'''
@@ -60,7 +60,7 @@ def geometry() -> None:
 		[1., 1.],
 		[1., 0.],
 	]))
-	print(f'This is a square: \n \n {square.vertices} \n')
+	print(f'\nThis is a square: \n \n {square.vertices} \n')
 	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
 	assert square.area() == 1.
@@ -103,7 +103,6 @@ def geometry() -> None:
 
 
 if __name__ == '__main__':
-	dataset()
-	print()
-	geometry()
+	DatasetExample()
+	GeometryExample()
 	exit()
