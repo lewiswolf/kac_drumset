@@ -51,15 +51,7 @@ class PhysicsTests(TestCase):
 		c_2 = 1.
 
 		# Test iterator with a square simulation
-		for u in FDTD_2D(
-			u_0=u_0.tolist(),
-			u_1=u_1.tolist(),
-			B=B.tolist(),
-			c_0=c_0,
-			c_1=c_1,
-			c_2=c_2,
-			T=20,
-		):
+		for u in FDTD_2D(u_0=u_0.tolist(), u_1=u_1.tolist(), B=B.tolist(), c_0=c_0, c_1=c_1, c_2=c_2, T=20):
 			# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 			# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 			# simulation.
@@ -68,16 +60,7 @@ class PhysicsTests(TestCase):
 			self.assertGreaterEqual(np.min(u), -1.)
 
 		# Test waveform generator with a square simulation
-		waveform = FDTDWaveform2D(
-			u_0=u_0,
-			u_1=u_1,
-			B=B,
-			c_0=c_0,
-			c_1=c_1,
-			c_2=c_2,
-			T=10,
-			w=(4, 4),
-		)
+		waveform = FDTDWaveform2D(u_0=u_0, u_1=u_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=10, w=(4, 4))
 		# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 		# simulation.
@@ -126,9 +109,15 @@ class PhysicsTests(TestCase):
 		self.assertEqual(rc[50], 1.)
 		self.assertEqual(np.max(rc), 1.)
 		self.assertEqual(np.min(rc), 0.)
+		self.assertGreater(rc[49], 0.)
+		self.assertGreater(rc[51], 0.)
 
 		# This test asserts that the two dimensional case has the correct peaks.
 		rc = raisedCosine((100, 100), (50, 50), sigma=10)
 		self.assertEqual(rc[50, 50], 1.)
 		self.assertEqual(np.max(rc), 1.)
 		self.assertEqual(np.min(rc), 0.)
+		self.assertGreater(rc[49, 50], 0.)
+		self.assertGreater(rc[51, 50], 0.)
+		self.assertGreater(rc[50, 49], 0.)
+		self.assertGreater(rc[50, 51], 0.)
