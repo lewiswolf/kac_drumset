@@ -303,6 +303,16 @@ class RandomPolygon(Polygon):
 ### Types
 
 ```python
+class Circle(Shape):
+	'''
+	A base class for a circle, instantiated with a radius.
+	'''
+
+	r: float 							# radius
+
+	def area(self) -> float:
+		''' Archimedes. '''
+
 class Polygon(Shape):
 	'''
 	A base class for a polygon, instantiated with an array of vertices.

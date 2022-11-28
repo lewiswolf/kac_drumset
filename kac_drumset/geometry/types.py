@@ -37,12 +37,13 @@ class Circle(Shape):
 	A base class for a circle, instantiated with a radius.
 	'''
 
-	r: float 	# radius
+	r: float 							# radius
 
 	def __init__(self, r: float = 1.) -> None:
 		self.r = r
 
 	def area(self) -> None:
+		''' Archimedes. '''
 		return np.pi * (self.r ** 2.)
 
 
