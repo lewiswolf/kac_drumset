@@ -27,11 +27,11 @@ def regenerateDataPoints(dataset: TorchDataset, Sampler: type[AudioSampler], ent
 	'''
 
 	# handle errors
-	if (not entries):
+	if not entries:
 		return dataset
-	if (Sampler.__name__ != dataset.sampler):
+	if Sampler.__name__ != dataset.sampler['name']:
 		raise TypeError(f'${Sampler.__name__} is not compatible with this dataset.')
-	if (dataset.__len__() < max(entries) or min(entries) < 0):
+	if dataset.__len__() < max(entries) or min(entries) < 0:
 		raise ValueError('Cannot replace all specified indices.')
 	# sort entries, remove metadata, load generators
 	entries.sort()
@@ -51,14 +51,14 @@ def regenerateDataPoints(dataset: TorchDataset, Sampler: type[AudioSampler], ent
 		new_file.write(r'{' + '\n')
 		new_file.write(rf'"dataset_size": {dataset.__len__()},' + '\n')
 		new_file.write(rf'"representation_settings": {json.dumps(dataset.representation_settings)},' + '\n')
-		new_file.write(rf'"sampler": "{dataset.sampler}",' + '\n')
+		new_file.write(rf'"sampler": {json.dumps(dataset.sampler)},' + '\n')
 		new_file.write(rf'"sampler_settings": {json.dumps(dataset.sampler_settings)},' + '\n')
 		# add data
 		new_file.write(r'"data": [' + '\n')
 		with tqdm(total=len(entries), bar_format=tqdm_settings['bar_format'], unit=tqdm_settings['unit']) as bar:
 			for i in range(dataset.__len__()):
 				new_file.write(r'{' + '\n')
-				if (entries != [] and entries[0] == i):
+				if entries != [] and entries[0] == i:
 					# prepare new sample
 					sampler.updateProperties(i)
 					sampler.generateWaveform()

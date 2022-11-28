@@ -31,7 +31,7 @@ class DatasetTests(TestCase):
 
 		# This test asserts that dynamic typing works for sampler_settings.
 		with withoutPrinting():
-			generateDataset(
+			dataset = generateDataset(
 				TestTone,
 				dataset_dir=self.tmp_dir,
 				dataset_size=10,
@@ -39,9 +39,13 @@ class DatasetTests(TestCase):
 					'duration': 1.,
 					'f_0': 440.,
 					'sample_rate': 48000,
-					'waveshape': 'sin',
 				}),
 			)
+			# This test asserts that the dataset retains all available information about the sample.
+			self.assertEqual(1., dataset.sampler_settings['duration'])
+			self.assertEqual(440., dataset.sampler_settings['f_0'])
+			self.assertEqual(48000, dataset.sampler_settings['sample_rate'])
+			self.assertEqual('sin', dataset.sampler_settings['waveshape'])
 
 		# Generate a dataset for subsequent tests.
 		with withoutPrinting():
@@ -68,8 +72,9 @@ class DatasetTests(TestCase):
 		# This test asserts that the dataset directory is correct.
 		self.assertEqual(dataset.dataset_dir, self.tmp_dir)
 
-		# This test asserts that the sampler name is correct.
-		self.assertEqual(dataset.sampler, 'TestSweep')
+		# This test asserts that the sampler information is correct.
+		self.assertEqual(dataset.sampler['name'], 'TestSweep')
+		self.assertEqual(type(dataset.sampler['version']), str)
 
 		# This test asserts that the SamplerSettings were copied correctly.
 		self.assertEqual(dataset.sampler_settings, {
@@ -165,7 +170,7 @@ class DatasetTests(TestCase):
 		self.assertEqual(dataset.dataset_dir, self.tmp_dir)
 
 		# This test asserts that the sampler name is correct.
-		self.assertEqual(dataset.sampler, 'TestSweep')
+		self.assertEqual(dataset.sampler['name'], 'TestSweep')
 
 	def test_regenerate_dataset(self) -> None:
 		'''
@@ -247,4 +252,8 @@ class DatasetTests(TestCase):
 		self.assertEqual(dataset.dataset_dir, self.tmp_dir)
 
 		# This test asserts that the sampler name is correct.
-		self.assertEqual(dataset.sampler, 'TestSweep')
+		self.assertEqual(dataset.sampler['name'], 'TestSweep')
+
+		# This test asserts that the transformed dataset can still be loaded.
+		with withoutPrinting():
+			dataset = loadDataset(dataset_dir=self.tmp_dir)

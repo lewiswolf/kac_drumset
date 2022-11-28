@@ -7,7 +7,7 @@ will maintain functionality and type consistency throughout this codebase.
 # core
 from abc import ABC, abstractmethod
 import math
-from typing import Literal, TypedDict, Union
+from typing import Any, Literal, TypedDict, Union
 
 # dependencies
 import numpy as np				# maths
@@ -16,8 +16,17 @@ import soundfile as sf			# audio read & write
 
 __all__ = [
 	'AudioSampler',
+	'SamplerInfo',
 	'SamplerSettings',
 ]
+
+
+class SamplerInfo(TypedDict, total=True):
+	'''
+	Information about the sampler used to generate a specific dataset.
+	'''
+	name: str		# name of the sampler
+	version: str	# version of kac_drumset when the sampler was generated
 
 
 class SamplerSettings(TypedDict, total=True):
@@ -42,17 +51,23 @@ class AudioSampler(ABC):
 		sampler.export('/absolute/filepath/')
 	'''
 
+	__settings__: dict[str, Any]		# all of the arguments passed to the class (should correspond to the type self.Settings)
 	duration: float						# duration of the audio file (seconds)
 	length: int							# length of the audio file (samples)
 	sample_rate: int					# sample rate
 	waveform: npt.NDArray[np.float64]	# the audio sample itself
 
-	def __init__(self, duration: float, sample_rate: int) -> None:
+	def __init__(self, duration: float, sample_rate: int, **kwargs: Any) -> None:
 		''' Initialise sampler. '''
+		# init properties
 		self.duration = duration
 		self.sample_rate = sample_rate
 		self.length = math.ceil(duration * sample_rate)
 		self.waveform = np.zeros(self.length)
+		# init settings object
+		self.__settings__ = kwargs
+		self.__settings__.update({'duration': self.duration, 'sample_rate': self.sample_rate})
+		self.__settings__ = dict(sorted(self.__settings__.items()))
 
 	def export(self, absolutePath: str, bit_depth: Literal[16, 24, 32] = 24) -> None:
 		''' Write the generated waveform to a .wav file. '''

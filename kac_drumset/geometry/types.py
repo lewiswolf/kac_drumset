@@ -13,6 +13,7 @@ import numpy.typing as npt	# typing for numpy
 from ..externals._geometry import _polygonArea
 
 __all__ = [
+	'Circle',
 	'Polygon',
 	'Shape',
 ]
@@ -31,19 +32,34 @@ class Shape(ABC):
 		pass
 
 
+class Circle(Shape):
+	'''
+	A base class for a circle, instantiated with a radius.
+	'''
+
+	r: float 							# radius
+
+	def __init__(self, r: float = 1.) -> None:
+		self.r = r
+
+	def area(self) -> float:
+		''' Archimedes. '''
+		return np.pi * (self.r ** 2.)
+
+
 class Polygon(Shape):
 	'''
 	A base class for a polygon, instantiated with an array of vertices.
 	'''
 
-	n: int								# number of vertices
+	N: int								# number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
 
 	def __init__(self, vertices: npt.NDArray[np.float64]) -> None:
 		assert vertices.ndim == 2 and vertices.shape[1] == 2, \
 			'Array of vertices is not the correct shape: (n, 2)'
 		self.vertices = vertices
-		self.n = vertices.shape[0]
+		self.N = vertices.shape[0]
 
 	def area(self) -> float:
 		'''

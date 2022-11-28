@@ -4,13 +4,14 @@ This file contains the generateDataset method.
 
 # core
 import json
+from importlib.metadata import version
 import os
 
 # dependencies
 from tqdm import tqdm			# CLI progress bar
 
 # src
-from .audio_sampler import AudioSampler, SamplerSettings
+from .audio_sampler import AudioSampler, SamplerInfo, SamplerSettings
 from .input_representation import InputRepresentation, RepresentationSettings
 from .dataset import TorchDataset
 from .utils import tqdm_settings, listToTensor
@@ -39,12 +40,16 @@ def generateDataset(
 		representation_settings,
 	)
 	sampler = Sampler(**sampler_settings)
+	sampler_info: SamplerInfo = {
+		'name': Sampler.__name__,
+		'version': version('kac_drumset'),
+	}
 	dataset = TorchDataset(
 		dataset_dir=dataset_dir,
 		dataset_size=dataset_size,
 		representation_settings=IR.settings,
-		sampler=Sampler.__name__,
-		sampler_settings=sampler_settings,
+		sampler=sampler_info,
+		sampler_settings=sampler.__settings__,
 		x_size=IR.transformShape(sampler.length, IR.settings),
 	)
 	# housekeeping
@@ -59,8 +64,8 @@ def generateDataset(
 		new_file.write(r'{' + '\n')
 		new_file.write(rf'"dataset_size": {dataset_size},' + '\n')
 		new_file.write(rf'"representation_settings": {json.dumps(IR.settings)},' + '\n')
-		new_file.write(rf'"sampler": "{Sampler.__name__}",' + '\n')
-		new_file.write(rf'"sampler_settings": {json.dumps(sampler_settings)},' + '\n')
+		new_file.write(rf'"sampler": {json.dumps(sampler_info)},' + '\n')
+		new_file.write(rf'"sampler_settings": {json.dumps(sampler.__settings__)},' + '\n')
 		# add data
 		new_file.write(r'"data": [' + '\n')
 		with tqdm(total=dataset_size, bar_format=tqdm_settings['bar_format'], unit=tqdm_settings['unit']) as bar:

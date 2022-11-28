@@ -32,9 +32,16 @@ def loadDataset(dataset_dir: str) -> TorchDataset:
 		file.readlines(1)
 		dataset_size = int(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
 		representation_settings = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
-		sampler = file.readlines(1)[0].replace('\n', '').split(':', 1)[1][2:-2]
+		sampler = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
 		sampler_settings = json.loads(file.readlines(1)[0].replace('\n', '').split(':', 1)[1][1:-1])
 		file.readlines(1)
+		# backwards compatibility
+		# delete during a major upgrade
+		if type(sampler) == str:
+			sampler = {
+				'name': sampler,
+				'version': '1.1.0',
+			}
 		# create dataset
 		dataset = TorchDataset(
 			dataset_dir=dataset_dir,

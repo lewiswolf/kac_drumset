@@ -34,7 +34,7 @@ class GeometryTests(TestCase):
 
 		for polygon in squares:
 			# This test asserts that a polygon has the correct number of vertices.
-			self.assertEqual(len(polygon.vertices), polygon.n)
+			self.assertEqual(len(polygon.vertices), polygon.N)
 
 			# This test asserts that isConvex() works for any closed arrangement of vertices.
 			self.assertTrue(isConvex(polygon))
@@ -83,7 +83,7 @@ class GeometryTests(TestCase):
 			LV = largestVector(polygon)
 
 			# This test asserts that a polygon has the correct number of vertices.
-			self.assertEqual(len(polygon.vertices), polygon.n)
+			self.assertEqual(len(polygon.vertices), polygon.N)
 
 			# This test asserts that the vertices are strictly bounded between 0.0 and 1.0.
 			self.assertEqual(np.min(polygon.vertices), 0.)
@@ -102,11 +102,11 @@ class GeometryTests(TestCase):
 			)
 
 			# This test asserts that no 3 adjacent vertices are colinear.
-			for j in range(polygon.n):
+			for j in range(polygon.N):
 				self.assertFalse(isColinear(np.array([
-					polygon.vertices[j - 1 if j > 0 else polygon.n - 1],
+					polygon.vertices[j - 1 if j > 0 else polygon.N - 1],
 					polygon.vertices[j],
-					polygon.vertices[(j + 1) % polygon.n],
+					polygon.vertices[(j + 1) % polygon.N],
 				])))
 
 			if polygon.convex:

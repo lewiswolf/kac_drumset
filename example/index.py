@@ -1,4 +1,4 @@
-def dataset() -> None:
+def DatasetExample() -> None:
 	'''
 	This example demonstrates all of the methods used to generate, load, and modify a dataset.
 	'''
@@ -42,7 +42,7 @@ def dataset() -> None:
 	dataset = transformDataset(dataset, representation_settings)
 
 
-def geometry() -> None:
+def GeometryExample() -> None:
 	'''
 	This example demonstrates all of the methods used to explore geometric analysis of drums.
 	'''
@@ -53,6 +53,10 @@ def geometry() -> None:
 	# src
 	import kac_drumset.geometry as G
 
+	# Define a circle
+	circle = G.Circle()
+	print(f'\nA circle with radius {circle.r} has an area of {circle.area()}.\n')
+
 	# Define a square.
 	square = G.Polygon(np.array([
 		[0., 0.],
@@ -61,10 +65,10 @@ def geometry() -> None:
 		[1., 0.],
 	]))
 	print(f'This is a square: \n \n {square.vertices} \n')
-	print(f'It, of course, has {square.n} sides.')
+	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
 	assert square.area() == 1.
-	print(f"Its area is {square.area()}.")
+	print(f'Its area is {square.area()}.')
 	# A square does not contain any sides...
 	assert not G.isColinear(square.vertices[0: 3])
 	# whereas a straight line does.
@@ -78,7 +82,7 @@ def geometry() -> None:
 	polygon = G.Polygon(G.generateConvexPolygon(5))
 	# Normalise the polygon to the unit interval, and remove isometric and similarity transformations.
 	polygon.vertices = G.convexNormalisation(polygon)
-	print(f'\nThis is a {polygon.n} sided polygon: \n \n {polygon.vertices} \n')
+	print(f'\nThis is a {polygon.N} sided polygon: \n \n {polygon.vertices} \n')
 	# Assess its area.
 	print(f"Its area is {polygon.area()}.")
 	# Compute its convexity.
@@ -103,7 +107,6 @@ def geometry() -> None:
 
 
 if __name__ == '__main__':
-	dataset()
-	print()
-	geometry()
+	DatasetExample()
+	GeometryExample()
 	exit()

@@ -35,7 +35,7 @@ def transformDataset(dataset: TorchDataset, representation_settings: Representat
 		representation_settings,
 	)
 	# check that the dataset actually needs transforming
-	if (IR.settings == dataset.representation_settings):
+	if IR.settings == dataset.representation_settings:
 		return dataset
 	# remove metadata and dataset.X
 	os.remove(f'{dataset.dataset_dir}/metadata.json')
@@ -54,7 +54,7 @@ def transformDataset(dataset: TorchDataset, representation_settings: Representat
 		new_file.write(r'{' + '\n')
 		new_file.write(rf'"dataset_size": {dataset.__len__()},' + '\n')
 		new_file.write(rf'"representation_settings": {json.dumps(IR.settings)},' + '\n')
-		new_file.write(rf'"sampler": "{dataset.sampler}",' + '\n')
+		new_file.write(rf'"sampler": {json.dumps(dataset.sampler)},' + '\n')
 		new_file.write(rf'"sampler_settings": {json.dumps(dataset.sampler_settings)},' + '\n')
 		# add data
 		new_file.write(r'"data": [' + '\n')

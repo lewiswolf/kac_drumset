@@ -2,11 +2,14 @@
 This file is used to define a dataset class compatible with PyTorch.
 '''
 
+# core
+from typing import Any
+
 # dependencies
 import torch				# pytorch
 
 # src
-from .audio_sampler import SamplerSettings
+from .audio_sampler import SamplerInfo
 from .input_representation import RepresentationSettings
 
 __all__ = [
@@ -19,8 +22,8 @@ class TorchDataset(torch.utils.data.Dataset):
 
 	dataset_dir: str									# dataset directory
 	representation_settings: RepresentationSettings		# settings for InputRepresentation
-	sampler: str										# the name of the sampler used to generate the dataset
-	sampler_settings: SamplerSettings					# settings for the sampler
+	sampler: SamplerInfo								# information about the sampler used to generate the dataset
+	sampler_settings: dict[str, Any]					# settings for the sampler
 	X: torch.Tensor										# data
 	Y: list[dict[str, torch.Tensor]]					# labels
 
@@ -29,8 +32,8 @@ class TorchDataset(torch.utils.data.Dataset):
 		dataset_dir: str,
 		dataset_size: int,
 		representation_settings: RepresentationSettings,
-		sampler: str,
-		sampler_settings: SamplerSettings,
+		sampler: SamplerInfo,
+		sampler_settings: dict[str, Any],
 		x_size: tuple[int, ...],
 	) -> None:
 		''' Initialise dataset. '''

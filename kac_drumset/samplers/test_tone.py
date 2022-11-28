@@ -11,6 +11,7 @@ import numpy as np 	# maths
 
 # src
 from ..dataset import AudioSampler, SamplerSettings
+from ..dataset.utils import classLocalsToKwargs
 
 __all__ = [
 	'TestTone',
@@ -41,7 +42,7 @@ class TestTone(AudioSampler):
 			waveshape 	Shape of the waveform.
 		'''
 
-		super().__init__(duration, sample_rate)
+		super().__init__(**classLocalsToKwargs(locals()))
 		self.f_0 = f_0
 		self.__random_f_0 = not bool(f_0)
 		self.waveshape = waveshape

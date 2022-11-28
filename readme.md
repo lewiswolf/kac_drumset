@@ -39,6 +39,7 @@ from kac_drumset import (
 	InputRepresentation,
 	# Types
 	RepresentationSettings,
+	SamplerInfo,
 	SamplerSettings,
 	TorchDataset,
 )
@@ -161,6 +162,14 @@ class RepresentationSettings(TypedDict, total=False):
 	window_length: int		# window length in samples
 
 
+class SamplerInfo(TypedDict, total=True):
+	'''
+	Information about the sampler used to generate a specific dataset.
+	'''
+	name: str		# name of the sampler
+	version: str	# version of kac_drumset when the sampler was generated
+
+
 class SamplerSettings(TypedDict, total=True):
 	'''
 	These are the minimum requirements for the AudioSampler __init__() method. This type is used to maintain type safety
@@ -175,8 +184,8 @@ class TorchDataset(torch.utils.data.Dataset):
 
 	dataset_dir: str									# dataset directory
 	representation_settings: RepresentationSettings		# settings for InputRepresentation
-	sampler: str										# the name of the sampler used to generate the dataset
-	sampler_settings: SamplerSettings					# settings for the sampler
+	sampler: SamplerInfo								# the name of the sampler used to generate the dataset
+	sampler_settings: dict[str, Any]					# settings for the sampler
 	X: torch.Tensor										# data
 	Y: list[dict[str, torch.Tensor]]					# labels
 
@@ -227,7 +236,7 @@ def centroid(P: Polygon, area: Optional[float] = None) -> tuple[float, float]:
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
 	'''
 
-def generateConvexPolygon(n: int) -> npt.NDArray[np.float64]:
+def generateConvexPolygon(N: int) -> npt.NDArray[np.float64]:
 	'''
 	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted from Sander Verdonschot's Java version,
 	found here: https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
@@ -294,12 +303,22 @@ class RandomPolygon(Polygon):
 ### Types
 
 ```python
+class Circle(Shape):
+	'''
+	A base class for a circle, instantiated with a radius.
+	'''
+
+	r: float 							# radius
+
+	def area(self) -> float:
+		''' Archimedes. '''
+
 class Polygon(Shape):
 	'''
 	A base class for a polygon, instantiated with an array of vertices.
 	'''
 
-	n: int								# number of vertices
+	N: int								# number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
 
 	def area(self) -> float:
@@ -511,11 +530,11 @@ class BesselModel(AudioSampler):
 	'''
 
 	class Settings(SamplerSettings, total=False):
+		M: int						# number of mth modes
+		N: int						# number of nth modes
 		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
 		decay_time: float			# how long will the simulation take to decay? (seconds)
-		M: int						# number of mth modes
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
-		N: int						# number of nth modes
 		tension: float				# tension at rest (N/m)	'''
 
 
@@ -538,11 +557,11 @@ class PoissonModel(AudioSampler):
 	'''
 
 	class Settings(SamplerSettings, total=False):
+		M: int						# number of mth modes
+		N: int						# number of nth modes
 		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
 		decay_time: float			# how long will the simulation take to decay? (seconds)
-		M: int						# number of mth modes
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
-		N: int						# number of nth modes
 		tension: float				# tension at rest (N/m)
 ```
 </details>
