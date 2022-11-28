@@ -66,8 +66,8 @@ class AudioSampler(ABC):
 		self.waveform = np.zeros(self.length)
 		# init settings object
 		self.__settings__ = kwargs
-		self.__settings__['duration'] = self.duration
-		self.__settings__['sample_rate'] = self.sample_rate
+		self.__settings__.update({'duration': self.duration, 'sample_rate': self.sample_rate})
+		self.__settings__ = dict(sorted(self.__settings__.items()))
 
 	def export(self, absolutePath: str, bit_depth: Literal[16, 24, 32] = 24) -> None:
 		''' Write the generated waveform to a .wav file. '''

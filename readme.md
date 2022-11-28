@@ -520,11 +520,11 @@ class BesselModel(AudioSampler):
 	'''
 
 	class Settings(SamplerSettings, total=False):
+		M: int						# number of mth modes
+		N: int						# number of nth modes
 		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
 		decay_time: float			# how long will the simulation take to decay? (seconds)
-		M: int						# number of mth modes
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
-		N: int						# number of nth modes
 		tension: float				# tension at rest (N/m)	'''
 
 
@@ -547,11 +547,11 @@ class PoissonModel(AudioSampler):
 	'''
 
 	class Settings(SamplerSettings, total=False):
+		M: int						# number of mth modes
+		N: int						# number of nth modes
 		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
 		decay_time: float			# how long will the simulation take to decay? (seconds)
-		M: int						# number of mth modes
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
-		N: int						# number of nth modes
 		tension: float				# tension at rest (N/m)
 ```
 </details>

@@ -48,22 +48,22 @@ class BesselModel(AudioSampler):
 		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
 		'''
 
+		M: int						# number of mth modes
+		N: int						# number of nth modes
 		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
 		decay_time: float			# how long will the simulation take to decay? (seconds)
-		M: int						# number of mth modes
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
-		N: int						# number of nth modes
 		tension: float				# tension at rest (N/m)
 
 	def __init__(
 		self,
 		duration: float,
 		sample_rate: int,
+		M: int = 10,
+		N: int = 10,
 		amplitude: float = 1.,
 		decay_time: float = 2.,
-		M: int = 10,
 		material_density: float = 0.2,
-		N: int = 10,
 		tension: float = 2000.,
 	) -> None:
 		'''
