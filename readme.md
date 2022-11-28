@@ -216,6 +216,7 @@ from kac_drumset.geometry import (
 	# Classes
 	'RandomPolygon',
 	# Types
+	'Circle',
 	'Polygon',
 	'Shape',
 )
