@@ -13,6 +13,7 @@ import numpy.typing as npt	# typing for numpy
 from ..externals._geometry import _polygonArea
 
 __all__ = [
+	'Circle',
 	'Polygon',
 	'Shape',
 ]
@@ -29,6 +30,20 @@ class Shape(ABC):
 	@abstractmethod
 	def area(self) -> float:
 		pass
+
+
+class Circle(Shape):
+	'''
+	A base class for a circle, instantiated with a radius.
+	'''
+
+	r: float 	# radius
+
+	def __init__(self, r: float = 1.) -> None:
+		self.r = r
+
+	def area(self) -> None:
+		return np.pi * (self.r ** 2.)
 
 
 class Polygon(Shape):

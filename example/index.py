@@ -53,6 +53,10 @@ def GeometryExample() -> None:
 	# src
 	import kac_drumset.geometry as G
 
+	# Define a circle
+	circle = G.Circle()
+	print(f'\nA circle with radius {circle.r} has an area of {circle.area()}.\n')
+
 	# Define a square.
 	square = G.Polygon(np.array([
 		[0., 0.],
@@ -60,11 +64,11 @@ def GeometryExample() -> None:
 		[1., 1.],
 		[1., 0.],
 	]))
-	print(f'\nThis is a square: \n \n {square.vertices} \n')
+	print(f'This is a square: \n \n {square.vertices} \n')
 	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
 	assert square.area() == 1.
-	print(f"Its area is {square.area()}.")
+	print(f'Its area is {square.area()}.')
 	# A square does not contain any sides...
 	assert not G.isColinear(square.vertices[0: 3])
 	# whereas a straight line does.

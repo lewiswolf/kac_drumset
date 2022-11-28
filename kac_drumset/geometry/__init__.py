@@ -11,7 +11,7 @@ from .isospectrality import weylCondition
 from .morphisms import concaveNormalisation
 from .projections import booleanMask
 from .random_polygon import RandomPolygon
-from .types import Polygon, Shape
+from .types import Circle, Polygon, Shape
 
 __all__ = [
 	# external methods
@@ -29,6 +29,7 @@ __all__ = [
 	# classes
 	'RandomPolygon',
 	# types
+	'Circle',
 	'Polygon',
 	'Shape',
 ]
