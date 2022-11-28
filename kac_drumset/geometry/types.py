@@ -42,7 +42,7 @@ class Circle(Shape):
 	def __init__(self, r: float = 1.) -> None:
 		self.r = r
 
-	def area(self) -> None:
+	def area(self) -> float:
 		''' Archimedes. '''
 		return np.pi * (self.r ** 2.)
 
