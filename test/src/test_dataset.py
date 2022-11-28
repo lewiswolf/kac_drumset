@@ -253,3 +253,7 @@ class DatasetTests(TestCase):
 
 		# This test asserts that the sampler name is correct.
 		self.assertEqual(dataset.sampler['name'], 'TestSweep')
+
+		# This test asserts that the transformed dataset can still be loaded.
+		with withoutPrinting():
+			dataset = loadDataset(dataset_dir=self.tmp_dir)

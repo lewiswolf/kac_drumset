@@ -54,7 +54,7 @@ def transformDataset(dataset: TorchDataset, representation_settings: Representat
 		new_file.write(r'{' + '\n')
 		new_file.write(rf'"dataset_size": {dataset.__len__()},' + '\n')
 		new_file.write(rf'"representation_settings": {json.dumps(IR.settings)},' + '\n')
-		new_file.write(rf'"sampler": "{dataset.sampler}",' + '\n')
+		new_file.write(rf'"sampler": {json.dumps(dataset.sampler)},' + '\n')
 		new_file.write(rf'"sampler_settings": {json.dumps(dataset.sampler_settings)},' + '\n')
 		# add data
 		new_file.write(r'"data": [' + '\n')
