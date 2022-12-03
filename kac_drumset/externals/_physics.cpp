@@ -20,6 +20,7 @@ PYBIND11_MODULE(_physics, m) {
 	m.def("_FDTDWaveform2D", &p::FDTDWaveform2D);
 	m.def("_raisedCosine1D", &p::raisedCosine1D);
 	m.def("_raisedCosine2D", &p::raisedCosine2D);
+	m.def("_raisedTriangle1D", &p::raisedTriangle1D);
 	m.def("besselJ", &p::besselJ);
 	m.def("besselJZero", &p::besselJZero);
 }

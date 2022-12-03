@@ -12,6 +12,7 @@ from kac_drumset.physics import (
 	FDTD_2D,
 	FDTDWaveform2D,
 	raisedCosine,
+	raisedTriangle,
 )
 
 
@@ -98,13 +99,12 @@ class PhysicsTests(TestCase):
 				places=28,
 			)
 
-	def test_raised_cosine(self) -> None:
+	def test_initial_conditions(self) -> None:
 		'''
-		The raised cosine transform is used as the activation function for a physical model. These tests assert that the
-		raised cosine works as intended, both in the 1 and 2 dimensional cases.
+		Tests used in conjunction with `initial_conditions.hpp`.
 		'''
 
-		# This test asserts that the one dimensional case has the correct peaks.
+		# This test asserts that the one dimensional raised cosine has the correct peaks.
 		rc = raisedCosine((100, ), (50, ), sigma=10)
 		self.assertEqual(rc[50], 1.)
 		self.assertEqual(np.max(rc), 1.)
@@ -112,7 +112,7 @@ class PhysicsTests(TestCase):
 		self.assertGreater(rc[49], 0.)
 		self.assertGreater(rc[51], 0.)
 
-		# This test asserts that the two dimensional case has the correct peaks.
+		# This test asserts that the two dimensional raised cosine has the correct peaks.
 		rc = raisedCosine((100, 100), (50, 50), sigma=10)
 		self.assertEqual(rc[50, 50], 1.)
 		self.assertEqual(np.max(rc), 1.)
@@ -121,3 +121,11 @@ class PhysicsTests(TestCase):
 		self.assertGreater(rc[51, 50], 0.)
 		self.assertGreater(rc[50, 49], 0.)
 		self.assertGreater(rc[50, 51], 0.)
+
+		# This test asserts that the one dimensional triangular distribution has the correct peaks.
+		t = raisedTriangle(100, 50, 30, 70)
+		self.assertEqual(t[50], 1.)
+		self.assertEqual(np.max(t), 1.)
+		self.assertEqual(np.min(t), 0.)
+		self.assertGreater(t[49], 0.)
+		self.assertGreater(t[51], 0.)
