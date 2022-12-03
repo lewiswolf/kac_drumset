@@ -355,6 +355,7 @@ from kac_drumset.physics import (
 	calculateRectangularSeries,
 	FDTDWaveform2D,
 	raisedCosine,
+	raisedTriangle,
 	# classes
 	FDTD_2D
 )
