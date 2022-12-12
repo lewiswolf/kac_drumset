@@ -216,6 +216,7 @@ from kac_drumset.geometry import (
 	# Classes
 	'RandomPolygon',
 	# Types
+	'Circle',
 	'Polygon',
 	'Shape',
 )
@@ -354,6 +355,7 @@ from kac_drumset.physics import (
 	calculateRectangularSeries,
 	FDTDWaveform2D,
 	raisedCosine,
+	raisedTriangle,
 	# classes
 	FDTD_2D
 )
@@ -459,11 +461,21 @@ def raisedCosine(
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
-	This function creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
+	Creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
 	input:
 		matrix_size = A tuple representing the size of the output matrix.
-		mu = The coordinate used to represent the centre of the cosine distribution.
-		sigma = The radius of the distribution.
+		μ = The coordinate used to represent the centre of the cosine distribution.
+		σ = The radius of the distribution.
+	'''
+
+def raisedTriangle(matrix_size: int, mu: int, a: int, b: int) -> npt.NDArray[np.float64]:
+	'''
+	Create a triangular distribution centred at mu. Only 1D distributions are supported.
+	input:
+		matrix_size = the size of the matrix.
+		μ = a cartesian point representing the maxima of the triangle.
+		a = minimum x value for the distribution.
+		b = maximum x value for the distribution.
 	'''
 ```
 

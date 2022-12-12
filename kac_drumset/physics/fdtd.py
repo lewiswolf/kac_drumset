@@ -12,12 +12,14 @@ from ..externals._physics import (
 	_FDTDWaveform2D,
 	_raisedCosine1D,
 	_raisedCosine2D,
+	_raisedTriangle1D,
 )
 
 __all__ = [
 	# methods
 	'FDTDWaveform2D',
 	'raisedCosine',
+	'raisedTriangle',
 	# classes
 	'FDTD_2D',
 ]
@@ -179,11 +181,11 @@ def raisedCosine(
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
-	This function creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
+	Creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
 	input:
 		matrix_size = A tuple representing the size of the output matrix.
-		mu = The coordinate used to represent the centre of the cosine distribution.
-		sigma = The radius of the distribution.
+		μ = The coordinate used to represent the centre of the cosine distribution.
+		σ = The radius of the distribution.
 	'''
 
 	if len(mu) > 2 or len(mu) != len(matrix_size):
@@ -199,3 +201,15 @@ def raisedCosine(
 			mu[1],
 			sigma,
 		))
+
+
+def raisedTriangle(matrix_size: int, mu: int, a: int, b: int) -> npt.NDArray[np.float64]:
+	'''
+	Create a triangular distribution centred at mu. Only 1D distributions are supported.
+	input:
+		matrix_size = the size of the matrix.
+		μ = a cartesian point representing the maxima of the triangle.
+		a = minimum x value for the distribution.
+		b = maximum x value for the distribution.
+	'''
+	return np.array(_raisedTriangle1D(matrix_size, mu, a, b))

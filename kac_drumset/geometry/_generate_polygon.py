@@ -14,8 +14,8 @@ __all__ = ['generateConvexPolygon']
 
 def generateConvexPolygon(N: int) -> npt.NDArray[np.float64]:
 	'''
-	Function wrapper for _genrateConvexPolygon(), converting (n: int): List[[number, number]] into
-	(n: int): npt.NDArray[np.float64].
+	Function wrapper for _genrateConvexPolygon(), converting (N: int): List[[number, number]] into
+	(N: int): npt.NDArray[np.float64].
 
 	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted from Sander Verdonschot's Java version,
 	found here: https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
