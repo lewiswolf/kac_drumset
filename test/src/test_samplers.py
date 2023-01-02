@@ -123,8 +123,6 @@ class SamplerTests(TestCase):
 
 		# This test asserts that a shape was properly defined after updating the model's properties.
 		self.assertTrue(hasattr(model, 'shape'))
-		# This test asserts that a boolean mask was properly defined after updating the model's properties.
-		self.assertEqual(model.B[model.strike], 1.)
 		# This test asserts that the model returns the vertices and the strike location as its labels.
 		self.assertEqual(len(model.getLabels()['strike_location']), 2)
 		self.assertLessEqual(len(model.getLabels()['vertices']), model.max_vertices)
@@ -143,7 +141,10 @@ class SamplerTests(TestCase):
 						material_density=material_density[j],
 						tension=tension[k],
 					)
+					# This test asserts that a boolean mask was properly defined after updating the model's properties.
 					model.updateProperties()
+					self.assertEqual(model.B[model.strike], 1.)
+
 					model.generateWaveform()
 
 					# This test asserts that The Courant number λ = γk/h, which is used to confirm that the
