@@ -105,7 +105,7 @@ class PhysicsTests(TestCase):
 		'''
 
 		# This test asserts that the one dimensional raised cosine has the correct peaks.
-		rc = raisedCosine((100, ), (50, ), sigma=10)
+		rc = raisedCosine((100, ), (50., ), sigma=10)
 		self.assertEqual(rc[50], 1.)
 		self.assertEqual(np.max(rc), 1.)
 		self.assertEqual(np.min(rc), 0.)
@@ -113,7 +113,7 @@ class PhysicsTests(TestCase):
 		self.assertGreater(rc[51], 0.)
 
 		# This test asserts that the two dimensional raised cosine has the correct peaks.
-		rc = raisedCosine((100, 100), (50, 50), sigma=10)
+		rc = raisedCosine((100, 100), (50., 50.), sigma=10)
 		self.assertEqual(rc[50, 50], 1.)
 		self.assertEqual(np.max(rc), 1.)
 		self.assertEqual(np.min(rc), 0.)
@@ -123,7 +123,7 @@ class PhysicsTests(TestCase):
 		self.assertGreater(rc[50, 51], 0.)
 
 		# This test asserts that the one dimensional triangular distribution has the correct peaks.
-		t = raisedTriangle(100, 50, 30, 70)
+		t = raisedTriangle(100, 50., 30., 70.)
 		self.assertEqual(t[50], 1.)
 		self.assertEqual(np.max(t), 1.)
 		self.assertEqual(np.min(t), 0.)

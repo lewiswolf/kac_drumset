@@ -177,7 +177,7 @@ def FDTDWaveform2D(
 
 def raisedCosine(
 	matrix_size: tuple[int, ...],
-	mu: tuple[int, ...],
+	mu: tuple[float, ...],
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
@@ -203,7 +203,7 @@ def raisedCosine(
 		))
 
 
-def raisedTriangle(matrix_size: int, mu: int, a: int, b: int) -> npt.NDArray[np.float64]:
+def raisedTriangle(matrix_size: int, mu: float, a: float, b: float) -> npt.NDArray[np.float64]:
 	'''
 	Create a triangular distribution centred at mu. Only 1D distributions are supported.
 	input:
