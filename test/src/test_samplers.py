@@ -14,6 +14,7 @@ from kac_drumset import (
 	PoissonModel,
 	SamplerSettings,
 )
+from kac_drumset.dataset.utils import classLocalsToKwargs
 from kac_drumset.utils import clearDirectory
 
 
@@ -36,7 +37,7 @@ class SamplerTests(TestCase):
 		class Test(AudioSampler):
 			''' The minimum instantiation requirements of AudioSampler. '''
 			def __init__(self, duration: float = 1., sample_rate: int = 48000) -> None:
-				super().__init__(duration, sample_rate)
+				super().__init__(**classLocalsToKwargs(locals()))
 
 			def generateWaveform(self) -> None:
 				pass
