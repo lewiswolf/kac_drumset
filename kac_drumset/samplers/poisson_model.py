@@ -91,10 +91,7 @@ class PoissonModel(AudioSampler):
 
 		if hasattr(self, 'L'):
 			A = self.a * np.abs(calculateRectangularAmplitudes(
-				(
-					self.strike[0] * (self.epsilon ** 0.5),
-					self.strike[1] / (self.epsilon ** 0.5),
-				),
+				(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),
 				self.N,
 				self.M,
 				self.epsilon,
