@@ -102,7 +102,7 @@ class BesselModel(AudioSampler):
 		Return the labels of the bessel model.
 		'''
 
-		return {'drum_size': [self.L], 'strike_location': [self.strike[0], self.strike[1]]} if hasattr(self, 'L') else {}
+		return {'drum_size': [self.L], 'strike_location': [*self.strike]} if hasattr(self, 'L') else {}
 
 	def updateProperties(self, i: Union[int, None] = None) -> None:
 		'''
