@@ -117,7 +117,4 @@ class BesselModel(AudioSampler):
 			self.strike = (0., 0.)
 		else:
 			# otherwise update the strike location to be a random location.
-			self.strike = (
-				random.uniform(-1., 1.),
-				random.uniform(0., np.pi),
-			)
+			self.strike = (random.uniform(-1., 1.), random.uniform(0., np.pi))
