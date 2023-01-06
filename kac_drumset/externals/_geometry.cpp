@@ -60,6 +60,12 @@ bool _isConvex(const std::vector<std::array<double, 2>>& V) {
 	return g::isConvex(convertVectorToPolygon(V));
 }
 
+bool _isPointInsidePolygon(
+	const std::array<double, 2>& p, const std::vector<std::array<double, 2>>& V
+) {
+	return g::isPointInsidePolygon(T::Point(p[0], p[1]), convertVectorToPolygon(V));
+}
+
 std::pair<double, std::pair<int, int>> _largestVector(const std::vector<std::array<double, 2>>& V) {
 	return g::largestVector(convertVectorToPolygon(V));
 }
@@ -79,6 +85,7 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_generateConvexPolygon", &_generateConvexPolygon);
 	m.def("_isColinear", &_isColinear);
 	m.def("_isConvex", &_isConvex);
+	m.def("_isPointInsidePolygon", &_isPointInsidePolygon);
 	m.def("_largestVector", &_largestVector);
 	m.def("_polygonArea", &_polygonArea);
 }

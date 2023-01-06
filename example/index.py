@@ -58,12 +58,7 @@ def GeometryExample() -> None:
 	print(f'\nA circle with radius {circle.r} has an area of {circle.area()}.\n')
 
 	# Define a square.
-	square = G.Polygon(np.array([
-		[0., 0.],
-		[0., 1.],
-		[1., 1.],
-		[1., 0.],
-	]))
+	square = G.Polygon(np.array([[0., 0.], [0., 1.], [1., 1.], [1., 0.]]))
 	print(f'This is a square: \n \n {square.vertices} \n')
 	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
@@ -72,11 +67,7 @@ def GeometryExample() -> None:
 	# A square does not contain any sides...
 	assert not G.isColinear(square.vertices[0: 3])
 	# whereas a straight line does.
-	assert G.isColinear(np.array([
-		[0., 0.],
-		[1., 1.],
-		[2., 2.],
-	]))
+	assert G.isColinear(np.array([[0., 0.], [1., 1.], [2., 2.]]))
 
 	# Define a 5 sided convex polygon.
 	polygon = G.Polygon(G.generateConvexPolygon(5))
@@ -88,17 +79,16 @@ def GeometryExample() -> None:
 	# Compute its convexity.
 	print(f'It is {G.isConvex(polygon)} that this polygon is convex.')
 	# Compute the geometric centroid.
-	print(f"The polygon's centroid is at {G.centroid(polygon)}.")
+	print(f"This polygon's centroid is at {G.centroid(polygon)}.")
+	# Determine if an arbitrary point is within the polygon.
+	print(f'It is {G.isPointInsidePolygon((0.5, 0.5), polygon)} that the point (0.5, 0.5) is inside of this polygon.')
 	# Compute its largest vector pair.
-	print(f"The length of the polygon's largest vector is {G.largestVector(polygon)[0]}.")
+	print(f"The length of this polygon's largest vector is {G.largestVector(polygon)[0]}.")
 	c = G.largestVector(polygon)[1]
-	points = [
-		polygon.vertices[c[0], 0],
-		polygon.vertices[c[0], 1],
-		polygon.vertices[c[1], 0],
-		polygon.vertices[c[1], 1],
-	]
-	print(f"And spans the coordinates (({points[0]}, {points[1]}), ({points[2]}, {points[3]})).")
+	print(
+		f'And spans the coordinates [({polygon.vertices[c[0], 0]}, {polygon.vertices[c[0], 1]}),',
+		f'({polygon.vertices[c[1], 0]}, {polygon.vertices[c[1], 1]})].',
+	)
 
 	# Given two shapes, determine whether they may be isospectral using Weyl's asymptotic law.
 	print(

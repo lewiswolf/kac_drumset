@@ -11,6 +11,7 @@ from kac_drumset.geometry import (
 	convexNormalisation,
 	isColinear,
 	isConvex,
+	isPointInsidePolygon,
 	largestVector,
 	RandomPolygon,
 	Polygon,
@@ -32,30 +33,22 @@ class GeometryTests(TestCase):
 			Polygon(np.array([[0, 0], [0, 1], [1, 1], [1, 0]])),
 		]
 
-		for polygon in squares:
-			# This test asserts that a polygon has the correct number of vertices.
-			self.assertEqual(len(polygon.vertices), polygon.N)
+		for square in squares:
+			# This test asserts that a square has the correct number of vertices.
+			self.assertEqual(len(square.vertices), square.N)
 
 			# This test asserts that isConvex() works for any closed arrangement of vertices.
-			self.assertTrue(isConvex(polygon))
+			self.assertTrue(isConvex(square))
 
-		# This test asserts that after convexNormalisation, one of the above squares produces the correct output.
-		self.assertFalse(False in np.equal(
-			convexNormalisation(squares[0]),
-			np.array([
-				[0., 0.5],
-				[0.5, 1.],
-				[1., 0.5],
-				[0.5, 0.],
-			]),
-		))
+			# This test asserts that convexNormalisation produces the correct output.
+			self.assertFalse(False in np.equal(
+				convexNormalisation(square),
+				np.array([[0., 0.5], [0.5, 1.], [1., 0.5], [0.5, 0.]]),
+			))
 
 		# This test asserts that after convexNormalisation, the two squares produce the same output.
 		# The two squares have opposite vertex order.
-		self.assertFalse(False in np.equal(
-			convexNormalisation(squares[0]),
-			convexNormalisation(squares[1]),
-		))
+		self.assertFalse(False in np.equal(convexNormalisation(squares[0]), convexNormalisation(squares[1])))
 
 		# This test asserts that after convexNormalisation, the quads produce the same output.
 		# The first two quads have opposite vertex order.
@@ -72,6 +65,14 @@ class GeometryTests(TestCase):
 		# np.allclose is used, as opposed to np.equal, to account for floating point errors.
 		self.assertTrue(np.allclose(quads[0].vertices, quads[2].vertices))
 		self.assertTrue(np.allclose(quads[0].vertices, quads[3].vertices))
+
+		# This test asserts that the correct points lie inside and outside of a polygon.
+		self.assertTrue(isPointInsidePolygon((0.5, 0.5), squares[0]))
+		self.assertTrue(isPointInsidePolygon((0.5, 0.), squares[0]))
+		self.assertTrue(isPointInsidePolygon((0.5, 1.), squares[0]))
+		self.assertTrue(isPointInsidePolygon((0., 0.5), squares[0]))
+		self.assertTrue(isPointInsidePolygon((1., 0.5), squares[0]))
+		self.assertFalse(isPointInsidePolygon((2., 2.), squares[0]))
 
 	def test_random_polygon(self) -> None:
 		'''

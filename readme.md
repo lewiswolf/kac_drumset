@@ -267,6 +267,11 @@ def isConvex(P: Polygon) -> bool:
 	clockwise or counter-clockwise'.
 	'''
 
+def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
+	'''
+	Determines whether or not a cartesion pair is within a polygon.
+	'''
+
 def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]):
 	'''
 	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the

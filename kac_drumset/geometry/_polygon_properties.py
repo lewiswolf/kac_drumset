@@ -15,6 +15,7 @@ from ..externals._geometry import (
 	_centroid,
 	_isColinear,
 	_isConvex,
+	_isPointInsidePolygon,
 	_largestVector,
 )
 
@@ -22,6 +23,7 @@ __all__ = [
 	'centroid',
 	'isColinear',
 	'isConvex',
+	'isPointInsidePolygon',
 	'largestVector',
 ]
 
@@ -60,6 +62,13 @@ def isConvex(P: Polygon) -> bool:
 	clockwise or counter-clockwise'.
 	'''
 	return _isConvex(P.vertices.tolist())
+
+
+def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
+	'''
+	Determines whether or not a cartesian pair is within a polygon.
+	'''
+	return _isPointInsidePolygon(list(p), P.vertices.tolist())
 
 
 def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]:
