@@ -1,5 +1,5 @@
 '''
-Import functions from external C++ library, housed in geometry/polygon_propertoes.hpp.
+Import functions from external C++ library, housed in geometry/polygon_properties.hpp.
 '''
 
 # core
@@ -66,7 +66,7 @@ def isConvex(P: Polygon) -> bool:
 
 def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	'''
-	Determines whether or not a cartesian pair is within a polygon.
+	Determines whether or not a cartesian point is within a polygon, including boundaries.
 	'''
 	return _isPointInsidePolygon(list(p), P.vertices.tolist())
 

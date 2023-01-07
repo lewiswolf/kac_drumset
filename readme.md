@@ -205,20 +205,21 @@ class TorchDataset(torch.utils.data.Dataset):
 ```python
 from kac_drumset.geometry import (
 	# Methods
-	'booleanMask',
-	'centroid',
-	'convexNormalisation',
-	'generateConvexPolygon',
-	'isColinear',
-	'isConvex',
-	'largestVector',
-	'weylCondition'
+	booleanMask,
+	centroid,
+	convexNormalisation,
+	generateConvexPolygon,
+	isColinear,
+	isConvex,
+	isPointInsidePolygon,
+	largestVector,
+	weylCondition
 	# Classes
-	'RandomPolygon',
+	RandomPolygon,
 	# Types
-	'Circle',
-	'Polygon',
-	'Shape',
+	Circle,
+	Polygon,
+	Shape,
 )
 ```
 
@@ -269,7 +270,7 @@ def isConvex(P: Polygon) -> bool:
 
 def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	'''
-	Determines whether or not a cartesion pair is within a polygon.
+	Determines whether or not a cartesian point is within a polygon, including boundaries.
 	'''
 
 def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]):
