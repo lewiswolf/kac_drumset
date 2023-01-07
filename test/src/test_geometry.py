@@ -29,11 +29,31 @@ class GeometryTests(TestCase):
 		'''
 
 		squares = [
-			Polygon(np.array([[0, 0], [1, 0], [1, 1], [0, 1]])),
-			Polygon(np.array([[0, 0], [0, 1], [1, 1], [1, 0]])),
+			Polygon(np.array([[0., 0.], [1., 0.], [1., 1.], [0., 1.]])),
+			Polygon(np.array([[0., 0.], [0., 1.], [1., 1.], [1., 0.]])),
 		]
 
+		def lambda_isInsideOfPolygon(P: Polygon) -> None:
+			for p in P.vertices:
+				self.assertTrue(isPointInsidePolygon(p, P))
+			for n in range(P.N):
+				a = P.vertices[n]
+				b = P.vertices[(n + 1) % P.N]
+				self.assertTrue(isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), P))
+
 		for square in squares:
+			# This test asserts that isPointInsidePolygon works as expected
+			lambda_isInsideOfPolygon(square)
+			# test line crossings
+			self.assertTrue(isPointInsidePolygon((0.999, 0.5), square))
+			self.assertFalse(isPointInsidePolygon((1.001, 0.5), square))
+			self.assertTrue(isPointInsidePolygon((0.5, 0.999), square))
+			self.assertFalse(isPointInsidePolygon((0.5, 1.001), square))
+			self.assertTrue(isPointInsidePolygon((0.001, 0.5), square))
+			self.assertFalse(isPointInsidePolygon((-0.001, 0.5), square))
+			self.assertTrue(isPointInsidePolygon((0.5, 0.001), square))
+			self.assertFalse(isPointInsidePolygon((0.5, -0.001), square))
+
 			# This test asserts that a square has the correct number of vertices.
 			self.assertEqual(len(square.vertices), square.N)
 
@@ -50,7 +70,6 @@ class GeometryTests(TestCase):
 		# The two squares have opposite vertex order.
 		self.assertFalse(False in np.equal(convexNormalisation(squares[0]), convexNormalisation(squares[1])))
 
-		# This test asserts that after convexNormalisation, the quads produce the same output.
 		# The first two quads have opposite vertex order.
 		# The second two quads have their x and y coordinates swapped.
 		quads = [
@@ -59,20 +78,17 @@ class GeometryTests(TestCase):
 			Polygon(np.array([[0, 0], [0, 1.1], [1, 1], [1, 0]])),
 			Polygon(np.array([[0, 0], [1, 0], [1, 1], [0, 1.1]])),
 		]
+
+		# This test asserts that isPointInsidePolygon works as expected
+		for quad in quads:
+			lambda_isInsideOfPolygon(square)
+		# This test asserts that after convexNormalisation, the quads produce the same output.
 		for quad in quads:
 			quad.vertices = convexNormalisation(quad)
 		self.assertFalse(False in np.equal(quads[0].vertices, quads[1].vertices))
 		# np.allclose is used, as opposed to np.equal, to account for floating point errors.
 		self.assertTrue(np.allclose(quads[0].vertices, quads[2].vertices))
 		self.assertTrue(np.allclose(quads[0].vertices, quads[3].vertices))
-
-		# This test asserts that the correct points lie inside and outside of a polygon.
-		self.assertTrue(isPointInsidePolygon((0.5, 0.5), squares[0]))
-		self.assertTrue(isPointInsidePolygon((0.5, 0.), squares[0]))
-		self.assertTrue(isPointInsidePolygon((0.5, 1.), squares[0]))
-		self.assertTrue(isPointInsidePolygon((0., 0.5), squares[0]))
-		self.assertTrue(isPointInsidePolygon((1., 0.5), squares[0]))
-		self.assertFalse(isPointInsidePolygon((2., 2.), squares[0]))
 
 	def test_random_polygon(self) -> None:
 		'''

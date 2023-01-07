@@ -270,7 +270,7 @@ def isConvex(P: Polygon) -> bool:
 
 def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	'''
-	Determines whether or not a cartesian point is within a polygon, including boundaries.
+	Determines whether or not a cartesian pair is within a polygon, including boundaries.
 	'''
 
 def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]):
