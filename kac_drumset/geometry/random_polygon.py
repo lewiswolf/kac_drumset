@@ -40,9 +40,7 @@ class RandomPolygon(Polygon):
 			super().__init__(generateConvexPolygon(random.randint(3, max_vertices)))
 		else:
 			super().__init__(generateConcavePolygon(random.randint(3, max_vertices)))
-
 		# normalise
 		self.vertices = convexNormalisation(self) if self.convex else concaveNormalisation(self)
-
 		# calculate other properties
 		self.centroid = centroid(self)
