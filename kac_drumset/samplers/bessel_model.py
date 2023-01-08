@@ -3,7 +3,6 @@ This sampler is used to produce a linear model of a circular membrane.
 '''
 
 # core
-import random
 from typing import Union
 
 # dependencies
@@ -112,9 +111,9 @@ class BesselModel(AudioSampler):
 
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
-			self.L = random.uniform(0.1, 2.)
+			self.L = np.random.uniform(0.1, 2.)
 			self.gamma = self.c / self.L
 			self.strike = (0., 0.)
 		else:
 			# otherwise update the strike location to be a random location.
-			self.strike = (random.uniform(-1., 1.), random.uniform(0., np.pi))
+			self.strike = (np.random.uniform(-1., 1.), np.random.uniform(0., np.pi))

@@ -3,7 +3,6 @@ This sampler is used to produce a linear model of a rectangular membrane.
 '''
 
 # core
-import random
 from typing import Union
 
 # dependencies
@@ -121,11 +120,11 @@ class PoissonModel(AudioSampler):
 
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
-			self.epsilon = random.uniform(1., 4.)
-			self.L = random.uniform(0.1, 2.)
+			self.epsilon = np.random.uniform(1., 4.)
+			self.L = np.random.uniform(0.1, 2.)
 			self.gamma = self.c / self.L
 			self.series = calculateRectangularSeries(self.N, self.M, self.epsilon)
 			self.strike = (0.5, 0.5)
 		else:
 			# otherwise update the strike location to be a random location.
-			self.strike = (random.uniform(0., 1.), random.uniform(0., 1.))
+			self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
