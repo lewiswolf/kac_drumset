@@ -210,7 +210,6 @@ from kac_drumset.geometry import (
 	convexNormalisation,
 	generateConvexPolygon,
 	isColinear,
-	isConvex,
 	isPointInsidePolygon,
 	largestVector,
 	weylCondition
@@ -226,13 +225,13 @@ from kac_drumset.geometry import (
 ### Methods
 
 ```python
-def booleanMask(P: Polygon, grid_size: int, convex: Optional[bool] = None) -> npt.NDArray[np.int8]:
+def booleanMask(P: Polygon, grid_size: int) -> npt.NDArray[np.int8]:
 	'''
 	This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
 	exist within a domain R^G where G ∈ [0, 1].
 	'''
 
-def centroid(P: Polygon, area: Optional[float] = None) -> tuple[float, float]:
+def centroid(P: Polygon) -> tuple[float, float]:
 	'''
 	This algorithm is used to calculate the geometric centroid of a 2D polygon. 
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
@@ -257,15 +256,6 @@ def convexNormalisation(P: Polygon) -> npt.NDArray[np.float64]:
 def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	'''
 	Determines whether or not a given set of three vertices are colinear.
-	'''
-
-def isConvex(P: Polygon) -> bool:
-	'''
-	Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
-	each vertex:
-		[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)].
-	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
-	clockwise or counter-clockwise'.
 	'''
 
 def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
@@ -317,6 +307,7 @@ class Circle(Shape):
 
 	r: float 							# radius
 
+	@cached_property
 	def area(self) -> float:
 		''' Archimedes. '''
 
@@ -328,10 +319,21 @@ class Polygon(Shape):
 	N: int								# number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
 
+	@cached_property
 	def area(self) -> float:
 		'''
 		An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
 		calculate the area of a polygon.
+		'''
+	
+	@cached_property
+	def convex(self) -> bool:
+		'''
+		Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
+		each vertex:
+			[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)].
+		See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
+		clockwise or counter-clockwise'.
 		'''
 
 class Shape(ABC):
@@ -340,6 +342,7 @@ class Shape(ABC):
 	'''
 	
 	@abstractmethod
+	@cached_property
 	def area(self) -> float:
 		pass
 ```

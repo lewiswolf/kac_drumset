@@ -2,9 +2,6 @@
 Import functions from external C++ library, housed in geometry/polygon_properties.hpp.
 '''
 
-# core
-from typing import Optional
-
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
@@ -14,7 +11,6 @@ from .types import Polygon
 from ..externals._geometry import (
 	_centroid,
 	_isColinear,
-	_isConvex,
 	_isPointInsideConvexPolygon,
 	_largestVector,
 )
@@ -22,21 +18,18 @@ from ..externals._geometry import (
 __all__ = [
 	'centroid',
 	'isColinear',
-	'isConvex',
 	'isPointInsidePolygon',
 	'largestVector',
 ]
 
 
-def centroid(P: Polygon, area: Optional[float] = None) -> tuple[float, float]:
+def centroid(P: Polygon) -> tuple[float, float]:
 	'''
 	This algorithm is used to calculate the geometric centroid of a 2D polygon.
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
 	'''
 
-	if area is None:
-		area = P.area()
-	c = _centroid(P.vertices.tolist(), area)
+	c = _centroid(P.vertices.tolist(), P.area)
 	return (c[0], c[1])
 
 
@@ -52,23 +45,11 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	return _isColinear(vertices.tolist())
 
 
-def isConvex(P: Polygon) -> bool:
-	'''
-	Function wrapper for _isConvex(), converting (P: Polygon): bool into (v: List[[float, float]]): bool.
-	Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
-	each vertex:
-		[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)].
-	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
-	clockwise or counter-clockwise'.
-	'''
-	return _isConvex(P.vertices.tolist())
-
-
 def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	'''
 	Determines whether or not a cartesian point is within a polygon, including boundaries.
 	'''
-	assert isConvex(P), 'isPointInsidePolygon() does not currently support concave shapes.'
+	assert P.convex, 'isPointInsidePolygon() does not currently support concave shapes.'
 	return _isPointInsideConvexPolygon(list(p), P.vertices.tolist())
 
 

@@ -10,7 +10,6 @@ from kac_drumset.geometry import (
 	booleanMask,
 	convexNormalisation,
 	isColinear,
-	isConvex,
 	isPointInsidePolygon,
 	largestVector,
 	RandomPolygon,
@@ -57,7 +56,7 @@ class GeometryTests(TestCase):
 			self.assertEqual(len(square.vertices), square.N)
 
 			# This test asserts that isConvex() works for any closed arrangement of vertices.
-			self.assertTrue(isConvex(square))
+			self.assertTrue(square.convex)
 
 			# This test asserts that convexNormalisation produces the correct output.
 			self.assertFalse(False in np.equal(
@@ -112,7 +111,7 @@ class GeometryTests(TestCase):
 			# places. This comparison is bounded due to the area() being 64-bit, whilst the comparison function,
 			# cv2.contourArea(), is 32-bit.
 			self.assertAlmostEqual(
-				polygon.area(),
+				polygon.area,
 				cv2.contourArea(polygon.vertices.astype('float32')),
 				places=7,
 			)
@@ -128,14 +127,15 @@ class GeometryTests(TestCase):
 			if polygon.convex:
 				# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
 				# can assume that the generateConvexPolygon() function works as intended.
-				self.assertTrue(isConvex(polygon))
+				self.assertTrue(polygon.convex)
 
 				# This test asserts that the largest vector lies across the x-axis.
 				self.assertTrue(polygon.vertices[LV[1][0]][0] == 0.)
 				self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
 
 				# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
-				mask = booleanMask(polygon, 100, convex=polygon.convex)
+				isPointInsidePolygon(polygon.centroid, polygon)
+				mask = booleanMask(polygon, 100)
 				self.assertEqual(mask[
 					round(polygon.centroid[0] * 100),
 					round(polygon.centroid[1] * 100),

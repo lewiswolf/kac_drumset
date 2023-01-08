@@ -55,15 +55,15 @@ def GeometryExample() -> None:
 
 	# Define a circle
 	circle = G.Circle()
-	print(f'\nA circle with radius {circle.r} has an area of {circle.area()}.\n')
+	print(f'\nA circle with radius {circle.r} has an area of {circle.area}.\n')
 
 	# Define a square.
 	square = G.Polygon(np.array([[0., 0.], [0., 1.], [1., 1.], [1., 0.]]))
 	print(f'This is a square: \n \n {square.vertices} \n')
 	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
-	assert square.area() == 1.
-	print(f'Its area is {square.area()}.')
+	assert square.area == 1.
+	print(f'Its area is {square.area}.')
 	# A square does not contain any sides...
 	assert not G.isColinear(square.vertices[0: 3])
 	# whereas a straight line does.
@@ -75,9 +75,9 @@ def GeometryExample() -> None:
 	polygon.vertices = G.convexNormalisation(polygon)
 	print(f'\nThis is a {polygon.N} sided polygon: \n \n {polygon.vertices} \n')
 	# Assess its area.
-	print(f"Its area is {polygon.area()}.")
+	print(f"Its area is {polygon.area}.")
 	# Compute its convexity.
-	print(f'It is {G.isConvex(polygon)} that this polygon is convex.')
+	print(f'It is {polygon.convex} that this polygon is convex.')
 	# Compute the geometric centroid.
 	print(f"This polygon's centroid is at {G.centroid(polygon)}.")
 	# Determine if an arbitrary point is within the polygon.

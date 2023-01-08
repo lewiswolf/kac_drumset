@@ -10,7 +10,7 @@ from ._generate_polygon import generateConvexPolygon
 from ._morphisms import convexNormalisation
 from .generate_polygon import generateConcavePolygon
 from .morphisms import concaveNormalisation
-from ._polygon_properties import centroid, isConvex
+from ._polygon_properties import centroid
 from .types import Polygon
 
 __all__ = [
@@ -38,13 +38,11 @@ class RandomPolygon(Polygon):
 		# generate random polygon
 		if not allow_concave or random.getrandbits(1):
 			super().__init__(generateConvexPolygon(random.randint(3, max_vertices)))
-			self.convex = True
 		else:
 			super().__init__(generateConcavePolygon(random.randint(3, max_vertices)))
-			self.convex = isConvex(self)
 
 		# normalise
 		self.vertices = convexNormalisation(self) if self.convex else concaveNormalisation(self)
 
 		# calculate other properties
-		self.centroid = centroid(self, self.area())
+		self.centroid = centroid(self)
