@@ -23,7 +23,7 @@ class GeometryTests(TestCase):
 	Tests used in conjunction with `/geometry`.
 	'''
 
-	def test_polygon(self) -> None:
+	def test_convex_polygon(self) -> None:
 		'''
 		Test properties of the type Polygon.
 		'''
@@ -33,7 +33,7 @@ class GeometryTests(TestCase):
 			Polygon(np.array([[0., 0.], [0., 1.], [1., 1.], [1., 0.]])),
 		]
 
-		def lambda_isInsideOfPolygon(P: Polygon) -> None:
+		def lambdaTest_isPointInsidePolygon(P: Polygon) -> None:
 			for p in P.vertices:
 				self.assertTrue(isPointInsidePolygon(p, P))
 			for n in range(P.N):
@@ -43,8 +43,7 @@ class GeometryTests(TestCase):
 
 		for square in squares:
 			# This test asserts that isPointInsidePolygon works as expected
-			lambda_isInsideOfPolygon(square)
-			# test line crossings
+			lambdaTest_isPointInsidePolygon(square)
 			self.assertTrue(isPointInsidePolygon((0.999, 0.5), square))
 			self.assertFalse(isPointInsidePolygon((1.001, 0.5), square))
 			self.assertTrue(isPointInsidePolygon((0.5, 0.999), square))
@@ -81,7 +80,7 @@ class GeometryTests(TestCase):
 
 		# This test asserts that isPointInsidePolygon works as expected
 		for quad in quads:
-			lambda_isInsideOfPolygon(square)
+			lambdaTest_isPointInsidePolygon(square)
 		# This test asserts that after convexNormalisation, the quads produce the same output.
 		for quad in quads:
 			quad.vertices = convexNormalisation(quad)

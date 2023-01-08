@@ -15,7 +15,7 @@ from ..externals._geometry import (
 	_centroid,
 	_isColinear,
 	_isConvex,
-	_isPointInsidePolygon,
+	_isPointInsideConvexPolygon,
 	_largestVector,
 )
 
@@ -68,7 +68,8 @@ def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	'''
 	Determines whether or not a cartesian point is within a polygon, including boundaries.
 	'''
-	return _isPointInsidePolygon(list(p), P.vertices.tolist())
+	assert isConvex(P), 'isPointInsidePolygon() does not currently support concave shapes.'
+	return _isPointInsideConvexPolygon(list(p), P.vertices.tolist())
 
 
 def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]:
