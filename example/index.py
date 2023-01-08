@@ -64,7 +64,7 @@ def GeometryExample() -> None:
 	# Assess its area.
 	print(f'Its area is {square.area}.')
 	print(
-		f'A square {"does" if G.isColinear(square.vertices[0: 3]) else "does not"} contain any points that are colinear.'
+		f'A square {"does" if G.isColinear(square.vertices[0: 3]) else "does not"} contain any points that are colinear.',
 	)
 	print(
 		'The points [[0., 0.], [1., 1.], [2., 2.]], however,',
