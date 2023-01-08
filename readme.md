@@ -60,7 +60,6 @@ def generateDataset(
 	are saved in the directory specified by the absolute filepath dataset_dir.
 	'''
 
-
 def loadDataset(dataset_dir: str) -> TorchDataset:
 	'''
 	loadDataset imports a kac_drumset dataset from the directory specified by the absolute path dataset_dir.
@@ -110,7 +109,6 @@ class AudioSampler(ABC):
 		This is an abstract TypedDict used to mirror the type declaration for the customised __init__() method. This allows
 		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
 		'''
-	
 
 class InputRepresentation():
 	'''
@@ -161,14 +159,12 @@ class RepresentationSettings(TypedDict, total=False):
 	]
 	window_length: int		# window length in samples
 
-
 class SamplerInfo(TypedDict, total=True):
 	'''
 	Information about the sampler used to generate a specific dataset.
 	'''
 	name: str		# name of the sampler
 	version: str	# version of kac_drumset when the sampler was generated
-
 
 class SamplerSettings(TypedDict, total=True):
 	'''
@@ -177,7 +173,6 @@ class SamplerSettings(TypedDict, total=True):
 	'''
 	duration: float		# duration of the audio file (seconds)
 	sample_rate: int	# sample rate
-
 
 class TorchDataset(torch.utils.data.Dataset):
 	''' PyTorch wrapper for a dataset. '''
@@ -557,7 +552,6 @@ class BesselModel(AudioSampler):
 		decay_time: float			# how long will the simulation take to decay? (seconds)
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		tension: float				# tension at rest (N/m)	'''
-
 
 class FDTDModel(AudioSampler):
 	'''
