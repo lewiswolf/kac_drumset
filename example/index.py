@@ -62,13 +62,12 @@ def GeometryExample() -> None:
 	print(f'This is a square: \n \n {square.vertices} \n')
 	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
-	assert square.area == 1.
 	print(f'Its area is {square.area}.')
-	# A square does not contain any sides...
-	assert not G.isColinear(square.vertices[0: 3])
-	# whereas a straight line does.
-	assert G.isColinear(np.array([[0., 0.], [1., 1.], [2., 2.]]))
-
+	print(f'A square {"does" if G.isColinear(square.vertices[0: 3]) else "does not"} contain any sides that are colinear.')
+	print(
+		'The points [[0., 0.], [1., 1.], [2., 2.]], however,',
+		f'{"are" if G.isColinear(np.array([[0., 0.], [1., 1.], [2., 2.]])) else "are not"} colinear.',
+	)
 	# Define a 5 sided convex polygon.
 	polygon = G.Polygon(G.generateConvexPolygon(5))
 	# Normalise the polygon to the unit interval, and remove isometric and similarity transformations.
