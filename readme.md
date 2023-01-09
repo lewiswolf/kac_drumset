@@ -564,6 +564,7 @@ class FDTDModel(AudioSampler):
 		drum_size: float			# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		max_vertices: int			# maximum amount of vertices for a given drum
+		strike_width: float			# width of the drum strike (m)
 		tension: float				# tension at rest (N/m)
 
 class PoissonModel(AudioSampler):
