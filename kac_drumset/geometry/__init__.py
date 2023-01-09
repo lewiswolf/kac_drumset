@@ -3,7 +3,7 @@ from ._morphisms import convexNormalisation
 from ._polygon_properties import (
 	centroid,
 	isColinear,
-	isConvex,
+	isPointInsidePolygon,
 	largestVector,
 )
 from .generate_polygon import generateConcavePolygon
@@ -19,7 +19,7 @@ __all__ = [
 	'convexNormalisation',
 	'generateConvexPolygon',
 	'isColinear',
-	'isConvex',
+	'isPointInsidePolygon',
 	'largestVector',
 	# methods
 	'booleanMask',

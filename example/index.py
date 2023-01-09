@@ -30,8 +30,15 @@ def DatasetExample() -> None:
 		dataset_size=10,
 		representation_settings=representation_settings,
 		sampler_settings=FDTDModel.Settings({
+			'amplitude': 1.,
+			'decay_time': 2.,
+			'drum_size': 0.3,
 			'duration': 1.,
+			'material_density': 0.2,
+			'max_vertices': 10,
 			'sample_rate': 48000,
+			'strike_width': 0.01,
+			'tension': 2000.,
 		}),
 	)
 	# Datasets can be loaded using the method below, which takes only the dataset directory as its argument.
@@ -55,50 +62,41 @@ def GeometryExample() -> None:
 
 	# Define a circle
 	circle = G.Circle()
-	print(f'\nA circle with radius {circle.r} has an area of {circle.area()}.\n')
+	print(f'\nA circle with radius {circle.r} has an area of {circle.area}.\n')
 
 	# Define a square.
-	square = G.Polygon(np.array([
-		[0., 0.],
-		[0., 1.],
-		[1., 1.],
-		[1., 0.],
-	]))
+	square = G.Polygon(np.array([[0., 0.], [0., 1.], [1., 1.], [1., 0.]]))
 	print(f'This is a square: \n \n {square.vertices} \n')
 	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
-	assert square.area() == 1.
-	print(f'Its area is {square.area()}.')
-	# A square does not contain any sides...
-	assert not G.isColinear(square.vertices[0: 3])
-	# whereas a straight line does.
-	assert G.isColinear(np.array([
-		[0., 0.],
-		[1., 1.],
-		[2., 2.],
-	]))
-
+	print(f'Its area is {square.area}.')
+	print(
+		f'A square {"does" if G.isColinear(square.vertices[0: 3]) else "does not"} contain any points that are colinear.',
+	)
+	print(
+		'The points [[0., 0.], [1., 1.], [2., 2.]], however,',
+		f'{"are" if G.isColinear(np.array([[0., 0.], [1., 1.], [2., 2.]])) else "are not"} colinear.',
+	)
 	# Define a 5 sided convex polygon.
 	polygon = G.Polygon(G.generateConvexPolygon(5))
 	# Normalise the polygon to the unit interval, and remove isometric and similarity transformations.
 	polygon.vertices = G.convexNormalisation(polygon)
 	print(f'\nThis is a {polygon.N} sided polygon: \n \n {polygon.vertices} \n')
 	# Assess its area.
-	print(f"Its area is {polygon.area()}.")
+	print(f"Its area is {polygon.area}.")
 	# Compute its convexity.
-	print(f'It is {G.isConvex(polygon)} that this polygon is convex.')
+	print(f'It is {polygon.convex} that this polygon is convex.')
 	# Compute the geometric centroid.
-	print(f"The polygon's centroid is at {G.centroid(polygon)}.")
+	print(f"This polygon's centroid is at {G.centroid(polygon)}.")
+	# Determine if an arbitrary point is within the polygon.
+	print(f'It is {G.isPointInsidePolygon((0.5, 0.5), polygon)} that the point (0.5, 0.5) is inside of this polygon.')
 	# Compute its largest vector pair.
-	print(f"The length of the polygon's largest vector is {G.largestVector(polygon)[0]}.")
+	print(f"The length of this polygon's largest vector is {G.largestVector(polygon)[0]}.")
 	c = G.largestVector(polygon)[1]
-	points = [
-		polygon.vertices[c[0], 0],
-		polygon.vertices[c[0], 1],
-		polygon.vertices[c[1], 0],
-		polygon.vertices[c[1], 1],
-	]
-	print(f"And spans the coordinates (({points[0]}, {points[1]}), ({points[2]}, {points[3]})).")
+	print(
+		f'And spans the coordinates [({polygon.vertices[c[0], 0]}, {polygon.vertices[c[0], 1]}),',
+		f'({polygon.vertices[c[1], 0]}, {polygon.vertices[c[1], 1]})].',
+	)
 
 	# Given two shapes, determine whether they may be isospectral using Weyl's asymptotic law.
 	print(

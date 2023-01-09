@@ -4,13 +4,14 @@ This file contains the fixed geometric types used as part of this package.
 
 # core
 from abc import ABC, abstractmethod
+from functools import cached_property
 
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
-from ..externals._geometry import _polygonArea
+from ..externals._geometry import _isConvex, _polygonArea
 
 __all__ = [
 	'Circle',
@@ -28,6 +29,7 @@ class Shape(ABC):
 		pass
 
 	@abstractmethod
+	@cached_property
 	def area(self) -> float:
 		pass
 
@@ -42,6 +44,7 @@ class Circle(Shape):
 	def __init__(self, r: float = 1.) -> None:
 		self.r = r
 
+	@cached_property
 	def area(self) -> float:
 		''' Archimedes. '''
 		return np.pi * (self.r ** 2.)
@@ -61,9 +64,21 @@ class Polygon(Shape):
 		self.vertices = vertices
 		self.N = vertices.shape[0]
 
+	@cached_property
 	def area(self) -> float:
 		'''
 		An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
 		calculate the area of a polygon.
 		'''
 		return _polygonArea(self.vertices.tolist())
+
+	@cached_property
+	def convex(self) -> bool:
+		'''
+		Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
+		each vertex:
+			[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)].
+		See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
+		clockwise or counter-clockwise'.
+		'''
+		return _isConvex(self.vertices.tolist())

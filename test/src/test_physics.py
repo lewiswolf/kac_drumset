@@ -31,7 +31,7 @@ class PhysicsTests(TestCase):
 		for r in [1., -1.]:
 			for theta in [0., np.pi / 2, np.pi, np.pi * 2]:
 				self.assertAlmostEqual(
-					float(np.max(calculateCircularAmplitudes(r, theta, series))),
+					float(calculateCircularAmplitudes(r, theta, series).max()),
 					0.,
 					places=15,
 				)
@@ -57,8 +57,8 @@ class PhysicsTests(TestCase):
 			# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 			# simulation.
 			self.assertFalse(np.isnan(u).any())
-			self.assertLessEqual(np.max(u), 1.)
-			self.assertGreaterEqual(np.min(u), -1.)
+			self.assertLessEqual(u.max(), 1.)
+			self.assertGreaterEqual(u.min(), -1.)
 
 		# Test waveform generator with a square simulation
 		waveform = FDTDWaveform2D(u_0=u_0, u_1=u_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=10, w=(4, 4))
@@ -66,8 +66,8 @@ class PhysicsTests(TestCase):
 		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 		# simulation.
 		self.assertFalse(np.isnan(waveform).any())
-		self.assertLessEqual(np.max(waveform), 1.)
-		self.assertGreaterEqual(np.min(waveform), -1.)
+		self.assertLessEqual(waveform.max(), 1.)
+		self.assertGreaterEqual(waveform.min(), -1.)
 
 	def test_poisson(self) -> None:
 		'''
@@ -79,22 +79,22 @@ class PhysicsTests(TestCase):
 			e_root = e ** 0.5
 			e_inv = 1 / (e ** 0.5)
 			self.assertAlmostEqual(
-				float(np.max(calculateRectangularAmplitudes((0., 0.), 10, 10, e))),
+				float(calculateRectangularAmplitudes((0., 0.), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
 			self.assertAlmostEqual(
-				float(np.max(calculateRectangularAmplitudes((e_root, 0.), 10, 10, e))),
+				float(calculateRectangularAmplitudes((e_root, 0.), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
 			self.assertAlmostEqual(
-				float(np.max(calculateRectangularAmplitudes((0., e_inv), 10, 10, e))),
+				float(calculateRectangularAmplitudes((0., e_inv), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
 			self.assertAlmostEqual(
-				float(np.max(calculateRectangularAmplitudes((e_root, e_inv), 10, 10, e))),
+				float(calculateRectangularAmplitudes((e_root, e_inv), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
@@ -105,27 +105,27 @@ class PhysicsTests(TestCase):
 		'''
 
 		# This test asserts that the one dimensional raised cosine has the correct peaks.
-		rc = raisedCosine((100, ), (50, ), sigma=10)
+		rc = raisedCosine((100, ), (50., ), sigma=10)
 		self.assertEqual(rc[50], 1.)
-		self.assertEqual(np.max(rc), 1.)
-		self.assertEqual(np.min(rc), 0.)
+		self.assertEqual(rc.max(), 1.)
+		self.assertEqual(rc.min(), 0.)
 		self.assertGreater(rc[49], 0.)
 		self.assertGreater(rc[51], 0.)
 
 		# This test asserts that the two dimensional raised cosine has the correct peaks.
-		rc = raisedCosine((100, 100), (50, 50), sigma=10)
+		rc = raisedCosine((100, 100), (50., 50.), sigma=10)
 		self.assertEqual(rc[50, 50], 1.)
-		self.assertEqual(np.max(rc), 1.)
-		self.assertEqual(np.min(rc), 0.)
+		self.assertEqual(rc.max(), 1.)
+		self.assertEqual(rc.min(), 0.)
 		self.assertGreater(rc[49, 50], 0.)
 		self.assertGreater(rc[51, 50], 0.)
 		self.assertGreater(rc[50, 49], 0.)
 		self.assertGreater(rc[50, 51], 0.)
 
 		# This test asserts that the one dimensional triangular distribution has the correct peaks.
-		t = raisedTriangle(100, 50, 30, 70)
+		t = raisedTriangle(100, 50., 30., 70.)
 		self.assertEqual(t[50], 1.)
-		self.assertEqual(np.max(t), 1.)
-		self.assertEqual(np.min(t), 0.)
+		self.assertEqual(t.max(), 1.)
+		self.assertEqual(t.min(), 0.)
 		self.assertGreater(t[49], 0.)
 		self.assertGreater(t[51], 0.)

@@ -3,7 +3,6 @@ This sampler is used to produce a linear model of a circular membrane.
 '''
 
 # core
-import random
 from typing import Union
 
 # dependencies
@@ -90,19 +89,19 @@ class BesselModel(AudioSampler):
 		'''
 
 		# 2016 - Chaigne & Kergomard, p.154
+		A = self.a * np.abs(calculateCircularAmplitudes(*self.strike, self.series)).flatten()
 		omega = (self.gamma * self.series).flatten() # eigenfrequencies
 		omega *= 2 * np.pi * self.k # rate of phase
-		A = self.a * np.abs(calculateCircularAmplitudes(*self.strike, self.series)).flatten()
 		for i in range(self.length):
 			# 2009 - Bilbao , pp.65-66
-			self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * np.max(A))
+			self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * A.max())
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		'''
 		Return the labels of the bessel model.
 		'''
 
-		return {'drum_size': [self.L], 'strike_location': [self.strike[0], self.strike[1]]} if hasattr(self, 'L') else {}
+		return {'drum_size': [self.L], 'strike_location': [*self.strike]} if hasattr(self, 'L') else {}
 
 	def updateProperties(self, i: Union[int, None] = None) -> None:
 		'''
@@ -112,12 +111,9 @@ class BesselModel(AudioSampler):
 
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
-			self.L = random.uniform(0.1, 2.)
+			self.L = np.random.uniform(0.1, 2.)
 			self.gamma = self.c / self.L
 			self.strike = (0., 0.)
 		else:
 			# otherwise update the strike location to be a random location.
-			self.strike = (
-				random.uniform(-1., 1.),
-				random.uniform(0., np.pi),
-			)
+			self.strike = (np.random.uniform(-1., 1.), np.random.uniform(0., np.pi))

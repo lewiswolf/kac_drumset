@@ -60,7 +60,6 @@ def generateDataset(
 	are saved in the directory specified by the absolute filepath dataset_dir.
 	'''
 
-
 def loadDataset(dataset_dir: str) -> TorchDataset:
 	'''
 	loadDataset imports a kac_drumset dataset from the directory specified by the absolute path dataset_dir.
@@ -110,7 +109,6 @@ class AudioSampler(ABC):
 		This is an abstract TypedDict used to mirror the type declaration for the customised __init__() method. This allows
 		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
 		'''
-	
 
 class InputRepresentation():
 	'''
@@ -161,14 +159,12 @@ class RepresentationSettings(TypedDict, total=False):
 	]
 	window_length: int		# window length in samples
 
-
 class SamplerInfo(TypedDict, total=True):
 	'''
 	Information about the sampler used to generate a specific dataset.
 	'''
 	name: str		# name of the sampler
 	version: str	# version of kac_drumset when the sampler was generated
-
 
 class SamplerSettings(TypedDict, total=True):
 	'''
@@ -177,7 +173,6 @@ class SamplerSettings(TypedDict, total=True):
 	'''
 	duration: float		# duration of the audio file (seconds)
 	sample_rate: int	# sample rate
-
 
 class TorchDataset(torch.utils.data.Dataset):
 	''' PyTorch wrapper for a dataset. '''
@@ -205,33 +200,33 @@ class TorchDataset(torch.utils.data.Dataset):
 ```python
 from kac_drumset.geometry import (
 	# Methods
-	'booleanMask',
-	'centroid',
-	'convexNormalisation',
-	'generateConvexPolygon',
-	'isColinear',
-	'isConvex',
-	'largestVector',
-	'weylCondition'
+	booleanMask,
+	centroid,
+	convexNormalisation,
+	generateConvexPolygon,
+	isColinear,
+	isPointInsidePolygon,
+	largestVector,
+	weylCondition
 	# Classes
-	'RandomPolygon',
+	RandomPolygon,
 	# Types
-	'Circle',
-	'Polygon',
-	'Shape',
+	Circle,
+	Polygon,
+	Shape,
 )
 ```
 
 ### Methods
 
 ```python
-def booleanMask(P: Polygon, grid_size: int, convex: Optional[bool] = None) -> npt.NDArray[np.int8]:
+def booleanMask(P: Polygon, grid_size: int) -> npt.NDArray[np.int8]:
 	'''
 	This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
 	exist within a domain R^G where G ∈ [0, 1].
 	'''
 
-def centroid(P: Polygon, area: Optional[float] = None) -> tuple[float, float]:
+def centroid(P: Polygon) -> tuple[float, float]:
 	'''
 	This algorithm is used to calculate the geometric centroid of a 2D polygon. 
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
@@ -258,13 +253,9 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	Determines whether or not a given set of three vertices are colinear.
 	'''
 
-def isConvex(P: Polygon) -> bool:
+def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	'''
-	Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
-	each vertex:
-		[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)].
-	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
-	clockwise or counter-clockwise'.
+	Determines whether or not a cartesian pair is within a polygon, including boundaries.
 	'''
 
 def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]):
@@ -311,6 +302,7 @@ class Circle(Shape):
 
 	r: float 							# radius
 
+	@cached_property
 	def area(self) -> float:
 		''' Archimedes. '''
 
@@ -322,10 +314,21 @@ class Polygon(Shape):
 	N: int								# number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
 
+	@cached_property
 	def area(self) -> float:
 		'''
 		An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
 		calculate the area of a polygon.
+		'''
+	
+	@cached_property
+	def convex(self) -> bool:
+		'''
+		Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
+		each vertex:
+			[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)].
+		See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
+		clockwise or counter-clockwise'.
 		'''
 
 class Shape(ABC):
@@ -334,6 +337,7 @@ class Shape(ABC):
 	'''
 	
 	@abstractmethod
+	@cached_property
 	def area(self) -> float:
 		pass
 ```
@@ -457,7 +461,7 @@ def FDTDWaveform2D(
 
 def raisedCosine(
 	matrix_size: tuple[int, ...],
-	mu: tuple[int, ...],
+	mu: tuple[float, ...],
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
@@ -468,7 +472,7 @@ def raisedCosine(
 		σ = The radius of the distribution.
 	'''
 
-def raisedTriangle(matrix_size: int, mu: int, a: int, b: int) -> npt.NDArray[np.float64]:
+def raisedTriangle(matrix_size: int, mu: float, a: float, b: float) -> npt.NDArray[np.float64]:
 	'''
 	Create a triangular distribution centred at mu. Only 1D distributions are supported.
 	input:
@@ -549,7 +553,6 @@ class BesselModel(AudioSampler):
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		tension: float				# tension at rest (N/m)	'''
 
-
 class FDTDModel(AudioSampler):
 	'''
 	This class creates a 2D simulation of an arbitrarily shaped drum, calculated using a FDTD scheme.
@@ -561,6 +564,7 @@ class FDTDModel(AudioSampler):
 		drum_size: float			# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		max_vertices: int			# maximum amount of vertices for a given drum
+		strike_width: float			# width of the drum strike (m)
 		tension: float				# tension at rest (N/m)
 
 class PoissonModel(AudioSampler):
