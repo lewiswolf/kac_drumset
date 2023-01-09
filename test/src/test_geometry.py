@@ -27,22 +27,35 @@ class GeometryTests(TestCase):
 		Test properties of the type Polygon.
 		'''
 
+		# Two squares ordered clockwise and counter-clockwise respectively.
 		squares = [
 			Polygon(np.array([[0., 0.], [1., 0.], [1., 1.], [0., 1.]])),
 			Polygon(np.array([[0., 0.], [0., 1.], [1., 1.], [1., 0.]])),
 		]
+		# The first two quads have opposite vertex order.
+		# The second two quads have their x and y coordinates swapped.
+		quads = [
+			Polygon(np.array([[0, 0], [1.1, 0], [1, 1], [0, 1]])),
+			Polygon(np.array([[0, 0], [0, 1], [1, 1], [1.1, 0]])),
+			Polygon(np.array([[0, 0], [0, 1.1], [1, 1], [1, 0]])),
+			Polygon(np.array([[0, 0], [1, 0], [1, 1], [0, 1.1]])),
+		]
 
-		def lambdaTest_isPointInsidePolygon(P: Polygon) -> None:
-			for p in P.vertices:
-				self.assertTrue(isPointInsidePolygon(p, P))
-			for n in range(P.N):
-				a = P.vertices[n]
-				b = P.vertices[(n + 1) % P.N]
-				self.assertTrue(isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), P))
-
+		# This test asserts that isPointInsidePolygon works as expected
+		for quad in quads:
+			for p in quad.vertices:
+				self.assertTrue(isPointInsidePolygon(p, quad))
+			for n in range(quad.N):
+				a = quad.vertices[n]
+				b = quad.vertices[(n + 1) % quad.N]
+				self.assertTrue(isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), quad))
 		for square in squares:
-			# This test asserts that isPointInsidePolygon works as expected
-			lambdaTest_isPointInsidePolygon(square)
+			for p in square.vertices:
+				self.assertTrue(isPointInsidePolygon(p, square))
+			for n in range(square.N):
+				a = square.vertices[n]
+				b = square.vertices[(n + 1) % square.N]
+				self.assertTrue(isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), square))
 			self.assertTrue(isPointInsidePolygon((0.999, 0.5), square))
 			self.assertFalse(isPointInsidePolygon((1.001, 0.5), square))
 			self.assertTrue(isPointInsidePolygon((0.5, 0.999), square))
@@ -63,23 +76,8 @@ class GeometryTests(TestCase):
 				convexNormalisation(square),
 				np.array([[0., 0.5], [0.5, 1.], [1., 0.5], [0.5, 0.]]),
 			))
-
 		# This test asserts that after convexNormalisation, the two squares produce the same output.
-		# The two squares have opposite vertex order.
 		self.assertFalse(False in np.equal(convexNormalisation(squares[0]), convexNormalisation(squares[1])))
-
-		# The first two quads have opposite vertex order.
-		# The second two quads have their x and y coordinates swapped.
-		quads = [
-			Polygon(np.array([[0, 0], [1.1, 0], [1, 1], [0, 1]])),
-			Polygon(np.array([[0, 0], [0, 1], [1, 1], [1.1, 0]])),
-			Polygon(np.array([[0, 0], [0, 1.1], [1, 1], [1, 0]])),
-			Polygon(np.array([[0, 0], [1, 0], [1, 1], [0, 1.1]])),
-		]
-
-		# This test asserts that isPointInsidePolygon works as expected
-		for quad in quads:
-			lambdaTest_isPointInsidePolygon(square)
 		# This test asserts that after convexNormalisation, the quads produce the same output.
 		for quad in quads:
 			quad.vertices = convexNormalisation(quad)
@@ -117,11 +115,11 @@ class GeometryTests(TestCase):
 			)
 
 			# This test asserts that no 3 adjacent vertices are colinear.
-			for j in range(polygon.N):
+			for n in range(polygon.N):
 				self.assertFalse(isColinear(np.array([
-					polygon.vertices[j - 1 if j > 0 else polygon.N - 1],
-					polygon.vertices[j],
-					polygon.vertices[(j + 1) % polygon.N],
+					polygon.vertices[n - 1 if n > 0 else polygon.N - 1],
+					polygon.vertices[n],
+					polygon.vertices[(n + 1) % polygon.N],
 				])))
 
 			if polygon.convex:
@@ -135,10 +133,9 @@ class GeometryTests(TestCase):
 
 				# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
 				isPointInsidePolygon(polygon.centroid, polygon)
-				mask = booleanMask(polygon, 100)
-				self.assertEqual(mask[
-					round(polygon.centroid[0] * 100),
-					round(polygon.centroid[1] * 100),
+				self.assertEqual(booleanMask(polygon, 100)[
+					round(polygon.centroid[0] * 99),
+					round(polygon.centroid[1] * 99),
 				], 1)
 
 				# This test asserts that convexNormalisation does not continuously alter the polygon.

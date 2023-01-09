@@ -15,6 +15,7 @@ from kac_drumset import (
 	SamplerSettings,
 )
 from kac_drumset.dataset.utils import classLocalsToKwargs
+from kac_drumset.geometry import isPointInsidePolygon
 from kac_drumset.utils import clearDirectory
 
 
@@ -142,11 +143,14 @@ class SamplerTests(TestCase):
 						material_density=material_density[j],
 						tension=tension[k],
 					)
-					# This test asserts that a boolean mask was properly defined after updating the model's properties.
+					# This test asserts that a boolean mask was properly defined after updating the model's properties, and that the
+					# centroid strike and listening location is always within the drum.
 					model.updateProperties()
-					self.assertEqual(model.B[model.strike], 1.)
-
-					model.generateWaveform()
+					self.assertTrue(isPointInsidePolygon(model.strike, model.shape))
+					self.assertEqual(model.B[
+						round(model.shape.centroid[0] * (model.H - 1)),
+						round(model.shape.centroid[1] * (model.H - 1)),
+					], 1)
 
 					# This test asserts that The Courant number λ = γk/h, which is used to confirm that the
 					# CFL stability criterion is upheld. If λ > 1 / (dimensionality)^0.5, the resultant
@@ -156,6 +160,7 @@ class SamplerTests(TestCase):
 					# This test asserts that the conservation law of energy is upheld. This is here naively
 					# tested, using the waveform itself, but should also be confirmed by comparing expected
 					# bounds on the Hamiltonian energy throughout the simulation.
+					model.generateWaveform()
 					self.assertFalse(np.isnan(model.waveform).any())
 					self.assertLessEqual(np.max(model.waveform), 1.)
 					self.assertGreaterEqual(np.min(model.waveform), -1.)
