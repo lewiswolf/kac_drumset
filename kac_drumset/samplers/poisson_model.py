@@ -99,7 +99,7 @@ class PoissonModel(AudioSampler):
 			omega *= 2 * np.pi * self.k # rate of phase
 			for i in range(self.length):
 				# 2009 - Bilbao , pp.65-66
-				self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * np.max(A))
+				self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * A.max())
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		'''

@@ -162,8 +162,8 @@ class SamplerTests(TestCase):
 					# bounds on the Hamiltonian energy throughout the simulation.
 					model.generateWaveform()
 					self.assertFalse(np.isnan(model.waveform).any())
-					self.assertLessEqual(np.max(model.waveform), 1.)
-					self.assertGreaterEqual(np.min(model.waveform), -1.)
+					self.assertLessEqual(model.waveform.max(), 1.)
+					self.assertGreaterEqual(model.waveform.min(), -1.)
 
 	def test_poisson(self) -> None:
 		'''

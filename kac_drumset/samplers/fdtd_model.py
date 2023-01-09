@@ -76,7 +76,7 @@ class FDTDModel(AudioSampler):
 		drum_size: float = 0.3,
 		material_density: float = 0.2,
 		max_vertices: int = 10,
-		strike_width: float = 0.005,
+		strike_width: float = 0.01,
 		tension: float = 2000.,
 	) -> None:
 		'''
@@ -100,7 +100,7 @@ class FDTDModel(AudioSampler):
 		self.h = 1 / self.H
 		self.cfl = self.gamma * self.k / self.h
 		self.sigma = self.H * strike_width / self.L
-		self.sigma_2 = self.sigma ** 2.
+		self.sigma_2 = max(self.sigma ** 2., 1.)
 		# FDTD update coefficients
 		log_decay = self.k * 6 * np.log(10) / self.d_60
 		self.c_0 = (self.cfl ** 2) / (1 + log_decay)

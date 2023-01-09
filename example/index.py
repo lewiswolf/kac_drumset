@@ -37,7 +37,7 @@ def DatasetExample() -> None:
 			'material_density': 0.2,
 			'max_vertices': 10,
 			'sample_rate': 48000,
-			'strike_width': 0.005,
+			'strike_width': 0.01,
 			'tension': 2000.,
 		}),
 	)
