@@ -30,8 +30,15 @@ def DatasetExample() -> None:
 		dataset_size=10,
 		representation_settings=representation_settings,
 		sampler_settings=FDTDModel.Settings({
+			'amplitude': 1.,
+			'decay_time': 2.,
+			'drum_size': 0.3,
 			'duration': 1.,
+			'material_density': 0.2,
+			'max_vertices': 10,
 			'sample_rate': 48000,
+			'strike_width': 0.005,
+			'tension': 2000.,
 		}),
 	)
 	# Datasets can be loaded using the method below, which takes only the dataset directory as its argument.
