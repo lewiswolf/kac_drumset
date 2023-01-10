@@ -661,7 +661,7 @@ class TestTone(AudioSampler):
 	'''
 
 	class Settings(SamplerSettings, total=False):
-		f_0: float										# fundamental frequency (hz)
+		f_0: float										# fixed fundamental frequency (hz)
 		waveshape: Literal['saw', 'sin', 'sqr', 'tri']	# shape of the waveform
 ```
 </details>

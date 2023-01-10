@@ -5,6 +5,7 @@ An AudioSampler() used for generating a random waveform.
 # core
 import random
 from typing import Literal, Union
+from typing_extensions import TypeAlias
 
 # dependencies
 import numpy as np 	# maths
@@ -18,22 +19,29 @@ __all__ = [
 ]
 
 
+Waveshape: TypeAlias = Literal['saw', 'sin', 'sqr', 'tri']
+
+
 class TestTone(AudioSampler):
 	'''
 	This class produces an arbitrary test tone, using either a sawtooth, sine, square or triangle waveform. If it's
 	initial frequency is not set, it will automatically create random frequencies.
 	'''
 
-	f_0: float										# fundamental frequency (hz)
-	__random_f_0: bool								# is the fundamental random or fixed?
-	waveshape: Literal['saw', 'sin', 'sqr', 'tri']	# shape of the waveform
+	f_0: float					# fundamental frequency (hz)
+	__random_f_0: bool			# is the fundamental random or fixed?
+	waveshape: Waveshape		# shape of the waveform
+
+	class Settings(SamplerSettings, total=False):
+		f_0: float				# fixed fundamental frequency
+		waveshape: Waveshape	# shape of the waveform
 
 	def __init__(
 		self,
 		duration: float,
 		sample_rate: int,
 		f_0: float = 0.,
-		waveshape: Literal['saw', 'sin', 'sqr', 'tri'] = 'sin',
+		waveshape: Waveshape = 'sin',
 	) -> None:
 		'''
 		Initialise a random waveform generator.
@@ -70,7 +78,3 @@ class TestTone(AudioSampler):
 		''' Randomise f_0. '''
 		if self.__random_f_0:
 			self.f_0 = random.uniform(110, 880)
-
-	class Settings(SamplerSettings, total=False):
-		f_0: float
-		waveshape: Literal['saw', 'sin', 'sqr', 'tri']
