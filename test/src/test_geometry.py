@@ -9,6 +9,7 @@ import numpy as np 			# maths
 from kac_drumset.geometry import (
 	booleanMask,
 	convexNormalisation,
+	generateConvexPolygon,
 	isColinear,
 	isPointInsidePolygon,
 	largestVector,
@@ -91,6 +92,10 @@ class GeometryTests(TestCase):
 		Stress test multiple properties of the class RandomPolygon.
 		'''
 
+		# This test asserts that generateConvexPolygon always produces a unique output.
+		for i in range(100):
+			self.assertFalse(np.all(np.equal(generateConvexPolygon(3), generateConvexPolygon(3))))
+
 		for i in range(10000):
 			polygon = RandomPolygon(20, allow_concave=True)
 			LV = largestVector(polygon)
@@ -99,8 +104,8 @@ class GeometryTests(TestCase):
 			self.assertEqual(len(polygon.vertices), polygon.N)
 
 			# This test asserts that the vertices are strictly bounded between 0.0 and 1.0.
-			self.assertEqual(np.min(polygon.vertices), 0.)
-			self.assertEqual(np.max(polygon.vertices), 1.)
+			self.assertEqual(polygon.vertices.min(), 0.)
+			self.assertEqual(polygon.vertices.max(), 1.)
 
 			# This test asserts that the largest vector is of magnitude 1.0.
 			self.assertEqual(LV[0], 1.)
