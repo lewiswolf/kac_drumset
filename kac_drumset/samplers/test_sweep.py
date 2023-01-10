@@ -22,6 +22,9 @@ class TestSweep(AudioSampler):
 	This class produces a sine wave sweep across the audio spectrum, from 20hz to f_s / 2.
 	'''
 
+	class Settings(SamplerSettings):
+		pass
+
 	def __init__(self, duration: float, sample_rate: int) -> None:
 		'''
 		Render the sinusoidal sweep.
@@ -45,7 +48,4 @@ class TestSweep(AudioSampler):
 		return {}
 
 	def updateProperties(self, i: Union[int, None] = None) -> None:
-		pass
-
-	class Settings(SamplerSettings):
 		pass

@@ -326,7 +326,7 @@ class Polygon(Shape):
 		'''
 		Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
 		each vertex:
-			[(x_i - x_i-1), (y_i - y_i-1)] x [(x_i+1 - x_i), (y_i+1 - y_i)].
+			[(x_i - x_i-1), (y_i - y_i-1)] × [(x_i+1 - x_i), (y_i+1 - y_i)].
 		See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
 		clockwise or counter-clockwise'.
 		'''
@@ -412,7 +412,7 @@ def calculateRectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsil
 		epsilon = aspect ratio of the rectangle
 	output:
 		A = {
-			sin(mxπ / (Є ** 0.5)) sin(nyπ (Є ** 0.5))
+			sin(mxπ / (Є ** 0.5)) sin(nyπ * (Є ** 0.5))
 			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
 		}
 	'''
@@ -426,7 +426,7 @@ def calculateRectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np
 		epsilon = aspect ratio of the rectangle
 	output:
 		S = {
-			((m^2 / Є) + (Єn^2)) ** 0.5
+			((m ** 2 / Є) + (Єn ** 2)) ** 0.5
 			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
 		}
 	'''
@@ -551,7 +551,7 @@ class BesselModel(AudioSampler):
 		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
 		decay_time: float			# how long will the simulation take to decay? (seconds)
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
-		tension: float				# tension at rest (N/m)	'''
+		tension: float				# tension at rest (N/m)
 
 class FDTDModel(AudioSampler):
 	'''
@@ -560,7 +560,7 @@ class FDTDModel(AudioSampler):
 
 	class Settings(SamplerSettings, total=False):
 		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
-		decay_time: float			# how long will the simulation take to decay?
+		decay_time: float			# how long will the simulation take to decay? (seconds)
 		drum_size: float			# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		max_vertices: int			# maximum amount of vertices for a given drum
@@ -661,7 +661,7 @@ class TestTone(AudioSampler):
 	'''
 
 	class Settings(SamplerSettings, total=False):
-		f_0: float										# fundamental frequency (hz)
+		f_0: float										# fixed fundamental frequency (hz)
 		waveshape: Literal['saw', 'sin', 'sqr', 'tri']	# shape of the waveform
 ```
 </details>
