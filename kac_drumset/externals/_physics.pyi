@@ -3,12 +3,13 @@ from typing_extensions import TypeAlias
 
 Matrix_1D: TypeAlias = list[float]
 Matrix_2D: TypeAlias = list[list[float]]
+BooleanImage: TypeAlias = list[list[int]]
 
 
 def _FDTDUpdate2D(
 	u_0: Matrix_2D,
 	u_1: Matrix_2D,
-	B: list[list[int]],
+	B: BooleanImage,
 	c_0: float,
 	c_1: float,
 	c_2: float,
@@ -20,7 +21,7 @@ def _FDTDUpdate2D(
 def _FDTDWaveform2D(
 	u_0: Matrix_2D,
 	u_1: Matrix_2D,
-	B: list[list[int]],
+	B: BooleanImage,
 	c_0: float,
 	c_1: float,
 	c_2: float,
