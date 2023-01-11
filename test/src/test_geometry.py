@@ -8,12 +8,14 @@ import numpy as np 			# maths
 # src
 from kac_drumset.geometry import (
 	convexNormalisation,
+	drawCircle,
 	drawPolygon,
 	generateConvexPolygon,
 	isColinear,
 	isPointInsidePolygon,
 	largestVector,
 	RandomPolygon,
+	Circle,
 	Polygon,
 )
 
@@ -22,6 +24,21 @@ class GeometryTests(TestCase):
 	'''
 	Tests used in conjunction with `/geometry`.
 	'''
+
+	def test_circle(self) -> None:
+		'''
+		Test properties of the type Circle.
+		'''
+
+		# This test asserts that the center of the boolean mask is always true.
+		for r in [0.1, 0.25, 0.5, 1.]:
+			C = Circle(r)
+			M = drawCircle(C, 101)
+			self.assertEqual(M[50, 50], 1)
+			self.assertEqual(M[0, 0], 0)
+			self.assertEqual(M[0, 100], 0)
+			self.assertEqual(M[100, 0], 0)
+			self.assertEqual(M[100, 100], 0)
 
 	def test_convex_polygon(self) -> None:
 		'''
