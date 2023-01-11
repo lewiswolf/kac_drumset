@@ -7,8 +7,8 @@ import numpy as np 			# maths
 
 # src
 from kac_drumset.geometry import (
-	booleanMask,
 	convexNormalisation,
+	drawPolygon,
 	generateConvexPolygon,
 	isColinear,
 	isPointInsidePolygon,
@@ -138,7 +138,7 @@ class GeometryTests(TestCase):
 
 				# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
 				isPointInsidePolygon(polygon.centroid, polygon)
-				self.assertEqual(booleanMask(polygon, 100)[
+				self.assertEqual(drawPolygon(polygon, 100)[
 					round(polygon.centroid[0] * 99),
 					round(polygon.centroid[1] * 99),
 				], 1)

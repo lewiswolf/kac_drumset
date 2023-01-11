@@ -200,9 +200,10 @@ class TorchDataset(torch.utils.data.Dataset):
 ```python
 from kac_drumset.geometry import (
 	# Methods
-	booleanMask,
 	centroid,
 	convexNormalisation,
+	drawCircle,
+	drawPolygon,
 	generateConvexPolygon,
 	isColinear,
 	isPointInsidePolygon,
@@ -220,22 +221,10 @@ from kac_drumset.geometry import (
 ### Methods
 
 ```python
-def booleanMask(P: Polygon, grid_size: int) -> npt.NDArray[np.int8]:
-	'''
-	This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
-	exist within a domain R^G where G ∈ [0, 1].
-	'''
-
 def centroid(P: Polygon) -> tuple[float, float]:
 	'''
 	This algorithm is used to calculate the geometric centroid of a 2D polygon. 
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
-	'''
-
-def generateConvexPolygon(N: int) -> npt.NDArray[np.float64]:
-	'''
-	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted from Sander Verdonschot's Java version,
-	found here: https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
 	'''
 
 def convexNormalisation(P: Polygon) -> npt.NDArray[np.float64]:
@@ -246,6 +235,24 @@ def convexNormalisation(P: Polygon) -> npt.NDArray[np.float64]:
 	Then, the largest vector is used to determine the lower and upper bounds across the x-axis. Next, the polygon is split
 	into quadrants, the largest of whose area determines the rotation/reflection of the polygon. Finally, the points are
 	normalised, and ordered such that V[0] = [0., y].
+	'''
+
+def drawCircle(C: Circle, grid_size: int) -> npt.NDArray[np.int8]:
+	'''
+	This function creates a boolean mask of a circle on a grid with dimensions R^(grid_size). The input shape should
+	exist within a domain R^G where G ∈ [0, 1].
+	'''
+
+def drawPolygon(P: Polygon, grid_size: int) -> npt.NDArray[np.int8]:
+	'''
+	This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
+	exist within a domain R^G where G ∈ [0, 1].
+	'''
+
+def generateConvexPolygon(N: int) -> npt.NDArray[np.float64]:
+	'''
+	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted from Sander Verdonschot's Java version,
+	found here: https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
 	'''
 
 def isColinear(vertices: npt.NDArray[np.float64]) -> bool:

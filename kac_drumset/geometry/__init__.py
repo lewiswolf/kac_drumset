@@ -6,10 +6,10 @@ from ._polygon_properties import (
 	isPointInsidePolygon,
 	largestVector,
 )
+from .projections import drawCircle, drawPolygon
 from .generate_polygon import generateConcavePolygon
 from .isospectrality import weylCondition
 from .morphisms import concaveNormalisation
-from .projections import booleanMask
 from .random_polygon import RandomPolygon
 from .types import Circle, Polygon, Shape
 
@@ -22,9 +22,10 @@ __all__ = [
 	'isPointInsidePolygon',
 	'largestVector',
 	# methods
-	'booleanMask',
-	'generateConcavePolygon',
 	'concaveNormalisation',
+	'drawCircle',
+	'drawPolygon',
+	'generateConcavePolygon',
 	'weylCondition',
 	# classes
 	'RandomPolygon',

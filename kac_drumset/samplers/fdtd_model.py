@@ -14,7 +14,7 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..dataset.utils import classLocalsToKwargs
-from ..geometry import RandomPolygon, booleanMask, isPointInsidePolygon
+from ..geometry import RandomPolygon, drawPolygon, isPointInsidePolygon
 from ..physics import FDTDWaveform2D, raisedCosine
 
 __all__ = [
@@ -151,7 +151,7 @@ class FDTDModel(AudioSampler):
 		if i is None or i % 5 == 0:
 			# initialise a random drum shape and calculate the initial conditions relative to the centroid of the drum.
 			self.shape = RandomPolygon(self.max_vertices)
-			self.B = booleanMask(self.shape, self.H)
+			self.B = drawPolygon(self.shape, self.H)
 			self.strike = self.shape.centroid
 		else:
 			# otherwise update the strike location to be a random location.
