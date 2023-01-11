@@ -43,7 +43,7 @@ class PhysicsTests(TestCase):
 
 		# matrices
 		u_0 = np.zeros((10, 10))
-		u_1 = np.pad(raisedCosine((8, 8), (3, 3)), 1, mode='constant')
+		u_1 = np.pad(raisedCosine((8, 8), (3., 3.)), 1, mode='constant')
 		B = np.pad(np.ones((8, 8), dtype=np.int8), 1, mode='constant')
 		# courant number and decay coefficients
 		cfl = 1 / (2 ** 0.5)
@@ -61,7 +61,7 @@ class PhysicsTests(TestCase):
 			self.assertGreaterEqual(u.min(), -1.)
 
 		# Test waveform generator with a square simulation
-		waveform = FDTDWaveform2D(u_0=u_0, u_1=u_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=10, w=(4, 4))
+		waveform = FDTDWaveform2D(u_0=u_0, u_1=u_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=(4, 4))
 		# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 		# simulation.
