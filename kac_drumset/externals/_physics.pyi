@@ -1,9 +1,13 @@
 # core
 from typing_extensions import TypeAlias
 
-Matrix_1D: TypeAlias = list[float]
-Matrix_2D: TypeAlias = list[list[float]]
-BooleanImage: TypeAlias = list[list[int]]
+# dependencies
+import numpy as np 			# maths
+import numpy.typing as npt	# typing for numpy
+
+Matrix_1D: TypeAlias = list[float] | npt.NDArray[np.float64]
+Matrix_2D: TypeAlias = list[list[float]] | npt.NDArray[np.float64]
+BooleanImage: TypeAlias = list[list[int]] | npt.NDArray[np.int8]
 
 
 def _FDTDUpdate2D(
@@ -15,7 +19,7 @@ def _FDTDUpdate2D(
 	c_2: float,
 	x_range: tuple[int, int],
 	y_range: tuple[int, int],
-) -> Matrix_2D: ...
+) -> list[list[float]]: ...
 
 
 def _FDTDWaveform2D(
@@ -27,7 +31,7 @@ def _FDTDWaveform2D(
 	c_2: float,
 	T: int,
 	w: tuple[int, int],
-) -> Matrix_1D: ...
+) -> list[float]: ...
 
 
 def _calculateCircularAmplitudes(r: float, theta: float, S: Matrix_2D) -> Matrix_2D: ...

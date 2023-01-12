@@ -5,6 +5,8 @@ Methods to derive spectral geometry properties.
 # src
 from .types import Shape
 
+__all__ = ['weylCondition']
+
 
 def weylCondition(S_1: Shape, S_2: Shape) -> bool:
 	'''
