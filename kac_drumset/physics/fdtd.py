@@ -163,16 +163,7 @@ def FDTDWaveform2D(
 			) + c_1 * u_n_x_y - c_2 * (u_n-1_x_y) ∀ u ∈ R^2
 	'''
 
-	return np.array(_FDTDWaveform2D(
-		u_0.tolist(),
-		u_1.tolist(),
-		B.tolist(),
-		c_0,
-		c_1,
-		c_2,
-		T,
-		w,
-	))
+	return np.array(_FDTDWaveform2D(u_0, u_1, B, c_0, c_1, c_2, T, w))
 
 
 def raisedCosine(

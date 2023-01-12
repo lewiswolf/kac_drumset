@@ -309,6 +309,12 @@ class Circle(Shape):
 
 	r: float 							# radius
 
+	def __init__(self, r: float = 1.) -> None:
+		'''
+		input:
+			r = radius
+		'''
+
 	@cached_property
 	def area(self) -> float:
 		''' Archimedes. '''
@@ -320,6 +326,12 @@ class Polygon(Shape):
 
 	N: int								# number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
+
+	def __init__(self, vertices: Union[list[list[float]], npt.NDArray[np.float64]]) -> None:
+		'''
+		input:
+			vertices = array of cartesian points.
+		'''
 
 	@cached_property
 	def area(self) -> float:
