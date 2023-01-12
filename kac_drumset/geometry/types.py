@@ -5,6 +5,7 @@ This file contains the fixed geometric types used as part of this package.
 # core
 from abc import ABC, abstractmethod
 from functools import cached_property
+from typing import Union
 
 # dependencies
 import numpy as np 			# maths
@@ -42,6 +43,10 @@ class Circle(Shape):
 	r: float 							# radius
 
 	def __init__(self, r: float = 1.) -> None:
+		'''
+		input:
+			r = radius
+		'''
 		self.r = r
 
 	@cached_property
@@ -58,11 +63,16 @@ class Polygon(Shape):
 	N: int								# number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
 
-	def __init__(self, vertices: npt.NDArray[np.float64]) -> None:
-		assert vertices.ndim == 2 and vertices.shape[1] == 2, \
+	def __init__(self, vertices: Union[list[list[float]], npt.NDArray[np.float64]]) -> None:
+		'''
+		input:
+			vertices = array of cartesian points.
+		'''
+		self.vertices = np.array(vertices)
+		assert self.vertices.ndim == 2 and self.vertices.shape[1] == 2, \
 			'Array of vertices is not the correct shape: (n, 2)'
-		self.vertices = vertices
-		self.N = vertices.shape[0]
+		self.N = self.vertices.shape[0]
+		assert self.N >= 3, 'A polygon must have three vertices.'
 
 	@cached_property
 	def area(self) -> float:
@@ -70,7 +80,7 @@ class Polygon(Shape):
 		An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
 		calculate the area of a polygon.
 		'''
-		return _polygonArea(self.vertices.tolist())
+		return _polygonArea(self.vertices)
 
 	@cached_property
 	def convex(self) -> bool:
@@ -81,4 +91,4 @@ class Polygon(Shape):
 		See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
 		clockwise or counter-clockwise'.
 		'''
-		return _isConvex(self.vertices.tolist())
+		return _isConvex(self.vertices)

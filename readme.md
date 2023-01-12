@@ -211,6 +211,8 @@ from kac_drumset.geometry import (
 	weylCondition
 	# Classes
 	RandomPolygon,
+	UnitRectangle,
+	UnitTriangle,
 	# Types
 	Circle,
 	Polygon,
@@ -297,6 +299,27 @@ class RandomPolygon(Polygon):
 			max_vertices:	Maximum amount of vertices. The true value is a uniform distribution from 3 to max_vertices.
 			allow_concave:	Is this polygon allowed to be concave?
 		'''
+
+class UnitRectangle(Polygon):
+	'''
+	Define the unit rectangle.
+	'''
+
+	def __init__(self, epsilon: float = 1.) -> None:
+		'''
+		input:
+			epsilon = aspect ratio
+		'''
+
+class UnitTriangle(Polygon):
+	'''
+	Define a triangle with unit area.
+	'''
+
+	def __init__(self, r: float, theta: float) -> None:
+		'''
+		For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [0, 1], the corresponding triangle will be unique.
+		'''
 ```
 
 ### Types
@@ -309,6 +332,12 @@ class Circle(Shape):
 
 	r: float 							# radius
 
+	def __init__(self, r: float = 1.) -> None:
+		'''
+		input:
+			r = radius
+		'''
+
 	@cached_property
 	def area(self) -> float:
 		''' Archimedes. '''
@@ -320,6 +349,12 @@ class Polygon(Shape):
 
 	N: int								# number of vertices
 	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
+
+	def __init__(self, vertices: Union[list[list[float]], npt.NDArray[np.float64]]) -> None:
+		'''
+		input:
+			vertices = array of cartesian points.
+		'''
 
 	@cached_property
 	def area(self) -> float:

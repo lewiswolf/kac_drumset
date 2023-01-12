@@ -29,7 +29,7 @@ def centroid(P: Polygon) -> tuple[float, float]:
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
 	'''
 
-	c = _centroid(P.vertices.tolist(), P.area)
+	c = _centroid(P.vertices, P.area)
 	return (c[0], c[1])
 
 
@@ -42,7 +42,7 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	'''
 	assert vertices.shape == (3, 2), \
 		'isColinear() only supports an input of vertices with shape (3, 2).'
-	return _isColinear(vertices.tolist())
+	return _isColinear(vertices)
 
 
 def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
@@ -50,7 +50,7 @@ def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	Determines whether or not a cartesian point is within a polygon, including boundaries.
 	'''
 	assert P.convex, 'isPointInsidePolygon() does not currently support concave shapes.'
-	return _isPointInsideConvexPolygon(list(p), P.vertices.tolist())
+	return _isPointInsideConvexPolygon(list(p), P.vertices)
 
 
 def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]:
@@ -58,5 +58,5 @@ def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]:
 	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the
 	vector and its indices.
 	'''
-	out = _largestVector(P.vertices.tolist())
+	out = _largestVector(P.vertices)
 	return out[0], (out[1][0], out[1][1])

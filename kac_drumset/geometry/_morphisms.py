@@ -23,4 +23,4 @@ def convexNormalisation(P: Polygon) -> npt.NDArray[np.float64]:
 	into quadrants, the largest of whose area determines the rotation/reflection of the polygon. Finally, the points are
 	normalised, and ordered such that V[0] = [0., y].
 	'''
-	return np.array(_convexNormalisation(P.vertices.tolist()))
+	return np.array(_convexNormalisation(P.vertices))

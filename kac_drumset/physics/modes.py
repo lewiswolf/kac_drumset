@@ -35,7 +35,7 @@ def calculateCircularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float6
 		}
 	'''
 
-	return np.array(_calculateCircularAmplitudes(r, theta, S.tolist()))
+	return np.array(_calculateCircularAmplitudes(r, theta, S))
 
 
 def calculateCircularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
@@ -66,13 +66,7 @@ def calculateRectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsil
 		}
 	'''
 
-	return np.array(_calculateRectangularAmplitudes(
-		p[0],
-		p[1],
-		N,
-		M,
-		epsilon,
-	))
+	return np.array(_calculateRectangularAmplitudes(p[0], p[1], N, M, epsilon))
 
 
 def calculateRectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
