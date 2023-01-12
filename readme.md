@@ -211,6 +211,7 @@ from kac_drumset.geometry import (
 	weylCondition
 	# Classes
 	RandomPolygon,
+	UnitRectangle,
 	# Types
 	Circle,
 	Polygon,
@@ -296,6 +297,17 @@ class RandomPolygon(Polygon):
 		input:
 			max_vertices:	Maximum amount of vertices. The true value is a uniform distribution from 3 to max_vertices.
 			allow_concave:	Is this polygon allowed to be concave?
+		'''
+
+class UnitRectangle(Polygon):
+	'''
+	Define the unit rectangle.
+	'''
+
+	def __init__(self, epsilon: float = 1.) -> None:
+		'''
+		input:
+			epsilon = aspect ratio
 		'''
 ```
 

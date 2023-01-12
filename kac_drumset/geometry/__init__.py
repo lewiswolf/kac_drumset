@@ -6,12 +6,13 @@ from ._polygon_properties import (
 	isPointInsidePolygon,
 	largestVector,
 )
-from .projections import drawCircle, drawPolygon
 from .generate_polygon import generateConcavePolygon
 from .isospectrality import weylCondition
 from .morphisms import concaveNormalisation
+from .projections import drawCircle, drawPolygon
 from .random_polygon import RandomPolygon
 from .types import Circle, Polygon, Shape
+from .unit_polygon import UnitRectangle
 
 __all__ = [
 	# external methods
@@ -29,6 +30,7 @@ __all__ = [
 	'weylCondition',
 	# classes
 	'RandomPolygon',
+	'UnitRectangle',
 	# types
 	'Circle',
 	'Polygon',

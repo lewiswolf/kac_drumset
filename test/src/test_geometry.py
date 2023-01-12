@@ -7,6 +7,7 @@ import numpy as np 			# maths
 
 # src
 from kac_drumset.geometry import (
+	centroid,
 	convexNormalisation,
 	drawCircle,
 	drawPolygon,
@@ -15,6 +16,7 @@ from kac_drumset.geometry import (
 	isPointInsidePolygon,
 	largestVector,
 	RandomPolygon,
+	UnitRectangle,
 	Circle,
 	Polygon,
 )
@@ -47,16 +49,16 @@ class GeometryTests(TestCase):
 
 		# Two squares ordered clockwise and counter-clockwise respectively.
 		squares = [
-			Polygon(np.array([[0., 0.], [1., 0.], [1., 1.], [0., 1.]])),
-			Polygon(np.array([[0., 0.], [0., 1.], [1., 1.], [1., 0.]])),
+			Polygon([[0., 0.], [1., 0.], [1., 1.], [0., 1.]]),
+			Polygon([[0., 0.], [0., 1.], [1., 1.], [1., 0.]]),
 		]
 		# The first two quads have opposite vertex order.
 		# The second two quads have their x and y coordinates swapped.
 		quads = [
-			Polygon(np.array([[0, 0], [1.1, 0], [1, 1], [0, 1]])),
-			Polygon(np.array([[0, 0], [0, 1], [1, 1], [1.1, 0]])),
-			Polygon(np.array([[0, 0], [0, 1.1], [1, 1], [1, 0]])),
-			Polygon(np.array([[0, 0], [1, 0], [1, 1], [0, 1.1]])),
+			Polygon([[0, 0], [1.1, 0], [1, 1], [0, 1]]),
+			Polygon([[0, 0], [0, 1], [1, 1], [1.1, 0]]),
+			Polygon([[0, 0], [0, 1.1], [1, 1], [1, 0]]),
+			Polygon([[0, 0], [1, 0], [1, 1], [0, 1.1]]),
 		]
 
 		# This test asserts that isPointInsidePolygon works as expected
@@ -163,3 +165,20 @@ class GeometryTests(TestCase):
 				# This test asserts that convexNormalisation does not continuously alter the polygon.
 				# np.allclose is used, as opposed to np.equal, to account for floating point errors.
 				self.assertTrue(np.allclose(polygon.vertices, convexNormalisation(polygon)))
+
+	def test_unit_polygon(self) -> None:
+		'''
+		Test used in conjunction with ./unit_polygons.py.
+		'''
+
+		# Test the vertices, centroid and area of the UnitRectangle for varying epsilons.
+		for [epsilon, vertices] in [
+			(1., [[0.5, 0.5], [0.5, -0.5], [-0.5, -0.5], [-0.5, 0.5]]),
+			(0.5, [[0.25, 1.], [0.25, -1.], [-0.25, -1.], [-0.25, 1.]]),
+			(1.25, [[0.625, 0.4], [0.625, -0.4], [-0.625, -0.4], [-0.625, 0.4]]),
+		]:
+			R = UnitRectangle(epsilon)
+			P = Polygon(vertices)
+			self.assertTrue(np.all(np.equal(R.vertices, P.vertices)))
+			self.assertEqual(R.area, P.area)
+			self.assertEqual(centroid(R), (0., 0.))
