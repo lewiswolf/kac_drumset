@@ -12,7 +12,7 @@ from .morphisms import concaveNormalisation
 from .projections import drawCircle, drawPolygon
 from .random_polygon import RandomPolygon
 from .types import Circle, Polygon, Shape
-from .unit_polygon import UnitRectangle
+from .unit_polygon import UnitRectangle, UnitTriangle
 
 __all__ = [
 	# external methods
@@ -31,6 +31,7 @@ __all__ = [
 	# classes
 	'RandomPolygon',
 	'UnitRectangle',
+	'UnitTriangle',
 	# types
 	'Circle',
 	'Polygon',

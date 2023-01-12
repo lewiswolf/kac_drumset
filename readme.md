@@ -212,6 +212,7 @@ from kac_drumset.geometry import (
 	# Classes
 	RandomPolygon,
 	UnitRectangle,
+	UnitTriangle,
 	# Types
 	Circle,
 	Polygon,
@@ -308,6 +309,16 @@ class UnitRectangle(Polygon):
 		'''
 		input:
 			epsilon = aspect ratio
+		'''
+
+class UnitTriangle(Polygon):
+	'''
+	Define a triangle with unit area.
+	'''
+
+	def __init__(self, r: float, theta: float) -> None:
+		'''
+		For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [0, 1], the corresponding triangle will be unique.
 		'''
 ```
 

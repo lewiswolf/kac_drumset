@@ -17,6 +17,7 @@ from kac_drumset.geometry import (
 	largestVector,
 	RandomPolygon,
 	UnitRectangle,
+	UnitTriangle,
 	Circle,
 	Polygon,
 )
@@ -182,3 +183,20 @@ class GeometryTests(TestCase):
 			self.assertTrue(np.all(np.equal(R.vertices, P.vertices)))
 			self.assertEqual(R.area, P.area)
 			self.assertEqual(centroid(R), (0., 0.))
+
+		# Test the vertices and area of the UnitTriangle for varying r, theta.
+		for [r, theta] in [
+			(1., np.pi / 2.), # equilateral
+			(0.5, np.pi / 2.),
+			(1., 1.),
+			(1., 2.),
+			(1., 3.),
+			(1., 4.),
+			(1., 5.),
+			(1., 6.),
+		]:
+			T = UnitTriangle(1., np.pi / 3)
+			P = Polygon(T.vertices)
+			self.assertAlmostEqual(T.area, P.area)
+			self.assertEqual(T.vertices[:, 0].min() + T.vertices[:, 0].max(), 0.)
+			self.assertEqual(T.vertices[:, 1].min() + T.vertices[:, 1].max(), 0.)
