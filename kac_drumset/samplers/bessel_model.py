@@ -34,7 +34,7 @@ class BesselModel(AudioSampler):
 	# model inferences
 	c: float						# wavespeed (m/s)
 	decay: float					# decay constant
-	gamma: float					# scaled wavespeed (1/s)
+	F: npt.NDArray[np.float64]		# array of eigenfrequencies
 	k: float						# sample length (ms)
 	series: npt.NDArray[np.float64]	# array of eigenmodes z_nm
 	# drum properties
@@ -90,7 +90,7 @@ class BesselModel(AudioSampler):
 
 		# 2016 - Chaigne & Kergomard, p.154
 		self.waveform = WaveEquationWaveform2D(
-			self.gamma * self.series,
+			self.F,
 			self.a * np.abs(calculateCircularAmplitudes(*self.strike, self.series)),
 			self.decay,
 			self.k,
@@ -113,7 +113,7 @@ class BesselModel(AudioSampler):
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
 			self.L = np.random.uniform(0.1, 2.)
-			self.gamma = self.c / self.L
+			self.F = self.series * self.c / self.L
 			self.strike = (0., 0.)
 		else:
 			# otherwise update the strike location to be a random location.
