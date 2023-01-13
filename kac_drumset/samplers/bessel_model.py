@@ -88,10 +88,9 @@ class BesselModel(AudioSampler):
 		Using additive synthesis, generate the waveform for the linear model.
 		'''
 
-		# 2016 - Chaigne & Kergomard, p.154
 		self.waveform = WaveEquationWaveform2D(
 			self.F,
-			self.a * np.abs(calculateCircularAmplitudes(*self.strike, self.series)),
+			self.a * calculateCircularAmplitudes(*self.strike, self.series),
 			self.decay,
 			self.k,
 			self.length,

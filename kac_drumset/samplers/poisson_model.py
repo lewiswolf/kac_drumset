@@ -90,12 +90,12 @@ class PoissonModel(AudioSampler):
 		if hasattr(self, 'L'):
 			self.waveform = WaveEquationWaveform2D(
 				self.F,
-				self.a * np.abs(calculateRectangularAmplitudes(
+				self.a * calculateRectangularAmplitudes(
 					(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),
 					self.N,
 					self.M,
 					self.epsilon,
-				)),
+				),
 				self.decay,
 				self.k,
 				self.length,

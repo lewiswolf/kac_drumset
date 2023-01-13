@@ -104,7 +104,7 @@ def WaveEquationWaveform2D(
 		k = sample length
 		T = length of simulation
 	output:
-		waveform = W[n] ∈ A * e^dt * sin(Ft) / N * max(A)
+		waveform = W[n] ∈ A * e^dt * sin(Ft) / NM * max(A)
 	'''
 
 	return np.array(_WaveEquationWaveform2D(F, A, d, k, T))
