@@ -2,6 +2,9 @@
 Import FDTD functions from external C++ library and configure python type conversions.
 '''
 
+# core
+from typing import Optional
+
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
@@ -13,6 +16,7 @@ from ..externals._physics import (
 	_raisedCosine1D,
 	_raisedCosine2D,
 	_raisedTriangle1D,
+	_raisedTriangle2D,
 )
 
 __all__ = [
@@ -179,28 +183,68 @@ def raisedCosine(
 		σ = The radius of the distribution.
 	'''
 
-	if len(mu) > 2 or len(mu) != len(matrix_size):
-		# handle dimensions > 2 and incompatible inputs
-		raise ValueError('raisedCosine() only supports one or two dimensional inputs.')
+	assert len(mu) <= 2 and len(mu) == len(matrix_size), \
+		'raisedCosine() only supports one or two dimensional inputs.'
+	return np.array(_raisedCosine1D(
+		matrix_size[0],
+		mu[0],
+		sigma,
+	) if len(mu) == 1 else _raisedCosine2D(
+		matrix_size[0],
+		matrix_size[1],
+		mu[0],
+		mu[1],
+		sigma,
+	))
+
+
+def raisedTriangle(
+	matrix_size: tuple[int, ...],
+	mu: tuple[float, ...],
+	x_ab: Optional[tuple[float, float]] = None,
+	y_ab: Optional[tuple[float, float]] = None,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a one or two dimensional triangular distribution.
+	input:
+		size = the size of the matrix.
+		μ = a cartesian point representing the maxima of the triangle.
+		x_ab = minimum and maximum x value for the distribution.
+		y_ab = minimum and maximum y value for the distribution.
+	output:
+		Λ(x, y) = Λ(x) * Λ(y)
+		Λ(x) = {
+			0,								x < a
+			(x - a) / (μ - a),				a ≤ x ≤ μ
+			1. - (x - μ) / (b - μ),			μ < x ≤ b
+			0,								x > a
+		}
+	'''
+	assert len(mu) <= 2 and len(mu) == len(matrix_size), \
+		'raisedTriangle() only supports one or two dimensional inputs.'
+	# configure x_ab
+	if x_ab is None:
+		x_ab = (0, matrix_size[0] - 1)
+	assert x_ab[0] <= mu[0] and x_ab[1] >= mu[0]
 	if len(mu) == 1:
-		return np.array(_raisedCosine1D(matrix_size[0], mu[0], sigma))
+		return np.array(_raisedTriangle1D(
+			matrix_size[0],
+			mu[0],
+			x_ab[0],
+			x_ab[1],
+		))
 	else:
-		return np.array(_raisedCosine2D(
+		# configure y_ab
+		if y_ab is None:
+			y_ab = (0, matrix_size[1] - 1)
+		assert y_ab[0] <= mu[1] and y_ab[1] >= mu[1]
+		return np.array(_raisedTriangle2D(
 			matrix_size[0],
 			matrix_size[1],
 			mu[0],
 			mu[1],
-			sigma,
+			x_ab[0],
+			x_ab[1],
+			y_ab[0],
+			y_ab[1],
 		))
-
-
-def raisedTriangle(matrix_size: int, mu: float, a: float, b: float) -> npt.NDArray[np.float64]:
-	'''
-	Create a triangular distribution centred at mu. Only 1D distributions are supported.
-	input:
-		matrix_size = the size of the matrix.
-		μ = a cartesian point representing the maxima of the triangle.
-		a = minimum x value for the distribution.
-		b = maximum x value for the distribution.
-	'''
-	return np.array(_raisedTriangle1D(matrix_size, mu, a, b))
