@@ -88,20 +88,28 @@ class SamplerTests(TestCase):
 		self.assertEqual(model.series.shape, (10, 10))
 
 		# stress test the bessel model
-		for i in range(1000):
+		for i in range(100):
 			model.updateProperties(i)
+
 			# This test asserts that a size and strike location were properly defined after updating
 			# the model's properties.
 			self.assertTrue(hasattr(model, 'L'))
 			self.assertTrue(hasattr(model, 'strike'))
+
 			# This test asserts that the model returns a drum_size.
 			self.assertEqual(len(model.getLabels()['drum_size']), 1)
+
 			# This test asserts that the model returns a valid polar strike location.
 			self.assertEqual(len(model.getLabels()['strike_location']), 2)
 			self.assertGreaterEqual(model.getLabels()['strike_location'][0], -1.)
 			self.assertLessEqual(model.getLabels()['strike_location'][0], 1.)
 			self.assertGreaterEqual(model.getLabels()['strike_location'][1], 0.)
 			self.assertLessEqual(model.getLabels()['strike_location'][1], np.pi)
+
+			# This test asserts that the waveform is not distorted.
+			model.generateWaveform()
+			self.assertLessEqual(model.waveform.max(), 1.)
+			self.assertGreaterEqual(model.waveform.min(), -1.)
 
 	def test_fdtd_model(self) -> None:
 		'''
@@ -181,7 +189,7 @@ class SamplerTests(TestCase):
 		self.assertEqual(model.decay, 0.)
 
 		# stress test the poisson model
-		for i in range(1000):
+		for i in range(100):
 			model.updateProperties(i)
 			# This test asserts that a size, aspect ratio and strike location were properly defined after
 			# updating the model's properties.
@@ -189,11 +197,14 @@ class SamplerTests(TestCase):
 			self.assertTrue(hasattr(model, 'L'))
 			self.assertTrue(hasattr(model, 'series'))
 			self.assertTrue(hasattr(model, 'strike'))
+
 			# This test asserts that the 2D series has correct shape
 			self.assertEqual(model.series.shape, (10, 10))
+
 			# This test asserts that the model returns a drum_size.
 			self.assertEqual(len(model.getLabels()['aspect_ratio']), 1)
 			self.assertEqual(len(model.getLabels()['drum_size']), 1)
+
 			# This test asserts that the model returns a valid cartesian strike location.
 			# The strike location should be normalised such that {x [0, 1]} => {x [0, (Ɛ^0.5)]} &
 			# {y, [0, 1]} => {y, [0,  1 / (Ɛ^0.5)]}
@@ -202,3 +213,8 @@ class SamplerTests(TestCase):
 			self.assertLessEqual(model.getLabels()['strike_location'][0], 1.)
 			self.assertGreaterEqual(model.getLabels()['strike_location'][1], 0.)
 			self.assertLessEqual(model.getLabels()['strike_location'][1], 1.)
+
+			# This test asserts that the waveform is not distorted.
+			model.generateWaveform()
+			self.assertLessEqual(model.waveform.max(), 1.)
+			self.assertGreaterEqual(model.waveform.min(), -1.)

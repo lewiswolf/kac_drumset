@@ -402,6 +402,7 @@ from kac_drumset.physics import (
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
+	WaveEquationWaveform2D,
 	# classes
 	FDTD_2D
 )
@@ -522,6 +523,25 @@ def raisedTriangle(matrix_size: int, mu: float, a: float, b: float) -> npt.NDArr
 		μ = a cartesian point representing the maxima of the triangle.
 		a = minimum x value for the distribution.
 		b = maximum x value for the distribution.
+	'''
+
+def WaveEquationWaveform2D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 2D wave equation.
+	input:
+		F = frequencies (hertz)
+		A = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[n] ∈ A * e^dt * sin(Ft) / NM * max(A)
 	'''
 ```
 

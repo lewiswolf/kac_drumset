@@ -13,6 +13,7 @@ from .modes import (
 	calculateCircularSeries,
 	calculateRectangularAmplitudes,
 	calculateRectangularSeries,
+	WaveEquationWaveform2D,
 )
 
 __all__ = [
@@ -26,6 +27,7 @@ __all__ = [
 	'FDTDWaveform2D',
 	'raisedCosine',
 	'raisedTriangle',
+	'WaveEquationWaveform2D',
 	# classes
 	'FDTD_2D',
 ]

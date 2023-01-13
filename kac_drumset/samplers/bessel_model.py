@@ -12,7 +12,7 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..dataset.utils import classLocalsToKwargs
-from ..physics import calculateCircularAmplitudes, calculateCircularSeries
+from ..physics import calculateCircularAmplitudes, calculateCircularSeries, WaveEquationWaveform2D
 
 __all__ = [
 	'BesselModel',
@@ -89,12 +89,13 @@ class BesselModel(AudioSampler):
 		'''
 
 		# 2016 - Chaigne & Kergomard, p.154
-		A = self.a * np.abs(calculateCircularAmplitudes(*self.strike, self.series)).flatten()
-		omega = (self.gamma * self.series).flatten() # eigenfrequencies
-		omega *= 2 * np.pi * self.k # rate of phase
-		for i in range(self.length):
-			# 2009 - Bilbao , pp.65-66
-			self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * A.max())
+		self.waveform = WaveEquationWaveform2D(
+			self.gamma * self.series,
+			self.a * np.abs(calculateCircularAmplitudes(*self.strike, self.series)),
+			self.decay,
+			self.k,
+			self.length,
+		)
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		'''

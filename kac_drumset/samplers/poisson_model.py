@@ -12,7 +12,7 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..dataset.utils import classLocalsToKwargs
-from ..physics import calculateRectangularAmplitudes, calculateRectangularSeries
+from ..physics import calculateRectangularAmplitudes, calculateRectangularSeries, WaveEquationWaveform2D
 
 __all__ = [
 	'PoissonModel',
@@ -89,17 +89,18 @@ class PoissonModel(AudioSampler):
 		'''
 
 		if hasattr(self, 'L'):
-			A = self.a * np.abs(calculateRectangularAmplitudes(
-				(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),
-				self.N,
-				self.M,
-				self.epsilon,
-			)).flatten()
-			omega = (self.gamma * self.series).flatten() # eigenfrequencies
-			omega *= 2 * np.pi * self.k # rate of phase
-			for i in range(self.length):
-				# 2009 - Bilbao , pp.65-66
-				self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * A.max())
+			self.waveform = WaveEquationWaveform2D(
+				self.gamma * self.series,
+				self.a * np.abs(calculateRectangularAmplitudes(
+					(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),
+					self.N,
+					self.M,
+					self.epsilon,
+				)),
+				self.decay,
+				self.k,
+				self.length,
+			)
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		'''

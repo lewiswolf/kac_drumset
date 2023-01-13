@@ -12,6 +12,7 @@ from ..externals._physics import (
 	_calculateCircularSeries,
 	_calculateRectangularAmplitudes,
 	_calculateRectangularSeries,
+	_WaveEquationWaveform2D,
 )
 
 __all__ = [
@@ -19,6 +20,7 @@ __all__ = [
 	'calculateCircularSeries',
 	'calculateRectangularAmplitudes',
 	'calculateRectangularSeries',
+	'WaveEquationWaveform2D',
 ]
 
 
@@ -84,3 +86,25 @@ def calculateRectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np
 	'''
 
 	return np.array(_calculateRectangularSeries(N, M, epsilon))
+
+
+def WaveEquationWaveform2D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 2D wave equation.
+	input:
+		F = frequencies (hertz)
+		A = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[n] ∈ A * e^dt * sin(Ft) / N * max(A)
+	'''
+
+	return np.array(_WaveEquationWaveform2D(F, A, d, k, T))
