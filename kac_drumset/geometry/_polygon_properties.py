@@ -30,7 +30,7 @@ def centroid(P: Polygon) -> tuple[float, float]:
 	'''
 
 	c = _centroid(P.vertices, P.area)
-	return (c[0], c[1])
+	return c[0], c[1]
 
 
 def isColinear(vertices: npt.NDArray[np.float64]) -> bool:

@@ -220,6 +220,7 @@ def raisedTriangle(
 			0,								x > a
 		}
 	'''
+
 	assert len(mu) <= 2 and len(mu) == len(matrix_size), \
 		'raisedTriangle() only supports one or two dimensional inputs.'
 	# configure x_ab
