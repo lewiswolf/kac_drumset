@@ -123,9 +123,19 @@ class PhysicsTests(TestCase):
 		self.assertGreater(rc[50, 51], 0.)
 
 		# This test asserts that the one dimensional triangular distribution has the correct peaks.
-		t = raisedTriangle(100, 50., 30., 70.)
+		t = raisedTriangle((100, ), (50., ), x_ab=(30., 70.))
 		self.assertEqual(t[50], 1.)
 		self.assertEqual(t.max(), 1.)
 		self.assertEqual(t.min(), 0.)
 		self.assertGreater(t[49], 0.)
 		self.assertGreater(t[51], 0.)
+
+		# This test asserts that the two dimensional triangular distribution has the correct peaks.
+		t = raisedTriangle((100, 100), (50., 50), x_ab=(30., 70.), y_ab=(30., 70.))
+		self.assertEqual(rc[50, 50], 1.)
+		self.assertEqual(t.max(), 1.)
+		self.assertEqual(t.min(), 0.)
+		self.assertGreater(rc[49, 50], 0.)
+		self.assertGreater(rc[51, 50], 0.)
+		self.assertGreater(rc[50, 49], 0.)
+		self.assertGreater(rc[50, 51], 0.)

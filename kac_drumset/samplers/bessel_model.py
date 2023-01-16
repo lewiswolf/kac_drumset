@@ -12,7 +12,7 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..dataset.utils import classLocalsToKwargs
-from ..physics import calculateCircularAmplitudes, calculateCircularSeries
+from ..physics import calculateCircularAmplitudes, calculateCircularSeries, WaveEquationWaveform2D
 
 __all__ = [
 	'BesselModel',
@@ -34,7 +34,7 @@ class BesselModel(AudioSampler):
 	# model inferences
 	c: float						# wavespeed (m/s)
 	decay: float					# decay constant
-	gamma: float					# scaled wavespeed (1/s)
+	F: npt.NDArray[np.float64]		# array of eigenfrequencies
 	k: float						# sample length (ms)
 	series: npt.NDArray[np.float64]	# array of eigenmodes z_nm
 	# drum properties
@@ -88,13 +88,13 @@ class BesselModel(AudioSampler):
 		Using additive synthesis, generate the waveform for the linear model.
 		'''
 
-		# 2016 - Chaigne & Kergomard, p.154
-		A = self.a * np.abs(calculateCircularAmplitudes(*self.strike, self.series)).flatten()
-		omega = (self.gamma * self.series).flatten() # eigenfrequencies
-		omega *= 2 * np.pi * self.k # rate of phase
-		for i in range(self.length):
-			# 2009 - Bilbao , pp.65-66
-			self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * A.max())
+		self.waveform = WaveEquationWaveform2D(
+			self.F,
+			self.a * calculateCircularAmplitudes(*self.strike, self.series),
+			self.decay,
+			self.k,
+			self.length,
+		)
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		'''
@@ -112,7 +112,7 @@ class BesselModel(AudioSampler):
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
 			self.L = np.random.uniform(0.1, 2.)
-			self.gamma = self.c / self.L
+			self.F = self.series * self.c / self.L
 			self.strike = (0., 0.)
 		else:
 			# otherwise update the strike location to be a random location.

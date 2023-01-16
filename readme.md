@@ -208,7 +208,7 @@ from kac_drumset.geometry import (
 	isColinear,
 	isPointInsidePolygon,
 	largestVector,
-	weylCondition
+	weylCondition,
 	# Classes
 	RandomPolygon,
 	UnitRectangle,
@@ -402,6 +402,7 @@ from kac_drumset.physics import (
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
+	WaveEquationWaveform2D,
 	# classes
 	FDTD_2D
 )
@@ -514,14 +515,46 @@ def raisedCosine(
 		σ = The radius of the distribution.
 	'''
 
-def raisedTriangle(matrix_size: int, mu: float, a: float, b: float) -> npt.NDArray[np.float64]:
+def raisedTriangle(
+	matrix_size: tuple[int, ...],
+	mu: tuple[float, ...],
+	x_ab: Optional[tuple[float, float]] = None,
+	y_ab: Optional[tuple[float, float]] = None,
+) -> npt.NDArray[np.float64]:
 	'''
-	Create a triangular distribution centred at mu. Only 1D distributions are supported.
+	Calculate a one or two dimensional triangular distribution.
 	input:
-		matrix_size = the size of the matrix.
+		size = the size of the matrix.
 		μ = a cartesian point representing the maxima of the triangle.
-		a = minimum x value for the distribution.
-		b = maximum x value for the distribution.
+		x_ab = minimum and maximum x value for the distribution.
+		y_ab = minimum and maximum y value for the distribution.
+	output:
+		Λ(x, y) = Λ(x) * Λ(y)
+		Λ(x) = {
+			0,								x < a
+			(x - a) / (μ - a),				a ≤ x ≤ μ
+			1. - (x - μ) / (b - μ),			μ < x ≤ b
+			0,								x > a
+		}
+	'''
+
+def WaveEquationWaveform2D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 2D wave equation.
+	input:
+		F = frequencies (hertz)
+		A = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[n] ∈ A * e^dt * sin(Ft) / NM * max(A)
 	'''
 ```
 

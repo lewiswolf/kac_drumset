@@ -12,7 +12,7 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..dataset.utils import classLocalsToKwargs
-from ..physics import calculateRectangularAmplitudes, calculateRectangularSeries
+from ..physics import calculateRectangularAmplitudes, calculateRectangularSeries, WaveEquationWaveform2D
 
 __all__ = [
 	'PoissonModel',
@@ -34,9 +34,8 @@ class PoissonModel(AudioSampler):
 	# model inferences
 	c: float						# wavespeed (m/s)
 	decay: float					# decay constant
-	gamma: float					# scaled wavespeed (1/s)
+	F: npt.NDArray[np.float64]		# array of eigenfrequencies
 	k: float						# sample length (ms)
-	series: npt.NDArray[np.float64]	# array of eigenmodes z_nm
 	# drum properties
 	epsilon: float					# aspect ratio
 	L: float						# size of the drum (m)
@@ -89,17 +88,18 @@ class PoissonModel(AudioSampler):
 		'''
 
 		if hasattr(self, 'L'):
-			A = self.a * np.abs(calculateRectangularAmplitudes(
-				(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),
-				self.N,
-				self.M,
-				self.epsilon,
-			)).flatten()
-			omega = (self.gamma * self.series).flatten() # eigenfrequencies
-			omega *= 2 * np.pi * self.k # rate of phase
-			for i in range(self.length):
-				# 2009 - Bilbao , pp.65-66
-				self.waveform[i] = np.sum(A * np.exp(i * self.decay) * np.sin(i * omega)) / (omega.shape[0] * A.max())
+			self.waveform = WaveEquationWaveform2D(
+				self.F,
+				self.a * calculateRectangularAmplitudes(
+					(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),
+					self.N,
+					self.M,
+					self.epsilon,
+				),
+				self.decay,
+				self.k,
+				self.length,
+			)
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		'''
@@ -122,8 +122,7 @@ class PoissonModel(AudioSampler):
 			# initialise a random drum size and strike location in the centroid of the drum.
 			self.epsilon = np.random.uniform(1., 4.)
 			self.L = np.random.uniform(0.1, 2.)
-			self.gamma = self.c / self.L
-			self.series = calculateRectangularSeries(self.N, self.M, self.epsilon)
+			self.F = calculateRectangularSeries(self.N, self.M, self.epsilon) * self.c / self.L
 			self.strike = (0.5, 0.5)
 		else:
 			# otherwise update the strike location to be a random location.
