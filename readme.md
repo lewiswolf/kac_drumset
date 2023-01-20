@@ -395,13 +395,15 @@ from kac_drumset.physics import (
 	# methods
 	besselJ,
 	besselJZero,
-	calculateCircularAmplitudes,
-	calculateCircularSeries,
-	calculateRectangularAmplitudes,
-	calculateRectangularSeries,
+	circularAmplitudes,
+	circularSeries,
+	equilateralTriangleAmplitudes,
+	equilateralTriangleSeries,
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
+	rectangularAmplitudes,
+	rectangularSeries,
 	WaveEquationWaveform2D,
 	# classes
 	FDTD_2D
@@ -422,7 +424,7 @@ def besselJZero(n: float, m: int) -> float:
 	boost::math::cyl_bessel_j_zero.
 	'''
 
-def calculateCircularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+def circularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the amplitudes of the circular eigenmodes relative to a polar strike location.
 	input:
@@ -435,7 +437,7 @@ def calculateCircularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float6
 		}
 	'''
 
-def calculateCircularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
+def circularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the eigenmodes of a circle.
 	input:
@@ -445,7 +447,7 @@ def calculateCircularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 		S = { z_nm | s ∈ ℝ, J_n(z_nm) = 0, n < N, 0 < m <= M }
 	'''
 
-def calculateRectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
+def rectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the amplitudes of the rectangular eigenmodes relative to a cartesian strike location.
 	input:
@@ -460,7 +462,7 @@ def calculateRectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsil
 		}
 	'''
 
-def calculateRectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
+def rectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the eigenmodes of a rectangle.
 	input:
@@ -470,6 +472,39 @@ def calculateRectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np
 	output:
 		S = {
 			((m ** 2 / Є) + (Єn ** 2)) ** 0.5
+			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
+		}
+	'''
+
+def equilateralTriangleAmplitudes(x: float, y: float, z: float, N: int, M: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the amplitudes of the equilateral triangle eigenmodes relative to a
+	trilinear strike location according to Lamé's formula.
+	Seth (1940) Transverse Vibrations of Triangular Membranes.
+	input:
+		( x, y, z ) = trilinear coordinate
+		N = number of modal orders
+		M = number of modes per order
+	output:
+		A = {
+			abs(sin(nxπ) sin(nyπ) sin(nzπ))
+			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
+		}
+	'''
+
+	return np.array(_equilateralTriangleAmplitudes(x, y, z, N, M))
+
+
+def equilateralTriangleSeries(N: int, M: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the eigenmodes of an equilateral triangle according to Lamé's formula.
+	Seth (1940) Transverse Vibrations of Triangular Membranes.
+	input:
+		N = number of modal orders
+		M = number of modes per order
+	output:
+		S = {
+			(m ** 2 + n ** 2 + mn) ** 0.5
 			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
 		}
 	'''
@@ -608,6 +643,7 @@ class FDTD_2D():
 from kac_drumset import (
 	BesselModel,
 	FDTDModel,
+	LaméModel,
 	PoissonModel,
 )
 ```
@@ -640,6 +676,19 @@ class FDTDModel(AudioSampler):
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		max_vertices: int			# maximum amount of vertices for a given drum
 		strike_width: float			# width of the drum strike (m)
+		tension: float				# tension at rest (N/m)
+
+class LaméModel(AudioSampler):
+	'''
+	A linear model of an equilateral triangle membrane using Lamé equations.
+	'''
+
+	class Settings(SamplerSettings, total=False):
+		M: int						# number of mth modes
+		N: int						# number of nth modes
+		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
+		decay_time: float			# how long will the simulation take to decay? (seconds)
+		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		tension: float				# tension at rest (N/m)
 
 class PoissonModel(AudioSampler):

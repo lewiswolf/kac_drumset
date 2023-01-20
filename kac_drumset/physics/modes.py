@@ -8,23 +8,27 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from ..externals._physics import (
-	_calculateCircularAmplitudes,
-	_calculateCircularSeries,
-	_calculateRectangularAmplitudes,
-	_calculateRectangularSeries,
+	_circularAmplitudes,
+	_circularSeries,
+	_equilateralTriangleAmplitudes,
+	_equilateralTriangleSeries,
+	_rectangularAmplitudes,
+	_rectangularSeries,
 	_WaveEquationWaveform2D,
 )
 
 __all__ = [
-	'calculateCircularAmplitudes',
-	'calculateCircularSeries',
-	'calculateRectangularAmplitudes',
-	'calculateRectangularSeries',
+	'circularAmplitudes',
+	'circularSeries',
+	'equilateralTriangleAmplitudes',
+	'equilateralTriangleSeries',
+	'rectangularAmplitudes',
+	'rectangularSeries',
 	'WaveEquationWaveform2D',
 ]
 
 
-def calculateCircularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+def circularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the amplitudes of the circular eigenmodes relative to a polar strike location.
 	input:
@@ -37,10 +41,10 @@ def calculateCircularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float6
 		}
 	'''
 
-	return np.array(_calculateCircularAmplitudes(r, theta, S))
+	return np.array(_circularAmplitudes(r, theta, S))
 
 
-def calculateCircularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
+def circularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the eigenmodes of a circle.
 	input:
@@ -50,10 +54,46 @@ def calculateCircularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 		S = { z_nm | s ∈ ℝ, J_n(z_nm) = 0, n < N, 0 < m <= M }
 	'''
 
-	return np.array(_calculateCircularSeries(N, M))
+	return np.array(_circularSeries(N, M))
 
 
-def calculateRectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
+def equilateralTriangleAmplitudes(x: float, y: float, z: float, N: int, M: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the amplitudes of the equilateral triangle eigenmodes relative to a
+	trilinear strike location according to Lamé's formula.
+	Seth (1940) Transverse Vibrations of Triangular Membranes.
+	input:
+		( x, y, z ) = trilinear coordinate
+		N = number of modal orders
+		M = number of modes per order
+	output:
+		A = {
+			abs(sin(nxπ) sin(nyπ) sin(nzπ))
+			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
+		}
+	'''
+
+	return np.array(_equilateralTriangleAmplitudes(x, y, z, N, M))
+
+
+def equilateralTriangleSeries(N: int, M: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the eigenmodes of an equilateral triangle according to Lamé's formula.
+	Seth (1940) Transverse Vibrations of Triangular Membranes.
+	input:
+		N = number of modal orders
+		M = number of modes per order
+	output:
+		S = {
+			(m ** 2 + n ** 2 + mn) ** 0.5
+			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
+		}
+	'''
+
+	return np.array(_equilateralTriangleSeries(N, M))
+
+
+def rectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the amplitudes of the rectangular eigenmodes relative to a cartesian strike location.
 	input:
@@ -68,10 +108,10 @@ def calculateRectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsil
 		}
 	'''
 
-	return np.array(_calculateRectangularAmplitudes(p[0], p[1], N, M, epsilon))
+	return np.array(_rectangularAmplitudes(p[0], p[1], N, M, epsilon))
 
 
-def calculateRectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
+def rectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the eigenmodes of a rectangle.
 	input:
@@ -85,7 +125,7 @@ def calculateRectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np
 		}
 	'''
 
-	return np.array(_calculateRectangularSeries(N, M, epsilon))
+	return np.array(_rectangularSeries(N, M, epsilon))
 
 
 def WaveEquationWaveform2D(

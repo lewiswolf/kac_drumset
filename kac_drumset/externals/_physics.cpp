@@ -12,16 +12,18 @@ namespace p = kac_core::physics;
 
 PYBIND11_MODULE(_physics, m) {
 	m.doc() = "_physics";
-	m.def("_calculateCircularAmplitudes", &p::calculateCircularAmplitudes);
-	m.def("_calculateCircularSeries", &p::calculateCircularSeries);
-	m.def("_calculateRectangularAmplitudes", &p::calculateRectangularAmplitudes);
-	m.def("_calculateRectangularSeries", &p::calculateRectangularSeries);
+	m.def("_circularAmplitudes", &p::circularAmplitudes);
+	m.def("_circularSeries", &p::circularSeries);
+	m.def("_equilateralTriangleAmplitudes", &p::equilateralTriangleAmplitudes);
+	m.def("_equilateralTriangleSeries", &p::equilateralTriangleSeries);
 	m.def("_FDTDUpdate2D", &p::FDTDUpdate2D);
 	m.def("_FDTDWaveform2D", &p::FDTDWaveform2D);
 	m.def("_raisedCosine1D", &p::raisedCosine1D);
 	m.def("_raisedCosine2D", &p::raisedCosine2D);
 	m.def("_raisedTriangle1D", &p::raisedTriangle1D);
 	m.def("_raisedTriangle2D", &p::raisedTriangle2D);
+	m.def("_rectangularAmplitudes", &p::rectangularAmplitudes);
+	m.def("_rectangularSeries", &p::rectangularSeries);
 	m.def("_WaveEquationWaveform2D", &p::WaveEquationWaveform2D);
 	m.def("besselJ", &p::besselJ);
 	m.def("besselJZero", &p::besselJZero);

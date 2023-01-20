@@ -12,6 +12,7 @@ from .dataset import (
 from .samplers import (
 	BesselModel,
 	FDTDModel,
+	LaméModel,
 	PoissonModel,
 	TestSweep,
 	TestTone,
@@ -33,6 +34,7 @@ __all__ = [
 	# samplers
 	'BesselModel',
 	'FDTDModel',
+	'LaméModel',
 	'PoissonModel',
 	# samplers - tests
 	'TestSweep',

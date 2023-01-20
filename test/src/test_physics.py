@@ -6,13 +6,13 @@ import numpy as np 			# maths
 
 # src
 from kac_drumset.physics import (
-	calculateCircularAmplitudes,
-	calculateCircularSeries,
-	calculateRectangularAmplitudes,
-	FDTD_2D,
+	circularAmplitudes,
+	circularSeries,
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
+	rectangularAmplitudes,
+	FDTD_2D,
 )
 
 
@@ -27,11 +27,11 @@ class PhysicsTests(TestCase):
 		'''
 
 		# This test asserts that the amplitude calculation is programmed correctly.
-		series = calculateCircularSeries(10, 10)
+		series = circularSeries(10, 10)
 		for r in [1., -1.]:
 			for theta in [0., np.pi / 2, np.pi, np.pi * 2]:
 				self.assertAlmostEqual(
-					float(calculateCircularAmplitudes(r, theta, series).max()),
+					float(circularAmplitudes(r, theta, series).max()),
 					0.,
 					places=15,
 				)
@@ -79,22 +79,22 @@ class PhysicsTests(TestCase):
 			e_root = e ** 0.5
 			e_inv = 1 / (e ** 0.5)
 			self.assertAlmostEqual(
-				float(calculateRectangularAmplitudes((0., 0.), 10, 10, e).max()),
+				float(rectangularAmplitudes((0., 0.), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
 			self.assertAlmostEqual(
-				float(calculateRectangularAmplitudes((e_root, 0.), 10, 10, e).max()),
+				float(rectangularAmplitudes((e_root, 0.), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
 			self.assertAlmostEqual(
-				float(calculateRectangularAmplitudes((0., e_inv), 10, 10, e).max()),
+				float(rectangularAmplitudes((0., e_inv), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
 			self.assertAlmostEqual(
-				float(calculateRectangularAmplitudes((e_root, e_inv), 10, 10, e).max()),
+				float(rectangularAmplitudes((e_root, e_inv), 10, 10, e).max()),
 				0.,
 				places=28,
 			)

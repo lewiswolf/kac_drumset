@@ -12,7 +12,7 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..dataset.utils import classLocalsToKwargs
-from ..physics import calculateCircularAmplitudes, calculateCircularSeries, WaveEquationWaveform2D
+from ..physics import circularAmplitudes, circularSeries, WaveEquationWaveform2D
 
 __all__ = [
 	'BesselModel',
@@ -81,7 +81,7 @@ class BesselModel(AudioSampler):
 		self.c = (self.t / self.p) ** 0.5
 		self.k = 1. / self.sample_rate
 		self.decay = -1 * self.k * 6 * np.log(10) / self.d_60
-		self.series = calculateCircularSeries(N, M)
+		self.series = circularSeries(N, M)
 
 	def generateWaveform(self) -> None:
 		'''
@@ -90,7 +90,7 @@ class BesselModel(AudioSampler):
 
 		self.waveform = WaveEquationWaveform2D(
 			self.F,
-			self.a * calculateCircularAmplitudes(*self.strike, self.series),
+			self.a * circularAmplitudes(*self.strike, self.series),
 			self.decay,
 			self.k,
 			self.length,

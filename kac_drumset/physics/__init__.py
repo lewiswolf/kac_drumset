@@ -9,10 +9,12 @@ from .fdtd import (
 	raisedTriangle,
 )
 from .modes import (
-	calculateCircularAmplitudes,
-	calculateCircularSeries,
-	calculateRectangularAmplitudes,
-	calculateRectangularSeries,
+	circularAmplitudes,
+	circularSeries,
+	equilateralTriangleAmplitudes,
+	equilateralTriangleSeries,
+	rectangularAmplitudes,
+	rectangularSeries,
 	WaveEquationWaveform2D,
 )
 
@@ -20,13 +22,15 @@ __all__ = [
 	# methods
 	'besselJ',
 	'besselJZero',
-	'calculateCircularAmplitudes',
-	'calculateCircularSeries',
-	'calculateRectangularAmplitudes',
-	'calculateRectangularSeries',
+	'circularAmplitudes',
+	'circularSeries',
+	'equilateralTriangleAmplitudes',
+	'equilateralTriangleSeries',
 	'FDTDWaveform2D',
 	'raisedCosine',
 	'raisedTriangle',
+	'rectangularAmplitudes',
+	'rectangularSeries',
 	'WaveEquationWaveform2D',
 	# classes
 	'FDTD_2D',

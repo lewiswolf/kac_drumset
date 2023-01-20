@@ -1,5 +1,5 @@
 '''
-This sampler is used to produce a linear model of a rectangular membrane.
+This sampler is used to produce a linear model of a triangular membrane.
 '''
 
 # core
@@ -12,34 +12,34 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..dataset.utils import classLocalsToKwargs
-from ..physics import rectangularAmplitudes, rectangularSeries, WaveEquationWaveform2D
+from ..physics import equilateralTriangleAmplitudes, equilateralTriangleSeries, WaveEquationWaveform2D
 
 __all__ = [
-	'PoissonModel',
+	'LaméModel',
 ]
 
 
-class PoissonModel(AudioSampler):
+class LaméModel(AudioSampler):
 	'''
-	A linear model of a unit area rectangle with aspect ratio Є, using poisson equations of the first kind.
+	A linear model of an equilateral triangle membrane using Lamé equations.
 	'''
 
 	# user defined variables
-	a: float						# maximum amplitude of the simulation ∈ [0, 1]
-	d_60: float						# decay time (seconds)
-	M: int							# number of mth modes
-	N: int							# number of nth modes
-	p: float						# material density of the simulated drum membrane (kg/m^2)
-	t: float						# tension at rest (N/m)
+	a: float							# maximum amplitude of the simulation ∈ [0, 1]
+	d_60: float							# decay time (seconds)
+	M: int								# number of mth modes
+	N: int								# number of nth modes
+	p: float							# material density of the simulated drum membrane (kg/m^2)
+	t: float							# tension at rest (N/m)
 	# model inferences
-	c: float						# wavespeed (m/s)
-	decay: float					# decay constant
-	F: npt.NDArray[np.float64]		# array of eigenfrequencies
-	k: float						# sample length (ms)
+	c: float							# wavespeed (m/s)
+	decay: float						# decay constant
+	F: npt.NDArray[np.float64]			# array of eigenfrequencies
+	k: float							# sample length (ms)
+	series: npt.NDArray[np.float64]		# array of eigenmodes z_nm
 	# drum properties
-	epsilon: float					# aspect ratio
-	L: float						# size of the drum (m)
-	strike: tuple[float, float]		# strike location in cartesian coordinates
+	L: float							# diameter of the drum (m)
+	strike: tuple[float, float, float]	# strike location in cartesian coordinates
 
 	class Settings(SamplerSettings, total=False):
 		'''
@@ -81,36 +81,27 @@ class PoissonModel(AudioSampler):
 		self.c = (self.t / self.p) ** 0.5
 		self.k = 1. / self.sample_rate
 		self.decay = -1 * self.k * 6 * np.log(10) / self.d_60
+		self.series = equilateralTriangleSeries(N, M)
 
 	def generateWaveform(self) -> None:
 		'''
 		Using additive synthesis, generate the waveform for the linear model.
 		'''
 
-		if hasattr(self, 'L'):
-			self.waveform = WaveEquationWaveform2D(
-				self.F,
-				self.a * rectangularAmplitudes(
-					(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),
-					self.N,
-					self.M,
-					self.epsilon,
-				),
-				self.decay,
-				self.k,
-				self.length,
-			)
+		self.waveform = WaveEquationWaveform2D(
+			self.F,
+			self.a * equilateralTriangleAmplitudes(*self.strike, self.N, self.M),
+			self.decay,
+			self.k,
+			self.length,
+		)
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
 		'''
-		Return the labels of the poisson model.
+		Return the labels of the lamé model.
 		'''
 
-		return {
-			'aspect_ratio': [self.epsilon],
-			'drum_size': [self.L],
-			'strike_location': [*self.strike],
-		} if hasattr(self, 'L') else {}
+		return {'drum_size': [self.L], 'strike_location': [*self.strike]} if hasattr(self, 'L') else {}
 
 	def updateProperties(self, i: Union[int, None] = None) -> None:
 		'''
@@ -120,10 +111,9 @@ class PoissonModel(AudioSampler):
 
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
-			self.epsilon = np.random.uniform(1., 4.)
 			self.L = np.random.uniform(0.1, 2.)
-			self.F = rectangularSeries(self.N, self.M, self.epsilon) * self.c / self.L
-			self.strike = (0.5, 0.5)
+			self.F = self.series * self.c / self.L
+			self.strike = (0.5, 0.5, 0.5)
 		else:
 			# otherwise update the strike location to be a random location.
-			self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
+			self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.), np.random.uniform(0., 1.))
