@@ -39,7 +39,7 @@ class LaméModel(AudioSampler):
 	series: npt.NDArray[np.float64]		# array of eigenmodes z_nm
 	# drum properties
 	L: float							# diameter of the drum (m)
-	strike: tuple[float, float, float]	# strike location in cartesian coordinates
+	strike: tuple[float, float, float]	# strike location in trilinear coordinates
 
 	class Settings(SamplerSettings, total=False):
 		'''
