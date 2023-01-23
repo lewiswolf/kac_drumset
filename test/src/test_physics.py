@@ -8,6 +8,7 @@ import numpy as np 			# maths
 from kac_drumset.physics import (
 	circularAmplitudes,
 	circularSeries,
+	equilateralTriangleAmplitudes,
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
@@ -68,6 +69,22 @@ class PhysicsTests(TestCase):
 		self.assertFalse(np.isnan(waveform).any())
 		self.assertLessEqual(waveform.max(), 1.)
 		self.assertGreaterEqual(waveform.min(), -1.)
+
+	def test_lamé(self) -> None:
+		'''
+		Tests used in conjunction with triangular_modes.hpp.
+		'''
+
+		# This test asserts that the amplitude calculation is programmed correctly.
+		self.assertNotEqual(float(equilateralTriangleAmplitudes(0.5, 0.5, 0.5, 10, 10).max()), 0.)
+		for x in [0., 1.]:
+			for y in [0., 1.]:
+				for z in [0., 1.]:
+					self.assertAlmostEqual(
+						float(equilateralTriangleAmplitudes(x, y, z, 10, 10).max()),
+						0.,
+						places=15,
+					)
 
 	def test_poisson(self) -> None:
 		'''
