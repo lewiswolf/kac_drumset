@@ -3,7 +3,7 @@ Import FDTD functions from external C++ library and configure python type conver
 '''
 
 # core
-from typing import Optional
+from typing import Union
 
 # dependencies
 import numpy as np 			# maths
@@ -111,7 +111,7 @@ class FDTD_2D():
 
 		if self._n < self.T:
 			self._n += 1
-			if self._n % 2 == 0:
+			if self._n % 2 == 1:
 				self.u_0 = _FDTDUpdate2D(
 					self.u_0,
 					self.u_1,
@@ -201,8 +201,8 @@ def raisedCosine(
 def raisedTriangle(
 	matrix_size: tuple[int, ...],
 	mu: tuple[float, ...],
-	x_ab: Optional[tuple[float, float]] = None,
-	y_ab: Optional[tuple[float, float]] = None,
+	x_ab: Union[tuple[float, float], None] = None,
+	y_ab: Union[tuple[float, float], None] = None,
 ) -> npt.NDArray[np.float64]:
 	'''
 	Calculate a one or two dimensional triangular distribution.
