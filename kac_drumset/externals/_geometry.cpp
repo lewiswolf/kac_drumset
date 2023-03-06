@@ -4,6 +4,8 @@ Generate python bindings for functions in `/kac_core/geometry` and configure C++
 
 // core
 #include <array>
+#include <random>
+#include <time.h>
 #include <utility>
 #include <vector>
 
@@ -46,8 +48,9 @@ std::vector<std::array<double, 2>> _convexNormalisation(const std::vector<std::a
 	return convertPolygonToVector(g::convexNormalisation(convertVectorToPolygon(V)));
 }
 
+std::default_random_engine random_engine = std::default_random_engine(time(NULL));
 std::vector<std::array<double, 2>> _generateConvexPolygon(const int& N) {
-	return convertPolygonToVector(g::generateConvexPolygon(N));
+	return convertPolygonToVector(g::generateConvexPolygon(N, random_engine));
 }
 
 bool _isColinear(const std::array<std::array<double, 2>, 3>& V) {
