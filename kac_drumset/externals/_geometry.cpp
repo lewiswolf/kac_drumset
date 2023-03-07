@@ -48,9 +48,8 @@ std::vector<std::array<double, 2>> _convexNormalisation(const std::vector<std::a
 	return convertPolygonToVector(g::convexNormalisation(convertVectorToPolygon(V)));
 }
 
-std::default_random_engine random_engine = std::default_random_engine(time(NULL));
 std::vector<std::array<double, 2>> _generateConvexPolygon(const int& N) {
-	return convertPolygonToVector(g::generateConvexPolygon(N, random_engine));
+	return convertPolygonToVector(g::generateConvexPolygon(N));
 }
 
 bool _isColinear(const std::array<std::array<double, 2>, 3>& V) {
