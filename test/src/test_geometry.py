@@ -217,8 +217,8 @@ class GeometryTests(TestCase):
 			self.assertEqual(T.vertices[:, 0].min() + T.vertices[:, 0].max(), 0.)
 			self.assertEqual(T.vertices[:, 1].min() + T.vertices[:, 1].max(), 0.)
 
-		# This tests affirms the symmetry of the method used to generate UnitTriangle
-		norm_tri = normaliseConvexPolygon(P)(UnitTriangle(1., 1.))
-		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(P)(UnitTriangle(1., np.pi - 1.)), norm_tri)))
-		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(P)(UnitTriangle(1., np.pi + 1.)), norm_tri)))
-		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(P)(UnitTriangle(1., -1.)), norm_tri)))
+		# This tests asserts the symmetry of the method used to generate UnitTriangle
+		norm_tri = normaliseConvexPolygon(UnitTriangle(1., 1.))
+		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., np.pi - 1.)), norm_tri)))
+		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., np.pi + 1.)), norm_tri)))
+		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., -1.)), norm_tri)))
