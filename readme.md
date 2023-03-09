@@ -201,13 +201,14 @@ class TorchDataset(torch.utils.data.Dataset):
 from kac_drumset.geometry import (
 	# Methods
 	centroid,
-	convexNormalisation,
 	drawCircle,
 	drawPolygon,
 	generateConvexPolygon,
 	isColinear,
 	isPointInsidePolygon,
 	largestVector,
+	lineIntersection,
+	normaliseConvexPolygon,
 	weylCondition,
 	# Classes
 	RandomPolygon,
@@ -227,16 +228,6 @@ def centroid(P: Polygon) -> tuple[float, float]:
 	'''
 	This algorithm is used to calculate the geometric centroid of a 2D polygon. 
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
-	'''
-
-def convexNormalisation(P: Polygon) -> npt.NDArray[np.float64]:
-	'''
-	This algorithm produces an identity polygon for each unique polygon given as input. This method normalises an input
-	polygon to the unit interval such that x ∈ [0, 1] && y ∈ [0, 1], reducing each input polygon by isometric and
-	similarity transformations. This is achieved by first enforcing that the vertices of a polygon are ordered clockwise.
-	Then, the largest vector is used to determine the lower and upper bounds across the x-axis. Next, the polygon is split
-	into quadrants, the largest of whose area determines the rotation/reflection of the polygon. Finally, the points are
-	normalised, and ordered such that V[0] = [0., y].
 	'''
 
 def drawCircle(C: Circle, grid_size: int) -> npt.NDArray[np.int8]:
@@ -271,6 +262,22 @@ def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]):
 	'''
 	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the
 	vector and its indices.
+	'''
+
+def lineIntersection(A: npt.NDArray[np.float64], B: npt.NDArray[np.float64]) -> tuple[bool, npt.NDArray[np.float64]]:
+	'''
+	Finds the point at which two lines intersect.
+	collisionLineLine() => https://github.com/bmoren/p5.collide2D
+	'''
+
+def normaliseConvexPolygon(P: Polygon) -> npt.NDArray[np.float64]:
+	'''
+	This algorithm produces an identity polygon for each unique polygon given as input. This method normalises an input
+	polygon to the unit interval such that x ∈ [0, 1] && y ∈ [0, 1], reducing each input polygon by isometric and
+	similarity transformations. This is achieved by first enforcing that the vertices of a polygon are ordered clockwise.
+	Then, the largest vector is used to determine the lower and upper bounds across the x-axis. Next, the polygon is split
+	into quadrants, the largest of whose area determines the rotation/reflection of the polygon. Finally, the points are
+	normalised, and ordered such that V[0] = [0., y].
 	'''
 
 def weylCondition(S_1: Shape, S_2: Shape) -> bool:
