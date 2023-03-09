@@ -60,6 +60,14 @@ def GeometryExample() -> None:
 	# src
 	import kac_drumset.geometry as G
 
+	# Define a line
+	line_a = np.array([[0., 0.], [1., 0.]])
+	line_b = np.array([[0., 1.], [1., 1.]])
+	print(
+		'\nThe two lines, [[0., 0.], [1., 0.]] and [[0., 1.], [1., 1.]]'
+		f'${"do" if G.lineIntersection(line_a, line_b)[0] else "do not"} intersect.\n',
+	)
+
 	# Define a circle
 	circle = G.Circle()
 	print(f'\nA circle with radius {circle.r} has an area of {circle.area}.\n')
@@ -80,7 +88,7 @@ def GeometryExample() -> None:
 	# Define a 5 sided convex polygon.
 	polygon = G.Polygon(G.generateConvexPolygon(5))
 	# Normalise the polygon to the unit interval, and remove isometric and similarity transformations.
-	polygon.vertices = G.convexNormalisation(polygon)
+	polygon.vertices = G.normaliseConvexPolygon(polygon)
 	print(f'\nThis is a {polygon.N} sided polygon: \n \n {polygon.vertices} \n')
 	# Assess its area.
 	print(f"Its area is {polygon.area}.")
@@ -105,6 +113,6 @@ def GeometryExample() -> None:
 
 
 if __name__ == '__main__':
-	DatasetExample()
+	# DatasetExample()
 	GeometryExample()
 	exit()

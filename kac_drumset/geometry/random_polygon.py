@@ -7,7 +7,7 @@ import random
 
 # src
 from ._generate_polygon import generateConvexPolygon
-from ._morphisms import convexNormalisation
+from ._morphisms import normaliseConvexPolygon
 from .generate_polygon import generateConcavePolygon
 from .morphisms import concaveNormalisation
 from ._polygon_properties import centroid
@@ -41,6 +41,6 @@ class RandomPolygon(Polygon):
 		else:
 			super().__init__(generateConcavePolygon(random.randint(3, max_vertices)))
 		# normalise
-		self.vertices = convexNormalisation(self) if self.convex else concaveNormalisation(self)
+		self.vertices = normaliseConvexPolygon(self) if self.convex else concaveNormalisation(self)
 		# calculate other properties
 		self.centroid = centroid(self)
