@@ -1,5 +1,6 @@
 from ._generate_polygon import generateConvexPolygon
-from ._morphisms import convexNormalisation
+from ._lines import lineIntersection
+from ._morphisms import normaliseConvexPolygon
 from ._polygon_properties import (
 	centroid,
 	isColinear,
@@ -17,11 +18,12 @@ from .unit_polygon import UnitRectangle, UnitTriangle
 __all__ = [
 	# external methods
 	'centroid',
-	'convexNormalisation',
 	'generateConvexPolygon',
 	'isColinear',
 	'isPointInsidePolygon',
 	'largestVector',
+	'lineIntersection',
+	'normaliseConvexPolygon',
 	# methods
 	'concaveNormalisation',
 	'drawCircle',

@@ -8,13 +8,13 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from .types import Polygon
-from ..externals._geometry import _convexNormalisation
+from ..externals._geometry import _normaliseConvexPolygon
 
 
-__all__ = ['convexNormalisation']
+__all__ = ['normaliseConvexPolygon']
 
 
-def convexNormalisation(P: Polygon) -> npt.NDArray[np.float64]:
+def normaliseConvexPolygon(P: Polygon) -> npt.NDArray[np.float64]:
 	'''
 	This algorithm produces an identity polygon for each unique polygon given as input. This method normalises an input
 	polygon to the unit interval such that x ∈ [0, 1] && y ∈ [0, 1], reducing each input polygon by isometric and
@@ -23,4 +23,4 @@ def convexNormalisation(P: Polygon) -> npt.NDArray[np.float64]:
 	into quadrants, the largest of whose area determines the rotation/reflection of the polygon. Finally, the points are
 	normalised, and ordered such that V[0] = [0., y].
 	'''
-	return np.array(_convexNormalisation(P.vertices))
+	return np.array(_normaliseConvexPolygon(P.vertices))

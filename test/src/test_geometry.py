@@ -8,13 +8,14 @@ import numpy as np 			# maths
 # src
 from kac_drumset.geometry import (
 	centroid,
-	convexNormalisation,
 	drawCircle,
 	drawPolygon,
 	generateConvexPolygon,
 	isColinear,
 	isPointInsidePolygon,
 	largestVector,
+	lineIntersection,
+	normaliseConvexPolygon,
 	RandomPolygon,
 	UnitRectangle,
 	UnitTriangle,
@@ -92,20 +93,35 @@ class GeometryTests(TestCase):
 			# This test asserts that isConvex() works for any closed arrangement of vertices.
 			self.assertTrue(square.convex)
 
-			# This test asserts that convexNormalisation produces the correct output.
+			# This test asserts that normaliseConvexPolygon produces the correct output.
 			self.assertFalse(False in np.equal(
-				convexNormalisation(square),
+				normaliseConvexPolygon(square),
 				np.array([[0., 0.5], [0.5, 1.], [1., 0.5], [0.5, 0.]]),
 			))
-		# This test asserts that after convexNormalisation, the two squares produce the same output.
-		self.assertFalse(False in np.equal(convexNormalisation(squares[0]), convexNormalisation(squares[1])))
-		# This test asserts that after convexNormalisation, the quads produce the same output.
+		# This test asserts that after normaliseConvexPolygon, the two squares produce the same output.
+		self.assertFalse(False in np.equal(normaliseConvexPolygon(squares[0]), normaliseConvexPolygon(squares[1])))
+		# This test asserts that after normaliseConvexPolygon, the quads produce the same output.
 		for quad in quads:
-			quad.vertices = convexNormalisation(quad)
+			quad.vertices = normaliseConvexPolygon(quad)
 		self.assertFalse(False in np.equal(quads[0].vertices, quads[1].vertices))
 		# np.allclose is used, as opposed to np.equal, to account for floating point errors.
 		self.assertTrue(np.allclose(quads[0].vertices, quads[2].vertices))
 		self.assertTrue(np.allclose(quads[0].vertices, quads[3].vertices))
+
+	def test_lines(self) -> None:
+		'''
+		Test properties of lines and curves.
+		'''
+
+		# This test asserts that lineIntersection() correctly reports intersections.
+		A = np.array([[0., 0.], [1., 0.]])
+		B = np.array([[0., 1.], [1., 1.]])
+		self.assertFalse(lineIntersection(A, B)[0])
+		B = np.array([[0.5, -0.5], [0.5, 0.5]])
+		does_it_cross, cross_point = lineIntersection(A, B)
+		self.assertTrue(does_it_cross)
+		self.assertEqual(cross_point[0], 0.5)
+		self.assertEqual(cross_point[1], 0.)
 
 	def test_random_polygon(self) -> None:
 		'''
@@ -163,9 +179,9 @@ class GeometryTests(TestCase):
 					round(polygon.centroid[1] * 99),
 				], 1)
 
-				# This test asserts that convexNormalisation does not continuously alter the polygon.
+				# This test asserts that normaliseConvexPolygon does not continuously alter the polygon.
 				# np.allclose is used, as opposed to np.equal, to account for floating point errors.
-				self.assertTrue(np.allclose(polygon.vertices, convexNormalisation(polygon)))
+				self.assertTrue(np.allclose(polygon.vertices, normaliseConvexPolygon(polygon)))
 
 	def test_unit_polygon(self) -> None:
 		'''
@@ -202,7 +218,7 @@ class GeometryTests(TestCase):
 			self.assertEqual(T.vertices[:, 1].min() + T.vertices[:, 1].max(), 0.)
 
 		# This tests affirms the symmetry of the method used to generate UnitTriangle
-		norm_tri = convexNormalisation(UnitTriangle(1., 1.))
-		self.assertTrue(np.all(np.allclose(convexNormalisation(UnitTriangle(1., np.pi - 1.)), norm_tri)))
-		self.assertTrue(np.all(np.allclose(convexNormalisation(UnitTriangle(1., np.pi + 1.)), norm_tri)))
-		self.assertTrue(np.all(np.allclose(convexNormalisation(UnitTriangle(1., -1.)), norm_tri)))
+		norm_tri = normaliseConvexPolygon(P)(UnitTriangle(1., 1.))
+		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(P)(UnitTriangle(1., np.pi - 1.)), norm_tri)))
+		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(P)(UnitTriangle(1., np.pi + 1.)), norm_tri)))
+		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(P)(UnitTriangle(1., -1.)), norm_tri)))
