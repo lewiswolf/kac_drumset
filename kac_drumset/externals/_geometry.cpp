@@ -5,6 +5,7 @@ Generate python bindings for functions in `/kac_core/geometry` and configure C++
 // core
 #include <array>
 #include <random>
+#include <string>
 #include <time.h>
 #include <utility>
 #include <vector>
@@ -71,12 +72,14 @@ bool _isPointInsideConvexPolygon(const _Point& p, const _Vertices& V) {
 	return g::isPointInsideConvexPolygon(T::Point(p[0], p[1]), convertVectorToPolygon(V));
 }
 
+bool _isSimple(const _Vertices& V) { return g::isSimple(convertVectorToPolygon(V)); }
+
 std::pair<double, std::pair<int, int>> _largestVector(const _Vertices& V) {
 	return g::largestVector(convertVectorToPolygon(V));
 }
 
-std::pair<bool, _Point> _lineIntersection(_Line& A, _Line& B) {
-	std::pair<bool, T::Point> out = g::lineIntersection(
+std::pair<std::string, _Point> _lineIntersection(_Line& A, _Line& B) {
+	std::pair<std::string, T::Point> out = g::lineIntersection(
 		T::Line(T::Point(A[0][0], A[0][1]), T::Point(A[1][0], A[1][1])),
 		T::Line(T::Point(B[0][0], B[0][1]), T::Point(B[1][0], B[1][1]))
 	);
@@ -96,6 +99,7 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_isColinear", &_isColinear);
 	m.def("_isConvex", &_isConvex);
 	m.def("_isPointInsideConvexPolygon", &_isPointInsideConvexPolygon);
+	m.def("_isSimple", &_isSimple);
 	m.def("_largestVector", &_largestVector);
 	m.def("_lineIntersection", &_lineIntersection);
 	m.def("_normaliseConvexPolygon", &_normaliseConvexPolygon);

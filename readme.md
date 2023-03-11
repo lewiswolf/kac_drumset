@@ -206,6 +206,7 @@ from kac_drumset.geometry import (
 	generateConvexPolygon,
 	isColinear,
 	isPointInsidePolygon,
+	isSimple,
 	largestVector,
 	lineIntersection,
 	normaliseConvexPolygon,
@@ -258,16 +259,41 @@ def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	Determines whether or not a cartesian pair is within a polygon, including boundaries.
 	'''
 
+def isSimple(P: Polygon) -> bool:
+	'''
+	Determine if a polygon is simple by checking for intersections.
+	'''
+
 def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]):
 	'''
 	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the
 	vector and its indices.
 	'''
 
-def lineIntersection(A: npt.NDArray[np.float64], B: npt.NDArray[np.float64]) -> tuple[bool, npt.NDArray[np.float64]]:
+def lineIntersection(A: npt.NDArray[np.float64], B: npt.NDArray[np.float64]) -> tuple[
+	Literal['adjacent', 'colinear', 'intersect', 'none', 'vertex'],
+	npt.NDArray[np.float64],
+]:
 	'''
-	Finds the point at which two lines intersect.
-	collisionLineLine() => https://github.com/bmoren/p5.collide2D
+	This function determines whether a line has an intersection, and returns it's type as well
+	as the point of intersection (if one exists).
+	input
+		A, B - Line segments to compare.
+	output
+		type -
+			'none'		No intersection.
+			'intersect' The general case where lines intersect one another.
+			'vertex'	This is the special case when two lines share a vertex.
+			'branch'	This is the special case when a vertex lies within another line. For
+						example, B creates an intersection at point B.a when B.a lies on the
+						open interval (A.a, A.b).
+			'colinear'	This is the special case when the two lines overlap.
+		point -
+			'none'		Empty point.
+			'intersect' The point of intersection ∈ (A.a, A.b) & (B.a, B.b).
+			'vertex'	The shared vertex.
+			'branch'	The branching vertex.
+			'colinear'	The midpoint between all 4 vertices.
 	'''
 
 def normaliseConvexPolygon(P: Polygon) -> npt.NDArray[np.float64]:

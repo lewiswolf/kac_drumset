@@ -2,23 +2,19 @@
 Import functions from external C++ library, housed in geometry/polygon_properties.hpp.
 '''
 
-# dependencies
-import numpy as np 			# maths
-import numpy.typing as npt	# typing for numpy
-
 # src
 from .types import Polygon
 from ..externals._geometry import (
 	_centroid,
-	_isColinear,
 	_isPointInsideConvexPolygon,
+	_isSimple,
 	_largestVector,
 )
 
 __all__ = [
 	'centroid',
-	'isColinear',
 	'isPointInsidePolygon',
+	'isSimple',
 	'largestVector',
 ]
 
@@ -33,24 +29,19 @@ def centroid(P: Polygon) -> tuple[float, float]:
 	return c[0], c[1]
 
 
-def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
-	'''
-	Function wrapper for _isColinear(), converting (v: npt.NDArray[np.float64]): bool into
-	(v: [[float, float], [float, float], [float, float]]): bool.
-
-	Determines whether or not a given set of three vertices are colinear.
-	'''
-	assert vertices.shape == (3, 2), \
-		'isColinear() only supports an input of vertices with shape (3, 2).'
-	return _isColinear(vertices)
-
-
 def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	'''
 	Determines whether or not a cartesian point is within a polygon, including boundaries.
 	'''
 	assert P.convex, 'isPointInsidePolygon() does not currently support concave shapes.'
 	return _isPointInsideConvexPolygon(list(p), P.vertices)
+
+
+def isSimple(P: Polygon) -> bool:
+	'''
+	Determine if a polygon is simple by checking for intersections.
+	'''
+	return _isSimple(P.vertices)
 
 
 def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]:

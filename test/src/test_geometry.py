@@ -13,6 +13,7 @@ from kac_drumset.geometry import (
 	generateConvexPolygon,
 	isColinear,
 	isPointInsidePolygon,
+	isSimple,
 	largestVector,
 	lineIntersection,
 	normaliseConvexPolygon,
@@ -113,24 +114,119 @@ class GeometryTests(TestCase):
 		Test properties of lines and curves.
 		'''
 
-		# This test asserts that lineIntersection() correctly reports intersections.
-		A = np.array([[0., 0.], [1., 0.]])
-		B = np.array([[0., 1.], [1., 1.]])
-		self.assertFalse(lineIntersection(A, B)[0])
-		B = np.array([[0.5, -0.5], [0.5, 0.5]])
-		does_it_cross, cross_point = lineIntersection(A, B)
-		self.assertTrue(does_it_cross)
-		self.assertEqual(cross_point[0], 0.5)
-		self.assertEqual(cross_point[1], 0.)
+		# This test asserts that lineIntersection() correctly reports none.
+		does_it_cross, cross_point = lineIntersection(
+			np.array([[0., 0.], [1., 0.]]),
+			np.array([[0., 1.], [1., 1.]]),
+		)
+		self.assertEqual(does_it_cross, 'none')
+		self.assertTrue(cross_point[0] == 0. and cross_point[1] == 0.)
+
+		# This test asserts that lineIntersection() correctly reports intersection.
+		does_it_cross, cross_point = lineIntersection(
+			np.array([[0., 0.], [1., 0.]]),
+			np.array([[0.5, -0.5], [0.5, 0.5]]),
+		)
+		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
+
+		# This test asserts that lineIntersection() correctly reports vertex.
+		does_it_cross, cross_point = lineIntersection(
+			np.array([[0., 0.], [1., 0.]]),
+			np.array([[1., 0.], [1., 1.]]),
+		)
+		self.assertEqual(does_it_cross, 'vertex')
+		self.assertTrue(cross_point[0] == 1. and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			np.array([[0., 0.], [1., 1.]]),
+			np.array([[1., 0.], [1., 1.]]),
+		)
+		self.assertEqual(does_it_cross, 'vertex')
+		self.assertTrue(cross_point[0] == 1. and cross_point[1] == 1.)
+		does_it_cross, cross_point = lineIntersection(
+			np.array([[0., 0.], [1., 0.]]),
+			np.array([[0., 0.], [1., 1.]]),
+		)
+		self.assertEqual(does_it_cross, 'vertex')
+		self.assertTrue(cross_point[0] == 0. and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			np.array([[0., 1.], [1., 1.]]),
+			np.array([[0., 0.], [0., 1.]]),
+		)
+		self.assertEqual(does_it_cross, 'vertex')
+		self.assertTrue(cross_point[0] == 0. and cross_point[1] == 1.)
+
+		# This test asserts that lineIntersection() correctly reports adjacent.
+		does_it_cross, cross_point = lineIntersection(
+			np.array([[0., 0.], [1., 0.]]),
+			np.array([[0.5, 0.], [0.5, 1.]]),
+		)
+		self.assertEqual(does_it_cross, 'adjacent')
+		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			np.array([[0.5, 0.], [0.5, 1.]]),
+			np.array([[0., 0.], [1., 0.]]),
+		)
+		self.assertEqual(does_it_cross, 'adjacent')
+		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
+
+		# This test asserts that lineIntersection() correctly reports colinear.
+		does_it_cross, cross_point = lineIntersection(
+			# B inside
+			np.array([[0., 0.], [1., 0.]]),
+			np.array([[0.25, 0.], [0.75, 0.]]),
+		)
+		self.assertEqual(does_it_cross, 'colinear')
+		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			# B left
+			np.array([[0., 0.], [1., 0.]]),
+			np.array([[-0.5, 0.], [0.5, 0.]]),
+		)
+		self.assertEqual(does_it_cross, 'colinear')
+		self.assertTrue(cross_point[0] == 0.25 and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			# B right
+			np.array([[0., 0.], [1., 0.]]),
+			np.array([[-0.5, 0.], [1.5, 0.]]),
+		)
+		self.assertEqual(does_it_cross, 'colinear')
+		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			# A inside
+			np.array([[0.25, 0.], [0.75, 0.]]),
+			np.array([[0., 0.], [1., 0.]]),
+		)
+		self.assertEqual(does_it_cross, 'colinear')
+		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			# A left
+			np.array([[-0.5, 0.], [0.5, 0.]]),
+			np.array([[0., 0.], [1., 0.]]),
+		)
+		self.assertEqual(does_it_cross, 'colinear')
+		self.assertTrue(cross_point[0] == 0.25 and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			# A right
+			np.array([[-0.5, 0.], [1.5, 0.]]),
+			np.array([[0., 0.], [1., 0.]]),
+		)
+		self.assertEqual(does_it_cross, 'colinear')
+		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
 
 	def test_random_polygon(self) -> None:
 		'''
 		Stress test multiple properties of the class RandomPolygon.
 		'''
 
-		# This test asserts that generateConvexPolygon always produces a unique output.
+		# This test asserts that isSimple works as expected.
+		self.assertTrue(isSimple(Polygon([[0., 0.], [1., 0.], [1., 1.], [0., 1.]])))
+		self.assertFalse(isSimple(Polygon([[0., 0.], [1., 1.], [1., 0.], [0., 1.]])))
+
 		for i in range(100):
-			self.assertFalse(np.all(np.equal(generateConvexPolygon(3), generateConvexPolygon(3))))
+			polygon = Polygon(generateConvexPolygon(3))
+
+			# This test asserts that generateConvexPolygon always produces a unique output.
+			self.assertFalse(np.all(np.equal(polygon.vertices, generateConvexPolygon(3))))
 
 		for i in range(10000):
 			polygon = RandomPolygon(20, allow_concave=True)
@@ -138,6 +234,9 @@ class GeometryTests(TestCase):
 
 			# This test asserts that a polygon has the correct number of vertices.
 			self.assertEqual(len(polygon.vertices), polygon.N)
+
+			# This test asserts that a polygon has is simple.
+			self.assertTrue(isSimple(polygon))
 
 			# This test asserts that the vertices are strictly bounded between 0.0 and 1.0.
 			self.assertEqual(polygon.vertices.min(), 0.)

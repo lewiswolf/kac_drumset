@@ -1,19 +1,15 @@
 from ._generate_polygon import generateConvexPolygon
-from ._lines import lineIntersection
+from ._lines import isColinear, lineIntersection
 from ._morphisms import normaliseConvexPolygon
-from ._polygon_properties import (
-	centroid,
-	isColinear,
-	isPointInsidePolygon,
-	largestVector,
-)
-from .generate_polygon import generateConcavePolygon
+from ._polygon_properties import centroid, isPointInsidePolygon, isSimple, largestVector
 from .isospectrality import weylCondition
-from .morphisms import concaveNormalisation
 from .projections import drawCircle, drawPolygon
 from .random_polygon import RandomPolygon
 from .types import Circle, Polygon, Shape
-from .unit_polygon import UnitRectangle, UnitTriangle
+from .unit_polygon import UnitRectangle
+
+from .morphisms import concaveNormalisation
+from .unit_polygon import UnitTriangle
 
 __all__ = [
 	# external methods
@@ -21,6 +17,7 @@ __all__ = [
 	'generateConvexPolygon',
 	'isColinear',
 	'isPointInsidePolygon',
+	'isSimple',
 	'largestVector',
 	'lineIntersection',
 	'normaliseConvexPolygon',
@@ -28,7 +25,6 @@ __all__ = [
 	'concaveNormalisation',
 	'drawCircle',
 	'drawPolygon',
-	'generateConcavePolygon',
 	'weylCondition',
 	# classes
 	'RandomPolygon',
