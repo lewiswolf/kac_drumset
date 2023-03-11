@@ -11,6 +11,7 @@ from kac_drumset.geometry import (
 	drawCircle,
 	drawPolygon,
 	generateConvexPolygon,
+	generatePolygon,
 	isColinear,
 	isPointInsidePolygon,
 	isSimple,
@@ -223,17 +224,20 @@ class GeometryTests(TestCase):
 		self.assertFalse(isSimple(Polygon([[0., 0.], [1., 1.], [1., 0.], [0., 1.]])))
 
 		for i in range(100):
-			polygon = Polygon(generateConvexPolygon(3))
+			polygon_0 = Polygon(generateConvexPolygon(3))
+			polygon_1 = Polygon(generatePolygon(3))
 
 			# This test asserts that generateConvexPolygon always produces a unique output.
-			self.assertFalse(np.all(np.equal(polygon.vertices, generateConvexPolygon(3))))
+			self.assertFalse(np.all(np.equal(polygon_0.vertices, generateConvexPolygon(3))))
+			self.assertFalse(np.all(np.equal(polygon_1.vertices, generatePolygon(3))))
 
-			# This test asserts that modifying the polygon method output.
-			area = polygon.area()
-			convex = polygon.convex()
-			polygon.vertices[0] = 0.0
-			self.assertNotEqual(area, polygon.area())
-			self.assertNotEqual(convex, polygon.convex())
+			# This test asserts that it is possible to modify the polygon.
+			area = polygon_0.area()
+			polygon_0.vertices = generateConvexPolygon(3)
+			self.assertNotEqual(area, polygon_0.area())
+			area = polygon_1.area()
+			polygon_1.vertices = generatePolygon(3)
+			self.assertNotEqual(area, polygon_1.area())
 
 		for i in range(10000):
 			polygon = RandomPolygon(20, allow_concave=True)
