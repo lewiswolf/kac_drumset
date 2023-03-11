@@ -8,10 +8,13 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from .types import Polygon
-from ..externals._geometry import _normaliseConvexPolygon
+from ..externals._geometry import _normaliseConvexPolygon, _normalisePolygon
 
 
-__all__ = ['normaliseConvexPolygon']
+__all__ = [
+	'normaliseConvexPolygon',
+	'normalisePolygon',
+]
 
 
 def normaliseConvexPolygon(P: Polygon) -> npt.NDArray[np.float64]:
@@ -24,3 +27,11 @@ def normaliseConvexPolygon(P: Polygon) -> npt.NDArray[np.float64]:
 	normalised, and ordered such that V[0] = [0., y].
 	'''
 	return np.array(_normaliseConvexPolygon(P.vertices))
+
+
+def normalisePolygon(P: Polygon) -> npt.NDArray[np.float64]:
+	'''
+	This algorithm performs general normalisation rotations to ensure uniqueness, however it is	not comprehensive for all
+	simple geometric transformations.
+	'''
+	return np.array(_normalisePolygon(P.vertices))

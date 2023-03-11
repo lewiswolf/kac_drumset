@@ -52,9 +52,7 @@ _Point _centroid(const _Vertices& V, double area) {
 	return {c.x, c.y};
 }
 
-_Vertices _normaliseConvexPolygon(const _Vertices& V) {
-	return convertPolygonToVector(g::normaliseConvexPolygon(convertVectorToPolygon(V)));
-}
+_Vertices _generatePolygon(const int& N) { return convertPolygonToVector(g::generatePolygon(N)); }
 
 _Vertices _generateConvexPolygon(const int& N) {
 	return convertPolygonToVector(g::generateConvexPolygon(N));
@@ -86,6 +84,14 @@ std::pair<std::string, _Point> _lineIntersection(_Line& A, _Line& B) {
 	return std::make_pair(out.first, _Point({out.second.x, out.second.y}));
 }
 
+_Vertices _normaliseConvexPolygon(const _Vertices& V) {
+	return convertPolygonToVector(g::normaliseConvexPolygon(convertVectorToPolygon(V)));
+}
+
+_Vertices _normalisePolygon(const _Vertices& V) {
+	return convertPolygonToVector(g::normaliseSimplePolygon(convertVectorToPolygon(V)));
+}
+
 double _polygonArea(const _Vertices& V) { return g::polygonArea(convertVectorToPolygon(V)); }
 
 /*
@@ -95,6 +101,7 @@ PyBind11 config.
 PYBIND11_MODULE(_geometry, m) {
 	m.doc() = "_geometry";
 	m.def("_centroid", &_centroid);
+	m.def("_generatePolygon", &_generatePolygon);
 	m.def("_generateConvexPolygon", &_generateConvexPolygon);
 	m.def("_isColinear", &_isColinear);
 	m.def("_isConvex", &_isConvex);
@@ -103,5 +110,6 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_largestVector", &_largestVector);
 	m.def("_lineIntersection", &_lineIntersection);
 	m.def("_normaliseConvexPolygon", &_normaliseConvexPolygon);
+	m.def("_normalisePolygon", &_normalisePolygon);
 	m.def("_polygonArea", &_polygonArea);
 }

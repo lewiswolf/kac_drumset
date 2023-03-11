@@ -12,10 +12,6 @@
 
 ## `geometry.py`
 
--   **Missing a reliable algorithm to generate all concave shapes**
-
-    Currently, convex shapes can be deterministically created with an efficient algorithm, as well as some concave shapes. However, due to the algorithm chosen to create concave shapes, not _all_ possible concave shapes can be created. The concave algorithm works by centring a collection of random points around the origin, and connecting them according to their polar angle. More complex concave shapes do not share this property, as it is possible for concave shapes to not obey this ordering, whilst maintaining that there are no line crossings. The best solution I have found so far is [scikit-geometry's](https://github.com/scikit-geometry/scikit-geometry) python wrapper around CGAL's [random_polygon_2()](https://doc.cgal.org/latest/Generator/group__PkgGeneratorsRef.html#gaa8cb58e4cc9ab9e225808799b1a61174), which uses a 2-opt approach to configuring the polygon. Due to scikit-geometry needing to be built from source, this has not yet been implemented.
-
 -   **concaveNormalisation**
 
     Concave normalisation is currently not supported. The method currently available does not account for isometric or more complicated transformations, as well as the order of the vertices. Upon completion, the below tests can be applied for all randomly generated polygons.

@@ -204,12 +204,14 @@ from kac_drumset.geometry import (
 	drawCircle,
 	drawPolygon,
 	generateConvexPolygon,
+	generatePolygon,
 	isColinear,
 	isPointInsidePolygon,
 	isSimple,
 	largestVector,
 	lineIntersection,
 	normaliseConvexPolygon,
+	normalisePolygon,
 	weylCondition,
 	# Classes
 	RandomPolygon,
@@ -247,6 +249,23 @@ def generateConvexPolygon(N: int) -> npt.NDArray[np.float64]:
 	'''
 	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted from Sander Verdonschot's Java version,
 	found here: https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
+	'''
+
+def generatePolygon(N: int) -> npt.NDArray[np.float64]:
+	'''
+	This algorithm is based on a method of eliminating self-intersections in a polygon by
+	using the Lin and Kerningham '2-opt' moves. Such a move eliminates an intersection between
+	two edges by reversing the order of the vertices between the edges. Intersecting edges are
+	detected using a simple sweep through the vertices and then one intersection is chosen at
+	random to eliminate after each sweep.
+	https://doc.cgal.org/latest/Generator/group__PkgGeneratorsRef.html#gaa8cb58e4cc9ab9e225808799b1a61174
+	van Leeuwen, J., & Schoone, A. A. (1982). Untangling a traveling salesman tour in the plane.
+
+	input:
+		N = the number of vertices
+		seed? = the seed for the random number generators
+	output:
+		V = a concave polygon of N random vertices
 	'''
 
 def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
@@ -304,6 +323,12 @@ def normaliseConvexPolygon(P: Polygon) -> npt.NDArray[np.float64]:
 	Then, the largest vector is used to determine the lower and upper bounds across the x-axis. Next, the polygon is split
 	into quadrants, the largest of whose area determines the rotation/reflection of the polygon. Finally, the points are
 	normalised, and ordered such that V[0] = [0., y].
+	'''
+
+def normalisePolygon(P: Polygon) -> npt.NDArray[np.float64]:
+	'''
+	This algorithm performs general normalisation rotations to ensure uniqueness, however it is	not comprehensive for all
+	simple geometric transformations.
 	'''
 
 def weylCondition(S_1: Shape, S_2: Shape) -> bool:

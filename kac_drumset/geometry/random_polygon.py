@@ -6,10 +6,8 @@ RandomPolygon is used to generate a random drum shape alongside computing some o
 import random
 
 # src
-from ._generate_polygon import generateConvexPolygon
-from ._morphisms import normaliseConvexPolygon
-from .generate_polygon import generateConcavePolygon
-from .morphisms import concaveNormalisation
+from ._generate_polygon import generatePolygon, generateConvexPolygon
+from ._morphisms import normaliseConvexPolygon, normalisePolygon
 from ._polygon_properties import centroid
 from .types import Polygon
 
@@ -39,8 +37,8 @@ class RandomPolygon(Polygon):
 		if not allow_concave or random.getrandbits(1):
 			super().__init__(generateConvexPolygon(random.randint(3, max_vertices)))
 		else:
-			super().__init__(generateConcavePolygon(random.randint(3, max_vertices)))
+			super().__init__(generatePolygon(random.randint(3, max_vertices)))
 		# normalise
-		self.vertices = normaliseConvexPolygon(self) if self.convex else concaveNormalisation(self)
+		self.vertices = normaliseConvexPolygon(self) if self.convex else normalisePolygon(self)
 		# calculate other properties
 		self.centroid = centroid(self)
