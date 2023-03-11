@@ -23,7 +23,6 @@ class RandomPolygon(Polygon):
 	'''
 
 	centroid: tuple[float, float]		# coordinate pair representing the centroid of the polygon
-	convex: bool						# is the polygon convex?
 
 	def __init__(self, max_vertices: int, allow_concave: bool = False) -> None:
 		'''
@@ -39,6 +38,6 @@ class RandomPolygon(Polygon):
 		else:
 			super().__init__(generatePolygon(random.randint(3, max_vertices)))
 		# normalise
-		self.vertices = normaliseConvexPolygon(self) if self.convex else normalisePolygon(self)
+		self.vertices = normaliseConvexPolygon(self) if self.convex() else normalisePolygon(self)
 		# calculate other properties
 		self.centroid = centroid(self)

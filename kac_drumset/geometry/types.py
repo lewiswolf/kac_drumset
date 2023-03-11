@@ -4,7 +4,6 @@ This file contains the fixed geometric types used as part of this package.
 
 # core
 from abc import ABC, abstractmethod
-from functools import cached_property
 from typing import Union
 
 # dependencies
@@ -30,7 +29,6 @@ class Shape(ABC):
 		pass
 
 	@abstractmethod
-	@cached_property
 	def area(self) -> float:
 		pass
 
@@ -49,7 +47,6 @@ class Circle(Shape):
 		'''
 		self.r = r
 
-	@cached_property
 	def area(self) -> float:
 		''' Archimedes. '''
 		return np.pi * (self.r ** 2.)
@@ -74,7 +71,6 @@ class Polygon(Shape):
 		self.N = self.vertices.shape[0]
 		assert self.N >= 3, 'A polygon must have three vertices.'
 
-	@cached_property
 	def area(self) -> float:
 		'''
 		An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
@@ -82,7 +78,6 @@ class Polygon(Shape):
 		'''
 		return _polygonArea(self.vertices)
 
-	@cached_property
 	def convex(self) -> bool:
 		'''
 		Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for

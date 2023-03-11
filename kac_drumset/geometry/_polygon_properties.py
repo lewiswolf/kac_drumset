@@ -25,7 +25,7 @@ def centroid(P: Polygon) -> tuple[float, float]:
 	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
 	'''
 
-	c = _centroid(P.vertices, P.area)
+	c = _centroid(P.vertices, P.area())
 	return c[0], c[1]
 
 
@@ -33,7 +33,7 @@ def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	'''
 	Determines whether or not a cartesian point is within a polygon, including boundaries.
 	'''
-	assert P.convex, 'isPointInsidePolygon() does not currently support concave shapes.'
+	assert P.convex(), 'isPointInsidePolygon() does not currently support concave shapes.'
 	return _isPointInsideConvexPolygon(list(p), P.vertices)
 
 

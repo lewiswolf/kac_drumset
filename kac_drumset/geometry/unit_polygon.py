@@ -3,7 +3,6 @@ This file is used to define varying polygons with unit area.
 '''
 
 # core
-from functools import cached_property
 import math
 
 # src
@@ -33,7 +32,6 @@ class UnitRectangle(Polygon):
 		y_1 = -1. * y_0
 		super().__init__([[x_0, y_0], [x_0, y_1], [x_1, y_1], [x_1, y_0]])
 
-	@cached_property
 	def area(self) -> float: return 1.
 
 
@@ -58,5 +56,4 @@ class UnitTriangle(Polygon):
 			[one_root_two * self.r * math.cos(self.theta), one_root_two * r_sin_theta],
 		])
 
-	@cached_property
 	def area(self) -> float: return 1.

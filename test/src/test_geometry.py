@@ -228,6 +228,13 @@ class GeometryTests(TestCase):
 			# This test asserts that generateConvexPolygon always produces a unique output.
 			self.assertFalse(np.all(np.equal(polygon.vertices, generateConvexPolygon(3))))
 
+			# This test asserts that modifying the polygon method output.
+			area = polygon.area()
+			convex = polygon.convex()
+			polygon.vertices[0] = 0.0
+			self.assertNotEqual(area, polygon.area())
+			self.assertNotEqual(convex, polygon.convex())
+
 		for i in range(10000):
 			polygon = RandomPolygon(20, allow_concave=True)
 			LV = largestVector(polygon)
@@ -249,7 +256,7 @@ class GeometryTests(TestCase):
 			# places. This comparison is bounded due to the area() being 64-bit, whilst the comparison function,
 			# cv2.contourArea(), is 32-bit.
 			self.assertAlmostEqual(
-				polygon.area,
+				polygon.area(),
 				cv2.contourArea(polygon.vertices.astype('float32')),
 				places=7,
 			)
@@ -262,10 +269,10 @@ class GeometryTests(TestCase):
 					polygon.vertices[(n + 1) % polygon.N],
 				])))
 
-			if polygon.convex:
+			if polygon.convex():
 				# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
 				# can assume that the generateConvexPolygon() function works as intended.
-				self.assertTrue(polygon.convex)
+				self.assertTrue(polygon.convex())
 
 				# This test asserts that the largest vector lies across the x-axis.
 				self.assertTrue(polygon.vertices[LV[1][0]][0] == 0.)
@@ -296,7 +303,7 @@ class GeometryTests(TestCase):
 			R = UnitRectangle(epsilon)
 			P = Polygon(vertices)
 			self.assertTrue(np.all(np.equal(R.vertices, P.vertices)))
-			self.assertEqual(R.area, P.area)
+			self.assertEqual(R.area(), P.area())
 			self.assertEqual(centroid(R), (0., 0.))
 
 		# Test the vertices and area of the UnitTriangle for varying r, theta.
@@ -312,7 +319,7 @@ class GeometryTests(TestCase):
 		]:
 			T = UnitTriangle(1., np.pi / 3)
 			P = Polygon(T.vertices)
-			self.assertAlmostEqual(T.area, P.area)
+			self.assertAlmostEqual(T.area(), P.area())
 			self.assertEqual(T.vertices[:, 0].min() + T.vertices[:, 0].max(), 0.)
 			self.assertEqual(T.vertices[:, 1].min() + T.vertices[:, 1].max(), 0.)
 
