@@ -206,6 +206,7 @@ from kac_drumset.geometry import (
 	generateConvexPolygon,
 	generatePolygon,
 	isColinear,
+	isConvex,
 	isPointInsidePolygon,
 	isSimple,
 	largestVector,
@@ -558,39 +559,6 @@ def rectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]
 	output:
 		S = {
 			((m ** 2 / Є) + (Єn ** 2)) ** 0.5
-			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
-		}
-	'''
-
-def equilateralTriangleAmplitudes(x: float, y: float, z: float, N: int, M: int) -> npt.NDArray[np.float64]:
-	'''
-	Calculate the amplitudes of the equilateral triangle eigenmodes relative to a
-	trilinear strike location according to Lamé's formula.
-	Seth (1940) Transverse Vibrations of Triangular Membranes.
-	input:
-		( x, y, z ) = trilinear coordinate
-		N = number of modal orders
-		M = number of modes per order
-	output:
-		A = {
-			abs(sin(nxπ) sin(nyπ) sin(nzπ))
-			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
-		}
-	'''
-
-	return np.array(_equilateralTriangleAmplitudes(x, y, z, N, M))
-
-
-def equilateralTriangleSeries(N: int, M: int) -> npt.NDArray[np.float64]:
-	'''
-	Calculate the eigenmodes of an equilateral triangle according to Lamé's formula.
-	Seth (1940) Transverse Vibrations of Triangular Membranes.
-	input:
-		N = number of modal orders
-		M = number of modes per order
-	output:
-		S = {
-			(m ** 2 + n ** 2 + mn) ** 0.5
 			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
 		}
 	'''
