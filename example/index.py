@@ -60,24 +60,16 @@ def GeometryExample() -> None:
 	# src
 	import kac_drumset.geometry as G
 
-	# Define a line
-	line_a = np.array([[0., 0.], [1., 0.]])
-	line_b = np.array([[0., 1.], [1., 1.]])
-	print(
-		'\nThe two lines, [[0., 0.], [1., 0.]] and [[0., 1.], [1., 1.]]'
-		f'${"do" if G.lineIntersection(line_a, line_b)[0] else "do not"} intersect.\n',
-	)
-
 	# Define a circle
 	circle = G.Circle()
-	print(f'\nA circle with radius {circle.r} has an area of {circle.area}.\n')
+	print(f'\nA circle with radius {circle.r} has an area of {circle.area()}.\n')
 
 	# Define a square.
 	square = G.Polygon(np.array([[0., 0.], [0., 1.], [1., 1.], [1., 0.]]))
 	print(f'This is a square: \n \n {square.vertices} \n')
 	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
-	print(f'Its area is {square.area}.')
+	print(f'Its area is {square.area()}.')
 	print(
 		f'A square {"does" if G.isColinear(square.vertices[0: 3]) else "does not"} contain any points that are colinear.',
 	)
@@ -91,9 +83,11 @@ def GeometryExample() -> None:
 	polygon.vertices = G.normaliseConvexPolygon(polygon)
 	print(f'\nThis is a {polygon.N} sided polygon: \n \n {polygon.vertices} \n')
 	# Assess its area.
-	print(f"Its area is {polygon.area}.")
+	print(f"Its area is {polygon.area()}.")
+	# Compute its simplicity.
+	print(f'It is {G.isSimple(polygon)} that this polygon is simple.')
 	# Compute its convexity.
-	print(f'It is {polygon.convex} that this polygon is convex.')
+	print(f'It is {G.isConvex(polygon)} that this polygon is convex.')
 	# Compute the geometric centroid.
 	print(f"This polygon's centroid is at {G.centroid(polygon)}.")
 	# Determine if an arbitrary point is within the polygon.
@@ -106,6 +100,16 @@ def GeometryExample() -> None:
 		f'({polygon.vertices[c[1], 0]}, {polygon.vertices[c[1], 1]})].',
 	)
 
+	# Define a line
+	line_a = np.array([[0., 0.], [1., 0.]])
+	line_b = np.array([[0., 1.], [1., 1.]])
+	do_they_intersect, and_where = G.lineIntersection(line_a, line_b)
+	print(
+		'\nThe two lines, [[0., 0.], [1., 0.]] and [[0., 1.], [1., 1.]],',
+		f'{"" if do_they_intersect else "do not "}intersect at point',
+		f'({and_where[0]}, {and_where[1]}).',
+	)
+
 	# Given two shapes, determine whether they may be isospectral using Weyl's asymptotic law.
 	print(
 		f"\nFor these two shapes, the square and the polygon, Weyl's asymptotic law is {G.weylCondition(square, polygon)}.",
@@ -113,6 +117,6 @@ def GeometryExample() -> None:
 
 
 if __name__ == '__main__':
-	# DatasetExample()
+	DatasetExample()
 	GeometryExample()
 	exit()

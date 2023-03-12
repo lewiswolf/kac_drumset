@@ -8,7 +8,7 @@ import random
 # src
 from ._generate_polygon import generatePolygon, generateConvexPolygon
 from ._morphisms import normaliseConvexPolygon, normalisePolygon
-from ._polygon_properties import centroid
+from ._polygon_properties import centroid, isConvex
 from .types import Polygon
 
 __all__ = [
@@ -38,6 +38,6 @@ class RandomPolygon(Polygon):
 		else:
 			super().__init__(generatePolygon(random.randint(3, max_vertices)))
 		# normalise
-		self.vertices = normaliseConvexPolygon(self) if self.convex() else normalisePolygon(self)
+		self.vertices = normaliseConvexPolygon(self) if isConvex(self) else normalisePolygon(self)
 		# calculate other properties
 		self.centroid = centroid(self)

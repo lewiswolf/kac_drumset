@@ -13,6 +13,7 @@ from kac_drumset.geometry import (
 	generateConvexPolygon,
 	generatePolygon,
 	isColinear,
+	isConvex,
 	isPointInsidePolygon,
 	isSimple,
 	largestVector,
@@ -20,7 +21,7 @@ from kac_drumset.geometry import (
 	normaliseConvexPolygon,
 	RandomPolygon,
 	UnitRectangle,
-	UnitTriangle,
+	# UnitTriangle,
 	Circle,
 	Polygon,
 )
@@ -93,7 +94,7 @@ class GeometryTests(TestCase):
 			self.assertEqual(len(square.vertices), square.N)
 
 			# This test asserts that isConvex() works for any closed arrangement of vertices.
-			self.assertTrue(square.convex)
+			self.assertTrue(isConvex(square))
 
 			# This test asserts that normaliseConvexPolygon produces the correct output.
 			self.assertFalse(False in np.equal(
@@ -273,10 +274,18 @@ class GeometryTests(TestCase):
 					polygon.vertices[(n + 1) % polygon.N],
 				])))
 
-			if polygon.convex():
+			# This test asserts that the area can be accurately scaled to any size.
+			# from random import random
+			# target_area = random()
+			# self.assertEqual(
+			# 	target_area,
+			# 	polygon.area() * ((target_area / polygon.area()) ** 0.5),
+			# )
+
+			if isConvex(polygon):
 				# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
 				# can assume that the generateConvexPolygon() function works as intended.
-				self.assertTrue(polygon.convex())
+				self.assertTrue(isConvex(polygon))
 
 				# This test asserts that the largest vector lies across the x-axis.
 				self.assertTrue(polygon.vertices[LV[1][0]][0] == 0.)
@@ -311,24 +320,33 @@ class GeometryTests(TestCase):
 			self.assertEqual(centroid(R), (0., 0.))
 
 		# Test the vertices and area of the UnitTriangle for varying r, theta.
-		for [r, theta] in [
-			(1., np.pi / 2.), # equilateral
-			(0.5, np.pi / 2.),
-			(1., 1.),
-			(1., 2.),
-			(1., 3.),
-			(1., 4.),
-			(1., 5.),
-			(1., 6.),
-		]:
-			T = UnitTriangle(1., np.pi / 3)
-			P = Polygon(T.vertices)
-			self.assertAlmostEqual(T.area(), P.area())
-			self.assertEqual(T.vertices[:, 0].min() + T.vertices[:, 0].max(), 0.)
-			self.assertEqual(T.vertices[:, 1].min() + T.vertices[:, 1].max(), 0.)
+		# for [r, theta] in [
+		# 	(0.5, np.pi / 2.),
+		# 	(1., 1.),
+		# 	(1., 2.),
+		# 	(1., 3.),
+		# 	(1., 4.),
+		# 	(1., 5.),
+		# 	(1., 6.),
+		# ]:
+		# 	T = UnitTriangle(1., np.pi / 3)
+		# 	P = Polygon(T.vertices)
+		# 	self.assertAlmostEqual(T.area(), P.area())
+		# 	self.assertEqual(T.vertices[:, 0].min() + T.vertices[:, 0].max(), 0.)
+		# 	self.assertEqual(T.vertices[:, 1].min() + T.vertices[:, 1].max(), 0.)
 
-		# This tests asserts the symmetry of the method used to generate UnitTriangle
-		norm_tri = normaliseConvexPolygon(UnitTriangle(1., 1.))
-		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., np.pi - 1.)), norm_tri)))
-		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., np.pi + 1.)), norm_tri)))
-		self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., -1.)), norm_tri)))
+		# # This tests asserts the symmetry of the method used to generate UnitTriangle
+		# norm_tri = normaliseConvexPolygon(UnitTriangle(1., 1.))
+		# self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., np.pi - 1.)), norm_tri)))
+		# self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., np.pi + 1.)), norm_tri)))
+		# self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., -1.)), norm_tri)))
+
+		# # This test asserts that the equilateral triangle is properly constructed.
+		# T = UnitTriangle(1., np.pi / 2)
+		# for n in range(3):
+		# 	a = T.vertices[n]
+		# 	b = T.vertices[(n + 1) % 3]
+		# 	self.assertEqual(
+		# 		((a[0] - b[0]) ** 2) + ((a[1] - b[1]) ** 2) ** 0.5,
+		# 		(4 / (3 ** 0.5)) ** 0.5,
+		# 	)

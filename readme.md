@@ -273,6 +273,15 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	Determines whether or not a given set of three vertices are colinear.
 	'''
 
+def isConvex(P: Polygon) -> bool:
+	'''
+	Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
+	each vertex:
+		[(x_i - x_i-1), (y_i - y_i-1)] × [(x_i+1 - x_i), (y_i+1 - y_i)].
+	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
+	clockwise or counter-clockwise'.
+	'''
+
 def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
 	'''
 	Determines whether or not a cartesian pair is within a polygon, including boundaries.
@@ -396,7 +405,6 @@ class Circle(Shape):
 			r = radius
 		'''
 
-	@cached_property
 	def area(self) -> float:
 		''' Archimedes. '''
 
@@ -414,21 +422,10 @@ class Polygon(Shape):
 			vertices = array of cartesian points.
 		'''
 
-	@cached_property
 	def area(self) -> float:
 		'''
 		An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
 		calculate the area of a polygon.
-		'''
-	
-	@cached_property
-	def convex(self) -> bool:
-		'''
-		Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
-		each vertex:
-			[(x_i - x_i-1), (y_i - y_i-1)] × [(x_i+1 - x_i), (y_i+1 - y_i)].
-		See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
-		clockwise or counter-clockwise'.
 		'''
 
 class Shape(ABC):
@@ -437,7 +434,6 @@ class Shape(ABC):
 	'''
 	
 	@abstractmethod
-	@cached_property
 	def area(self) -> float:
 		pass
 ```
@@ -503,6 +499,38 @@ def circularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 		M = number of modes per order
 	output:
 		S = { z_nm | s ∈ ℝ, J_n(z_nm) = 0, n < N, 0 < m <= M }
+	'''
+
+def equilateralTriangleAmplitudes(x: float, y: float, z: float, N: int, M: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the amplitudes of the equilateral triangle eigenmodes relative to a
+	trilinear strike location according to Lamé's formula.
+	Seth (1940) Transverse Vibrations of Triangular Membranes.
+	input:
+		( x, y, z ) = trilinear coordinate
+		N = number of modal orders
+		M = number of modes per order
+	output:
+		A = {
+			abs(sin(nxπ) sin(nyπ) sin(nzπ))
+			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
+		}
+	'''
+
+	return np.array(_equilateralTriangleAmplitudes(x, y, z, N, M))
+
+def equilateralTriangleSeries(N: int, M: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the eigenmodes of an equilateral triangle according to Lamé's formula.
+	Seth (1940) Transverse Vibrations of Triangular Membranes.
+	input:
+		N = number of modal orders
+		M = number of modes per order
+	output:
+		S = {
+			(m ** 2 + n ** 2 + mn) ** 0.5
+			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
+		}
 	'''
 
 def rectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:

@@ -8,6 +8,7 @@ import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
+from ._polygon_properties import isConvex
 from .types import Circle, Polygon
 
 __all__ = [
@@ -42,7 +43,7 @@ def drawPolygon(P: Polygon, grid_size: int) -> npt.NDArray[np.int8]:
 		np.zeros((grid_size, grid_size), 'int8'),
 		np.array([[round(y * (grid_size - 1)), round(x * (grid_size - 1))] for [x, y] in P.vertices], 'int32'),
 		1,
-	) if P.convex() else cv2.fillPoly(
+	) if isConvex(P) else cv2.fillPoly(
 		np.zeros((grid_size, grid_size), 'int8'),
 		np.array([[[round(y * (grid_size - 1)), round(x * (grid_size - 1))] for [x, y] in P.vertices]], 'int32'),
 		1,

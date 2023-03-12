@@ -1,7 +1,7 @@
 from ._generate_polygon import generateConvexPolygon, generatePolygon
 from ._lines import isColinear, lineIntersection
 from ._morphisms import normaliseConvexPolygon, normalisePolygon
-from ._polygon_properties import centroid, isPointInsidePolygon, isSimple, largestVector
+from ._polygon_properties import centroid, isConvex, isPointInsidePolygon, isSimple, largestVector
 from .isospectrality import weylCondition
 from .projections import drawCircle, drawPolygon
 from .random_polygon import RandomPolygon
@@ -16,6 +16,7 @@ __all__ = [
 	'generateConvexPolygon',
 	'generatePolygon',
 	'isColinear',
+	'isConvex',
 	'isPointInsidePolygon',
 	'isSimple',
 	'largestVector',
