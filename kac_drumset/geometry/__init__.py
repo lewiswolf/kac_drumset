@@ -1,4 +1,4 @@
-from ._generate_polygon import generateConvexPolygon, generatePolygon
+from ._generate_polygon import generateIrregularStar, generateConvexPolygon, generatePolygon
 from ._lines import isColinear, lineIntersection
 from ._morphisms import normaliseConvexPolygon, normalisePolygon
 from ._polygon_properties import centroid, isConvex, isPointInsidePolygon, isSimple, largestVector
@@ -13,6 +13,7 @@ from .unit_polygon import UnitTriangle
 __all__ = [
 	# external methods
 	'centroid',
+	'generateIrregularStar',
 	'generateConvexPolygon',
 	'generatePolygon',
 	'isColinear',
