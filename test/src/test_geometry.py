@@ -10,6 +10,7 @@ from kac_drumset.geometry import (
 	centroid,
 	drawCircle,
 	drawPolygon,
+	generateIrregularStar,
 	generateConvexPolygon,
 	generatePolygon,
 	isColinear,
@@ -225,20 +226,19 @@ class GeometryTests(TestCase):
 		self.assertFalse(isSimple(Polygon([[0., 0.], [1., 1.], [1., 0.], [0., 1.]])))
 
 		for i in range(100):
-			polygon_0 = Polygon(generateConvexPolygon(3))
-			polygon_1 = Polygon(generatePolygon(3))
+			polygons: list[Polygon] = [
+				Polygon(generateIrregularStar(3)),
+				Polygon(generateConvexPolygon(3)),
+				Polygon(generatePolygon(3)),
+			]
+			for polygon in polygons:
+				# This test asserts that generateConvexPolygon always produces a unique output.
+				self.assertFalse(np.all(np.equal(polygon.vertices, generateConvexPolygon(3))))
 
-			# This test asserts that generateConvexPolygon always produces a unique output.
-			self.assertFalse(np.all(np.equal(polygon_0.vertices, generateConvexPolygon(3))))
-			self.assertFalse(np.all(np.equal(polygon_1.vertices, generatePolygon(3))))
-
-			# This test asserts that it is possible to modify the polygon.
-			area = polygon_0.area()
-			polygon_0.vertices = generateConvexPolygon(3)
-			self.assertNotEqual(area, polygon_0.area())
-			area = polygon_1.area()
-			polygon_1.vertices = generatePolygon(3)
-			self.assertNotEqual(area, polygon_1.area())
+				# This test asserts that it is possible to modify the polygon.
+				area = polygon.area()
+				polygon.vertices = generateConvexPolygon(3)
+				self.assertNotEqual(area, polygon.area())
 
 		for i in range(10000):
 			polygon = RandomPolygon(20, allow_concave=True)
@@ -273,14 +273,6 @@ class GeometryTests(TestCase):
 					polygon.vertices[n],
 					polygon.vertices[(n + 1) % polygon.N],
 				])))
-
-			# This test asserts that the area can be accurately scaled to any size.
-			# from random import random
-			# target_area = random()
-			# self.assertEqual(
-			# 	target_area,
-			# 	polygon.area() * ((target_area / polygon.area()) ** 0.5),
-			# )
 
 			if isConvex(polygon):
 				# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we

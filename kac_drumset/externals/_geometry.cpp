@@ -52,11 +52,15 @@ _Point _centroid(const _Vertices& V, double area) {
 	return {c.x, c.y};
 }
 
-_Vertices _generatePolygon(const int& N) { return convertPolygonToVector(g::generatePolygon(N)); }
+_Vertices _generateIrregularStar(const int& N) {
+	return convertPolygonToVector(g::generateIrregularStar(N));
+}
 
 _Vertices _generateConvexPolygon(const int& N) {
 	return convertPolygonToVector(g::generateConvexPolygon(N));
 }
+
+_Vertices _generatePolygon(const int& N) { return convertPolygonToVector(g::generatePolygon(N)); }
 
 bool _isColinear(const std::array<_Point, 3>& V) {
 	return g::isColinear(
@@ -101,6 +105,7 @@ PyBind11 config.
 PYBIND11_MODULE(_geometry, m) {
 	m.doc() = "_geometry";
 	m.def("_centroid", &_centroid);
+	m.def("_generateIrregularStar", &_generateIrregularStar);
 	m.def("_generatePolygon", &_generatePolygon);
 	m.def("_generateConvexPolygon", &_generateConvexPolygon);
 	m.def("_isColinear", &_isColinear);
