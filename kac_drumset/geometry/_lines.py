@@ -10,7 +10,7 @@ import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
-from ..externals._geometry import _isColinear, _lineIntersection
+from ..externals._geometry import _isColinear, _largestVector, _lineIntersection
 
 __all__ = [
 	'isColinear',
@@ -28,6 +28,17 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	assert vertices.shape == (3, 2), \
 		'isColinear() only supports an input of vertices with shape (3, 2).'
 	return _isColinear(vertices)
+
+
+def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, int]]:
+	'''
+	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the
+	vector and its indices.
+	'''
+	assert vertices.ndim == 2 and vertices[0].shape[0] == 2, \
+		'largestVector() only supports an input of shape (n, 2).'
+	out = _largestVector(vertices)
+	return out[0], (out[1][0], out[1][1])
 
 
 def lineIntersection(A: npt.NDArray[np.float64], B: npt.NDArray[np.float64]) -> tuple[

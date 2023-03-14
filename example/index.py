@@ -18,6 +18,7 @@ def DatasetExample() -> None:
 		RepresentationSettings,	# typing for the representation_settings
 		TorchDataset,			# the dataset class
 	)
+	from kac_drumset.geometry import ConvexPolygon
 
 	# Generating a dataset takes as its first argument an AudioSampler, each of which has its own customised settings
 	# constructor. To configure the representation settings, a dict of type RepresentationSettings is passed to the
@@ -31,6 +32,7 @@ def DatasetExample() -> None:
 		representation_settings=representation_settings,
 		sampler_settings=FDTDModel.Settings({
 			'amplitude': 1.,
+			'arbitrary_shape': ConvexPolygon,
 			'decay_time': 2.,
 			'drum_size': 0.3,
 			'duration': 1.,
@@ -58,43 +60,49 @@ def GeometryExample() -> None:
 	import numpy as np
 
 	# src
-	import kac_drumset.geometry as G
+	from kac_drumset.geometry import (
+		isColinear,
+		largestVector,
+		lineIntersection,
+		weylCondition,
+		Circle,
+		ConvexPolygon,
+		UnitRectangle,
+	)
 
 	# Define a circle
-	circle = G.Circle()
+	circle = Circle()
 	print(f'\nA circle with radius {circle.r} has an area of {circle.area()}.\n')
 
 	# Define a square.
-	square = G.Polygon(np.array([[0., 0.], [0., 1.], [1., 1.], [1., 0.]]))
+	square = UnitRectangle(1.)
 	print(f'This is a square: \n \n {square.vertices} \n')
 	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
 	print(f'Its area is {square.area()}.')
 	print(
-		f'A square {"does" if G.isColinear(square.vertices[0: 3]) else "does not"} contain any points that are colinear.',
+		f'A square {"does" if isColinear(square.vertices[0: 3]) else "does not"} contain any points that are colinear.',
 	)
 	print(
 		'The points [[0., 0.], [1., 1.], [2., 2.]], however,',
-		f'{"are" if G.isColinear(np.array([[0., 0.], [1., 1.], [2., 2.]])) else "are not"} colinear.',
+		f'{"are" if isColinear(np.array([[0., 0.], [1., 1.], [2., 2.]])) else "are not"} colinear.',
 	)
 	# Define a 5 sided convex polygon.
-	polygon = G.Polygon(G.generateConvexPolygon(5))
-	# Normalise the polygon to the unit interval, and remove isometric and similarity transformations.
-	polygon.vertices = G.normaliseConvexPolygon(polygon)
+	polygon = ConvexPolygon(5)
 	print(f'\nThis is a {polygon.N} sided polygon: \n \n {polygon.vertices} \n')
 	# Assess its area.
 	print(f"Its area is {polygon.area()}.")
 	# Compute its simplicity.
-	print(f'It is {G.isSimple(polygon)} that this polygon is simple.')
+	print(f'It is {polygon.isSimple()} that this polygon is simple.')
 	# Compute its convexity.
-	print(f'It is {G.isConvex(polygon)} that this polygon is convex.')
+	print(f'It is {polygon.convex} that this polygon is convex.')
 	# Compute the geometric centroid.
-	print(f"This polygon's centroid is at {G.centroid(polygon)}.")
+	print(f"This polygon's centroid is at {polygon.centroid()}.")
 	# Determine if an arbitrary point is within the polygon.
-	print(f'It is {G.isPointInsidePolygon((0.5, 0.5), polygon)} that the point (0.5, 0.5) is inside of this polygon.')
+	print(f'It is {polygon.isPointInside((0.5, 0.5))} that the point (0.5, 0.5) is inside of this polygon.')
 	# Compute its largest vector pair.
-	print(f"The length of this polygon's largest vector is {G.largestVector(polygon)[0]}.")
-	c = G.largestVector(polygon)[1]
+	print(f"The length of this polygon's largest vector is {largestVector(polygon.vertices)[0]}.")
+	c = largestVector(polygon.vertices)[1]
 	print(
 		f'And spans the coordinates [({polygon.vertices[c[0], 0]}, {polygon.vertices[c[0], 1]}),',
 		f'({polygon.vertices[c[1], 0]}, {polygon.vertices[c[1], 1]})].',
@@ -103,7 +111,7 @@ def GeometryExample() -> None:
 	# Define a line
 	line_a = np.array([[0., 0.], [1., 0.]])
 	line_b = np.array([[0., 1.], [1., 1.]])
-	do_they_intersect, and_where = G.lineIntersection(line_a, line_b)
+	do_they_intersect, and_where = lineIntersection(line_a, line_b)
 	print(
 		'\nThe two lines, [[0., 0.], [1., 0.]] and [[0., 1.], [1., 1.]],',
 		f'{"" if do_they_intersect else "do not "}intersect at point',
@@ -112,7 +120,7 @@ def GeometryExample() -> None:
 
 	# Given two shapes, determine whether they may be isospectral using Weyl's asymptotic law.
 	print(
-		f"\nFor these two shapes, the square and the polygon, Weyl's asymptotic law is {G.weylCondition(square, polygon)}.",
+		f"\nFor these two shapes, the square and the polygon, Weyl's asymptotic law is {weylCondition(square, polygon)}.",
 	)
 
 

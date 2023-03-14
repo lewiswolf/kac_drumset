@@ -16,7 +16,7 @@ from kac_drumset import (
 	SamplerSettings,
 )
 from kac_drumset.dataset.utils import classLocalsToKwargs
-from kac_drumset.geometry import isPointInsidePolygon
+from kac_drumset.geometry import ConvexPolygon
 from kac_drumset.utils import clearDirectory
 
 
@@ -119,7 +119,12 @@ class SamplerTests(TestCase):
 		'''
 
 		# This test asserts that model correctly mounts with both its minimum requirements and type safety.
-		settings: FDTDModel.Settings = {'duration': 1., 'sample_rate': 48000, 'decay_time': np.inf}
+		settings: FDTDModel.Settings = {
+			'duration': 1.,
+			'sample_rate': 48000,
+			'arbitrary_shape': ConvexPolygon,
+			'decay_time': np.inf,
+		}
 		model = FDTDModel(**settings)
 
 		# This test asserts that the labels default to an empty array when no waveform has been generated.
@@ -129,12 +134,14 @@ class SamplerTests(TestCase):
 		self.assertEqual(model.c_2, 1.)
 
 		# generate a random shape and dirichlet boundary conditions.
-		settings = {'duration': 1., 'sample_rate': 48000}
+		settings = {'duration': 1., 'sample_rate': 48000, 'arbitrary_shape': ConvexPolygon}
 		model = FDTDModel(**settings)
 		model.updateProperties()
 
 		# This test asserts that a shape was properly defined after updating the model's properties.
 		self.assertTrue(hasattr(model, 'shape'))
+		# This test asserts that the listening point is within the model
+		# self.assertTrue(model.shape.isPointInside(model.w))
 		# This test asserts that the model returns the vertices and the strike location as its labels.
 		self.assertEqual(len(model.getLabels()['strike_location']), 2)
 		self.assertLessEqual(len(model.getLabels()['vertices']), model.max_vertices)
@@ -149,6 +156,7 @@ class SamplerTests(TestCase):
 					model = FDTDModel(
 						duration=0.02,
 						sample_rate=48000,
+						arbitrary_shape=ConvexPolygon,
 						drum_size=drum_size[i],
 						material_density=material_density[j],
 						tension=tension[k],
@@ -156,10 +164,11 @@ class SamplerTests(TestCase):
 					# This test asserts that a boolean mask was properly defined after updating the model's properties, and that the
 					# centroid strike and listening location is always within the drum.
 					model.updateProperties()
-					self.assertTrue(isPointInsidePolygon(model.strike, model.shape))
+					self.assertTrue(model.shape.isPointInside(model.strike))
+					centroid = model.shape.centroid()
 					self.assertEqual(model.B[
-						round(model.shape.centroid[0] * (model.H - 1)),
-						round(model.shape.centroid[1] * (model.H - 1)),
+						round(centroid[0] * (model.H - 1)),
+						round(centroid[1] * (model.H - 1)),
 					], 1)
 
 					# This test asserts that The Courant number λ = γk/h, which is used to confirm that the

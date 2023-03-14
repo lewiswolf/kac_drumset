@@ -200,100 +200,32 @@ class TorchDataset(torch.utils.data.Dataset):
 ```python
 from kac_drumset.geometry import (
 	# Methods
-	centroid,
-	drawCircle,
-	drawPolygon,
-	generateConvexPolygon,
-	generatePolygon,
-	isColinear,
-	isConvex,
-	isPointInsidePolygon,
-	isSimple,
-	largestVector,
-	lineIntersection,
-	normaliseConvexPolygon,
-	normalisePolygon,
-	weylCondition,
+	'isColinear',
+	'largestVector',
+	'lineIntersection',
+	'weylCondition',
 	# Classes
-	RandomPolygon,
-	UnitRectangle,
-	UnitTriangle,
+	'ConvexPolygon',
+	'IrregularStar',
+	'TSPolygon',
+	'UnitRectangle',
+	'UnitTriangle',
 	# Types
-	Circle,
-	Polygon,
-	Shape,
+	'Circle',
+	'Polygon',
+	'Shape',
 )
 ```
 
 ### Methods
 
 ```python
-def centroid(P: Polygon) -> tuple[float, float]:
-	'''
-	This algorithm is used to calculate the geometric centroid of a 2D polygon. 
-	See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
-	'''
-
-def drawCircle(C: Circle, grid_size: int) -> npt.NDArray[np.int8]:
-	'''
-	This function creates a boolean mask of a circle on a grid with dimensions R^(grid_size). The input shape should
-	exist within a domain R^G where G ∈ [0, 1].
-	'''
-
-def drawPolygon(P: Polygon, grid_size: int) -> npt.NDArray[np.int8]:
-	'''
-	This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
-	exist within a domain R^G where G ∈ [0, 1].
-	'''
-
-def generateConvexPolygon(N: int) -> npt.NDArray[np.float64]:
-	'''
-	Generate convex shapes according to Pavel Valtr's 1995 algorithm. Adapted from Sander Verdonschot's Java version,
-	found here: https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
-	'''
-
-def generatePolygon(N: int) -> npt.NDArray[np.float64]:
-	'''
-	This algorithm is based on a method of eliminating self-intersections in a polygon by
-	using the Lin and Kerningham '2-opt' moves. Such a move eliminates an intersection between
-	two edges by reversing the order of the vertices between the edges. Intersecting edges are
-	detected using a simple sweep through the vertices and then one intersection is chosen at
-	random to eliminate after each sweep.
-	https://doc.cgal.org/latest/Generator/group__PkgGeneratorsRef.html#gaa8cb58e4cc9ab9e225808799b1a61174
-	van Leeuwen, J., & Schoone, A. A. (1982). Untangling a traveling salesman tour in the plane.
-
-	input:
-		N = the number of vertices
-		seed? = the seed for the random number generators
-	output:
-		V = a concave polygon of N random vertices
-	'''
-
 def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	'''
 	Determines whether or not a given set of three vertices are colinear.
 	'''
 
-def isConvex(P: Polygon) -> bool:
-	'''
-	Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
-	each vertex:
-		[(x_i - x_i-1), (y_i - y_i-1)] × [(x_i+1 - x_i), (y_i+1 - y_i)].
-	See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
-	clockwise or counter-clockwise'.
-	'''
-
-def isPointInsidePolygon(p: tuple[float, float], P: Polygon) -> bool:
-	'''
-	Determines whether or not a cartesian pair is within a polygon, including boundaries.
-	'''
-
-def isSimple(P: Polygon) -> bool:
-	'''
-	Determine if a polygon is simple by checking for intersections.
-	'''
-
-def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]):
+def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]:
 	'''
 	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the
 	vector and its indices.
@@ -325,22 +257,6 @@ def lineIntersection(A: npt.NDArray[np.float64], B: npt.NDArray[np.float64]) -> 
 			'colinear'	The midpoint between all 4 vertices.
 	'''
 
-def normaliseConvexPolygon(P: Polygon) -> npt.NDArray[np.float64]:
-	'''
-	This algorithm produces an identity polygon for each unique polygon given as input. This method normalises an input
-	polygon to the unit interval such that x ∈ [0, 1] && y ∈ [0, 1], reducing each input polygon by isometric and
-	similarity transformations. This is achieved by first enforcing that the vertices of a polygon are ordered clockwise.
-	Then, the largest vector is used to determine the lower and upper bounds across the x-axis. Next, the polygon is split
-	into quadrants, the largest of whose area determines the rotation/reflection of the polygon. Finally, the points are
-	normalised, and ordered such that V[0] = [0., y].
-	'''
-
-def normalisePolygon(P: Polygon) -> npt.NDArray[np.float64]:
-	'''
-	This algorithm performs general normalisation rotations to ensure uniqueness, however it is	not comprehensive for all
-	simple geometric transformations.
-	'''
-
 def weylCondition(S_1: Shape, S_2: Shape) -> bool:
 	'''
 	Using Weyl's asymptotic law, determine whether two polygons may be isospectral.
@@ -351,43 +267,32 @@ def weylCondition(S_1: Shape, S_2: Shape) -> bool:
 ### Classes
 
 ```python
-class RandomPolygon(Polygon):
+class ConvexPolygon(Polygon):
 	'''
-	This class is used to generate a random polygon, normalised and centred between 0.0 and 1.0. The convexity and the
-	centroid of the polygon are also included in this class.
 	'''
 
-	centroid: tuple[float, float]		# coordinate pair representing the centroid of the polygon
-	convex: bool						# is the polygon convex?
+	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
 
-	def __init__(self, max_vertices: int, allow_concave: bool = False) -> None:
-		'''
-		This function generates a polygon, whilst also calculating its properties.
-		input:
-			max_vertices:	Maximum amount of vertices. The true value is a uniform distribution from 3 to max_vertices.
-			allow_concave:	Is this polygon allowed to be concave?
-		'''
+class IrregularStar(Polygon):
+	'''
+	'''
+
+	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+
+class TSPolygon(Polygon):
+	'''
+	'''
+
+	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
 
 class UnitRectangle(Polygon):
 	'''
-	Define the unit rectangle.
+	Define a rectangle with unit area and an aspect ration epsilon.
 	'''
 
-	def __init__(self, epsilon: float = 1.) -> None:
-		'''
-		input:
-			epsilon = aspect ratio
-		'''
+	epsilon: float
 
-class UnitTriangle(Polygon):
-	'''
-	Define a triangle with unit area.
-	'''
-
-	def __init__(self, r: float, theta: float) -> None:
-		'''
-		For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [0, 1], the corresponding triangle will be unique.
-		'''
+	def __init__(self, epsilon: Optional[float] = None) -> None:
 ```
 
 ### Types
@@ -398,30 +303,34 @@ class Circle(Shape):
 	A base class for a circle, instantiated with a radius.
 	'''
 
-	r: float 							# radius
+	r: float # radius
 
 	def __init__(self, r: float = 1.) -> None:
-		'''
-		input:
-			r = radius
-		'''
+		self.r = r
 
 	def area(self) -> float:
 		''' Archimedes. '''
+
+	def centroid(self) -> tuple[float, float]:
+
+	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
+		'''
+		This function creates a boolean mask of a circle on a grid with dimensions R^(grid_size). The input shape should
+		exist within a domain R^G where G ∈ [0, 1].
+		'''
+
+	def isPointInside(self, p: tuple[float, float]) -> bool:
 
 class Polygon(Shape):
 	'''
 	A base class for a polygon, instantiated with an array of vertices.
 	'''
 
-	N: int								# number of vertices
-	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
+	convex: bool
+	N: int
+	vertices: npt.NDArray[np.float64]
 
-	def __init__(self, vertices: Union[list[list[float]], npt.NDArray[np.float64]]) -> None:
-		'''
-		input:
-			vertices = array of cartesian points.
-		'''
+	def __init__(self, vertices: Optional[Union[list[list[float]], npt.NDArray[np.float64]]] = None) -> None:
 
 	def area(self) -> float:
 		'''
@@ -429,13 +338,50 @@ class Polygon(Shape):
 		calculate the area of a polygon.
 		'''
 
+	def centroid(self) -> tuple[float, float]:
+		'''
+		This algorithm is used to calculate the geometric centroid of a 2D polygon.
+		See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
+		'''
+
+	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
+		'''
+		This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
+		exist within a domain R^G where G ∈ [0, 1].
+		'''
+
+	def isPointInside(self, p: tuple[float, float]) -> bool:
+		'''
+		Determines whether or not a cartesian point is within a polygon, including boundaries.
+		'''
+
+	def isSimple(self) -> bool:
+		'''
+		Determine if a polygon is simple by checking for intersections.
+		'''
+
 class Shape(ABC):
 	'''
-	An abstract base class for a shape in Euclidean geometry.
+	An abstract base class for a two dimensional manifold in Euclidean geometry.
 	'''
-	
+
+	def __init__(self) -> None:
+		pass
+
 	@abstractmethod
 	def area(self) -> float:
+		pass
+
+	@abstractmethod
+	def centroid(self) -> tuple[float, float]:
+		pass
+
+	@abstractmethod
+	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
+		pass
+
+	@abstractmethod
+	def isPointInside(self, p: tuple[float, float]) -> bool:
 		pass
 ```
 </details>
@@ -517,8 +463,6 @@ def equilateralTriangleAmplitudes(x: float, y: float, z: float, N: int, M: int) 
 			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
 		}
 	'''
-
-	return np.array(_equilateralTriangleAmplitudes(x, y, z, N, M))
 
 def equilateralTriangleSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 	'''
@@ -724,13 +668,14 @@ class FDTDModel(AudioSampler):
 	'''
 
 	class Settings(SamplerSettings, total=False):
-		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
-		decay_time: float			# how long will the simulation take to decay? (seconds)
-		drum_size: float			# size of the drum, spanning both the horizontal and vertical axes (m)
-		material_density: float		# material density of the simulated drum membrane (kg/m^2)
-		max_vertices: int			# maximum amount of vertices for a given drum
-		strike_width: float			# width of the drum strike (m)
-		tension: float				# tension at rest (N/m)
+		amplitude: float				# maximum amplitude of the simulation ∈ [0, 1]
+		arbitrary_shape: type[Polygon]	# what shape should the drum be in?
+		decay_time: float				# how long will the simulation take to decay? (seconds)
+		drum_size: float				# size of the drum, spanning both the horizontal and vertical axes (m)
+		material_density: float			# material density of the simulated drum membrane (kg/m^2)
+		max_vertices: int				# maximum amount of vertices for a given drum
+		strike_width: float				# width of the drum strike (m)
+		tension: float					# tension at rest (N/m)
 
 class LaméModel(AudioSampler):
 	'''

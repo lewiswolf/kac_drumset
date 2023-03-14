@@ -4,43 +4,86 @@ RandomPolygon is used to generate a random drum shape alongside computing some o
 
 # core
 import random
+from typing import Optional
+
+# dependencies
+import numpy as np
 
 # src
-from ._generate_polygon import generateConvexPolygon, generatePolygon
-from ._morphisms import normaliseConvexPolygon, normalisePolygon
-from ._polygon_properties import centroid, isConvex
-from .types import Polygon
+from ..externals._geometry import (
+	_generateConvexPolygon,
+	_generateUnitRectangle,
+	_generateIrregularStar,
+	_generatePolygon,
+	_normaliseConvexPolygon,
+	_normalisePolygon,
+)
+from .polygon import Polygon
 
 __all__ = [
-	'RandomPolygon',
+	'ConvexPolygon',
+	'IrregularStar',
+	'TSPolygon',
+	'UnitRectangle',
+	'UnitTriangle',
 ]
 
 
-class RandomPolygon(Polygon):
+class ConvexPolygon(Polygon):
 	'''
-	This class is used to generate a random polygon, normalised and centred between 0.0 and 1.0. The convexity and the
-	centroid of the polygon are also included in this class.
 	'''
 
-	centroid: tuple[float, float]	# coordinate pair representing the centroid of the polygon
-	convex: bool					# whether or not the polygon is convex
+	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+		super().__init__(_normaliseConvexPolygon(_generateConvexPolygon(
+			random.randint(3, max_vertices) if N is None else N,
+		)))
 
-	def __init__(self, max_vertices: int, allow_concave: bool = False) -> None:
-		'''
-		This function generates a polygon, whilst also calculating its properties.
-		input:
-			max_vertices:	Maximum amount of vertices. The true value is a uniform distribution from 3 to max_vertices.
-			allow_concave:	Is this polygon allowed to be concave?
-		'''
 
-		# generate random polygon
-		if not allow_concave or random.getrandbits(1):
-			super().__init__(generateConvexPolygon(random.randint(3, max_vertices)))
-			self.convex = True
-		else:
-			super().__init__(generatePolygon(random.randint(3, max_vertices)))
-			self.convex = isConvex(self)
-		# normalise
-		self.vertices = normaliseConvexPolygon(self) if self.convex else normalisePolygon(self)
-		# calculate other properties
-		self.centroid = centroid(self)
+class IrregularStar(Polygon):
+	'''
+	'''
+
+	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+		super().__init__(_generateIrregularStar(
+			random.randint(3, max_vertices) if N is None else N,
+		))
+		self.vertices = np.array(_normaliseConvexPolygon(self.vertices) if self.convex else _normalisePolygon(self.vertices))
+
+
+class TSPolygon(Polygon):
+	'''
+	'''
+
+	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+		super().__init__(_generatePolygon(
+			random.randint(3, max_vertices) if N is None else N,
+		))
+		self.vertices = np.array(_normaliseConvexPolygon(self.vertices) if self.convex else _normalisePolygon(self.vertices))
+
+
+class UnitRectangle(Polygon):
+	'''
+	Define a rectangle with unit area and an aspect ration epsilon.
+	'''
+
+	epsilon: float
+
+	def __init__(self, epsilon: Optional[float] = None) -> None:
+		self.epsilon = np.random.uniform(0., 1.) if epsilon is None else epsilon
+		super().__init__(_generateUnitRectangle(self.epsilon))
+
+
+class UnitTriangle(Polygon):
+	'''
+	Define a triangle with unit area. For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [0, 1], the corresponding triangle
+	will be unique.
+	'''
+
+	r: float
+	theta: float
+
+	def __init__(self, r: float, theta: float) -> None:
+		self.r = np.random.uniform(0., 1.) if r is None else r
+		self.theta = np.random.uniform(0., np.pi) if theta is None else theta
+		assert self.r <= 1. and self.r >= 0., 'r ∈ [0, 1]'
+		# super().__init__(_generateUnitTriangle(r, theta))

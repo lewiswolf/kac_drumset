@@ -1,35 +1,22 @@
-from ._generate_polygon import generateIrregularStar, generateConvexPolygon, generatePolygon
-from ._lines import isColinear, lineIntersection
-from ._morphisms import normaliseConvexPolygon, normalisePolygon
-from ._polygon_properties import centroid, isConvex, isPointInsidePolygon, isSimple, largestVector
+from ._lines import isColinear, largestVector, lineIntersection
 from .isospectrality import weylCondition
-from .projections import drawCircle, drawPolygon
-from .random_polygon import RandomPolygon
-from .types import Circle, Polygon, Shape
-from .unit_polygon import UnitRectangle
+from .random_polygon import ConvexPolygon, IrregularStar, TSPolygon, UnitRectangle, UnitTriangle
+from .polygon import Polygon
+from .circle import Circle
+from .types import Shape
 
-from .unit_polygon import UnitTriangle
 
 __all__ = [
 	# external methods
-	'centroid',
-	'generateIrregularStar',
-	'generateConvexPolygon',
-	'generatePolygon',
 	'isColinear',
-	'isConvex',
-	'isPointInsidePolygon',
-	'isSimple',
 	'largestVector',
 	'lineIntersection',
-	'normaliseConvexPolygon',
-	'normalisePolygon',
 	# methods
-	'drawCircle',
-	'drawPolygon',
 	'weylCondition',
 	# classes
-	'RandomPolygon',
+	'ConvexPolygon',
+	'IrregularStar',
+	'TSPolygon',
 	'UnitRectangle',
 	'UnitTriangle',
 	# types

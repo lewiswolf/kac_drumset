@@ -10,7 +10,7 @@
 
     The `librosa.vqt` function is written solely in python, whereas a pytorch version would be written with a c++ backend, using python bindings. This would be much quicker to use, as the CQT/VQT is a slow algorithm to begin with. This would also remove the need to import librosa altogether. Librosa also depends on libsndfile to be installed, which is not the default in Linux. 
 
-## `geometry.py`
+## geometry
 
 -   **concaveNormalisation**
 
@@ -24,3 +24,27 @@
 -	**Add Support for ellipses**
 
 	Currently, only simple polygons are supported by this library, and there is a need to extend this to include elliptical shapes as well. This would involve creating a new type, as well as updating the geometry library - functions such as `area()` and `centroid()` - so as to support this alternative geometric construction.
+
+-   **Add a method to scale a polygon to a target area**
+
+	```python
+	# This test asserts that the area can be accurately scaled to any size.
+	from random import random
+	target_area = random()
+	self.assertEqual(
+		target_area,
+		polygon.area() * ((target_area / polygon.area()) ** 0.5),
+	)
+	```
+
+-   **isPointInsidePolygon**
+
+	```python
+	assert isConvex(P), 'isPointInsidePolygon() does not currently support concave shapes.'
+	```
+
+## Physics
+
+-   **Equilateral amplitudes?**
+
+These seem to be missing the `m` component.
