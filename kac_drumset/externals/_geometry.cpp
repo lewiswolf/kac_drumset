@@ -62,6 +62,10 @@ _Vertices _generateConvexPolygon(const int& N) {
 
 _Vertices _generatePolygon(const int& N) { return convertPolygonToVector(g::generatePolygon(N)); }
 
+_Vertices _generateUnitRectangle(const double& epsilon) {
+	return convertPolygonToVector(g::generateUnitRectangle(epsilon));
+}
+
 bool _isColinear(const std::array<_Point, 3>& V) {
 	return g::isColinear(
 		T::Point(V[0][0], V[0][1]), T::Point(V[1][0], V[1][1]), T::Point(V[2][0], V[2][1])
@@ -108,6 +112,7 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_generateIrregularStar", &_generateIrregularStar);
 	m.def("_generatePolygon", &_generatePolygon);
 	m.def("_generateConvexPolygon", &_generateConvexPolygon);
+	m.def("_generateUnitRectangle", &_generateUnitRectangle);
 	m.def("_isColinear", &_isColinear);
 	m.def("_isConvex", &_isConvex);
 	m.def("_isPointInsideConvexPolygon", &_isPointInsideConvexPolygon);

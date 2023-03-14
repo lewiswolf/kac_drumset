@@ -6,7 +6,7 @@ RandomPolygon is used to generate a random drum shape alongside computing some o
 import random
 
 # src
-from ._generate_polygon import generatePolygon, generateConvexPolygon
+from ._generate_polygon import generateConvexPolygon, generatePolygon
 from ._morphisms import normaliseConvexPolygon, normalisePolygon
 from ._polygon_properties import centroid, isConvex
 from .types import Polygon
@@ -22,7 +22,8 @@ class RandomPolygon(Polygon):
 	centroid of the polygon are also included in this class.
 	'''
 
-	centroid: tuple[float, float]		# coordinate pair representing the centroid of the polygon
+	centroid: tuple[float, float]	# coordinate pair representing the centroid of the polygon
+	convex: bool					# whether or not the polygon is convex
 
 	def __init__(self, max_vertices: int, allow_concave: bool = False) -> None:
 		'''
@@ -35,9 +36,11 @@ class RandomPolygon(Polygon):
 		# generate random polygon
 		if not allow_concave or random.getrandbits(1):
 			super().__init__(generateConvexPolygon(random.randint(3, max_vertices)))
+			self.convex = True
 		else:
 			super().__init__(generatePolygon(random.randint(3, max_vertices)))
+			self.convex = isConvex(self)
 		# normalise
-		self.vertices = normaliseConvexPolygon(self) if isConvex(self) else normalisePolygon(self)
+		self.vertices = normaliseConvexPolygon(self) if self.convex else normalisePolygon(self)
 		# calculate other properties
 		self.centroid = centroid(self)

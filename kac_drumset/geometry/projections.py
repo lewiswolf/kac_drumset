@@ -2,6 +2,8 @@
 This file contains functions that project geometric object into alternative representations.
 '''
 
+from typing import Union
+
 # dependencies
 import cv2					# image processing
 import numpy as np 			# maths
@@ -32,18 +34,19 @@ def drawCircle(C: Circle, grid_size: int) -> npt.NDArray[np.int8]:
 	)
 
 
-def drawPolygon(P: Polygon, grid_size: int) -> npt.NDArray[np.int8]:
+def drawPolygon(P: Polygon, grid_size: int, convex: Union[bool, None] = None) -> npt.NDArray[np.int8]:
 	'''
 	This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
 	exist within a domain R^G where G ∈ [0, 1].
 	'''
-
+	if convex is None:
+		convex = isConvex(P)
 	# transposing maintains that mask[x, y] works as intended
 	return cv2.fillConvexPoly(
 		np.zeros((grid_size, grid_size), 'int8'),
 		np.array([[round(y * (grid_size - 1)), round(x * (grid_size - 1))] for [x, y] in P.vertices], 'int32'),
 		1,
-	) if isConvex(P) else cv2.fillPoly(
+	) if convex else cv2.fillPoly(
 		np.zeros((grid_size, grid_size), 'int8'),
 		np.array([[[round(y * (grid_size - 1)), round(x * (grid_size - 1))] for [x, y] in P.vertices]], 'int32'),
 		1,
