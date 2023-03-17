@@ -48,9 +48,11 @@ PyBind11 exports.
 */
 
 _Point _centroid(const _Vertices& V, double area) {
-	T::Point c = g::centroid(convertVectorToPolygon(V), area);
-	return {c.x, c.y};
+	T::Point p = g::centroid(convertVectorToPolygon(V), area);
+	return {p.x, p.y};
 }
+
+double _circleArea(const double& r) { return g::circleArea(r); }
 
 _Vertices _generateIrregularStar(const int& N) {
 	return convertPolygonToVector(g::generateIrregularStar(N));
@@ -92,6 +94,11 @@ std::pair<std::string, _Point> _lineIntersection(_Line& A, _Line& B) {
 	return std::make_pair(out.first, _Point({out.second.x, out.second.y}));
 }
 
+_Point _lineMidpoint(_Line& L) {
+	T::Point p = g::lineMidpoint(T::Line(T::Point(L[0][0], L[0][1]), T::Point(L[1][0], L[1][1])));
+	return {p.x, p.y};
+}
+
 _Vertices _normaliseConvexPolygon(const _Vertices& V) {
 	return convertPolygonToVector(g::normaliseConvexPolygon(convertVectorToPolygon(V)));
 }
@@ -109,6 +116,7 @@ PyBind11 config.
 PYBIND11_MODULE(_geometry, m) {
 	m.doc() = "_geometry";
 	m.def("_centroid", &_centroid);
+	m.def("_circleArea", &_circleArea);
 	m.def("_generateIrregularStar", &_generateIrregularStar);
 	m.def("_generatePolygon", &_generatePolygon);
 	m.def("_generateConvexPolygon", &_generateConvexPolygon);
@@ -119,6 +127,7 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_isSimple", &_isSimple);
 	m.def("_largestVector", &_largestVector);
 	m.def("_lineIntersection", &_lineIntersection);
+	m.def("_lineMidpoint", &_lineMidpoint);
 	m.def("_normaliseConvexPolygon", &_normaliseConvexPolygon);
 	m.def("_normalisePolygon", &_normalisePolygon);
 	m.def("_polygonArea", &_polygonArea);

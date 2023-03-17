@@ -18,7 +18,7 @@ from ..externals._geometry import (
 	_isSimple,
 	_polygonArea,
 )
-from .types import Shape
+from .types import Shape, ShapeSettings
 
 __all__ = [
 	'Polygon',
@@ -33,6 +33,9 @@ class Polygon(Shape):
 	N: int								# number of vertices
 	_convex: bool						# is the polygon convex or not?
 	_vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
+
+	class Settings(ShapeSettings, total=False):
+		vertices: Union[list[list[float]], npt.NDArray[np.float64]]
 
 	def __init__(self, vertices: Optional[Union[list[list[float]], npt.NDArray[np.float64]]] = None) -> None:
 		'''

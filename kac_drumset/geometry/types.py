@@ -4,6 +4,7 @@ This file contains the fixed geometric types used as part of this package.
 
 # core
 from abc import ABC, abstractmethod
+from typing import TypedDict
 
 # dependencies
 import numpy as np 			# maths
@@ -11,7 +12,12 @@ import numpy.typing as npt	# typing for numpy
 
 __all__ = [
 	'Shape',
+	'ShapeSettings',
 ]
+
+
+class ShapeSettings(TypedDict, total=False):
+	pass
 
 
 class Shape(ABC):
@@ -20,6 +26,10 @@ class Shape(ABC):
 	'''
 
 	def __init__(self) -> None:
+		pass
+
+	@abstractmethod
+	class Settings(ShapeSettings, total=False):
 		pass
 
 	@abstractmethod

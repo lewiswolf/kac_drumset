@@ -1,9 +1,9 @@
-from ._lines import isColinear, largestVector, lineIntersection
+from ._lines import isColinear, largestVector, lineIntersection, lineMidpoint
+from .ellipse import Circle, Ellipse
 from .isospectrality import weylCondition
 from .random_polygon import ConvexPolygon, IrregularStar, TSPolygon, UnitRectangle, UnitTriangle
 from .polygon import Polygon
-from .circle import Circle
-from .types import Shape
+from .types import Shape, ShapeSettings
 
 
 __all__ = [
@@ -11,16 +11,19 @@ __all__ = [
 	'isColinear',
 	'largestVector',
 	'lineIntersection',
+	'lineMidpoint',
 	# methods
 	'weylCondition',
 	# classes
+	'Circle',
 	'ConvexPolygon',
 	'IrregularStar',
 	'TSPolygon',
 	'UnitRectangle',
 	'UnitTriangle',
 	# types
-	'Circle',
+	'Ellipse',
 	'Polygon',
 	'Shape',
+	'ShapeSettings',
 ]

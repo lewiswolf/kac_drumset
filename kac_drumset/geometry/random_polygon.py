@@ -7,7 +7,7 @@ import random
 from typing import Optional
 
 # dependencies
-import numpy as np
+import numpy as np 			# maths
 
 # src
 from ..externals._geometry import (
@@ -19,6 +19,7 @@ from ..externals._geometry import (
 	_normalisePolygon,
 )
 from .polygon import Polygon
+from .types import ShapeSettings
 
 __all__ = [
 	'ConvexPolygon',
@@ -33,6 +34,10 @@ class ConvexPolygon(Polygon):
 	'''
 	'''
 
+	class Settings(ShapeSettings, total=False):
+		N: int
+		max_vertices: int
+
 	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
 		super().__init__(_normaliseConvexPolygon(_generateConvexPolygon(
 			random.randint(3, max_vertices) if N is None else N,
@@ -42,6 +47,10 @@ class ConvexPolygon(Polygon):
 class IrregularStar(Polygon):
 	'''
 	'''
+
+	class Settings(ShapeSettings, total=False):
+		N: int
+		max_vertices: int
 
 	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
 		super().__init__(_generateIrregularStar(
@@ -53,6 +62,10 @@ class IrregularStar(Polygon):
 class TSPolygon(Polygon):
 	'''
 	'''
+
+	class Settings(ShapeSettings, total=False):
+		N: int
+		max_vertices: int
 
 	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
 		super().__init__(_generatePolygon(
@@ -68,6 +81,9 @@ class UnitRectangle(Polygon):
 
 	epsilon: float
 
+	class Settings(ShapeSettings, total=False):
+		epsilon: float
+
 	def __init__(self, epsilon: Optional[float] = None) -> None:
 		self.epsilon = np.random.uniform(0., 1.) if epsilon is None else epsilon
 		super().__init__(_generateUnitRectangle(self.epsilon))
@@ -81,6 +97,10 @@ class UnitTriangle(Polygon):
 
 	r: float
 	theta: float
+
+	class Settings(ShapeSettings, total=False):
+		r: float
+		theta: float
 
 	def __init__(self, r: float, theta: float) -> None:
 		self.r = np.random.uniform(0., 1.) if r is None else r

@@ -14,7 +14,7 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..dataset.utils import classLocalsToKwargs
-from ..geometry import Polygon
+from ..geometry import Polygon, ShapeSettings
 from ..physics import FDTDWaveform2D, raisedCosine
 
 __all__ = [
@@ -34,6 +34,7 @@ class FDTDModel(AudioSampler):
 	L: float						# size of the drum, spanning both the horizontal and vertical axes (m)
 	max_vertices: int				# maximum amount of vertices for a given drum
 	p: float						# material density of the simulated drum membrane (kg/m^2)
+	shape_settings: ShapeSettings	# the class settings for a given drum shape
 	strike_width: float				# width of the drum strike (m)
 	t: float						# tension at rest (N/m)
 	w: tuple[int, int]				# sample point of the 2D surface
@@ -66,7 +67,7 @@ class FDTDModel(AudioSampler):
 		decay_time: float				# how long will the simulation take to decay? (seconds)
 		drum_size: float				# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float			# material density of the simulated drum membrane (kg/m^2)
-		max_vertices: int				# maximum amount of vertices for a given drum
+		shape_settings: ShapeSettings	# the class settings for a given drum shape
 		strike_width: float				# width of the drum strike (m)
 		tension: float					# tension at rest (N/m)
 
@@ -79,7 +80,7 @@ class FDTDModel(AudioSampler):
 		decay_time: float = 2.,
 		drum_size: float = 0.3,
 		material_density: float = 0.2,
-		max_vertices: int = 10,
+		shape_settings: ShapeSettings = {},
 		strike_width: float = 0.01,
 		tension: float = 2000.,
 	) -> None:
@@ -96,8 +97,8 @@ class FDTDModel(AudioSampler):
 		self.arbitrary_shape = arbitrary_shape
 		self.d_60 = decay_time
 		self.L = drum_size
-		self.max_vertices = max_vertices
 		self.p = material_density
+		self.shape_settings = shape_settings
 		self.strike_width = strike_width
 		self.t = tension
 		# initialise inferences
@@ -155,7 +156,7 @@ class FDTDModel(AudioSampler):
 
 		if i is None or i % 5 == 0:
 			# initialise a random drum shape and calculate the initial conditions relative to the centroid of the drum.
-			self.shape = self.arbitrary_shape()
+			self.shape = self.arbitrary_shape(**self.shape_settings)
 			self.B = self.shape.draw(self.H)
 			centroid = self.shape.centroid()
 			self.w = (
