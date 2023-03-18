@@ -1,5 +1,5 @@
 '''
-This file contains the fixed geometric types used as part of this package.
+This file contains the abstract base class for every two-dimensional shape.
 '''
 
 # core
@@ -30,20 +30,36 @@ class Shape(ABC):
 
 	@abstractmethod
 	class Settings(ShapeSettings, total=False):
+		'''
+		Settings to be used when generating.
+		'''
 		pass
 
 	@abstractmethod
 	def area(self) -> float:
+		'''
+		Calculate the area of a 2D manifold.
+		'''
 		pass
 
 	@abstractmethod
 	def centroid(self) -> tuple[float, float]:
+		'''
+		This algorithm is used to calculate the geometric centroid of a 2D manifold.
+		'''
 		pass
 
 	@abstractmethod
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
+		'''
+		This function creates a boolean mask of a manifold on a grid with dimensions R^(grid_size). The input shape is always
+		normalised to the domain R^G before being drawn.
+		'''
 		pass
 
 	@abstractmethod
 	def isPointInside(self, p: tuple[float, float]) -> bool:
+		'''
+		Determines if a given point p ∈ P, including boundaries.
+		'''
 		pass

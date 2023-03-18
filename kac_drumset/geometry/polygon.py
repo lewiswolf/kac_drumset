@@ -3,7 +3,7 @@ This file contains the fixed geometric types used as part of this package.
 '''
 
 # core
-from typing import Optional, Union
+from typing import cast, Optional, Union
 
 # dependencies
 import cv2					# image processing
@@ -15,7 +15,9 @@ from ..externals._geometry import (
 	_centroid,
 	_isConvex,
 	_isPointInsideConvexPolygon,
+	_isPointInsidePolygon,
 	_isSimple,
+	_normalisePolygon,
 	_polygonArea,
 )
 from .types import Shape, ShapeSettings
@@ -35,20 +37,20 @@ class Polygon(Shape):
 	_vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
 
 	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
 		vertices: Union[list[list[float]], npt.NDArray[np.float64]]
 
 	def __init__(self, vertices: Optional[Union[list[list[float]], npt.NDArray[np.float64]]] = None) -> None:
-		'''
-		input:
-			vertices = array of cartesian points.
-		'''
-		assert vertices is not None
 		self.vertices = np.array(vertices)
-		assert self.vertices.ndim == 2 and self.vertices.shape[1] == 2, \
-			'Array of vertices is not the correct shape: (n, 2)'
 		self.N = self.vertices.shape[0]
+		assert vertices is not None, 'Polygon() must be initialised with an array of vertices.'
+		assert self.vertices.ndim == 2 and self.vertices.shape[1] == 2, 'Array of vertices is not the correct shape: (n, 2)'
 		assert self.N >= 3, 'A polygon must have three vertices.'
-		self.convex = _isConvex(vertices)
+
+	'''
+	Getters and setters for .convex and .vertices.
+	This maintains that .convex is a cached variable, but is also updated with the vertices.
+	'''
 
 	@property
 	def convex(self) -> bool:
@@ -69,8 +71,8 @@ class Polygon(Shape):
 
 	def area(self) -> float:
 		'''
-		An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
-		calculate the area of a polygon.
+		An implementation of the polygon area algorithm derived using Green's Theorem.
+		https://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
 		'''
 		return _polygonArea(self.vertices)
 
@@ -79,31 +81,51 @@ class Polygon(Shape):
 		This algorithm is used to calculate the geometric centroid of a 2D polygon.
 		See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
 		'''
-		out = _centroid(self.vertices, self.area())
-		return out[0], out[1]
+		return cast(tuple[float, float], tuple(_centroid(self.vertices, self.area())))
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
-		This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
-		exist within a domain R^G where G ∈ [0, 1].
+		This function creates a boolean mask of a manifold on a grid with dimensions R^(grid_size). The input shape is always
+		normalised to the domain R^G before being drawn.
 		'''
 		# transposing maintains that mask[x, y] works as intended
 		return cv2.fillConvexPoly(
 			np.zeros((grid_size, grid_size), 'int8'),
-			np.array([[round(y * (grid_size - 1)), round(x * (grid_size - 1))] for [x, y] in self.vertices], 'int32'),
+			np.array(
+				[
+					[round(y * (grid_size - 1)), round(x * (grid_size - 1))]
+					for [x, y] in (
+						self.vertices if self.vertices.min() == 0. and self.vertices.max() == 1. else _normalisePolygon(self.vertices)
+					)
+				],
+				'int32',
+			),
 			1,
 		) if self.convex else cv2.fillPoly(
 			np.zeros((grid_size, grid_size), 'int8'),
-			np.array([[[round(y * (grid_size - 1)), round(x * (grid_size - 1))] for [x, y] in self.vertices]], 'int32'),
+			np.array(
+				[
+					[round(y * (grid_size - 1)), round(x * (grid_size - 1))]
+					for [x, y] in (
+						self.vertices if self.vertices.min() == 0. and self.vertices.max() == 1. else _normalisePolygon(self.vertices)
+					)
+				],
+				'int32',
+			),
 			1,
 		)
 
 	def isPointInside(self, p: tuple[float, float]) -> bool:
 		'''
-		Determines whether or not a cartesian point is within a polygon, including boundaries.
+		Determines if a given point p ∈ P, including boundaries.
 		'''
-		assert self.convex, 'isPointInsidePolygon() does not currently support concave shapes.'
-		return _isPointInsideConvexPolygon(list(p), self.vertices)
+		return _isPointInsideConvexPolygon(
+			list(p),
+			self.vertices,
+		) if self.convex else _isPointInsidePolygon(
+			list(p),
+			self.vertices,
+		)
 
 	def isSimple(self) -> bool:
 		'''

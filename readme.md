@@ -200,20 +200,22 @@ class TorchDataset(torch.utils.data.Dataset):
 ```python
 from kac_drumset.geometry import (
 	# Methods
-	'isColinear',
-	'largestVector',
-	'lineIntersection',
-	'weylCondition',
+	isColinear,
+	largestVector,
+	lineIntersection,
+	weylCondition,
 	# Classes
-	'ConvexPolygon',
-	'IrregularStar',
-	'TSPolygon',
-	'UnitRectangle',
-	'UnitTriangle',
+	Circle,
+	ConvexPolygon,
+	IrregularStar,
+	TravellingSalesmanPolygon,
+	UnitRectangle,
+	UnitTriangle,
 	# Types
-	'Circle',
-	'Polygon',
-	'Shape',
+	Ellipse,
+	Polygon,
+	Shape,
+	ShapeSettings,
 )
 ```
 
@@ -267,21 +269,56 @@ def weylCondition(S_1: Shape, S_2: Shape) -> bool:
 ### Classes
 
 ```python
+
+class Circle(Ellipse):
+	'''
+	A base class for a circle, instantiated with a radius.
+	'''
+
+	class Settings(ShapeSettings):
+		r: float			# radius
+
+	def __init__(self, r: float = 1.) -> None:
+
 class ConvexPolygon(Polygon):
 	'''
+	Generate convex shapes according to Pavel Valtr's 1995 algorithm.
 	'''
+
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		N: int				# number of vertices
+		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
 
 class IrregularStar(Polygon):
 	'''
+	This is a fast method for generating concave polygons, particularly with a large number of vertices. This approach
+	generates polygons by ordering a series of random points around a centre point. As a result, not all possible simple
+	polygons are generated this way.
 	'''
+
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		N: int				# number of vertices
+		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
 
-class TSPolygon(Polygon):
+class TravellingSalesmanPolygon(Polygon):
 	'''
+	This algorithm is based on a method of eliminating self-intersections in a polygon by using the Lin and Kerningham
+	'2-opt' moves. Such a move eliminates an intersection between two edges by reversing the order of the vertices between
+	the edges. Intersecting edges are detected using a simple sweep through the vertices and then one intersection is
+	chosen at random to eliminate after each sweep.
+	van Leeuwen, J., & Schoone, A. A. (1982). Untangling a traveling salesman tour in the plane.
 	'''
+
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		N: int				# number of vertices
+		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
 
@@ -290,52 +327,87 @@ class UnitRectangle(Polygon):
 	Define a rectangle with unit area and an aspect ration epsilon.
 	'''
 
-	epsilon: float
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		epsilon: float		# aspect ratio
 
 	def __init__(self, epsilon: Optional[float] = None) -> None:
+
+class UnitTriangle(Polygon):
+	'''
+	Define a triangle with unit area. For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [0, 1], the corresponding triangle
+	will be unique.
+	'''
+
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		r: float			# radius
+		theta: float		# angle
+
+	def __init__(self, r: float, theta: float) -> None:
+
 ```
 
 ### Types
 
 ```python
-class Circle(Shape):
+class Ellipse(Shape):
 	'''
-	A base class for a circle, instantiated with a radius.
+	A base class for an ellipse, instantiated with two foci.
 	'''
 
-	r: float # radius
+	class Settings(ShapeSettings):
+		''' Settings to be used when generating. '''
+		f_0: tuple[float, float]	# focus §
+		f_1: tuple[float, float]	# focus 2
 
-	def __init__(self, r: float = 1.) -> None:
-		self.r = r
+	def __init__(self, f_0: tuple[float, float], f_1: tuple[float, float]) -> None:
 
 	def area(self) -> float:
-		''' Archimedes. '''
+		''' Archimedes.	'''
 
 	def centroid(self) -> tuple[float, float]:
+		'''
+		Return the midpoint between the two foci.
+		'''
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
-		This function creates a boolean mask of a circle on a grid with dimensions R^(grid_size). The input shape should
-		exist within a domain R^G where G ∈ [0, 1].
+		This function creates a boolean mask of a manifold on a grid with dimensions R^(grid_size). The input shape is always
+		normalised to the domain R^G before being drawn.
 		'''
 
 	def isPointInside(self, p: tuple[float, float]) -> bool:
+		'''
+		Determines if a given point p ∈ P, including boundaries.
+		'''
 
 class Polygon(Shape):
 	'''
 	A base class for a polygon, instantiated with an array of vertices.
 	'''
 
-	convex: bool
-	N: int
-	vertices: npt.NDArray[np.float64]
+	N: int								# number of vertices
+
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		vertices: Union[list[list[float]], npt.NDArray[np.float64]]
 
 	def __init__(self, vertices: Optional[Union[list[list[float]], npt.NDArray[np.float64]]] = None) -> None:
 
+	'''
+	Getters and setters for .convex and .vertices.
+	This maintains that .convex is a cached variable, but is also updated with the vertices.
+	'''
+	@property
+	def convex(self) -> bool:
+	@property
+	def vertices(self) -> npt.NDArray[np.float64]:
+
 	def area(self) -> float:
 		'''
-		An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
-		calculate the area of a polygon.
+		An implementation of the polygon area algorithm derived using Green's Theorem.
+		https://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
 		'''
 
 	def centroid(self) -> tuple[float, float]:
@@ -346,13 +418,13 @@ class Polygon(Shape):
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
-		This function creates a boolean mask of a polygon on a grid with dimensions R^(grid_size). The input shape should
-		exist within a domain R^G where G ∈ [0, 1].
+		This function creates a boolean mask of a manifold on a grid with dimensions R^(grid_size). The input shape is always
+		normalised to the domain R^G before being drawn.
 		'''
 
 	def isPointInside(self, p: tuple[float, float]) -> bool:
 		'''
-		Determines whether or not a cartesian point is within a polygon, including boundaries.
+		Determines if a given point p ∈ P, including boundaries.
 		'''
 
 	def isSimple(self) -> bool:
@@ -365,24 +437,36 @@ class Shape(ABC):
 	An abstract base class for a two dimensional manifold in Euclidean geometry.
 	'''
 
-	def __init__(self) -> None:
-		pass
+	@abstractmethod
+	class Settings(ShapeSettings, total=False):
+		'''
+		Settings to be used when generating.
+		'''
 
 	@abstractmethod
 	def area(self) -> float:
-		pass
+		'''
+		Calculate the area of a 2D manifold.
+		'''
 
 	@abstractmethod
 	def centroid(self) -> tuple[float, float]:
-		pass
+		'''
+		This algorithm is used to calculate the geometric centroid of a 2D manifold.
+		'''
 
 	@abstractmethod
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
-		pass
+		'''
+		This function creates a boolean mask of a manifold on a grid with dimensions R^(grid_size). The input shape is always
+		normalised to the domain R^G before being drawn.
+		'''
 
 	@abstractmethod
 	def isPointInside(self, p: tuple[float, float]) -> bool:
-		pass
+		'''
+		Determines if a given point p ∈ P, including boundaries.
+		'''
 ```
 </details>
 
@@ -673,7 +757,7 @@ class FDTDModel(AudioSampler):
 		decay_time: float				# how long will the simulation take to decay? (seconds)
 		drum_size: float				# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float			# material density of the simulated drum membrane (kg/m^2)
-		max_vertices: int				# maximum amount of vertices for a given drum
+		shape_settings: ShapeSettings	# the class generator settings for a given drum shape
 		strike_width: float				# width of the drum strike (m)
 		tension: float					# tension at rest (N/m)
 

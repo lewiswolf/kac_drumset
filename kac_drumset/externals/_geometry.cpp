@@ -33,13 +33,13 @@ Type conversions.
 
 _Vertices convertPolygonToVector(const T::Polygon& P) {
 	_Vertices out;
-	for (int i = 0; i < P.size(); i++) { out.push_back({{P[i].x, P[i].y}}); }
+	for (unsigned long n = 0; n < P.size(); n++) { out.push_back({{P[n].x, P[n].y}}); }
 	return out;
 }
 
 T::Polygon convertVectorToPolygon(const _Vertices& V) {
-	T::Polygon out(V.size());
-	for (int i = 0; i < V.size(); i++) { out[i] = T::Point(V[i][0], V[i][1]); }
+	T::Polygon out;
+	for (unsigned long n = 0; n < V.size(); n++) { out.push_back(T::Point(V[n][0], V[n][1])); }
 	return out;
 }
 
@@ -80,6 +80,10 @@ bool _isPointInsideConvexPolygon(const _Point& p, const _Vertices& V) {
 	return g::isPointInsideConvexPolygon(T::Point(p[0], p[1]), convertVectorToPolygon(V));
 }
 
+bool _isPointInsidePolygon(const _Point& p, const _Vertices& V) {
+	return g::isPointInsidePolygon(T::Point(p[0], p[1]), convertVectorToPolygon(V));
+}
+
 bool _isSimple(const _Vertices& V) { return g::isSimple(convertVectorToPolygon(V)); }
 
 std::pair<double, std::pair<int, int>> _largestVector(const _Vertices& V) {
@@ -99,6 +103,10 @@ _Vertices _normaliseConvexPolygon(const _Vertices& V) {
 }
 
 _Vertices _normalisePolygon(const _Vertices& V) {
+	return convertPolygonToVector(g::normalisePolygon(convertVectorToPolygon(V)));
+}
+
+_Vertices _normaliseSimplePolygon(const _Vertices& V) {
 	return convertPolygonToVector(g::normaliseSimplePolygon(convertVectorToPolygon(V)));
 }
 
@@ -119,10 +127,12 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_isColinear", &_isColinear);
 	m.def("_isConvex", &_isConvex);
 	m.def("_isPointInsideConvexPolygon", &_isPointInsideConvexPolygon);
+	m.def("_isPointInsidePolygon", &_isPointInsidePolygon);
 	m.def("_isSimple", &_isSimple);
 	m.def("_largestVector", &_largestVector);
 	m.def("_lineIntersection", &_lineIntersection);
 	m.def("_normaliseConvexPolygon", &_normaliseConvexPolygon);
 	m.def("_normalisePolygon", &_normalisePolygon);
+	m.def("_normaliseSimplePolygon", &_normaliseSimplePolygon);
 	m.def("_polygonArea", &_polygonArea);
 }

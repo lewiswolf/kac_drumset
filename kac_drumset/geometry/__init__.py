@@ -1,26 +1,26 @@
 from ._lines import isColinear, largestVector, lineIntersection
 from .ellipse import Circle, Ellipse
 from .isospectrality import weylCondition
-from .random_polygon import ConvexPolygon, IrregularStar, TSPolygon, UnitRectangle, UnitTriangle
+from .random_polygon import ConvexPolygon, IrregularStar, TravellingSalesmanPolygon, UnitRectangle, UnitTriangle
 from .polygon import Polygon
 from .types import Shape, ShapeSettings
 
 
 __all__ = [
-	# external methods
+	# External Methods
 	'isColinear',
 	'largestVector',
 	'lineIntersection',
-	# methods
+	# Methods
 	'weylCondition',
-	# classes
+	# Classes
 	'Circle',
 	'ConvexPolygon',
 	'IrregularStar',
-	'TSPolygon',
+	'TravellingSalesmanPolygon',
 	'UnitRectangle',
 	'UnitTriangle',
-	# types
+	# Types
 	'Ellipse',
 	'Polygon',
 	'Shape',

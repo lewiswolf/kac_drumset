@@ -1,5 +1,5 @@
 '''
-RandomPolygon is used to generate a random drum shape alongside computing some of its properties.
+This file contains classes for generating polygons, including random polygon generators and unit polygon generators.
 '''
 
 # core
@@ -16,7 +16,7 @@ from ..externals._geometry import (
 	_generateIrregularStar,
 	_generatePolygon,
 	_normaliseConvexPolygon,
-	_normalisePolygon,
+	_normaliseSimplePolygon,
 )
 from .polygon import Polygon
 from .types import ShapeSettings
@@ -32,11 +32,13 @@ __all__ = [
 
 class ConvexPolygon(Polygon):
 	'''
+	Generate convex shapes according to Pavel Valtr's 1995 algorithm.
 	'''
 
 	class Settings(ShapeSettings, total=False):
-		N: int
-		max_vertices: int
+		''' Settings to be used when generating. '''
+		N: int				# number of vertices
+		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
 		super().__init__(_normaliseConvexPolygon(_generateConvexPolygon(
@@ -46,32 +48,42 @@ class ConvexPolygon(Polygon):
 
 class IrregularStar(Polygon):
 	'''
+	This is a fast method for generating concave polygons, particularly with a large number of vertices. This approach
+	generates polygons by ordering a series of random points around a centre point. As a result, not all possible simple
+	polygons are generated this way.
 	'''
 
 	class Settings(ShapeSettings, total=False):
-		N: int
-		max_vertices: int
+		''' Settings to be used when generating. '''
+		N: int				# number of vertices
+		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
-		super().__init__(_generateIrregularStar(
-			random.randint(3, max_vertices) if N is None else N,
-		))
-		self.vertices = np.array(_normaliseConvexPolygon(self.vertices) if self.convex else _normalisePolygon(self.vertices))
+		super().__init__(_generateIrregularStar(random.randint(3, max_vertices) if N is None else N))
+		self.vertices = np.array(
+			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
+		)
 
 
-class TSPolygon(Polygon):
+class TravellingSalesmanPolygon(Polygon):
 	'''
+	This algorithm is based on a method of eliminating self-intersections in a polygon by using the Lin and Kerningham
+	'2-opt' moves. Such a move eliminates an intersection between two edges by reversing the order of the vertices between
+	the edges. Intersecting edges are detected using a simple sweep through the vertices and then one intersection is
+	chosen at random to eliminate after each sweep.
+	van Leeuwen, J., & Schoone, A. A. (1982). Untangling a traveling salesman tour in the plane.
 	'''
 
 	class Settings(ShapeSettings, total=False):
-		N: int
-		max_vertices: int
+		''' Settings to be used when generating. '''
+		N: int				# number of vertices
+		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
-		super().__init__(_generatePolygon(
-			random.randint(3, max_vertices) if N is None else N,
-		))
-		self.vertices = np.array(_normaliseConvexPolygon(self.vertices) if self.convex else _normalisePolygon(self.vertices))
+		super().__init__(_generatePolygon(random.randint(3, max_vertices) if N is None else N))
+		self.vertices = np.array(
+			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
+		)
 
 
 class UnitRectangle(Polygon):
@@ -82,7 +94,8 @@ class UnitRectangle(Polygon):
 	epsilon: float
 
 	class Settings(ShapeSettings, total=False):
-		epsilon: float
+		''' Settings to be used when generating. '''
+		epsilon: float		# aspect ratio
 
 	def __init__(self, epsilon: Optional[float] = None) -> None:
 		self.epsilon = np.random.uniform(0., 1.) if epsilon is None else epsilon
@@ -99,11 +112,13 @@ class UnitTriangle(Polygon):
 	theta: float
 
 	class Settings(ShapeSettings, total=False):
-		r: float
-		theta: float
+		''' Settings to be used when generating. '''
+		r: float			# radius
+		theta: float		# angle
 
 	def __init__(self, r: float, theta: float) -> None:
 		self.r = np.random.uniform(0., 1.) if r is None else r
 		self.theta = np.random.uniform(0., np.pi) if theta is None else theta
 		assert self.r <= 1. and self.r >= 0., 'r ∈ [0, 1]'
+		raise Exception('unsupported')
 		# super().__init__(_generateUnitTriangle(r, theta))

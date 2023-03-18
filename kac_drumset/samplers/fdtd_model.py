@@ -67,7 +67,7 @@ class FDTDModel(AudioSampler):
 		decay_time: float				# how long will the simulation take to decay? (seconds)
 		drum_size: float				# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float			# material density of the simulated drum membrane (kg/m^2)
-		shape_settings: ShapeSettings	# the class settings for a given drum shape
+		shape_settings: ShapeSettings	# the class generator settings for a given drum shape
 		strike_width: float				# width of the drum strike (m)
 		tension: float					# tension at rest (N/m)
 
