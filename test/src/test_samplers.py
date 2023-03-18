@@ -124,6 +124,7 @@ class SamplerTests(TestCase):
 			'sample_rate': 48000,
 			'arbitrary_shape': ConvexPolygon,
 			'decay_time': np.inf,
+			'shape_settings': ConvexPolygon.Settings({'max_vertices': 10}),
 		}
 		model = FDTDModel(**settings)
 
@@ -141,10 +142,11 @@ class SamplerTests(TestCase):
 		# This test asserts that a shape was properly defined after updating the model's properties.
 		self.assertTrue(hasattr(model, 'shape'))
 		# This test asserts that the listening point is within the model
-		# self.assertTrue(model.shape.isPointInside(model.w))
+		self.assertTrue(model.shape.isPointInside(model.w))
+		self.assertTrue(model.B[model.w_discrete] == 1)
 		# This test asserts that the model returns the vertices and the strike location as its labels.
 		self.assertEqual(len(model.getLabels()['strike_location']), 2)
-		self.assertLessEqual(len(model.getLabels()['vertices']), model.max_vertices)
+		self.assertLessEqual(len(model.getLabels()['vertices']), 10)
 
 		# generate a distribution of drums to assert that the sampler works with various configurations
 		drum_size = [0.9, 0.7, 0.5, 0.3, 0.1]
@@ -159,6 +161,7 @@ class SamplerTests(TestCase):
 						arbitrary_shape=ConvexPolygon,
 						drum_size=drum_size[i],
 						material_density=material_density[j],
+						shape_settings=ConvexPolygon.Settings({'max_vertices': 10}),
 						tension=tension[k],
 					)
 					# This test asserts that a boolean mask was properly defined after updating the model's properties, and that the

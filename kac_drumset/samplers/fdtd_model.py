@@ -37,7 +37,6 @@ class FDTDModel(AudioSampler):
 	shape_settings: ShapeSettings	# the class settings for a given drum shape
 	strike_width: float				# width of the drum strike (m)
 	t: float						# tension at rest (N/m)
-	w: tuple[int, int]				# sample point of the 2D surface
 	# FDTD inferences
 	c: float						# wavespeed (m/s)
 	cfl: float						# courant number
@@ -51,10 +50,14 @@ class FDTDModel(AudioSampler):
 	c_0: float						# first coefficient
 	c_1: float						# second coefficient
 	c_2: float						# third coefficient
+	u_0: npt.NDArray[np.float64]	# initial conditions for each simulation
+	u_1: npt.NDArray[np.float64]	# excitation for each simulation
+	w_discrete: tuple[int, int]		# discreet sample point of the 2D surface
 	# drum properties
 	B: npt.NDArray[np.int8]			# boolean matrix define the boundary conditions for the drum
 	shape: Polygon					# the shape of the drum
 	strike: tuple[float, float]		# where is the drum struck?
+	w: tuple[float, float]			# sample point of the 2D surface
 
 	class Settings(SamplerSettings, total=False):
 		'''
@@ -115,6 +118,7 @@ class FDTDModel(AudioSampler):
 		self.c_0 = (self.cfl ** 2) / (1 + log_decay)
 		self.c_1 = (2 - 4 * (self.cfl ** 2)) / (1 + log_decay)
 		self.c_2 = (1 - log_decay) / (1 + log_decay)
+		self.u_0 = np.zeros((self.H + 2, self.H + 2))
 
 	def generateWaveform(self) -> None:
 		'''
@@ -123,18 +127,14 @@ class FDTDModel(AudioSampler):
 
 		if hasattr(self, 'shape'):
 			self.waveform = FDTDWaveform2D(
-				np.zeros((self.H + 2, self.H + 2)),
-				np.pad(self.a * raisedCosine(
-					(self.H, self.H),
-					(self.strike[0] * (self.H - 1), self.strike[1] * (self.H - 1)),
-					sigma=self.sigma,
-				) / self.sigma_2, 1, mode='constant'),
-				np.pad(self.B, 1, mode='constant'),
+				self.u_0,
+				self.u_1,
+				self.B,
 				self.c_0,
 				self.c_1,
 				self.c_2,
 				self.length,
-				self.w,
+				self.w_discrete,
 			)
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
@@ -155,17 +155,27 @@ class FDTDModel(AudioSampler):
 		'''
 
 		if i is None or i % 5 == 0:
-			# initialise a random drum shape and calculate the initial conditions relative to the centroid of the drum.
+			# initialise a random drum shape and calculate the initial conditions.
 			self.shape = self.arbitrary_shape(**self.shape_settings)
-			self.B = self.shape.draw(self.H)
+			self.B = np.pad(self.shape.draw(self.H), 1, mode='constant')
+			# if possible use the centroid as the primary listening and excitation position, otherwise use a random point.
 			centroid = self.shape.centroid()
-			self.w = (
-				round(centroid[0] * (self.H - 1)) + 1,
-				round(centroid[1] * (self.H - 1)) + 1,
-			)
 			self.strike = centroid
+			self.w = centroid
+			while not self.shape.isPointInside(self.strike):
+				self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
+			while not self.shape.isPointInside(self.w):
+				self.w = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
+			# create discrete version of self.w
+			self.w_discrete = (round(self.w[0] * (self.H - 1)) + 1, round(self.w[1] * (self.H - 1)) + 1)
 		else:
-			# otherwise update the strike location to be a random location.
+			# update the strike location to be a random location.
 			self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
 			while not self.shape.isPointInside(self.strike):
 				self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
+		# generate a new excitation matrix
+		self.u_1 = np.pad(self.a * raisedCosine(
+			(self.H, self.H),
+			(self.strike[0] * (self.H - 1), self.strike[1] * (self.H - 1)),
+			sigma=self.sigma,
+		) / self.sigma_2, 1, mode='constant')

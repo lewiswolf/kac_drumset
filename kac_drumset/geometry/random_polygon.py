@@ -24,7 +24,7 @@ from .types import ShapeSettings
 __all__ = [
 	'ConvexPolygon',
 	'IrregularStar',
-	'TSPolygon',
+	'TravellingSalesmanPolygon',
 	'UnitRectangle',
 	'UnitTriangle',
 ]

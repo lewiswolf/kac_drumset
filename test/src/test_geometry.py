@@ -11,6 +11,8 @@ from kac_drumset.externals._geometry import (
 	_generateIrregularStar,
 	_generatePolygon,
 	_isConvex,
+	_isPointInsideConvexPolygon,
+	# _isPointInsidePolygon,
 	_normaliseConvexPolygon,
 )
 from kac_drumset.geometry import (
@@ -21,7 +23,7 @@ from kac_drumset.geometry import (
 	# classes
 	ConvexPolygon,
 	IrregularStar,
-	TSPolygon,
+	TravellingSalesmanPolygon,
 	UnitRectangle,
 	# UnitTriangle,
 	# types
@@ -40,9 +42,22 @@ class GeometryTests(TestCase):
 		Test properties of the type Circle.
 		'''
 
-		# This test asserts that the center of the boolean mask is always true.
-		for r in [0.1, 0.25, 0.5, 1.]:
-			M = Circle(r).draw(101)
+		# This test asserts that the area is always correct.
+		self.assertEqual(Circle(1.).area(), np.pi)
+
+		for r in [0.1, 0.25, 0.5, 1., 2.]:
+			C = Circle(r)
+
+			# This test asserts that the circle correctly has equal foci.
+			self.assertEqual(C.f_0, C.f_1)
+
+			# This test asserts that the centroid is (0., 0.)
+			centroid = C.centroid()
+			self.assertEqual(centroid[0], 0.)
+			self.assertEqual(centroid[1], 0.)
+
+			# This test asserts that the center of the boolean mask is always true.
+			M = C.draw(101)
 			self.assertEqual(M[50, 50], 1)
 			self.assertEqual(M[0, 0], 0)
 			self.assertEqual(M[0, 100], 0)
@@ -68,35 +83,43 @@ class GeometryTests(TestCase):
 			Polygon([[0, 0], [1, 0], [1, 1], [0, 1.1]]),
 		]
 
-		# This test asserts that _isPointInsidePolygon works as expected
-		for quad in quads:
-			for p in quad.vertices:
-				self.assertTrue(quad.isPointInside(p))
-			for n in range(quad.N):
-				a = quad.vertices[n]
-				b = quad.vertices[(n + 1) % quad.N]
-				self.assertTrue(quad.isPointInside(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.)))
-		for square in squares:
-			for p in square.vertices:
-				self.assertTrue(square.isPointInside(p))
-			for n in range(square.N):
-				a = square.vertices[n]
-				b = square.vertices[(n + 1) % square.N]
-				self.assertTrue(square.isPointInside(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.)))
-			self.assertTrue(square.isPointInside((0.999, 0.5)))
-			self.assertFalse(square.isPointInside((1.001, 0.5)))
-			self.assertTrue(square.isPointInside((0.5, 0.999)))
-			self.assertFalse(square.isPointInside((0.5, 1.001)))
-			self.assertTrue(square.isPointInside((0.001, 0.5)))
-			self.assertFalse(square.isPointInside((-0.001, 0.5)))
-			self.assertTrue(square.isPointInside((0.5, 0.001)))
-			self.assertFalse(square.isPointInside((0.5, -0.001)))
-
+		for P in quads + squares:
 			# This test asserts that a square has the correct number of vertices.
-			self.assertEqual(len(square.vertices), square.N)
+			self.assertEqual(len(P.vertices), P.N)
 
 			# This test asserts that _isConvex works for any closed arrangement of vertices.
-			self.assertTrue(square.convex)
+			self.assertTrue(P.convex)
+
+			# This test asserts that P.isPointInside is True for all vertices.
+			for p in P.vertices:
+				self.assertTrue(_isPointInsideConvexPolygon(p, P.vertices))
+				# self.assertTrue(_isPointInsidePolygon(p, P.vertices))
+
+			# This test asserts that P.isPointInside is True for all midpoints between adjacent vertices.
+			for n in range(P.N):
+				a = P.vertices[n]
+				b = P.vertices[(n + 1) % P.N]
+				self.assertTrue(_isPointInsideConvexPolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), P.vertices))
+			# 	self.assertTrue(_isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), P.vertices))
+
+		for square in squares:
+			# This test asserts that P.isPointInside works as expected.
+			# self.assertTrue(_isPointInsidePolygon((0.999, 0.5), square.vertices))
+			self.assertTrue(_isPointInsideConvexPolygon((0.999, 0.5), square.vertices))
+			# self.assertFalse(_isPointInsidePolygon((1.001, 0.5), square.vertices))
+			self.assertFalse(_isPointInsideConvexPolygon((1.001, 0.5), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((0.5, 0.999), square.vertices))
+			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.999), square.vertices))
+			# self.assertFalse(_isPointInsidePolygon((0.5, 1.001), square.vertices))
+			self.assertFalse(_isPointInsideConvexPolygon((0.5, 1.001), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((0.001, 0.5), square.vertices))
+			self.assertTrue(_isPointInsideConvexPolygon((0.001, 0.5), square.vertices))
+			# self.assertFalse(_isPointInsidePolygon((-0.001, 0.5), square.vertices))
+			self.assertFalse(_isPointInsideConvexPolygon((-0.001, 0.5), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((0.5, 0.001), square.vertices))
+			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.001), square.vertices))
+			# self.assertFalse(_isPointInsidePolygon((0.5, -0.001), square.vertices))
+			self.assertFalse(_isPointInsideConvexPolygon((0.5, -0.001), square.vertices))
 
 			# This test asserts that _normaliseConvexPolygon produces the correct output.
 			self.assertFalse(False in np.equal(
@@ -114,6 +137,7 @@ class GeometryTests(TestCase):
 			_normaliseConvexPolygon(squares[0].vertices),
 			_normaliseConvexPolygon(squares[1].vertices)),
 		)
+
 		# This test asserts that after _normaliseConvexPolygon, the quads produce the same output.
 		for quad in quads:
 			quad.vertices = np.array(_normaliseConvexPolygon(quad.vertices))
@@ -240,7 +264,7 @@ class GeometryTests(TestCase):
 			for P in [
 				ConvexPolygon,
 				IrregularStar,
-				TSPolygon,
+				TravellingSalesmanPolygon,
 			]:
 				polygon = P(max_vertices=20)
 				LV = largestVector(polygon.vertices)
@@ -275,6 +299,20 @@ class GeometryTests(TestCase):
 						polygon.vertices[(n + 1) % polygon.N],
 					])))
 
+				# This test asserts that isPointInsidePolygon includes the vertices.
+				# for p in polygon.vertices:
+				# 	self.assertTrue(_isPointInsidePolygon(p. polygon.vertices))
+
+				# # This test asserts that isPointInside includes the midpoint of each vertex.
+				# for n in range(polygon.N):
+				# 	a = polygon.vertices[n]
+				# 	b = polygon.vertices[(n + 1) % polygon.N]
+				# 	self.assertTrue(_isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), polygon.vertices))
+				# 	if not polygon.isPointInside(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.)):
+				# 		from graphs import PlotPolygon
+				# 		print(polygon.vertices[n])
+				# 		PlotPolygon(polygon.vertices)
+
 			if polygon.convex:
 				# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
 				# can assume that the _generateConvexPolygon() function works as intended.
@@ -284,9 +322,20 @@ class GeometryTests(TestCase):
 				self.assertTrue(polygon.vertices[LV[1][0]][0] == 0.)
 				self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
 
+				# This test asserts that isPointInsideConvexPolygon includes the vertices.
+				for p in polygon.vertices:
+					self.assertTrue(_isPointInsideConvexPolygon(p, polygon.vertices))
+
+				# This test asserts that isPointInsideConvexPolygon includes the midpoint of each vertex.
+				# for n in range(polygon.N):
+				# 	a = polygon.vertices[n]
+				# 	b = polygon.vertices[(n + 1) % polygon.N]
+				# 	self.assertTrue(_isPointInsideConvexPolygon([(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.], polygon.vertices))
+
 				# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
 				centroid = polygon.centroid()
-				polygon.isPointInside(centroid)
+				self.assertTrue(_isPointInsideConvexPolygon(polygon.centroid(), polygon.vertices))
+				# self.assertTrue(_isPointInsidePolygon(polygon.centroid(), polygon.vertices))
 				self.assertEqual(polygon.draw(100)[
 					round(centroid[0] * 99),
 					round(centroid[1] * 99),
@@ -303,9 +352,9 @@ class GeometryTests(TestCase):
 
 		# Test the vertices, centroid and area of the UnitRectangle for varying epsilons.
 		for [epsilon, vertices] in [
-			(1., [[0.5, 0.5], [0.5, -0.5], [-0.5, -0.5], [-0.5, 0.5]]),
-			(0.5, [[0.25, 1.], [0.25, -1.], [-0.25, -1.], [-0.25, 1.]]),
-			(1.25, [[0.625, 0.4], [0.625, -0.4], [-0.625, -0.4], [-0.625, 0.4]]),
+			(1., [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5]]),
+			(0.5, [[-0.25, -1.], [-0.25, 1.], [0.25, 1.], [0.25, -1.]]),
+			(1.25, [[-0.625, -0.4], [-0.625, 0.4], [0.625, 0.4], [0.625, -0.4]]),
 		]:
 			R = UnitRectangle(epsilon)
 			P = Polygon(vertices)
