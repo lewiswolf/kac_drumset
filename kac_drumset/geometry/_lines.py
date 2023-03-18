@@ -10,13 +10,12 @@ import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
-from ..externals._geometry import _isColinear, _largestVector, _lineIntersection, _lineMidpoint
+from ..externals._geometry import _isColinear, _largestVector, _lineIntersection
 
 __all__ = [
 	'isColinear',
 	'largestVector',
 	'lineIntersection',
-	'lineMidpoint',
 ]
 
 
@@ -72,11 +71,3 @@ def lineIntersection(A: npt.NDArray[np.float64], B: npt.NDArray[np.float64]) -> 
 		'lineIntersection() only supports an input of A and B with shapes (2, 2).'
 	out = _lineIntersection(A, B)
 	return out[0], np.array(out[1])
-
-
-def lineMidpoint(A: npt.NDArray[np.float64]) -> tuple[float, float]:
-	'''
-	Find the midpoint of a line.
-	'''
-	out = _lineMidpoint(A)
-	return out[0], out[1]

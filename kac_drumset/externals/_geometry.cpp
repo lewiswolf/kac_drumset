@@ -94,11 +94,6 @@ std::pair<std::string, _Point> _lineIntersection(_Line& A, _Line& B) {
 	return std::make_pair(out.first, _Point({out.second.x, out.second.y}));
 }
 
-_Point _lineMidpoint(_Line& L) {
-	T::Point p = g::lineMidpoint(T::Line(T::Point(L[0][0], L[0][1]), T::Point(L[1][0], L[1][1])));
-	return {p.x, p.y};
-}
-
 _Vertices _normaliseConvexPolygon(const _Vertices& V) {
 	return convertPolygonToVector(g::normaliseConvexPolygon(convertVectorToPolygon(V)));
 }
@@ -127,7 +122,6 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_isSimple", &_isSimple);
 	m.def("_largestVector", &_largestVector);
 	m.def("_lineIntersection", &_lineIntersection);
-	m.def("_lineMidpoint", &_lineMidpoint);
 	m.def("_normaliseConvexPolygon", &_normaliseConvexPolygon);
 	m.def("_normalisePolygon", &_normalisePolygon);
 	m.def("_polygonArea", &_polygonArea);

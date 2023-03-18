@@ -1,4 +1,4 @@
-from ._lines import isColinear, largestVector, lineIntersection, lineMidpoint
+from ._lines import isColinear, largestVector, lineIntersection
 from .ellipse import Circle, Ellipse
 from .isospectrality import weylCondition
 from .random_polygon import ConvexPolygon, IrregularStar, TSPolygon, UnitRectangle, UnitTriangle
@@ -11,7 +11,6 @@ __all__ = [
 	'isColinear',
 	'largestVector',
 	'lineIntersection',
-	'lineMidpoint',
 	# methods
 	'weylCondition',
 	# classes

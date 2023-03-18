@@ -38,7 +38,7 @@ def DatasetExample() -> None:
 			'duration': 1.,
 			'material_density': 0.2,
 			'sample_rate': 48000,
-			'shape_settings': ConvexPolygon.Settings({'max_vertices': 10, 'vertices': []}),
+			'shape_settings': ConvexPolygon.Settings({'max_vertices': 10}),
 			'strike_width': 0.01,
 			'tension': 2000.,
 		}),
