@@ -51,7 +51,6 @@ class FDTDModel(AudioSampler):
 	c_1: float						# second coefficient
 	c_2: float						# third coefficient
 	u_0: npt.NDArray[np.float64]	# initial conditions for each simulation
-	u_1: npt.NDArray[np.float64]	# excitation for each simulation
 	w_discrete: tuple[int, int]		# discreet sample point of the 2D surface
 	# drum properties
 	B: npt.NDArray[np.int8]			# boolean matrix define the boundary conditions for the drum
@@ -128,7 +127,11 @@ class FDTDModel(AudioSampler):
 		if hasattr(self, 'shape'):
 			self.waveform = FDTDWaveform2D(
 				self.u_0,
-				self.u_1,
+				np.pad(self.a * raisedCosine(
+					(self.H, self.H),
+					(self.strike[0] * (self.H - 1), self.strike[1] * (self.H - 1)),
+					sigma=self.sigma,
+				) / self.sigma_2, 1, mode='constant'),
 				self.B,
 				self.c_0,
 				self.c_1,
@@ -159,7 +162,7 @@ class FDTDModel(AudioSampler):
 			self.shape = self.arbitrary_shape(**self.shape_settings)
 			self.B = np.pad(self.shape.draw(self.H), 1, mode='constant')
 			# if possible use the centroid as the primary listening and excitation position, otherwise use a random point.
-			centroid = self.shape.centroid()
+			centroid = self.shape.centroid
 			self.strike = centroid
 			self.w = centroid
 			while not self.shape.isPointInside(self.strike):
@@ -173,9 +176,3 @@ class FDTDModel(AudioSampler):
 			self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
 			while not self.shape.isPointInside(self.strike):
 				self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
-		# generate a new excitation matrix
-		self.u_1 = np.pad(self.a * raisedCosine(
-			(self.H, self.H),
-			(self.strike[0] * (self.H - 1), self.strike[1] * (self.H - 1)),
-			sigma=self.sigma,
-		) / self.sigma_2, 1, mode='constant')

@@ -12,13 +12,13 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from ..externals._geometry import (
-	_centroid,
 	_isConvex,
 	_isPointInsideConvexPolygon,
 	_isPointInsidePolygon,
 	_isSimple,
 	_normalisePolygon,
 	_polygonArea,
+	_polygonCentroid,
 )
 from .types import Shape, ShapeSettings
 
@@ -48,9 +48,18 @@ class Polygon(Shape):
 		assert self.N >= 3, 'A polygon must have three vertices.'
 
 	'''
-	Getters and setters for .convex and .vertices.
-	This maintains that .convex is a cached variable, but is also updated with the vertices.
+	Getters and setters for .centroid, .convex and .vertices.
+	This setup maintains that .convex is a cached variable, but is also updated with the vertices.
 	'''
+
+	@property
+	def centroid(self) -> tuple[float, float]:
+		''' This algorithm is used to calculate the geometric centroid of a 2D polygon. '''
+		return cast(tuple[float, float], tuple(_polygonCentroid(self.vertices, self.area())))
+
+	@centroid.setter
+	def centroid(self, v: tuple[float, float]) -> None:
+		pass
 
 	@property
 	def convex(self) -> bool:
@@ -72,16 +81,8 @@ class Polygon(Shape):
 	def area(self) -> float:
 		'''
 		An implementation of the polygon area algorithm derived using Green's Theorem.
-		https://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
 		'''
 		return _polygonArea(self.vertices)
-
-	def centroid(self) -> tuple[float, float]:
-		'''
-		This algorithm is used to calculate the geometric centroid of a 2D polygon.
-		See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
-		'''
-		return cast(tuple[float, float], tuple(_centroid(self.vertices, self.area())))
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''

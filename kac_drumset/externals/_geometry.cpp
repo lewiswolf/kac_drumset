@@ -47,13 +47,6 @@ T::Polygon convertVectorToPolygon(const _Vertices& V) {
 PyBind11 exports.
 */
 
-_Point _centroid(const _Vertices& V, double area) {
-	T::Point p = g::centroid(convertVectorToPolygon(V), area);
-	return {p.x, p.y};
-}
-
-double _circleArea(const double& r) { return g::circleArea(r); }
-
 _Vertices _generateIrregularStar(const int& N) {
 	return convertPolygonToVector(g::generateIrregularStar(N));
 }
@@ -112,14 +105,17 @@ _Vertices _normaliseSimplePolygon(const _Vertices& V) {
 
 double _polygonArea(const _Vertices& V) { return g::polygonArea(convertVectorToPolygon(V)); }
 
+_Point _polygonCentroid(const _Vertices& V, double area) {
+	T::Point p = g::polygonCentroid(convertVectorToPolygon(V), area);
+	return {p.x, p.y};
+}
+
 /*
 PyBind11 config.
 */
 
 PYBIND11_MODULE(_geometry, m) {
 	m.doc() = "_geometry";
-	m.def("_centroid", &_centroid);
-	m.def("_circleArea", &_circleArea);
 	m.def("_generateIrregularStar", &_generateIrregularStar);
 	m.def("_generatePolygon", &_generatePolygon);
 	m.def("_generateConvexPolygon", &_generateConvexPolygon);
@@ -135,4 +131,5 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_normalisePolygon", &_normalisePolygon);
 	m.def("_normaliseSimplePolygon", &_normaliseSimplePolygon);
 	m.def("_polygonArea", &_polygonArea);
+	m.def("_polygonCentroid", &_polygonCentroid);
 }

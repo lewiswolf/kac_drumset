@@ -97,7 +97,7 @@ def GeometryExample() -> None:
 	# Compute its convexity.
 	print(f'It is {polygon.convex} that this polygon is convex.')
 	# Compute the geometric centroid.
-	print(f"This polygon's centroid is at {polygon.centroid()}.")
+	print(f"This polygon's centroid is at {polygon.centroid}.")
 	# Determine if an arbitrary point is within the polygon.
 	print(f'It is {polygon.isPointInside((0.5, 0.5))} that the point (0.5, 0.5) is inside of this polygon.')
 	# Compute its largest vector pair.
