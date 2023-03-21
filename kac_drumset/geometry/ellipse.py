@@ -34,9 +34,25 @@ class Ellipse(Shape):
 		minor: tuple[float, float]	# length across the y axis
 
 	def __init__(self, major: float, minor: float, centroid: tuple[float, float] = (0., 0.)) -> None:
-		self.major = major if major > minor else minor
-		self.minor = minor if major > minor else major
+		if (major > minor):
+			self.major = major
+			self.minor = minor
+		else:
+			self.major = minor
+			self.minor = major
 		self._centroid = centroid
+
+	'''
+	'''
+
+	@property
+	def area(self) -> float:
+		''' Archimedes '''
+		return self.major * self.minor * np.pi
+
+	@area.setter
+	def area(self) -> None:
+		pass
 
 	'''
 	'''
@@ -48,10 +64,6 @@ class Ellipse(Shape):
 	@centroid.setter
 	def centroid(self, value: tuple[float, float]) -> None:
 		self._centroid = value
-
-	def area(self) -> float:
-		''' Archimedes '''
-		return self.major * self.minor * np.pi
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
@@ -118,6 +130,9 @@ class Circle(Ellipse):
 	def __init__(self, r: Optional[float] = None, centroid: tuple[float, float] = (0., 0.)) -> None:
 		self._r = np.random.uniform(0., 1.) if r is None else r
 		super().__init__(self._r, self._r, centroid)
+
+	'''
+	'''
 
 	@property
 	def r(self) -> float:

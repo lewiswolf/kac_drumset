@@ -116,7 +116,7 @@ class UnitTriangle(Polygon):
 		r: float			# radius
 		theta: float		# angle
 
-	def __init__(self, r: float, theta: float) -> None:
+	def __init__(self, r: Optional[float] = None, theta: Optional[float] = None) -> None:
 		self.r = np.random.uniform(0., 1.) if r is None else r
 		self.theta = np.random.uniform(0., np.pi) if theta is None else theta
 		assert self.r <= 1. and self.r >= 0., 'r ∈ [0, 1]'

@@ -72,14 +72,14 @@ def GeometryExample() -> None:
 
 	# Define a circle
 	circle = Circle()
-	print(f'\nA circle with radius {circle.r} has an area of {circle.area()}.\n')
+	print(f'\nA circle with radius {circle.r} has an area of {circle.area}.\n')
 
 	# Define a square.
 	square = UnitRectangle(1.)
 	print(f'This is a square: \n \n {square.vertices} \n')
 	print(f'It, of course, has {square.N} sides.')
 	# Assess its area.
-	print(f'Its area is {square.area()}.')
+	print(f'Its area is {square.area}.')
 	print(
 		f'A square {"does" if isColinear(square.vertices[0: 3]) else "does not"} contain any points that are colinear.',
 	)
@@ -91,7 +91,7 @@ def GeometryExample() -> None:
 	polygon = ConvexPolygon(5)
 	print(f'\nThis is a {polygon.N} sided polygon: \n \n {polygon.vertices} \n')
 	# Assess its area.
-	print(f"Its area is {polygon.area()}.")
+	print(f"Its area is {polygon.area}.")
 	# Compute its simplicity.
 	print(f'It is {polygon.isSimple()} that this polygon is simple.')
 	# Compute its convexity.

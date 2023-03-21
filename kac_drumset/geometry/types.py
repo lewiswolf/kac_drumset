@@ -37,16 +37,18 @@ class Shape(ABC):
 
 	@property
 	@abstractmethod
-	def centroid(self) -> tuple[float, float]:
+	def area(self) -> float:
 		'''
-		This algorithm is used to calculate the geometric centroid of a 2D manifold.
+		Calculate the area of a 2D manifold. This property should be used to scale the shape whenever it is set.
 		'''
 		pass
 
+	@property
 	@abstractmethod
-	def area(self) -> float:
+	def centroid(self) -> tuple[float, float]:
 		'''
-		Calculate the area of a 2D manifold.
+		This algorithm is used to calculate the geometric centroid of a 2D manifold. This property should be used move the
+		shape about the plane whenever it is set.
 		'''
 		pass
 

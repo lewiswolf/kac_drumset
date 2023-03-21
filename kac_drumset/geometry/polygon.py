@@ -48,18 +48,37 @@ class Polygon(Shape):
 		assert self.N >= 3, 'A polygon must have three vertices.'
 
 	'''
-	Getters and setters for .centroid, .convex and .vertices.
-	This setup maintains that .convex is a cached variable, but is also updated with the vertices.
+	Getters and setters for area.
+	Setting area _should_ be used to scale the polygon, but is not currently implemented.
+	'''
+
+	@property
+	def area(self) -> float:
+		''' An implementation of the polygon area algorithm derived using Green's Theorem. '''
+		return _polygonArea(self.vertices)
+
+	@area.setter
+	def area(self) -> None:
+		pass
+
+	'''
+	Getters and setters for centroid.
+	Setting area _should_ be used to scale the polygon, but is not currently implemented.
 	'''
 
 	@property
 	def centroid(self) -> tuple[float, float]:
 		''' This algorithm is used to calculate the geometric centroid of a 2D polygon. '''
-		return cast(tuple[float, float], tuple(_polygonCentroid(self.vertices, self.area())))
+		return cast(tuple[float, float], tuple(_polygonCentroid(self.vertices, self.area)))
 
 	@centroid.setter
 	def centroid(self, v: tuple[float, float]) -> None:
 		pass
+
+	'''
+	Getters and setters for convex and vertices.
+	This setup maintains that convex is a cached variable, that updates whenever the vertices are updated.
+	'''
 
 	@property
 	def convex(self) -> bool:
@@ -77,12 +96,6 @@ class Polygon(Shape):
 	def vertices(self, v: npt.NDArray[np.float64]) -> None:
 		self._vertices = v
 		self._convex = _isConvex(v)
-
-	def area(self) -> float:
-		'''
-		An implementation of the polygon area algorithm derived using Green's Theorem.
-		'''
-		return _polygonArea(self.vertices)
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
