@@ -4,12 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy = ">=1.23"
-opencv-python = ">=4.6"
+numpy = ">=1.24"
+opencv-python = ">=4.7"
 soundfile = "*"
-torch = ">=1.12"
-torchaudio = ">=0.12"
-tqdm = ">=4.64"
+torch = ">=2.0"
+torchaudio = ">=2.0"
+tqdm = ">=4.65"
 
 [dev-packages]
 flake8 = "*"
