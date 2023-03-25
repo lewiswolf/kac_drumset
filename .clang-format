@@ -6,13 +6,17 @@ AlignConsecutiveBitFields: None
 AlignConsecutiveDeclarations: None
 AlignConsecutiveMacros: AcrossEmptyLinesAndComments
 AlignOperands: AlignAfterOperator
-AlignTrailingComments: true
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 2
 AllowAllArgumentsOnNextLine: true
 AllowShortBlocksOnASingleLine: Always
 AllowShortLoopsOnASingleLine: true
 BinPackArguments: false
 BinPackParameters: false
+BreakArrays: false
 BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeInlineASMColon: OnlyMultiline
 BreakBeforeTernaryOperators: true
 ColumnLimit: 100
 CompactNamespaces: true
@@ -29,14 +33,17 @@ IndentExternBlock: Indent
 IndentGotoLabels: true
 IndentPPDirectives: BeforeHash
 IndentRequires: false
+IndentRequiresClause: false
 IndentWidth: 4
 IndentWrappedFunctionNames: false
 InsertBraces: false
+InsertNewlineAtEOF: true
 InsertTrailingCommas: Wrapped
 JavaScriptQuotes: Single
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 LambdaBodyIndentation: Signature
+LineEnding: LF
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 PPIndentWidth: 4
@@ -44,6 +51,8 @@ PointerAlignment: Left
 QualifierAlignment: Left
 ReferenceAlignment: Pointer
 ReflowComments: true
+RemoveSemicolon: true
+RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Leave
 SortIncludes: CaseInsensitive
 SortUsingDeclarations: true
