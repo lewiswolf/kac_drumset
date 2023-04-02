@@ -1,4 +1,5 @@
 # core
+from importlib.metadata import version
 import os
 from unittest import TestCase
 
@@ -41,7 +42,7 @@ class DatasetTests(TestCase):
 					'sample_rate': 48000,
 				}),
 			)
-			# This test asserts that the dataset retains all available information about the sample.
+			# This test asserts that the dataset retains all available information about the sampler.
 			self.assertEqual(1., dataset.sampler_settings['duration'])
 			self.assertEqual(440., dataset.sampler_settings['f_0'])
 			self.assertEqual(48000, dataset.sampler_settings['sample_rate'])
@@ -75,6 +76,7 @@ class DatasetTests(TestCase):
 		# This test asserts that the sampler information is correct.
 		self.assertEqual(dataset.sampler['name'], 'TestSweep')
 		self.assertEqual(type(dataset.sampler['version']), str)
+		self.assertEqual(dataset.sampler['version'], version('kac_drumset'))
 
 		# This test asserts that the SamplerSettings were copied correctly.
 		self.assertEqual(dataset.sampler_settings, {
@@ -236,7 +238,7 @@ class DatasetTests(TestCase):
 		with withoutPrinting():
 			dataset = transformDataset(dataset, {'output_type': 'fft'})
 
-		# This test asserts that the representation_settings are the default.
+		# This test asserts that the representation_settings have been updated.
 		self.assertEqual(dataset.representation_settings['output_type'], 'fft')
 
 		# This test asserts that data is the expected shape.
