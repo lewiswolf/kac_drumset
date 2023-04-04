@@ -51,7 +51,6 @@ class FDTDModel(AudioSampler):
 	c_1: float						# second coefficient
 	c_2: float						# third coefficient
 	u_0: npt.NDArray[np.float64]	# initial conditions for each simulation
-	w_discrete: tuple[int, int]		# discreet sample point of the 2D surface
 	# drum properties
 	B: npt.NDArray[np.int8]			# boolean matrix define the boundary conditions for the drum
 	shape: Polygon					# the shape of the drum
@@ -137,7 +136,7 @@ class FDTDModel(AudioSampler):
 				self.c_1,
 				self.c_2,
 				self.length,
-				self.w_discrete,
+				self.w,
 			)
 
 	def getLabels(self) -> dict[str, list[Union[float, int]]]:
@@ -164,13 +163,11 @@ class FDTDModel(AudioSampler):
 			# if possible use the centroid as the primary listening and excitation position, otherwise use a random point.
 			centroid = self.shape.centroid
 			self.strike = centroid
-			self.w = centroid
 			while not self.shape.isPointInside(self.strike):
 				self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
+			self.w = centroid
 			while not self.shape.isPointInside(self.w):
 				self.w = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
-			# create discrete version of self.w
-			self.w_discrete = (round(self.w[0] * (self.H - 1)) + 1, round(self.w[1] * (self.H - 1)) + 1)
 		else:
 			# update the strike location to be a random location.
 			self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))

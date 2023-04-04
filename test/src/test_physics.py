@@ -27,7 +27,7 @@ class PhysicsTests(TestCase):
 		Tests used in conjunction with circular_modes.hpp.
 		'''
 
-		# This test asserts that the amplitude calculation is programmed correctly.
+		# This test asserts that all amplitudes are zero at the boundary.
 		series = circularSeries(10, 10)
 		for r in [1., -1.]:
 			for theta in [0., np.pi / 2, np.pi, np.pi * 2]:
@@ -62,7 +62,7 @@ class PhysicsTests(TestCase):
 			self.assertGreaterEqual(u.min(), -1.)
 
 		# Test waveform generator with a square simulation
-		waveform = FDTDWaveform2D(u_0=u_0, u_1=u_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=(4, 4))
+		waveform = FDTDWaveform2D(u_0=u_0, u_1=u_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=(0.5, 0.5))
 		# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 		# simulation.
