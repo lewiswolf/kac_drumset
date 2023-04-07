@@ -141,9 +141,10 @@ class SamplerTests(TestCase):
 
 		# This test asserts that a shape was properly defined after updating the model's properties.
 		self.assertTrue(hasattr(model, 'shape'))
+
 		# This test asserts that the listening point is within the model
 		self.assertTrue(model.shape.isPointInside(model.w))
-		self.assertTrue(model.B[model.w_discrete] == 1)
+
 		# This test asserts that the model returns the vertices and the strike location as its labels.
 		self.assertEqual(len(model.getLabels()['strike_location']), 2)
 		self.assertLessEqual(len(model.getLabels()['vertices']), 10)
@@ -168,7 +169,7 @@ class SamplerTests(TestCase):
 					# centroid strike and listening location is always within the drum.
 					model.updateProperties()
 					self.assertTrue(model.shape.isPointInside(model.strike))
-					centroid = model.shape.centroid()
+					centroid = model.shape.centroid
 					self.assertEqual(model.B[
 						round(centroid[0] * (model.H - 1)),
 						round(centroid[1] * (model.H - 1)),

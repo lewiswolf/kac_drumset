@@ -156,20 +156,21 @@ class FDTDModel(AudioSampler):
 		location - the first strike location is always the centroid.
 		'''
 
+		# lambda for maintaining that points are within the shape.
+		def pointInsideLambda(default: tuple[float, float]) -> tuple[float, float]:
+			p = default
+			while not self.shape.isPointInside(p):
+				p = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
+			return p
+
 		if i is None or i % 5 == 0:
 			# initialise a random drum shape and calculate the initial conditions.
 			self.shape = self.arbitrary_shape(**self.shape_settings)
 			self.B = np.pad(self.shape.draw(self.H), 1, mode='constant')
 			# if possible use the centroid as the primary listening and excitation position, otherwise use a random point.
 			centroid = self.shape.centroid
-			self.strike = centroid
-			while not self.shape.isPointInside(self.strike):
-				self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
-			self.w = centroid
-			while not self.shape.isPointInside(self.w):
-				self.w = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
+			self.strike = pointInsideLambda(centroid)
+			self.w = pointInsideLambda(centroid)
 		else:
 			# update the strike location to be a random location.
-			self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
-			while not self.shape.isPointInside(self.strike):
-				self.strike = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
+			self.strike = pointInsideLambda((np.random.uniform(0., 1.), np.random.uniform(0., 1.)))

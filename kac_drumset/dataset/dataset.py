@@ -46,8 +46,6 @@ class TorchDataset(torch.utils.data.Dataset):
 
 	def __getitem__(self, i: int) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
 		''' Return the data and its labels at index i. '''
-		if not hasattr(self, 'Y'):
-			raise ValueError('Dataset contains no data.')
 		return self.X[i], self.Y[i]
 
 	def __len__(self) -> int:
