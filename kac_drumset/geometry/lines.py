@@ -21,9 +21,6 @@ __all__ = [
 
 def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	'''
-	Function wrapper for _isColinear(), converting (v: npt.NDArray[np.float64]): bool into
-	(v: [[float, float], [float, float], [float, float]]): bool.
-
 	Determines whether or not a given set of three vertices are colinear.
 	'''
 	assert vertices.shape == (3, 2), \
