@@ -1,5 +1,5 @@
 '''
-This file contains the fixed geometric types used as part of this package.
+This file contains the fixed geometric type Polygon.
 '''
 
 # core
@@ -58,12 +58,11 @@ class Polygon(Shape):
 		return _polygonArea(self.vertices)
 
 	@area.setter
-	def area(self) -> None:
+	def area(self, a: float) -> None:
 		pass
 
 	'''
-	Getters and setters for centroid.
-	Setting area _should_ be used to scale the polygon, but is not currently implemented.
+	Getters and setters for centroid. Setting centroid translates the polygon about the plane.
 	'''
 
 	@property
@@ -72,12 +71,14 @@ class Polygon(Shape):
 		return cast(tuple[float, float], tuple(_polygonCentroid(self.vertices, self.area)))
 
 	@centroid.setter
-	def centroid(self, v: tuple[float, float]) -> None:
-		pass
+	def centroid(self, c: tuple[float, float]) -> None:
+		centroid = self.centroid
+		self._vertices[:, 0] += c[0] - centroid[0]
+		self._vertices[:, 1] += c[1] - centroid[1]
 
 	'''
-	Getters and setters for convex and vertices.
-	This setup maintains that convex is a cached variable, that updates whenever the vertices are updated.
+	Getters and setters for convex and vertices. This setup maintains that convex is a cached variable, that updates
+	whenever the vertices are updated.
 	'''
 
 	@property

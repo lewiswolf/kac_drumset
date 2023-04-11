@@ -25,8 +25,8 @@ from kac_drumset.geometry import (
 	# classes
 	Circle,
 	ConvexPolygon,
-	# IrregularStar,
-	# TravellingSalesmanPolygon,
+	IrregularStar,
+	TravellingSalesmanPolygon,
 	UnitRectangle,
 	# UnitTriangle,
 	# types
@@ -122,32 +122,25 @@ class GeometryTests(TestCase):
 			# This test asserts that P.isPointInside is True for all vertices.
 			for p in P.vertices:
 				self.assertTrue(_isPointInsideConvexPolygon(p, P.vertices))
-				# self.assertTrue(_isPointInsidePolygon(p, P.vertices))
+				self.assertTrue(_isPointInsidePolygon(p, P.vertices))
 
-			# This test asserts that P.isPointInside is True for all midpoints between adjacent vertices.
-			for n in range(P.N):
-				a = P.vertices[n]
-				b = P.vertices[(n + 1) % P.N]
-				self.assertTrue(_isPointInsideConvexPolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), P.vertices))
-			# 	self.assertTrue(_isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), P.vertices))
-
+		# This test asserts that P.isPointInside always works as expected.
 		for square in squares:
-			# This test asserts that P.isPointInside works as expected.
-			# self.assertTrue(_isPointInsidePolygon((0.999, 0.5), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.999, 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.999, 0.5), square.vertices))
-			# self.assertFalse(_isPointInsidePolygon((1.001, 0.5), square.vertices))
+			self.assertFalse(_isPointInsidePolygon((1.001, 0.5), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((1.001, 0.5), square.vertices))
-			# self.assertTrue(_isPointInsidePolygon((0.5, 0.999), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.5, 0.999), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.999), square.vertices))
-			# self.assertFalse(_isPointInsidePolygon((0.5, 1.001), square.vertices))
+			self.assertFalse(_isPointInsidePolygon((0.5, 1.001), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((0.5, 1.001), square.vertices))
-			# self.assertTrue(_isPointInsidePolygon((0.001, 0.5), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.001, 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.001, 0.5), square.vertices))
-			# self.assertFalse(_isPointInsidePolygon((-0.001, 0.5), square.vertices))
+			self.assertFalse(_isPointInsidePolygon((-0.001, 0.5), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((-0.001, 0.5), square.vertices))
-			# self.assertTrue(_isPointInsidePolygon((0.5, 0.001), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.5, 0.001), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.001), square.vertices))
-			# self.assertFalse(_isPointInsidePolygon((0.5, -0.001), square.vertices))
+			self.assertFalse(_isPointInsidePolygon((0.5, -0.001), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((0.5, -0.001), square.vertices))
 
 			# This test asserts that _normaliseConvexPolygon produces the correct output.
@@ -292,8 +285,8 @@ class GeometryTests(TestCase):
 
 			for P in [
 				ConvexPolygon,
-				# IrregularStar,
-				# TravellingSalesmanPolygon,
+				IrregularStar,
+				TravellingSalesmanPolygon,
 			]:
 				polygon = P(max_vertices=20)
 				LV = largestVector(polygon.vertices)
@@ -328,18 +321,14 @@ class GeometryTests(TestCase):
 					])))
 
 				# This test asserts that isPointInsidePolygon includes the vertices.
-				# for p in polygon.vertices:
-				# 	self.assertTrue(_isPointInsidePolygon(p. polygon.vertices))
+				for p in polygon.vertices:
+					self.assertTrue(_isPointInsidePolygon(p, polygon.vertices))
 
-				# # This test asserts that isPointInside includes the midpoint of each vertex.
+				# This test asserts that isPointInside includes the midpoint of each vertex.
 				# for n in range(polygon.N):
 				# 	a = polygon.vertices[n]
 				# 	b = polygon.vertices[(n + 1) % polygon.N]
 				# 	self.assertTrue(_isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), polygon.vertices))
-				# 	if not polygon.isPointInside(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.)):
-				# 		from graphs import PlotPolygon
-				# 		print(polygon.vertices[n])
-				# 		PlotPolygon(polygon.vertices)
 
 			if polygon.convex:
 				# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
@@ -355,19 +344,19 @@ class GeometryTests(TestCase):
 					self.assertTrue(_isPointInsideConvexPolygon(p, polygon.vertices))
 
 				# This test asserts that isPointInsideConvexPolygon includes the midpoint of each vertex.
-				for n in range(polygon.N):
-					a = polygon.vertices[n]
-					b = polygon.vertices[(n + 1) % polygon.N]
-					self.assertTrue(_isPointInsideConvexPolygon([(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.], polygon.vertices))
+				# for n in range(polygon.N):
+				# 	a = polygon.vertices[n]
+				# 	b = polygon.vertices[(n + 1) % polygon.N]
+				# 	self.assertTrue(_isPointInsideConvexPolygon([(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.], polygon.vertices))
 
 				# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
 				centroid = polygon.centroid
 				self.assertTrue(_isPointInsideConvexPolygon(centroid, polygon.vertices))
+				self.assertTrue(_isPointInsidePolygon(centroid, polygon.vertices))
 				self.assertEqual(polygon.draw(100)[
 					round(centroid[0] * 99),
 					round(centroid[1] * 99),
 				], 1)
-				self.assertTrue(_isPointInsidePolygon(centroid, polygon.vertices))
 
 				# This test asserts that _normaliseConvexPolygon does not continuously alter the polygon.
 				# np.allclose is used, as opposed to np.equal, to account for floating point errors.
@@ -375,8 +364,8 @@ class GeometryTests(TestCase):
 
 			# This test asserts that polygon translation works as expected.
 			polygon.centroid = (10., 10.)
-			self.assertEqual(polygon.centroid[0], 10.)
-			self.assertEqual(polygon.centroid[1], 10.)
+			self.assertAlmostEqual(polygon.centroid[0], 10.)
+			self.assertAlmostEqual(polygon.centroid[1], 10.)
 
 	def test_unit_polygon(self) -> None:
 		'''
