@@ -107,7 +107,7 @@ class Ellipse(Shape):
 
 	def focal_distance(self) -> float:
 		'''
-		The distance between a focus and the origin.
+		The distance between a focus and the centroid.
 		'''
 		return self.major * self.eccentricity()
 

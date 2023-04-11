@@ -390,7 +390,7 @@ class Ellipse(Shape):
 
 	def focal_distance(self) -> float:
 		'''
-		The distance between a focus and the origin.
+		The distance between a focus and the centroid.
 		'''
 
 	def isPointInside(self, p: tuple[float, float]) -> bool:
