@@ -21,10 +21,6 @@
 	self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
 	```
 
--	**Add Support for ellipses**
-
-	Currently, only simple polygons are supported by this library, and there is a need to extend this to include elliptical shapes as well. This would involve creating a new type, as well as updating the geometry library - functions such as `area()` and `centroid()` - so as to support this alternative geometric construction.
-
 -   **Add a method to scale a polygon to a target area**
 
 	```python
@@ -42,6 +38,8 @@
 	```python
 	assert isConvex(P), 'isPointInsidePolygon() does not currently support concave shapes.'
 	```
+
+-   **UnitTriangle**
 
 ## Physics
 

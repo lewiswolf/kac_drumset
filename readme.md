@@ -275,10 +275,16 @@ class Circle(Ellipse):
 	A base class for a circle, instantiated with a radius.
 	'''
 
-	class Settings(ShapeSettings):
+	class Settings(ShapeSettings, total=False):
 		r: float			# radius
 
-	def __init__(self, r: float = 1.) -> None:
+	def __init__(self, r: Optional[float] = None, centroid: tuple[float, float] = (0., 0.)) -> None:
+
+	@property
+	def r(self) -> float:
+		'''
+		Getters and setters for radius. Updating the radius updates both major and minor.
+		'''
 
 class ConvexPolygon(Polygon):
 	'''
@@ -333,19 +339,6 @@ class UnitRectangle(Polygon):
 
 	def __init__(self, epsilon: Optional[float] = None) -> None:
 
-class UnitTriangle(Polygon):
-	'''
-	Define a triangle with unit area. For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [0, 1], the corresponding triangle
-	will be unique.
-	'''
-
-	class Settings(ShapeSettings, total=False):
-		''' Settings to be used when generating. '''
-		r: float			# radius
-		theta: float		# angle
-
-	def __init__(self, r: float, theta: float) -> None:
-
 ```
 
 ### Types
@@ -356,25 +349,48 @@ class Ellipse(Shape):
 	A base class for an ellipse, instantiated with two foci.
 	'''
 
-	class Settings(ShapeSettings):
+	major: float
+	minor: float
+
+	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		f_0: tuple[float, float]	# focus §
-		f_1: tuple[float, float]	# focus 2
+		major: float				# length across the x axis
+		minor: float				# length across the y axis
 
-	def __init__(self, f_0: tuple[float, float], f_1: tuple[float, float]) -> None:
+	def __init__(self, major: float, minor: float, centroid: tuple[float, float] = (0., 0.)) -> None:
 
+	@property
 	def area(self) -> float:
-		''' Archimedes.	'''
+		'''
+		Getters and setters for area. Setting area scales the ellipse.
+		'''
 
+	@property
 	def centroid(self) -> tuple[float, float]:
 		'''
-		Return the midpoint between the two foci.
+		Getters and setters for centroid. Setting centroid translates the ellipse about the plane.
 		'''
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
 		This function creates a boolean mask of a manifold on a grid with dimensions R^(grid_size). The input shape is always
 		normalised to the domain R^G before being drawn.
+		'''
+
+	def eccentricity(self) -> float:
+		'''
+		The ratio between the focal distance and the major axis.
+		'''
+
+	def foci(self) -> tuple[tuple[float, float], tuple[float, float]]:
+		'''
+		The foci are the two points at which the sum of the distances between any point on the surface of the ellipse is a
+		constant.
+		'''
+
+	def focal_distance(self) -> float:
+		'''
+		The distance between a focus and the origin.
 		'''
 
 	def isPointInside(self, p: tuple[float, float]) -> bool:
@@ -394,27 +410,29 @@ class Polygon(Shape):
 		vertices: Union[list[list[float]], npt.NDArray[np.float64]]
 
 	def __init__(self, vertices: Optional[Union[list[list[float]], npt.NDArray[np.float64]]] = None) -> None:
+	
+	'''
+	Getters and setters for area.
+	Setting area _should_ be used to scale the polygon, but is not currently implemented.
+	'''
+	@property
+	def area(self) -> float:
+		''' An implementation of the polygon area algorithm derived using Green's Theorem. '''
+
+	@property
+	def centroid(self) -> tuple[float, float]:
+		'''
+		Getters and setters for centroid. Setting centroid translates the polygon about the plane.
+		'''
 
 	'''
-	Getters and setters for .convex and .vertices.
-	This maintains that .convex is a cached variable, but is also updated with the vertices.
+	Getters and setters for convex and vertices.
+	This setup maintains that convex is a cached variable, that updates whenever the vertices are updated.
 	'''
 	@property
 	def convex(self) -> bool:
 	@property
 	def vertices(self) -> npt.NDArray[np.float64]:
-
-	def area(self) -> float:
-		'''
-		An implementation of the polygon area algorithm derived using Green's Theorem.
-		https://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
-		'''
-
-	def centroid(self) -> tuple[float, float]:
-		'''
-		This algorithm is used to calculate the geometric centroid of a 2D polygon.
-		See http://paulbourke.net/geometry/polygonmesh/ 'Calculating the area and centroid of a polygon'.
-		'''
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
@@ -437,22 +455,28 @@ class Shape(ABC):
 	An abstract base class for a two dimensional manifold in Euclidean geometry.
 	'''
 
+	def __init__(self) -> None:
+		pass
+
 	@abstractmethod
 	class Settings(ShapeSettings, total=False):
 		'''
 		Settings to be used when generating.
 		'''
 
+	@property
 	@abstractmethod
 	def area(self) -> float:
 		'''
-		Calculate the area of a 2D manifold.
+		Calculate the area of a 2D manifold. This property should be used to scale the shape whenever it is set.
 		'''
 
+	@property
 	@abstractmethod
 	def centroid(self) -> tuple[float, float]:
 		'''
-		This algorithm is used to calculate the geometric centroid of a 2D manifold.
+		This algorithm is used to calculate the geometric centroid of a 2D manifold. This property should be used move the
+		shape about the plane whenever it is set.
 		'''
 
 	@abstractmethod
@@ -467,6 +491,9 @@ class Shape(ABC):
 		'''
 		Determines if a given point p ∈ P, including boundaries.
 		'''
+
+class ShapeSettings(TypedDict, total=False):
+	''' Placeholder for custom ShapeSettings. '''
 ```
 </details>
 

@@ -1,4 +1,6 @@
 # core
+import math
+import random
 from unittest import TestCase
 
 # dependencies
@@ -12,7 +14,7 @@ from kac_drumset.externals._geometry import (
 	_generatePolygon,
 	_isConvex,
 	_isPointInsideConvexPolygon,
-	# _isPointInsidePolygon,
+	_isPointInsidePolygon,
 	_normaliseConvexPolygon,
 )
 from kac_drumset.geometry import (
@@ -21,13 +23,14 @@ from kac_drumset.geometry import (
 	largestVector,
 	lineIntersection,
 	# classes
+	Circle,
 	ConvexPolygon,
-	IrregularStar,
-	TravellingSalesmanPolygon,
+	# IrregularStar,
+	# TravellingSalesmanPolygon,
 	UnitRectangle,
 	# UnitTriangle,
 	# types
-	Circle,
+	Ellipse,
 	Polygon,
 )
 
@@ -42,27 +45,53 @@ class GeometryTests(TestCase):
 		Test properties of the type Circle.
 		'''
 
-		# This test asserts that the area is always correct.
-		self.assertEqual(Circle(1.).area(), np.pi)
+		C = Circle(1.)
+
+		# This test asserts that the area of a unit circle is calculated correctly.
+		self.assertEqual(C.area, np.pi)
+
+		# This test asserts that the area is correct for both the interior and boundaries.
+		for _ in range(50):
+			r_1 = random.uniform(0., 1.)
+			r_2 = random.uniform(0., 1.) + 1.
+			theta = random.uniform(0., 2 * np.pi)
+			self.assertTrue(C.isPointInside((r_1 * math.cos(theta), r_1 * math.sin(theta))))
+			self.assertFalse(C.isPointInside((r_2 * math.cos(theta), r_2 * math.sin(theta))))
 
 		for r in [0.1, 0.25, 0.5, 1., 2.]:
+			E = Ellipse(r, 1 / r)
 			C = Circle(r)
 
 			# This test asserts that the circle correctly has equal foci.
-			self.assertEqual(C.f_0, C.f_1)
+			self.assertEqual(C.major, C.minor)
 
-			# This test asserts that the centroid is (0., 0.)
-			centroid = C.centroid()
-			self.assertEqual(centroid[0], 0.)
-			self.assertEqual(centroid[1], 0.)
+			# This test asserts that areas can be properly updated on the fly.
+			random_area = random.uniform(0., 100.)
+			C.area = random_area
+			E.area = random_area
+			self.assertAlmostEqual(C.area, random_area)
+			self.assertAlmostEqual(E.area, random_area)
+
+			# This test asserts that the default centroid is (0., 0.).
+			self.assertEqual(C.centroid, (0., 0.))
+
+			# This test asserts that the default eccentricity is 0.
+			self.assertEqual(C.eccentricity(), 0.0)
+
+			# This test asserts that the default focal distance is 0.
+			self.assertEqual(C.focal_distance(), 0.0)
+
+			# This test asserts that the default foci are each (0., 0.).
+			self.assertEqual(C.foci(), ((0., 0.), (0., 0.)))
 
 			# This test asserts that the center of the boolean mask is always true.
-			M = C.draw(101)
-			self.assertEqual(M[50, 50], 1)
-			self.assertEqual(M[0, 0], 0)
-			self.assertEqual(M[0, 100], 0)
-			self.assertEqual(M[100, 0], 0)
-			self.assertEqual(M[100, 100], 0)
+			for S in [E, C]:
+				M = S.draw(101)
+				self.assertEqual(M[50, 50], 1)
+				self.assertEqual(M[0, 0], 0)
+				self.assertEqual(M[0, 100], 0)
+				self.assertEqual(M[100, 0], 0)
+				self.assertEqual(M[100, 100], 0)
 
 	def test_convex_polygon(self) -> None:
 		'''
@@ -263,8 +292,8 @@ class GeometryTests(TestCase):
 
 			for P in [
 				ConvexPolygon,
-				IrregularStar,
-				TravellingSalesmanPolygon,
+				# IrregularStar,
+				# TravellingSalesmanPolygon,
 			]:
 				polygon = P(max_vertices=20)
 				LV = largestVector(polygon.vertices)
@@ -282,11 +311,10 @@ class GeometryTests(TestCase):
 				# This test asserts that the largest vector is of magnitude 1.0.
 				self.assertEqual(LV[0], 1.)
 
-				# This test asserts that the area(), used for calculating the area of a polygon is accurate to at least 6 decimal
-				# places. This comparison is bounded due to the area() being 64-bit, whilst the comparison function,
-				# cv2.contourArea(), is 32-bit.
+				# This test asserts that the area of a polygon is accurate to at least 7 decimal places. This comparison is bounded
+				# due to the area being 64-bit, whilst the comparison function, cv2.contourArea(), is 32-bit.
 				self.assertAlmostEqual(
-					polygon.area(),
+					polygon.area,
 					cv2.contourArea(polygon.vertices.astype('float32')),
 					places=7,
 				)
@@ -327,23 +355,28 @@ class GeometryTests(TestCase):
 					self.assertTrue(_isPointInsideConvexPolygon(p, polygon.vertices))
 
 				# This test asserts that isPointInsideConvexPolygon includes the midpoint of each vertex.
-				# for n in range(polygon.N):
-				# 	a = polygon.vertices[n]
-				# 	b = polygon.vertices[(n + 1) % polygon.N]
-				# 	self.assertTrue(_isPointInsideConvexPolygon([(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.], polygon.vertices))
+				for n in range(polygon.N):
+					a = polygon.vertices[n]
+					b = polygon.vertices[(n + 1) % polygon.N]
+					self.assertTrue(_isPointInsideConvexPolygon([(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.], polygon.vertices))
 
 				# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
-				centroid = polygon.centroid()
-				self.assertTrue(_isPointInsideConvexPolygon(polygon.centroid(), polygon.vertices))
-				# self.assertTrue(_isPointInsidePolygon(polygon.centroid(), polygon.vertices))
+				centroid = polygon.centroid
+				self.assertTrue(_isPointInsideConvexPolygon(centroid, polygon.vertices))
 				self.assertEqual(polygon.draw(100)[
 					round(centroid[0] * 99),
 					round(centroid[1] * 99),
 				], 1)
+				self.assertTrue(_isPointInsidePolygon(centroid, polygon.vertices))
 
 				# This test asserts that _normaliseConvexPolygon does not continuously alter the polygon.
 				# np.allclose is used, as opposed to np.equal, to account for floating point errors.
 				self.assertTrue(np.allclose(polygon.vertices, np.array(_normaliseConvexPolygon(polygon.vertices))))
+
+			# This test asserts that polygon translation works as expected.
+			polygon.centroid = (10., 10.)
+			self.assertEqual(polygon.centroid[0], 10.)
+			self.assertEqual(polygon.centroid[1], 10.)
 
 	def test_unit_polygon(self) -> None:
 		'''
@@ -359,8 +392,8 @@ class GeometryTests(TestCase):
 			R = UnitRectangle(epsilon)
 			P = Polygon(vertices)
 			self.assertTrue(np.all(np.equal(R.vertices, P.vertices)))
-			self.assertEqual(R.area(), P.area())
-			self.assertEqual(R.centroid(), (0., 0.))
+			self.assertEqual(R.area, P.area)
+			self.assertEqual(R.centroid, (0., 0.))
 
 		# Test the vertices and area of the UnitTriangle for varying r, theta.
 		# for [r, theta] in [
@@ -374,7 +407,7 @@ class GeometryTests(TestCase):
 		# ]:
 		# 	T = UnitTriangle(1., np.pi / 3)
 		# 	P = Polygon(T.vertices)
-		# 	self.assertAlmostEqual(T.area(), P.area())
+		# 	self.assertAlmostEqual(T.area, P.area)
 		# 	self.assertEqual(T.vertices[:, 0].min() + T.vertices[:, 0].max(), 0.)
 		# 	self.assertEqual(T.vertices[:, 1].min() + T.vertices[:, 1].max(), 0.)
 

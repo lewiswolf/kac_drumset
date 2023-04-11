@@ -28,10 +28,10 @@ class Ellipse(Shape):
 	major: float
 	minor: float
 
-	class Settings(ShapeSettings):
+	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		major: tuple[float, float]	# length across the x axis
-		minor: tuple[float, float]	# length across the y axis
+		major: float				# length across the x axis
+		minor: float				# length across the y axis
 
 	def __init__(self, major: float, minor: float, centroid: tuple[float, float] = (0., 0.)) -> None:
 		if (major > minor):
@@ -43,20 +43,23 @@ class Ellipse(Shape):
 		self._centroid = centroid
 
 	'''
+	Getters and setters for area. Setting area scales the ellipse.
 	'''
-
 	@property
 	def area(self) -> float:
 		''' Archimedes '''
 		return self.major * self.minor * np.pi
 
 	@area.setter
-	def area(self) -> None:
-		pass
+	def area(self, a: float) -> None:
+		epsilon = self.major / self.minor
+		scaled_a = ((a / np.pi) ** 0.5)
+		self.major = scaled_a * epsilon
+		self.minor = scaled_a / epsilon
 
 	'''
+	Getters and setters for centroid. Setting centroid translates the ellipse about the plane.
 	'''
-
 	@property
 	def centroid(self) -> tuple[float, float]:
 		return self._centroid
@@ -112,8 +115,8 @@ class Ellipse(Shape):
 		'''
 		Determines if a given point p ∈ P, including boundaries.
 		'''
-		raise Exception('unsupported')
-		return 0.
+		return (((p[0] - self.centroid[0]) ** 2) / (self.major ** 2)) \
+			+ (((p[1] - self.centroid[1]) ** 2) / (self.minor ** 2)) <= 1.
 
 
 class Circle(Ellipse):
@@ -132,8 +135,8 @@ class Circle(Ellipse):
 		super().__init__(self._r, self._r, centroid)
 
 	'''
+	Getters and setters for radius. Updating the radius updates both major and minor.
 	'''
-
 	@property
 	def r(self) -> float:
 		assert self.major == self._r and self.minor == self._r

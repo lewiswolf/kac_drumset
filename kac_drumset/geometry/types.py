@@ -17,6 +17,7 @@ __all__ = [
 
 
 class ShapeSettings(TypedDict, total=False):
+	''' Placeholder for custom ShapeSettings. '''
 	pass
 
 
