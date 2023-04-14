@@ -64,6 +64,8 @@ class GeometryTests(TestCase):
 
 			# This test asserts that the circle correctly has equal foci.
 			self.assertEqual(C.major, C.minor)
+			self.assertEqual(C.r, C.major)
+			self.assertEqual(C.r, C.minor)
 
 			# This test asserts that areas can be properly updated on the fly.
 			random_area = random.uniform(0., 100.)
@@ -278,7 +280,7 @@ class GeometryTests(TestCase):
 		'''
 
 		for i in range(10000):
-			# This test asserts that _generateConvexPolygon always produces a unique output.
+			# This test asserts that all polygon generation methods always produces a unique output.
 			self.assertFalse(np.all(np.equal(_generateConvexPolygon(3), _generateConvexPolygon(3))))
 			self.assertFalse(np.all(np.equal(_generateIrregularStar(3), _generateIrregularStar(3))))
 			self.assertFalse(np.all(np.equal(_generatePolygon(3), _generatePolygon(3))))

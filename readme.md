@@ -357,7 +357,7 @@ class Ellipse(Shape):
 		major: float				# length across the x axis
 		minor: float				# length across the y axis
 
-	def __init__(self, major: float, minor: float, centroid: tuple[float, float] = (0., 0.)) -> None:
+	def __init__(self, major: Optional[float], minor: Optional[float], centroid: tuple[float, float] = (0., 0.)) -> None:
 
 	@property
 	def area(self) -> float:
