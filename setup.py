@@ -32,12 +32,8 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 			continue
 		# find [packages]
 		if line[0] == '[':
-			if line == '[packages]':
-				is_pkg = True
-				continue
-			else:
-				is_pkg = False
-				continue
+			is_pkg = line == '[packages]'
+			continue
 		# append package names with required version
 		if is_pkg:
 			pkg_name, _, *spec = line.split()
