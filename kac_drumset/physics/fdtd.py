@@ -2,9 +2,6 @@
 Import FDTD functions from external C++ library and configure python type conversions.
 '''
 
-# core
-from typing import Union
-
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
@@ -201,8 +198,8 @@ def raisedCosine(
 def raisedTriangle(
 	matrix_size: tuple[int, ...],
 	mu: tuple[float, ...],
-	x_ab: Union[tuple[float, float], None] = None,
-	y_ab: Union[tuple[float, float], None] = None,
+	x_ab: tuple[float, float] | None = None,
+	y_ab: tuple[float, float] | None = None,
 ) -> npt.NDArray[np.float64]:
 	'''
 	Calculate a one or two dimensional triangular distribution.

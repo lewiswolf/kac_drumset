@@ -2,7 +2,7 @@
 
 # kac_drumset
 
-![python version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue)
+![python version](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue)
 <a href="https://doi.org/10.5281/zenodo.7274474">
 ![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.7274474-blue)
 </a>
@@ -96,11 +96,11 @@ class AudioSampler(ABC):
 		''' This method should be used to generate and set self.waveform. '''
 
 	@abstractmethod
-	def getLabels(self) -> dict[str, list[Union[float, int]]]:
+	def getLabels(self) -> dict[str, list[float | int]]:
 		''' This method should return the y labels for the generated audio. '''
 
 	@abstractmethod
-	def updateProperties(self, i: Union[int, None]) -> None:
+	def updateProperties(self, i: int | None]) -> None:
 		''' This method should be used to update the properties of the sampler when inside a generator loop. '''
 
 	@abstractmethod
@@ -278,7 +278,7 @@ class Circle(Ellipse):
 	class Settings(ShapeSettings, total=False):
 		r: float			# radius
 
-	def __init__(self, r: Optional[float] = None, centroid: tuple[float, float] = (0., 0.)) -> None:
+	def __init__(self, r: float | None = None, centroid: tuple[float, float] = (0., 0.)) -> None:
 
 	@property
 	def r(self) -> float:
@@ -296,7 +296,7 @@ class ConvexPolygon(Polygon):
 		N: int				# number of vertices
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
 
 class IrregularStar(Polygon):
 	'''
@@ -310,7 +310,7 @@ class IrregularStar(Polygon):
 		N: int				# number of vertices
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
 
 class TravellingSalesmanPolygon(Polygon):
 	'''
@@ -326,7 +326,7 @@ class TravellingSalesmanPolygon(Polygon):
 		N: int				# number of vertices
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
 
 class UnitRectangle(Polygon):
 	'''
@@ -337,7 +337,7 @@ class UnitRectangle(Polygon):
 		''' Settings to be used when generating. '''
 		epsilon: float		# aspect ratio
 
-	def __init__(self, epsilon: Optional[float] = None) -> None:
+	def __init__(self, epsilon: float | None = None) -> None:
 
 ```
 
@@ -357,7 +357,7 @@ class Ellipse(Shape):
 		major: float				# length across the x axis
 		minor: float				# length across the y axis
 
-	def __init__(self, major: Optional[float], minor: Optional[float], centroid: tuple[float, float] = (0., 0.)) -> None:
+	def __init__(self, major: float | None, minor: float | None, centroid: tuple[float, float] = (0., 0.)) -> None:
 
 	@property
 	def area(self) -> float:
@@ -407,9 +407,9 @@ class Polygon(Shape):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		vertices: Union[list[list[float]], npt.NDArray[np.float64]]
+		vertices: list[list[float]] | npt.NDArray[np.float64]
 
-	def __init__(self, vertices: Optional[Union[list[list[float]], npt.NDArray[np.float64]]] = None) -> None:
+	def __init__(self, vertices: list[list[float]] | npt.NDArray[np.float64] | None = None) -> None:
 	
 	'''
 	Getters and setters for area.
@@ -662,8 +662,8 @@ def raisedCosine(
 def raisedTriangle(
 	matrix_size: tuple[int, ...],
 	mu: tuple[float, ...],
-	x_ab: Optional[tuple[float, float]] = None,
-	y_ab: Optional[tuple[float, float]] = None,
+	x_ab: tuple[float, float] | None = None,
+	y_ab: tuple[float, float] | None = None,
 ) -> npt.NDArray[np.float64]:
 	'''
 	Calculate a one or two dimensional triangular distribution.

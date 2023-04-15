@@ -2,9 +2,6 @@
 An AudioSampler() used for generating a sinusoidal sweep of the audio spectrum.
 '''
 
-# core
-from typing import Union
-
 # dependencies
 import numpy as np 			# maths
 
@@ -44,8 +41,8 @@ class TestSweep(AudioSampler):
 	def generateWaveform(self) -> None:
 		pass
 
-	def getLabels(self) -> dict[str, list[Union[float, int]]]:
+	def getLabels(self) -> dict[str, list[float | int]]:
 		return {}
 
-	def updateProperties(self, i: Union[int, None] = None) -> None:
+	def updateProperties(self, i: int | None = None) -> None:
 		pass

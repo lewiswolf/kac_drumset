@@ -5,7 +5,6 @@ generated polygon, which is used to define the boundary conditions, and a finite
 
 # core
 import math
-from typing import Union
 
 # dependencies
 import numpy as np 			# maths
@@ -139,7 +138,7 @@ class FDTDModel(AudioSampler):
 				self.w,
 			)
 
-	def getLabels(self) -> dict[str, list[Union[float, int]]]:
+	def getLabels(self) -> dict[str, list[float | int]]:
 		'''
 		This method returns the vertices for the drum's arbitrary shaped, padded with zeros to equal the length of
 		self.max_vertices.
@@ -150,7 +149,7 @@ class FDTDModel(AudioSampler):
 			'vertices': self.shape.vertices.tolist(),
 		} if hasattr(self, 'shape') else {}
 
-	def updateProperties(self, i: Union[int, None] = None) -> None:
+	def updateProperties(self, i: int | None = None) -> None:
 		'''
 		For every five drum samples generated, update the drum shape. And for every drum sample generated update the strike
 		location - the first strike location is always the centroid.

@@ -3,7 +3,7 @@ This file contains the fixed geometric type Polygon.
 '''
 
 # core
-from typing import cast, Optional, Union
+from typing import cast
 
 # dependencies
 import cv2					# image processing
@@ -38,9 +38,9 @@ class Polygon(Shape):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		vertices: Union[list[list[float]], npt.NDArray[np.float64]]
+		vertices: list[list[float]] | npt.NDArray[np.float64]
 
-	def __init__(self, vertices: Optional[Union[list[list[float]], npt.NDArray[np.float64]]] = None) -> None:
+	def __init__(self, vertices: list[list[float]] | npt.NDArray[np.float64] | None = None) -> None:
 		self.vertices = np.array(vertices)
 		self.N = self.vertices.shape[0]
 		assert vertices is not None, 'Polygon() must be initialised with an array of vertices.'
@@ -95,8 +95,11 @@ class Polygon(Shape):
 
 	@vertices.setter
 	def vertices(self, v: npt.NDArray[np.float64]) -> None:
+		self.N = v.shape[0]
 		self._vertices = v
 		self._convex = _isConvex(v)
+		assert self.vertices.ndim == 2 and self.vertices.shape[1] == 2, 'Array of vertices is not the correct shape: (n, 2)'
+		assert self.N >= 3, 'A polygon must have three vertices.'
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''

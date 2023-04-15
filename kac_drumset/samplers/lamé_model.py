@@ -2,9 +2,6 @@
 This sampler is used to produce a linear model of a triangular membrane.
 '''
 
-# core
-from typing import Union
-
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
@@ -96,14 +93,14 @@ class LaméModel(AudioSampler):
 			self.length,
 		)
 
-	def getLabels(self) -> dict[str, list[Union[float, int]]]:
+	def getLabels(self) -> dict[str, list[float | int]]:
 		'''
 		Return the labels of the lamé model.
 		'''
 
 		return {'drum_size': [self.L], 'strike_location': [*self.strike]} if hasattr(self, 'L') else {}
 
-	def updateProperties(self, i: Union[int, None] = None) -> None:
+	def updateProperties(self, i: int | None = None) -> None:
 		'''
 		For every five drum samples generated, update the size of the drum. And for every drum sample generated update the
 		strike location - the first strike location is always the centroid.

@@ -4,7 +4,7 @@ An AudioSampler() used for generating a random waveform.
 
 # core
 import random
-from typing import Literal, Union
+from typing import Literal
 from typing_extensions import TypeAlias
 
 # dependencies
@@ -70,11 +70,11 @@ class TestTone(AudioSampler):
 		if self.waveshape == 'tri':
 			self.waveform = 4. * np.array([1 - (i % 1) if i % 1 > 0.5 else i % 1 for i in f_t]) - 1.
 
-	def getLabels(self) -> dict[str, list[Union[float, int]]]:
+	def getLabels(self) -> dict[str, list[float | int]]:
 		''' Returns f_0 as a label. '''
 		return {'f_0': [self.f_0]} if self.f_0 else {}
 
-	def updateProperties(self, i: Union[int, None] = None) -> None:
+	def updateProperties(self, i: int | None = None) -> None:
 		''' Randomise f_0. '''
 		if self.__random_f_0:
 			self.f_0 = random.uniform(110, 880)

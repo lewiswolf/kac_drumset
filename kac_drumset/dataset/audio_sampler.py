@@ -7,7 +7,7 @@ will maintain functionality and type consistency throughout this codebase.
 # core
 from abc import ABC, abstractmethod
 import math
-from typing import Any, Literal, TypedDict, Union
+from typing import Any, Literal, TypedDict
 
 # dependencies
 import numpy as np				# maths
@@ -79,12 +79,12 @@ class AudioSampler(ABC):
 		pass
 
 	@abstractmethod
-	def getLabels(self) -> dict[str, list[Union[float, int]]]:
+	def getLabels(self) -> dict[str, list[float | int]]:
 		''' This method should return the y labels for the generated audio. '''
 		pass
 
 	@abstractmethod
-	def updateProperties(self, i: Union[int, None] = None) -> None:
+	def updateProperties(self, i: int | None = None) -> None:
 		''' This method should be used to update the properties of the sampler when inside a generator loop. '''
 		pass
 

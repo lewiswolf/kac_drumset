@@ -3,7 +3,7 @@ This file contains variables and methods reused throughout this module.
 '''
 
 # core
-from typing import Any, Union
+from typing import Any
 
 # dependencies
 import torch					# pytorch
@@ -32,7 +32,7 @@ def classLocalsToKwargs(d: dict[str, Any]) -> dict[str, Any]:
 	return {key: value for key, value in d.items() if key not in ['self', '__class__']}
 
 
-def listToTensor(d: dict[str, list[Union[float, int]]]) -> dict[str, torch.Tensor]:
+def listToTensor(d: dict[str, list[float | int]]) -> dict[str, torch.Tensor]:
 	''' Convert a dictionary of lists to a dictionary of tensors. '''
 	t = {}
 	for k, v in d.items():
@@ -40,7 +40,7 @@ def listToTensor(d: dict[str, list[Union[float, int]]]) -> dict[str, torch.Tenso
 	return t
 
 
-def tensorToList(t: dict[str, torch.Tensor]) -> dict[str, list[Union[float, int]]]:
+def tensorToList(t: dict[str, torch.Tensor]) -> dict[str, list[float | int]]:
 	''' Convert a dictionary of tensors to a dictionary of lists. '''
 	d = {}
 	for k, v in t.items():

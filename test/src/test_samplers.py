@@ -1,6 +1,5 @@
 # core
 import os
-from typing import Union
 from unittest import TestCase
 
 # dependencies
@@ -44,10 +43,10 @@ class SamplerTests(TestCase):
 			def generateWaveform(self) -> None:
 				pass
 
-			def getLabels(self) -> dict[str, list[Union[float, int]]]:
+			def getLabels(self) -> dict[str, list[float | int]]:
 				return {}
 
-			def updateProperties(self, i: Union[int, None] = None) -> None:
+			def updateProperties(self, i: int | None = None) -> None:
 				pass
 
 			class Settings(SamplerSettings):

@@ -2,9 +2,6 @@
 This file contains the fixed geometric types used as part of this package.
 '''
 
-# core
-from typing import Optional
-
 # dependencies
 import cv2					# image processing
 import numpy as np 			# maths
@@ -33,7 +30,7 @@ class Ellipse(Shape):
 		major: float				# length across the x axis
 		minor: float				# length across the y axis
 
-	def __init__(self, major: Optional[float], minor: Optional[float], centroid: tuple[float, float] = (0., 0.)) -> None:
+	def __init__(self, major: float | None, minor: float | None, centroid: tuple[float, float] = (0., 0.)) -> None:
 		major = 1. if major is None else major
 		minor = np.random.uniform(0., 1.) if minor is None else minor
 		if (major > minor):
@@ -130,7 +127,7 @@ class Circle(Ellipse):
 		''' Settings to be used when generating. '''
 		r: float			# radius
 
-	def __init__(self, r: Optional[float] = None, centroid: tuple[float, float] = (0., 0.)) -> None:
+	def __init__(self, r: float | None = None, centroid: tuple[float, float] = (0., 0.)) -> None:
 		r = np.random.uniform(0., 1.) if r is None else r
 		super().__init__(r, r, centroid)
 

@@ -4,7 +4,6 @@ This file contains classes for generating polygons, including random polygon gen
 
 # core
 import random
-from typing import Optional
 
 # dependencies
 import numpy as np 			# maths
@@ -41,7 +40,7 @@ class ConvexPolygon(Polygon):
 		N: int				# number of vertices
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
 		super().__init__(_normaliseConvexPolygon(_generateConvexPolygon(
 			random.randint(3, max_vertices) if N is None else N,
 		)))
@@ -59,7 +58,7 @@ class IrregularStar(Polygon):
 		N: int				# number of vertices
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
 		super().__init__(_generateIrregularStar(random.randint(3, max_vertices) if N is None else N))
 		self.vertices = np.array(
 			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
@@ -80,7 +79,7 @@ class TravellingSalesmanPolygon(Polygon):
 		N: int				# number of vertices
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: Optional[int] = None, max_vertices: int = 10) -> None:
+	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
 		super().__init__(_generatePolygon(random.randint(3, max_vertices) if N is None else N))
 		self.vertices = np.array(
 			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
@@ -98,7 +97,7 @@ class UnitRectangle(Polygon):
 		''' Settings to be used when generating. '''
 		epsilon: float		# aspect ratio
 
-	def __init__(self, epsilon: Optional[float] = None) -> None:
+	def __init__(self, epsilon: float | None = None) -> None:
 		self.epsilon = np.random.uniform(0., 1.) if epsilon is None else epsilon
 		super().__init__(_generateUnitRectangle(self.epsilon))
 
@@ -117,7 +116,7 @@ class UnitTriangle(Polygon):
 		r: float			# radius
 		theta: float		# angle
 
-	def __init__(self, r: Optional[float] = None, theta: Optional[float] = None) -> None:
+	def __init__(self, r: float | None = None, theta: float | None = None) -> None:
 		self.r = np.random.uniform(0., 1.) if r is None else r
 		self.theta = np.random.uniform(0., np.pi) if theta is None else theta
 		super().__init__(_generateUnitTriangle(self.r, self.theta))
