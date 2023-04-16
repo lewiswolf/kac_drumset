@@ -867,7 +867,7 @@ from kac_drumset import (
 ```python
 def withoutPrinting(allow_errors: bool = False) -> Iterator[Any]:
 	'''
-	This wrapper can used around blocks of code to silence calls to print(), as well as optionally silence error messages.
+	This wrapper is used around blocks of code to silence calls to print(), as well as optionally silence error messages.
 	'''
 
 def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
