@@ -1,6 +1,5 @@
 # core
-from typing import Annotated, Literal
-from typing_extensions import TypeAlias
+from typing import Annotated, Literal, TypeAlias
 
 # dependencies
 import numpy as np 			# maths

@@ -1,5 +1,5 @@
 # core
-from typing_extensions import TypeAlias
+from typing import TypeAlias
 
 # dependencies
 import numpy as np 			# maths

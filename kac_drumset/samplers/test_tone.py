@@ -4,8 +4,7 @@ An AudioSampler() used for generating a random waveform.
 
 # core
 import random
-from typing import Literal
-from typing_extensions import TypeAlias
+from typing import Literal, TypeAlias
 
 # dependencies
 import numpy as np 	# maths
