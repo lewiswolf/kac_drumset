@@ -6,6 +6,7 @@ from .dataset import (
 	AudioSampler,
 	InputRepresentation,
 	RepresentationSettings,
+	SamplerInfo,
 	SamplerSettings,
 	TorchDataset,
 )
@@ -28,6 +29,7 @@ __all__ = [
 	'InputRepresentation',
 	# dataset types
 	'RepresentationSettings',
+	'SamplerInfo',
 	'SamplerSettings',
 	'TorchDataset',
 	# samplers
