@@ -23,18 +23,19 @@ __all__ = [
 ]
 
 
-def clearDirectory(absolutePath: str) -> None:
+def clearDirectory(absolutePath: str, excludes: list[str] = ['.gitignore']) -> None:
 	'''
-	Completely clears all files and folders from the input directory, except for a .gitignore at the top level of the
-	directory.
+	Completely clears all files and folders from the input directory.
+	params:
+		absolutePath	absolute filepath to the directory for clearing
+		excludes		files or subdirectories to exclude from clearing
 	'''
 
 	for file in os.listdir(absolutePath):
+		if file in excludes:
+			continue
 		path = f'{absolutePath}/{file}'
-		if os.path.isdir(path):
-			shutil.rmtree(path)
-		elif file != '.gitignore':
-			os.remove(path)
+		shutil.rmtree(path) if os.path.isdir(path) else os.remove(path)
 
 
 def printEmojis(s: str) -> None:
