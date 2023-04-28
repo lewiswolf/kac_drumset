@@ -101,6 +101,12 @@ class Polygon(Shape):
 		assert self.vertices.ndim == 2 and self.vertices.shape[1] == 2, 'Array of vertices is not the correct shape: (n, 2)'
 		assert self.N >= 3, 'A polygon must have three vertices.'
 
+	def __getLabels__(self) -> dict[str, list[float | int]]:
+		'''
+		This method should be used to return the metadata about the current shape.
+		'''
+		return {'vertices': self.vertices.tolist()}
+
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
 		This function creates a boolean mask of a manifold on a grid with dimensions R^(grid_size). The input shape is always

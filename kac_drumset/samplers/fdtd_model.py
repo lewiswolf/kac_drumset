@@ -13,7 +13,7 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..dataset import AudioSampler, SamplerSettings
 from ..dataset.utils import classLocalsToKwargs
-from ..geometry import Polygon, ShapeSettings
+from ..geometry import Shape, ShapeSettings
 from ..physics import FDTDWaveform2D, raisedCosine
 
 __all__ = [
@@ -28,7 +28,7 @@ class FDTDModel(AudioSampler):
 
 	# user-defined variables
 	a: float						# maximum amplitude of the simulation ∈ [0, 1]
-	arbitrary_shape: type[Polygon]	# what shape should the drum be in?
+	arbitrary_shape: type[Shape]	# what shape should the drum be in?
 	d_60: float						# decay time (seconds)
 	L: float						# size of the drum, spanning both the horizontal and vertical axes (m)
 	max_vertices: int				# maximum amount of vertices for a given drum
@@ -52,7 +52,7 @@ class FDTDModel(AudioSampler):
 	u_0: npt.NDArray[np.float64]	# initial conditions for each simulation
 	# drum properties
 	B: npt.NDArray[np.int8]			# boolean matrix define the boundary conditions for the drum
-	shape: Polygon					# the shape of the drum
+	shape: Shape					# the shape of the drum
 	strike: tuple[float, float]		# where is the drum struck?
 	w: tuple[float, float]			# sample point of the 2D surface
 
@@ -63,7 +63,7 @@ class FDTDModel(AudioSampler):
 		'''
 
 		amplitude: float				# maximum amplitude of the simulation ∈ [0, 1]
-		arbitrary_shape: type[Polygon]	# what shape should the drum be in?
+		arbitrary_shape: type[Shape]	# what shape should the drum be in?
 		decay_time: float				# how long will the simulation take to decay? (seconds)
 		drum_size: float				# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float			# material density of the simulated drum membrane (kg/m^2)
@@ -75,7 +75,7 @@ class FDTDModel(AudioSampler):
 		self,
 		duration: float,
 		sample_rate: int,
-		arbitrary_shape: type[Polygon],
+		arbitrary_shape: type[Shape],
 		amplitude: float = 1.,
 		decay_time: float = 2.,
 		drum_size: float = 0.3,
@@ -118,9 +118,7 @@ class FDTDModel(AudioSampler):
 		self.u_0 = np.zeros((self.H + 2, self.H + 2))
 
 	def generateWaveform(self) -> None:
-		'''
-		Calculate the FDTD for a 2D polygon.
-		'''
+		''' Calculate the FDTD for a 2D polygon. '''
 
 		if hasattr(self, 'shape'):
 			self.waveform = FDTDWaveform2D(
@@ -139,15 +137,15 @@ class FDTDModel(AudioSampler):
 			)
 
 	def getLabels(self) -> dict[str, list[float | int]]:
-		'''
-		This method returns the vertices for the drum's arbitrary shaped, padded with zeros to equal the length of
-		self.max_vertices.
-		'''
+		''' This method returns the labels for the FDTD. '''
 
-		return {
-			'strike_location': [*self.strike],
-			'vertices': self.shape.vertices.tolist(),
-		} if hasattr(self, 'shape') else {}
+		labels = {}
+		if hasattr(self, 'shape'):
+			labels = self.shape.__getLabels__()
+			labels.update({'sample_location': [*self.w], 'strike_location': [*self.strike]})
+			return labels
+		else:
+			return labels
 
 	def updateProperties(self, i: int | None = None) -> None:
 		'''

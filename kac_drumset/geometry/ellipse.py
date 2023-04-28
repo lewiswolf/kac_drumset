@@ -67,6 +67,12 @@ class Ellipse(Shape):
 	def centroid(self, value: tuple[float, float]) -> None:
 		self._centroid = value
 
+	def __getLabels__(self) -> dict[str, list[float | int]]:
+		'''
+		This method should be used to return the metadata about the current shape.
+		'''
+		return {'major': self.major, 'minor': self.minor}
+
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
 		This function creates a boolean mask of a manifold on a grid with dimensions R^(grid_size). The input shape is always

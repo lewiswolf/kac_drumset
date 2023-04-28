@@ -36,6 +36,13 @@ class Shape(ABC):
 		'''
 		pass
 
+	@abstractmethod
+	def __getLabels__(self) -> dict[str, list[float | int]]:
+		'''
+		This method should be used to return the metadata about the current shape.
+		'''
+		pass
+
 	@property
 	@abstractmethod
 	def area(self) -> float:
