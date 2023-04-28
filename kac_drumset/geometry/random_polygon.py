@@ -101,6 +101,12 @@ class UnitRectangle(Polygon):
 		self.epsilon = np.random.uniform(0., 1.) if epsilon is None else epsilon
 		super().__init__(_generateUnitRectangle(self.epsilon))
 
+	def __getLabels__(self) -> dict[str, list[float | int]]:
+		'''
+		This method should be used to return the metadata about the current shape.
+		'''
+		return {'epsilon': [self.epsilon], 'N': [self.N], 'vertices': self.vertices.tolist()}
+
 
 class UnitTriangle(Polygon):
 	'''
@@ -119,6 +125,12 @@ class UnitTriangle(Polygon):
 	def __init__(self, r: float | None = None, theta: float | None = None) -> None:
 		self.r = np.random.uniform(0., 1.) if r is None else r
 		self.theta = np.random.uniform(0., np.pi) if theta is None else theta
-		super().__init__(_generateUnitTriangle(self.r, self.theta))
 		assert self.r <= 1. and self.r >= 0., 'r ∈ [0, 1]'
+		super().__init__(_generateUnitTriangle(self.r, self.theta))
 		raise Exception('unsupported')
+
+	def __getLabels__(self) -> dict[str, list[float | int]]:
+		'''
+		This method should be used to return the metadata about the current shape.
+		'''
+		return {'r': [self.r], 'N': [self.N], 'theta': [self.theta], 'vertices': self.vertices.tolist()}

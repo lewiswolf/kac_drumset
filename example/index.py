@@ -18,7 +18,8 @@ def DatasetExample() -> None:
 		RepresentationSettings,	# typing for the representation_settings
 		TorchDataset,			# the dataset class
 	)
-	from kac_drumset.geometry import ConvexPolygon
+	# from kac_drumset.geometry import ConvexPolygon
+	from kac_drumset.geometry import Ellipse
 
 	# Generating a dataset takes as its first argument an AudioSampler, each of which has its own customised settings
 	# constructor. To configure the representation settings, a dict of type RepresentationSettings is passed to the
@@ -32,13 +33,13 @@ def DatasetExample() -> None:
 		representation_settings=representation_settings,
 		sampler_settings=FDTDModel.Settings({
 			'amplitude': 1.,
-			'arbitrary_shape': ConvexPolygon,
+			'arbitrary_shape': Ellipse,
 			'decay_time': 2.,
 			'drum_size': 0.3,
 			'duration': 1.,
 			'material_density': 0.2,
 			'sample_rate': 48000,
-			'shape_settings': ConvexPolygon.Settings({'max_vertices': 10}),
+			'shape_settings': {},
 			'strike_width': 0.01,
 			'tension': 2000.,
 		}),

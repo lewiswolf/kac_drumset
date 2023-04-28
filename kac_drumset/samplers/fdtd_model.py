@@ -139,13 +139,12 @@ class FDTDModel(AudioSampler):
 	def getLabels(self) -> dict[str, list[float | int]]:
 		''' This method returns the labels for the FDTD. '''
 
-		labels = {}
 		if hasattr(self, 'shape'):
 			labels = self.shape.__getLabels__()
 			labels.update({'sample_location': [*self.w], 'strike_location': [*self.strike]})
-			return labels
 		else:
-			return labels
+			labels = {}
+		return labels
 
 	def updateProperties(self, i: int | None = None) -> None:
 		'''

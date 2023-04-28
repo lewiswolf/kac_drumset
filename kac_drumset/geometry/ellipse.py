@@ -30,7 +30,12 @@ class Ellipse(Shape):
 		major: float				# length across the x axis
 		minor: float				# length across the y axis
 
-	def __init__(self, major: float | None, minor: float | None, centroid: tuple[float, float] = (0., 0.)) -> None:
+	def __init__(
+		self,
+		major: float | None = None,
+		minor: float | None = None,
+		centroid: tuple[float, float] = (0., 0.),
+	) -> None:
 		major = 1. if major is None else major
 		minor = np.random.uniform(0., 1.) if minor is None else minor
 		if (major > minor):
@@ -71,7 +76,7 @@ class Ellipse(Shape):
 		'''
 		This method should be used to return the metadata about the current shape.
 		'''
-		return {'major': self.major, 'minor': self.minor}
+		return {'major': [self.major], 'minor': [self.minor]}
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
@@ -149,3 +154,9 @@ class Circle(Ellipse):
 	def r(self, value: float) -> None:
 		self.major = value
 		self.minor = value
+
+	def __getLabels__(self) -> dict[str, list[float | int]]:
+		'''
+		This method should be used to return the metadata about the current shape.
+		'''
+		return {'r': [self.r], 'major': [self.major], 'minor': [self.minor]}

@@ -357,7 +357,7 @@ class Ellipse(Shape):
 		major: float				# length across the x axis
 		minor: float				# length across the y axis
 
-	def __init__(self, major: float | None, minor: float | None, centroid: tuple[float, float] = (0., 0.)) -> None:
+	def __init__(self, major: float | None = None, minor: float | None = None, centroid: tuple[float, float] = (0., 0.)) -> None:
 
 	@property
 	def area(self) -> float:
@@ -402,8 +402,6 @@ class Polygon(Shape):
 	'''
 	A base class for a polygon, instantiated with an array of vertices.
 	'''
-
-	N: int								# number of vertices
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
