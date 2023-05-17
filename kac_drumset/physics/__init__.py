@@ -14,6 +14,7 @@ from .modes import (
 	equilateralTriangleAmplitudes,
 	equilateralTriangleSeries,
 	rectangularAmplitudes,
+	rectangularChladniPattern,
 	rectangularSeries,
 	WaveEquationWaveform2D,
 )
@@ -30,6 +31,7 @@ __all__ = [
 	'raisedCosine',
 	'raisedTriangle',
 	'rectangularAmplitudes',
+	'rectangularChladniPattern',
 	'rectangularSeries',
 	'WaveEquationWaveform2D',
 	# classes

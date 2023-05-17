@@ -462,6 +462,13 @@ class Shape(ABC):
 		Settings to be used when generating.
 		'''
 
+	@abstractmethod
+	def __getLabels__(self) -> dict[str, list[float | int]]:
+		'''
+		This method should be used to return the metadata about the current shape.
+		'''
+		pass
+
 	@property
 	@abstractmethod
 	def area(self) -> float:
@@ -513,6 +520,7 @@ from kac_drumset.physics import (
 	raisedCosine,
 	raisedTriangle,
 	rectangularAmplitudes,
+	rectangularChladniPattern,
 	rectangularSeries,
 	WaveEquationWaveform2D,
 	# classes
@@ -599,6 +607,22 @@ def rectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float
 		A = {
 			sin(mxπ / (Є ** 0.5)) sin(nyπ * (Є ** 0.5))
 			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
+		}
+	'''
+
+def rectangularChladniPattern(m: int, n: int, X: int, Y: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
+	'''
+	Produce the 2D chladni pattern for a rectangular plate.
+	http://paulbourke.net/geometry/chladni/
+	input:
+		m = mth modal index
+		n = nth modal index
+		X = length of the X axis
+		Y = length of the Y axis
+		tolerance = the standard deviation between the calculation and the final pattern
+	output:
+		M = {
+			cos(nπx/X) cos(mπy/Y) - cos(mπx/X) cos(nπy/Y)
 		}
 	'''
 

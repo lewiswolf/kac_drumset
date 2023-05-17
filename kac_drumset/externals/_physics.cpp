@@ -37,6 +37,7 @@ PYBIND11_MODULE(_physics, m) {
 	m.def("_raisedTriangle1D", &p::raisedTriangle1D);
 	m.def("_raisedTriangle2D", &p::raisedTriangle2D);
 	m.def("_rectangularAmplitudes", &p::rectangularAmplitudes);
+	m.def("_rectangularChladniPattern", &p::rectangularChladniPattern);
 	m.def("_rectangularSeries", &p::rectangularSeries);
 	m.def("_WaveEquationWaveform2D", &p::WaveEquationWaveform2D);
 	m.def("besselJ", &p::besselJ);
