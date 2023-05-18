@@ -513,6 +513,7 @@ from kac_drumset.physics import (
 	besselJ,
 	besselJZero,
 	circularAmplitudes,
+	circularChladniPattern,
 	circularSeries,
 	equilateralTriangleAmplitudes,
 	equilateralTriangleSeries,
