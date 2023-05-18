@@ -27,6 +27,7 @@ T::Matrix_1D _FDTDWaveform2D(
 PYBIND11_MODULE(_physics, m) {
 	m.doc() = "_physics";
 	m.def("_circularAmplitudes", &p::circularAmplitudes);
+	m.def("_circularChladniPattern", &p::circularChladniPattern);
 	m.def("_circularSeries", &p::circularSeries);
 	m.def("_equilateralTriangleAmplitudes", &p::equilateralTriangleAmplitudes);
 	m.def("_equilateralTriangleSeries", &p::equilateralTriangleSeries);

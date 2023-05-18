@@ -10,6 +10,7 @@ from .fdtd import (
 )
 from .modes import (
 	circularAmplitudes,
+	circularChladniPattern,
 	circularSeries,
 	equilateralTriangleAmplitudes,
 	equilateralTriangleSeries,
@@ -23,6 +24,7 @@ __all__ = [
 	# methods
 	'besselJ',
 	'besselJZero',
+	'circularChladniPattern',
 	'circularAmplitudes',
 	'circularSeries',
 	'equilateralTriangleAmplitudes',

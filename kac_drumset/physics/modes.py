@@ -9,6 +9,7 @@ import numpy.typing as npt	# typing for numpy
 # src
 from ..externals._physics import (
 	_circularAmplitudes,
+	_circularChladniPattern,
 	_circularSeries,
 	_equilateralTriangleAmplitudes,
 	_equilateralTriangleSeries,
@@ -20,6 +21,7 @@ from ..externals._physics import (
 
 __all__ = [
 	'circularAmplitudes',
+	'circularChladniPattern',
 	'circularSeries',
 	'equilateralTriangleAmplitudes',
 	'equilateralTriangleSeries',
@@ -44,6 +46,24 @@ def circularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> np
 	'''
 
 	return np.array(_circularAmplitudes(r, theta, S))
+
+
+def circularChladniPattern(m: int, n: int, H: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
+	'''
+	Produce the 2D chladni pattern for a circular plate.
+	http://paulbourke.net/geometry/chladni/
+	input:
+		m = mth modal index
+		n = nth modal index
+		H = length of the X and Y axis
+		tolerance = the standard deviation between the calculation and the final pattern
+	output:
+		M = {
+			J_n(z_nm * r) * (cos(nθ) + sin(nθ)) ≈ 0
+		}
+	'''
+
+	return np.array(_circularChladniPattern(m, n, H, tolerance))
 
 
 def circularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
@@ -125,7 +145,7 @@ def rectangularChladniPattern(m: int, n: int, X: int, Y: int, tolerance: float =
 		tolerance = the standard deviation between the calculation and the final pattern
 	output:
 		M = {
-			cos(nπx/X) cos(mπy/Y) - cos(mπx/X) cos(nπy/Y)
+			cos(nπx/X) cos(mπy/Y) - cos(mπx/X) cos(nπy/Y) ≈ 0
 		}
 	'''
 
