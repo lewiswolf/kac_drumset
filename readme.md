@@ -736,7 +736,7 @@ def WaveEquationWaveform2D(
 		k = sample length
 		T = length of simulation
 	output:
-		waveform = W[n] ∈ A * e^dt * sin(Ft) / NM * max(A)
+		waveform = W[t] ∈ A * e^dt * sin(ωt) / max(A) * NM
 	'''
 ```
 
