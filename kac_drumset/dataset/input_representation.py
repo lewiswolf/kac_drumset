@@ -65,7 +65,7 @@ class InputRepresentation():
 	settings: RepresentationSettings
 	transformer: torch.nn.Module
 
-	def __init__(self, sample_rate: int, settings: RepresentationSettings = {}) -> None:
+	def __init__(self, sample_rate: int, settings: RepresentationSettings | None = None) -> None:
 		'''
 		InputRepresentation works by creating a variably defined method self.transform. This method uses the input settings to
 		generate the correct input representation of the data.
@@ -81,7 +81,7 @@ class InputRepresentation():
 			'output_type': 'end2end',
 			'window_length': 512,
 		}
-		default_settings.update(settings)
+		default_settings.update({} if settings is None else settings)
 		self.settings = default_settings
 		self.sample_rate = sample_rate
 		self.__normalise__ = self.normalise if self.settings['normalise_input'] else lambda x: x

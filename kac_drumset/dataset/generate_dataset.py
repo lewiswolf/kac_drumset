@@ -27,7 +27,7 @@ def generateDataset(
 	sampler_settings: SamplerSettings,
 	dataset_dir: str,
 	dataset_size: int = 10,
-	representation_settings: RepresentationSettings = {},
+	representation_settings: RepresentationSettings | None = None,
 ) -> TorchDataset:
 	'''
 	Generates a dataset of audio samples. The generated dataset, including the individual .wav files and the metadata.json,

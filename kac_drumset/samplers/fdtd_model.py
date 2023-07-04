@@ -80,7 +80,7 @@ class FDTDModel(AudioSampler):
 		decay_time: float = 2.,
 		drum_size: float = 0.3,
 		material_density: float = 0.2,
-		shape_settings: ShapeSettings = {},
+		shape_settings: ShapeSettings | None = None,
 		strike_width: float = 0.01,
 		tension: float = 2000.,
 	) -> None:
@@ -98,7 +98,7 @@ class FDTDModel(AudioSampler):
 		self.d_60 = decay_time
 		self.L = drum_size
 		self.p = material_density
-		self.shape_settings = shape_settings
+		self.shape_settings = {} if shape_settings is None else shape_settings
 		self.strike_width = strike_width
 		self.t = tension
 		# initialise inferences
