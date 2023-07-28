@@ -16,7 +16,7 @@ flake8 = "*"
 flake8-commas = "*"
 flake8-pyi = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
-kac_drumset = {editable = true, path = "."}
+kac-drumset = {editable = true, path = "."}
 mypy = "*"
 scikit-build = "*"
 types-setuptools = "*"
