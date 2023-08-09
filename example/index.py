@@ -91,7 +91,7 @@ def GeometryExample() -> None:
 	polygon = ConvexPolygon(5)
 	print(f'\nThis is a {polygon.N} sided polygon: \n \n {polygon.vertices} \n')
 	# Assess its area.
-	print(f"Its area is {polygon.area}.")
+	print(f'Its area is {polygon.area}.')
 	# Compute its simplicity.
 	print(f'It is {polygon.isSimple()} that this polygon is simple.')
 	# Compute its convexity.

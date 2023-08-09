@@ -38,7 +38,7 @@ def loadDataset(dataset_dir: str) -> TorchDataset:
 			file.readlines(1)
 			# backwards compatibility
 			# delete during a major upgrade
-			if type(sampler) == str:
+			if isinstance(sampler, str):
 				sampler = {
 					'name': sampler,
 					'version': '1.1.0',

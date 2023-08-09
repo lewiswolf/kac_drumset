@@ -15,6 +15,7 @@ tqdm = ">=4.65"
 flake8 = "*"
 flake8-commas = "*"
 flake8-pyi = "*"
+flake8-quotes = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
 kac-drumset = {editable = true, path = "."}
 mypy = "*"

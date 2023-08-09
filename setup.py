@@ -52,7 +52,7 @@ setup(
 		'Programming Language :: Python :: 3.11',
 		'Typing :: Typed',
 	],
-	cmake_install_dir="kac_drumset/externals",
+	cmake_install_dir='kac_drumset/externals',
 	description=short_description,
 	long_description=long_description,
 	include_package_data=True,
