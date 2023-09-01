@@ -136,15 +136,12 @@ class Polygon(Shape):
 			1,
 		) if self.convex else cv2.fillPoly(
 			np.zeros((grid_size, grid_size), 'int8'),
-			np.array(
-				[
-					[round(y * (grid_size - 1)), round(x * (grid_size - 1))]
-					for [x, y] in (
-						self.vertices if self.vertices.min() == 0. and self.vertices.max() == 1. else _normalisePolygon(self.vertices)
-					)
-				],
-				'int32',
-			),
+			[np.array([
+				[round(y * (grid_size - 1)), round(x * (grid_size - 1))]
+				for [x, y] in (
+					self.vertices if self.vertices.min() == 0. and self.vertices.max() == 1. else _normalisePolygon(self.vertices)
+				)
+			])],
 			1,
 		)
 
