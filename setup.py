@@ -11,7 +11,7 @@ from skbuild import setup
 
 this = os.path.abspath(os.path.dirname(__file__))
 name = 'kac_drumset'
-version = '1.2.0'
+version = '2.0.0'
 short_description = 'Analysis tools and a dataset generator for arbitrarily shaped drums.'
 
 # import long description from readme.md
@@ -34,10 +34,15 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 		if line[0] == '[':
 			is_pkg = line == '[packages]'
 			continue
-		# append package names with required version
+		# append package names with required version / git config
 		if is_pkg:
 			pkg_name, _, *spec = line.split()
-			packages.append(pkg_name if spec[0] == '"*"' else f'{pkg_name}{spec[0][1:-1]}')
+			if spec[0] == '"*"':
+				packages.append(pkg_name)
+			elif spec[0] == '{git':
+				packages.append(f'{pkg_name} @ git+{spec[2][1:-2]}#egg={pkg_name}')
+			else:
+				packages.append(f'{pkg_name}{spec[0][1:-1]}')
 
 setup(
 	author='Lewis Wolstanholme',

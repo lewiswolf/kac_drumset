@@ -7,18 +7,17 @@ def DatasetExample() -> None:
 	import os
 
 	# src
-	from kac_drumset import (
+	from kac_drumset.geometry import ConvexPolygon
+	from kac_drumset.samplers import FDTDModel
+	from kac_prediction.dataset import (
 		# methods
 		generateDataset,
 		loadDataset,
 		transformDataset,
-		# classes
-		FDTDModel,
 		# types
 		RepresentationSettings,
 		TorchDataset,
 	)
-	from kac_drumset.geometry import ConvexPolygon
 
 	# Generating a dataset takes as its first argument an AudioSampler, each of which has its own customised settings
 	# constructor. To configure the representation settings, a dict of type RepresentationSettings is passed to the
@@ -126,5 +125,5 @@ def GeometryExample() -> None:
 
 if __name__ == '__main__':
 	DatasetExample()
-	GeometryExample()
+	# GeometryExample()
 	exit()

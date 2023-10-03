@@ -7,8 +7,7 @@ import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
-from ..dataset import AudioSampler, SamplerSettings
-from ..dataset.utils import classLocalsToKwargs
+from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
 from ..physics import equilateralTriangleAmplitudes, equilateralTriangleSeries, WaveEquationWaveform2D
 
 __all__ = [

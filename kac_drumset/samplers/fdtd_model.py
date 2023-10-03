@@ -11,8 +11,7 @@ import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
-from ..dataset import AudioSampler, SamplerSettings
-from ..dataset.utils import classLocalsToKwargs
+from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
 from ..geometry import Shape, ShapeSettings
 from ..physics import FDTDWaveform2D, raisedCosine
 

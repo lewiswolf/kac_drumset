@@ -4,19 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+kac_prediction = {git = "https://github.com/lewiswolf/kac_prediction.git"}
 numpy = ">=1.25"
 opencv-python = ">=4.7"
-soundfile = "*"
-torch = ">=2.0"
-torchaudio = ">=2.0"
-tqdm = ">=4.66"
 
 [dev-packages]
 flake8 = "*"
 flake8-commas = "*"
 flake8-pyi = "*"
 flake8-quotes = "*"
-graphs = {ref = "master", git = "https://github.com/lewiswolf/graphs.git"}
+graphs = {git = "https://github.com/lewiswolf/graphs.git"}
 kac-drumset = {file = ".", editable = true}
 mypy = "*"
 scikit-build = "*"

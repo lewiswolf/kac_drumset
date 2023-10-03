@@ -8,59 +8,15 @@ import contextlib
 import cProfile
 import os
 import pstats
-import re
-import shutil
 import sys
 import time
 from typing import Any, Callable, Iterator
 
 __all__ = [
-	'clearDirectory',
-	'printEmojis',
 	'withoutPrinting',
 	'withProfiler',
 	'withTimer',
 ]
-
-
-def clearDirectory(absolutePath: str, excludes: list[str] = ['.gitignore']) -> None:
-	'''
-	Completely clears all files and folders from the input directory.
-	params:
-		absolutePath	absolute filepath to the directory for clearing
-		excludes		files or subdirectories to exclude from clearing
-	'''
-
-	for file in os.listdir(absolutePath):
-		if file in excludes:
-			continue
-		path = f'{absolutePath}/{file}'
-		shutil.rmtree(path) if os.path.isdir(path) else os.remove(path)
-
-
-def printEmojis(s: str) -> None:
-	'''
-	Checks whether or not the operating system is mac or linux. If so, emojis are printed as normal, else they are
-	filtered from the string.
-	'''
-
-	if sys.platform in ['linux', 'darwin']:
-		print(s)
-	else:
-		regex = re.compile(
-			'['
-			u'\U00002600-\U000026FF' # miscellaneous
-			u'\U00002700-\U000027BF' # dingbats
-			u'\U0001F1E0-\U0001F1FF' # flags (iOS)
-			u'\U0001F600-\U0001F64F' # emoticons
-			u'\U0001F300-\U0001F5FF' # symbols & pictographs I
-			u'\U0001F680-\U0001F6FF' # transport & map symbols
-			u'\U0001F900-\U0001F9FF' # symbols & pictographs II
-			u'\U0001FA70-\U0001FAFF' # symbols & pictographs III
-			']+',
-			flags=re.UNICODE,
-		)
-		print(regex.sub(r'', s).strip())
 
 
 @contextlib.contextmanager
