@@ -6,13 +6,13 @@ from unittest import TestCase
 import numpy as np 			# maths
 
 # src
+from kac_drumset.geometry import ConvexPolygon
 from kac_drumset.samplers import (
 	BesselModel,
 	FDTDModel,
 	LaméModel,
 	PoissonModel,
 )
-from kac_drumset.geometry import ConvexPolygon
 from kac_prediction.utils import clearDirectory
 
 

@@ -32,11 +32,10 @@ class Ellipse(Shape):
 
 	def __init__(
 		self,
-		major: float | None = None,
+		major: float = 1.,
 		minor: float | None = None,
 		centroid: tuple[float, float] = (0., 0.),
 	) -> None:
-		major = 1. if major is None else major
 		minor = np.random.uniform(0., 1.) if minor is None else minor
 		if (major > minor):
 			self.major = major
