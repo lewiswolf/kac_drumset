@@ -40,7 +40,7 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 			if spec[0] == '"*"':
 				packages.append(pkg_name)
 			elif spec[0] == '{git':
-				packages.append(f'{pkg_name} @ git+{spec[2][1:-2]}#egg={pkg_name}')
+				packages.append(f'{pkg_name} @ git+{spec[2][1:-2]}')
 			else:
 				packages.append(f'{pkg_name}{spec[0][1:-1]}')
 
