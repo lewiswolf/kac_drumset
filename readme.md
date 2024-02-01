@@ -12,7 +12,7 @@ Python based analysis tools and dataset generator for arbitrarily shaped drums.
 # Install
 
 ```bash
-pip install "git+https://github.com/lewiswolf/kac_drumset.git#egg=kac_drumset"
+pip install "git+https://github.com/lewiswolf/kac_drumset.git"
 ```
 
 ### Dependencies

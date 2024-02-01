@@ -21,7 +21,7 @@ jobs:
                   python-version: ${{ matrix.python }}
 
             - name: Test installation
-              run: pip install "git+https://github.com/lewiswolf/kac_drumset.git#egg=kac_drumset"
+              run: pip install "git+https://github.com/lewiswolf/kac_drumset.git"
 
     all-tests:
         runs-on: ${{ matrix.os }}
