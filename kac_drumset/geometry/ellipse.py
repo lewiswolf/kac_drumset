@@ -84,21 +84,21 @@ class Ellipse(Shape):
 		'''
 		half_grid = round((grid_size - 1) / 2)
 		return cv2.circle(
-			np.zeros((grid_size, grid_size), 'int8'),
+			np.zeros((grid_size, grid_size), np.int8),
 			(half_grid, half_grid),
 			half_grid,
-			1,
+			(1, 0, 0),
 			-1,
-		) if self.major == self.minor else cv2.ellipse(
-			np.zeros((grid_size, grid_size), 'int8'),
+		).astype(np.int8) if self.major == self.minor else cv2.ellipse(
+			np.zeros((grid_size, grid_size), np.int8),
 			(half_grid, half_grid),
 			(half_grid, round(half_grid * self.minor / self.major)),
 			0,
 			0,
 			360,
-			1,
+			(1, 0, 0),
 			thickness=-1,
-		)
+		).astype(np.int8)
 
 	def eccentricity(self) -> float:
 		'''

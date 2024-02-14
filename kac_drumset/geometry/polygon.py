@@ -133,8 +133,8 @@ class Polygon(Shape):
 				],
 				'int32',
 			),
-			1,
-		) if self.convex else cv2.fillPoly(
+			(1, 0, 0),
+		).astype(np.int8) if self.convex else cv2.fillPoly(
 			np.zeros((grid_size, grid_size), 'int8'),
 			[np.array([
 				[round(y * (grid_size - 1)), round(x * (grid_size - 1))]
@@ -142,8 +142,8 @@ class Polygon(Shape):
 					self.vertices if self.vertices.min() == 0. and self.vertices.max() == 1. else _normalisePolygon(self.vertices)
 				)
 			])],
-			1,
-		)
+			(1, 0, 0),
+		).astype(np.int8)
 
 	def isPointInside(self, p: tuple[float, float]) -> bool:
 		'''
