@@ -1,94 +1,76 @@
 '''
-This file contains the fixed geometric types used as part of this package.
+This file contains the abstract base class for every two-dimensional shape.
 '''
 
 # core
 from abc import ABC, abstractmethod
-from functools import cached_property
-from typing import Union
+from typing import TypedDict
 
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
-# src
-from ..externals._geometry import _isConvex, _polygonArea
-
 __all__ = [
-	'Circle',
-	'Polygon',
 	'Shape',
+	'ShapeSettings',
 ]
+
+
+class ShapeSettings(TypedDict, total=False):
+	''' Placeholder for custom ShapeSettings. '''
+	pass
 
 
 class Shape(ABC):
 	'''
-	An abstract base class for a shape in Euclidean geometry.
+	An abstract base class for a two dimensional manifold in Euclidean geometry.
 	'''
 
 	def __init__(self) -> None:
 		pass
 
 	@abstractmethod
-	@cached_property
-	def area(self) -> float:
+	class Settings(ShapeSettings, total=False):
+		'''
+		Settings to be used when generating.
+		'''
 		pass
 
-
-class Circle(Shape):
-	'''
-	A base class for a circle, instantiated with a radius.
-	'''
-
-	r: float 							# radius
-
-	def __init__(self, r: float = 1.) -> None:
+	@abstractmethod
+	def __getLabels__(self) -> dict[str, list[float | int]]:
 		'''
-		input:
-			r = radius
+		This method should be used to return the metadata about the current shape.
 		'''
-		self.r = r
+		pass
 
-	@cached_property
-	def area(self) -> float:
-		''' Archimedes. '''
-		return np.pi * (self.r ** 2.)
-
-
-class Polygon(Shape):
-	'''
-	A base class for a polygon, instantiated with an array of vertices.
-	'''
-
-	N: int								# number of vertices
-	vertices: npt.NDArray[np.float64]	# cartesian products representing the vertices of a shape
-
-	def __init__(self, vertices: Union[list[list[float]], npt.NDArray[np.float64]]) -> None:
-		'''
-		input:
-			vertices = array of cartesian points.
-		'''
-		self.vertices = np.array(vertices)
-		assert self.vertices.ndim == 2 and self.vertices.shape[1] == 2, \
-			'Array of vertices is not the correct shape: (n, 2)'
-		self.N = self.vertices.shape[0]
-		assert self.N >= 3, 'A polygon must have three vertices.'
-
-	@cached_property
+	@property
+	@abstractmethod
 	def area(self) -> float:
 		'''
-		An implementation of the shoelace algorithm, first described by Albrecht Ludwig Friedrich Meister, which is used to
-		calculate the area of a polygon.
+		Calculate the area of a 2D manifold. This property should be used to scale the shape whenever it is set.
 		'''
-		return _polygonArea(self.vertices)
+		pass
 
-	@cached_property
-	def convex(self) -> bool:
+	@property
+	@abstractmethod
+	def centroid(self) -> tuple[float, float]:
 		'''
-		Tests whether or not a given polygon is convex. This is achieved using the resultant sign of the cross product for
-		each vertex:
-			[(x_i - x_i-1), (y_i - y_i-1)] × [(x_i+1 - x_i), (y_i+1 - y_i)].
-		See => http://paulbourke.net/geometry/polygonmesh/ 'Determining whether or not a polygon (2D) has its vertices ordered
-		clockwise or counter-clockwise'.
+		This algorithm is used to calculate the geometric centroid of a 2D manifold. This property should be used move the
+		shape about the plane whenever it is set.
 		'''
-		return _isConvex(self.vertices)
+		pass
+
+	@abstractmethod
+	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
+		'''
+		This function creates a boolean mask of a manifold on a grid with dimensions R^(grid_size). The input shape is always
+		normalised to the domain R^G before being drawn.
+		'''
+		pass
+
+	@abstractmethod
+	def isPointInside(self, p: tuple[float, float]) -> bool:
+		'''
+		Determines if a given point p ∈ P, including boundaries.
+		'''
+		pass

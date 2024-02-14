@@ -2,9 +2,6 @@
 Import FDTD functions from external C++ library and configure python type conversions.
 '''
 
-# core
-from typing import Optional
-
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
@@ -111,7 +108,7 @@ class FDTD_2D():
 
 		if self._n < self.T:
 			self._n += 1
-			if self._n % 2 == 0:
+			if self._n % 2 == 1:
 				self.u_0 = _FDTDUpdate2D(
 					self.u_0,
 					self.u_1,
@@ -147,7 +144,7 @@ def FDTDWaveform2D(
 	c_1: float,
 	c_2: float,
 	T: int,
-	w: tuple[int, int],
+	w: tuple[float, float],
 ) -> npt.NDArray[np.float64]:
 	'''
 	Generates a waveform using a 2 dimensional FDTD scheme. See `fdtd.hpp` for a parameter description.
@@ -159,7 +156,7 @@ def FDTDWaveform2D(
 		c_1 = second fdtd coefficient related to the decay term and the courant number.
 		c_2 = third fdtd coefficient related to the decay term.
 		T = length of simulation in samples.
-		w = the coordinate at which the waveform is sampled.
+		w = the coordinate at which the waveform is sampled ∈ ℝ^2, [0. 1.].
 	output:
 		waveform = W[n] ∈
 			c_0 * (
@@ -201,8 +198,8 @@ def raisedCosine(
 def raisedTriangle(
 	matrix_size: tuple[int, ...],
 	mu: tuple[float, ...],
-	x_ab: Optional[tuple[float, float]] = None,
-	y_ab: Optional[tuple[float, float]] = None,
+	x_ab: tuple[float, float] | None = None,
+	y_ab: tuple[float, float] | None = None,
 ) -> npt.NDArray[np.float64]:
 	'''
 	Calculate a one or two dimensional triangular distribution.
@@ -220,6 +217,7 @@ def raisedTriangle(
 			0,								x > a
 		}
 	'''
+
 	assert len(mu) <= 2 and len(mu) == len(matrix_size), \
 		'raisedTriangle() only supports one or two dimensional inputs.'
 	# configure x_ab

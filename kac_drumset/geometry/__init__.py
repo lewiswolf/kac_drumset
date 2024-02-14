@@ -1,39 +1,28 @@
-from ._generate_polygon import generateConvexPolygon
-from ._morphisms import convexNormalisation
-from ._polygon_properties import (
-	centroid,
-	isColinear,
-	isPointInsidePolygon,
-	largestVector,
-)
-from .generate_polygon import generateConcavePolygon
+from .ellipse import Circle, Ellipse
 from .isospectrality import weylCondition
-from .morphisms import concaveNormalisation
-from .projections import drawCircle, drawPolygon
-from .random_polygon import RandomPolygon
-from .types import Circle, Polygon, Shape
-from .unit_polygon import UnitRectangle, UnitTriangle
+from .lines import isColinear, largestVector, lineIntersection
+from .random_polygon import ConvexPolygon, IrregularStar, TravellingSalesmanPolygon, UnitRectangle, UnitTriangle
+from .polygon import Polygon
+from .types import Shape, ShapeSettings
+
 
 __all__ = [
-	# external methods
-	'centroid',
-	'convexNormalisation',
-	'generateConvexPolygon',
+	# External Methods
 	'isColinear',
-	'isPointInsidePolygon',
 	'largestVector',
-	# methods
-	'concaveNormalisation',
-	'drawCircle',
-	'drawPolygon',
-	'generateConcavePolygon',
+	'lineIntersection',
+	# Methods
 	'weylCondition',
-	# classes
-	'RandomPolygon',
+	# Classes
+	'Circle',
+	'ConvexPolygon',
+	'IrregularStar',
+	'TravellingSalesmanPolygon',
 	'UnitRectangle',
 	'UnitTriangle',
-	# types
-	'Circle',
+	# Types
+	'Ellipse',
 	'Polygon',
 	'Shape',
+	'ShapeSettings',
 ]

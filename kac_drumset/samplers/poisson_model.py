@@ -2,17 +2,13 @@
 This sampler is used to produce a linear model of a rectangular membrane.
 '''
 
-# core
-from typing import Union
-
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
 # src
-from ..dataset import AudioSampler, SamplerSettings
-from ..dataset.utils import classLocalsToKwargs
-from ..physics import calculateRectangularAmplitudes, calculateRectangularSeries, WaveEquationWaveform2D
+from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
+from ..physics import rectangularAmplitudes, rectangularSeries, WaveEquationWaveform2D
 
 __all__ = [
 	'PoissonModel',
@@ -90,7 +86,7 @@ class PoissonModel(AudioSampler):
 		if hasattr(self, 'L'):
 			self.waveform = WaveEquationWaveform2D(
 				self.F,
-				self.a * calculateRectangularAmplitudes(
+				self.a * rectangularAmplitudes(
 					(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),
 					self.N,
 					self.M,
@@ -101,7 +97,7 @@ class PoissonModel(AudioSampler):
 				self.length,
 			)
 
-	def getLabels(self) -> dict[str, list[Union[float, int]]]:
+	def getLabels(self) -> dict[str, list[float | int]]:
 		'''
 		Return the labels of the poisson model.
 		'''
@@ -112,7 +108,7 @@ class PoissonModel(AudioSampler):
 			'strike_location': [*self.strike],
 		} if hasattr(self, 'L') else {}
 
-	def updateProperties(self, i: Union[int, None] = None) -> None:
+	def updateProperties(self, i: int | None = None) -> None:
 		'''
 		For every five drum samples generated, update the size of the drum. And for every drum sample generated update the
 		strike location - the first strike location is always the centroid.
@@ -122,7 +118,7 @@ class PoissonModel(AudioSampler):
 			# initialise a random drum size and strike location in the centroid of the drum.
 			self.epsilon = np.random.uniform(1., 4.)
 			self.L = np.random.uniform(0.1, 2.)
-			self.F = calculateRectangularSeries(self.N, self.M, self.epsilon) * self.c / self.L
+			self.F = rectangularSeries(self.N, self.M, self.epsilon) * self.c / self.L
 			self.strike = (0.5, 0.5)
 		else:
 			# otherwise update the strike location to be a random location.
