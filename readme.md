@@ -411,13 +411,13 @@ def circularSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 		S = { z_nm | s ∈ ℝ, J_n(z_nm) = 0, n < N, 0 < m <= M }
 	'''
 
-def equilateralTriangleAmplitudes(x: float, y: float, z: float, N: int, M: int) -> npt.NDArray[np.float64]:
+def equilateralTriangleAmplitudes(u: float, v: float, w: float, N: int, M: int) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the amplitudes of the equilateral triangle eigenmodes relative to a
 	trilinear strike location according to Lamé's formula.
 	Seth (1940) Transverse Vibrations of Triangular Membranes.
 	input:
-		( x, y, z ) = trilinear coordinate
+		( u, v, w ) = trilinear coordinate
 		N = number of modal orders
 		M = number of modes per order
 	output:
@@ -456,7 +456,7 @@ def rectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float
 		}
 	'''
 
-def rectangularChladniPattern(m: int, n: int, X: int, Y: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
+def rectangularChladniPattern(m: float, n: float, X: int, Y: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
 	'''
 	Produce the 2D chladni pattern for a rectangular plate.
 	http://paulbourke.net/geometry/chladni/

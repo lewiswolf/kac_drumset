@@ -77,11 +77,11 @@ class PhysicsTests(TestCase):
 
 		# This test asserts that the amplitude calculation is programmed correctly.
 		self.assertNotEqual(float(equilateralTriangleAmplitudes(0.5, 0.5, 0.5, 10, 10).max()), 0.)
-		for x in [0., 1.]:
-			for y in [0., 1.]:
-				for z in [0., 1.]:
+		for u in [0., 1.]:
+			for v in [0., 1.]:
+				for w in [0., 1.]:
 					self.assertAlmostEqual(
-						float(equilateralTriangleAmplitudes(x, y, z, 10, 10).max()),
+						float(equilateralTriangleAmplitudes(u, v, w, 10, 10).max()),
 						0.,
 						places=15,
 					)
