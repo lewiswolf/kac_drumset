@@ -386,13 +386,13 @@ def circularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> np
 		}
 	'''
 
-def circularChladniPattern(m: int, n: int, H: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
+def circularChladniPattern(n: int, m: int, H: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
 	'''
 	Produce the 2D chladni pattern for a circular plate.
 	http://paulbourke.net/geometry/chladni/
 	input:
-		m = mth modal index
 		n = nth modal index
+		m = mth modal index
 		H = length of the X and Y axis
 		tolerance = the standard deviation between the calculation and the final pattern
 	output:
@@ -456,13 +456,13 @@ def rectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float
 		}
 	'''
 
-def rectangularChladniPattern(m: float, n: float, X: int, Y: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
+def rectangularChladniPattern(n: float, m: float, X: int, Y: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
 	'''
 	Produce the 2D chladni pattern for a rectangular plate.
 	http://paulbourke.net/geometry/chladni/
 	input:
-		m = mth modal index
 		n = nth modal index
+		m = mth modal index
 		X = length of the X axis
 		Y = length of the Y axis
 		tolerance = the standard deviation between the calculation and the final pattern
