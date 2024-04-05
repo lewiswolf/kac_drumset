@@ -24,6 +24,27 @@ T::Matrix_1D _FDTDWaveform2D(
 	return p::FDTDWaveform2D(u_0, u_1, B, c_0, c_1, c_2, T, T::Point(w[0], w[1]));
 }
 
+T::Matrix_1D _raisedCosine2D(
+	const unsigned long& size_X,
+	const unsigned long& size_Y,
+	const std::array<double, 2>& mu,
+	const double& sigma
+) {
+	return p::raisedCosine2D(size_X, size_Y, T::Point(mu[0], mu[1]), sigma);
+}
+
+T::Matrix_1D _raisedTriangle2D(
+	const unsigned long& size_X,
+	const unsigned long& size_Y,
+	const std::array<double, 2>& mu,
+	const double& x_a,
+	const double& x_b,
+	const double& y_a,
+	const double& y_b
+) {
+	return p::raisedTriangle2D(size_X, size_Y, T::Point(mu[0], mu[1]), x_a, x_b, y_a, y_b);
+}
+
 PYBIND11_MODULE(_physics, m) {
 	m.doc() = "_physics";
 	m.def("_circularAmplitudes", &p::circularAmplitudes);
@@ -34,9 +55,9 @@ PYBIND11_MODULE(_physics, m) {
 	m.def("_FDTDUpdate2D", &p::FDTDUpdate2D);
 	m.def("_FDTDWaveform2D", &_FDTDWaveform2D);
 	m.def("_raisedCosine1D", &p::raisedCosine1D);
-	m.def("_raisedCosine2D", &p::raisedCosine2D);
+	m.def("_raisedCosine2D", &_raisedCosine2D);
 	m.def("_raisedTriangle1D", &p::raisedTriangle1D);
-	m.def("_raisedTriangle2D", &p::raisedTriangle2D);
+	m.def("_raisedTriangle2D", &_raisedTriangle2D);
 	m.def("_rectangularAmplitudes", &p::rectangularAmplitudes);
 	m.def("_rectangularChladniPattern", &p::rectangularChladniPattern);
 	m.def("_rectangularSeries", &p::rectangularSeries);

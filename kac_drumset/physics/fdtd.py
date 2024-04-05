@@ -169,7 +169,7 @@ def FDTDWaveform2D(
 
 def raisedCosine(
 	matrix_size: tuple[int, ...],
-	mu: tuple[float, ...],
+	mu: tuple[float] | tuple[float, float],
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
@@ -189,15 +189,14 @@ def raisedCosine(
 	) if len(mu) == 1 else _raisedCosine2D(
 		matrix_size[0],
 		matrix_size[1],
-		mu[0],
-		mu[1],
+		mu,
 		sigma,
 	))
 
 
 def raisedTriangle(
 	matrix_size: tuple[int, ...],
-	mu: tuple[float, ...],
+	mu: tuple[float] | tuple[float, float],
 	x_ab: tuple[float, float] | None = None,
 	y_ab: tuple[float, float] | None = None,
 ) -> npt.NDArray[np.float64]:
@@ -239,8 +238,7 @@ def raisedTriangle(
 		return np.array(_raisedTriangle2D(
 			matrix_size[0],
 			matrix_size[1],
-			mu[0],
-			mu[1],
+			mu,
 			x_ab[0],
 			x_ab[1],
 			y_ab[0],
