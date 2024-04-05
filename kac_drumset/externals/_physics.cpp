@@ -24,7 +24,7 @@ T::Matrix_1D _FDTDWaveform2D(
 	return p::FDTDWaveform2D(u_0, u_1, B, c_0, c_1, c_2, T, T::Point(w[0], w[1]));
 }
 
-T::Matrix_1D _raisedCosine2D(
+T::Matrix_2D _raisedCosine2D(
 	const unsigned long& size_X,
 	const unsigned long& size_Y,
 	const std::array<double, 2>& mu,
@@ -33,7 +33,7 @@ T::Matrix_1D _raisedCosine2D(
 	return p::raisedCosine2D(size_X, size_Y, T::Point(mu[0], mu[1]), sigma);
 }
 
-T::Matrix_1D _raisedTriangle2D(
+T::Matrix_2D _raisedTriangle2D(
 	const unsigned long& size_X,
 	const unsigned long& size_Y,
 	const std::array<double, 2>& mu,
