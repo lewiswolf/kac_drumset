@@ -152,8 +152,7 @@ class FDTDModel(AudioSampler):
 		'''
 
 		# lambda for maintaining that points are within the shape.
-		def pointInsideLambda(default: tuple[float, float]) -> tuple[float, float]:
-			p = default
+		def pointInsideLambda(p: tuple[float, float]) -> tuple[float, float]:
 			while not self.shape.isPointInside(p):
 				p = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
 			return p
