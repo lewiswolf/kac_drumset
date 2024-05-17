@@ -386,7 +386,7 @@ def circularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> np
 		}
 	'''
 
-def circularChladniPattern(n: int, m: int, H: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
+def circularChladniPattern(n: float, m: float, H: int, tolerance: float = 0.1) -> npt.NDArray[np.float64]:
 	'''
 	Produce the 2D chladni pattern for a circular plate.
 	http://paulbourke.net/geometry/chladni/
