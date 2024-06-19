@@ -5,8 +5,8 @@ name = "pypi"
 
 [packages]
 kac_prediction = {git = "https://github.com/lewiswolf/kac_prediction.git"}
-numpy = ">=1.26"
-opencv-python = ">=4.9"
+numpy = ">=2.0"
+opencv-python = ">=4.10"
 
 [dev-packages]
 flake8 = "*"
