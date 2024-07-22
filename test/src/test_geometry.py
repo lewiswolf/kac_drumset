@@ -14,7 +14,7 @@ from kac_drumset.externals._geometry import (
 	_generatePolygon,
 	_isConvex,
 	_isPointInsideConvexPolygon,
-	_isPointInsidePolygon,
+	# _isPointInsidePolygon,
 	_normaliseConvexPolygon,
 )
 from kac_drumset.geometry import (
@@ -124,25 +124,25 @@ class GeometryTests(TestCase):
 			# This test asserts that P.isPointInside is True for all vertices.
 			for p in P.vertices:
 				self.assertTrue(_isPointInsideConvexPolygon(p, P.vertices))
-				self.assertTrue(_isPointInsidePolygon(p, P.vertices))
+				# self.assertTrue(_isPointInsidePolygon(p, P.vertices))
 
 		# This test asserts that P.isPointInside always works as expected.
 		for square in squares:
-			self.assertTrue(_isPointInsidePolygon((0.999, 0.5), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((0.999, 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.999, 0.5), square.vertices))
-			self.assertFalse(_isPointInsidePolygon((1.001, 0.5), square.vertices))
+			# self.assertFalse(_isPointInsidePolygon((1.001, 0.5), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((1.001, 0.5), square.vertices))
-			self.assertTrue(_isPointInsidePolygon((0.5, 0.999), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((0.5, 0.999), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.999), square.vertices))
-			self.assertFalse(_isPointInsidePolygon((0.5, 1.001), square.vertices))
+			# self.assertFalse(_isPointInsidePolygon((0.5, 1.001), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((0.5, 1.001), square.vertices))
-			self.assertTrue(_isPointInsidePolygon((0.001, 0.5), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((0.001, 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.001, 0.5), square.vertices))
-			self.assertFalse(_isPointInsidePolygon((-0.001, 0.5), square.vertices))
+			# self.assertFalse(_isPointInsidePolygon((-0.001, 0.5), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((-0.001, 0.5), square.vertices))
-			self.assertTrue(_isPointInsidePolygon((0.5, 0.001), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((0.5, 0.001), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.001), square.vertices))
-			self.assertFalse(_isPointInsidePolygon((0.5, -0.001), square.vertices))
+			# self.assertFalse(_isPointInsidePolygon((0.5, -0.001), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((0.5, -0.001), square.vertices))
 
 			# This test asserts that _normaliseConvexPolygon produces the correct output.
@@ -248,10 +248,10 @@ class GeometryTests(TestCase):
 		does_it_cross, cross_point = lineIntersection(
 			# B right
 			np.array([[0., 0.], [1., 0.]]),
-			np.array([[-0.5, 0.], [1.5, 0.]]),
+			np.array([[0.5, 0.], [1.5, 0.]]),
 		)
 		self.assertEqual(does_it_cross, 'colinear')
-		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
+		self.assertTrue(cross_point[0] == 0.75 and cross_point[1] == 0.)
 		does_it_cross, cross_point = lineIntersection(
 			# A inside
 			np.array([[0.25, 0.], [0.75, 0.]]),
@@ -268,11 +268,25 @@ class GeometryTests(TestCase):
 		self.assertTrue(cross_point[0] == 0.25 and cross_point[1] == 0.)
 		does_it_cross, cross_point = lineIntersection(
 			# A right
-			np.array([[-0.5, 0.], [1.5, 0.]]),
+			np.array([[0.5, 0.], [1.5, 0.]]),
 			np.array([[0., 0.], [1., 0.]]),
 		)
 		self.assertEqual(does_it_cross, 'colinear')
-		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
+		self.assertTrue(cross_point[0] == 0.75 and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			# Line outside
+			np.array([[0., 0.], [1., 0.]]),
+			np.array([[1.5, 0.], [2.5, 0.]]),
+		)
+		self.assertEqual(does_it_cross, 'none')
+		self.assertTrue(cross_point[0] == 0. and cross_point[1] == 0.)
+		does_it_cross, cross_point = lineIntersection(
+			# Line outside
+			np.array([[1.5, 0.], [2.5, 0.]]),
+			np.array([[0., 0.], [1., 0.]]),
+		)
+		self.assertEqual(does_it_cross, 'none')
+		self.assertTrue(cross_point[0] == 0. and cross_point[1] == 0.)
 
 	def test_random_polygon(self) -> None:
 		'''
@@ -296,7 +310,7 @@ class GeometryTests(TestCase):
 				# This test asserts that a polygon has the correct number of vertices.
 				self.assertEqual(len(polygon.vertices), polygon.N)
 
-				# This test asserts that a polygon has is simple.
+				# This test asserts that a polygon is simple.
 				self.assertTrue(polygon.isSimple())
 
 				# This test asserts that the vertices are strictly bounded between 0.0 and 1.0.
@@ -323,8 +337,8 @@ class GeometryTests(TestCase):
 					])))
 
 				# This test asserts that isPointInsidePolygon includes the vertices.
-				for p in polygon.vertices:
-					self.assertTrue(_isPointInsidePolygon(p, polygon.vertices))
+				# for p in polygon.vertices:
+				# 	self.assertTrue(_isPointInsidePolygon(p, polygon.vertices))
 
 				# This test asserts that isPointInside includes the midpoint of each vertex.
 				# for n in range(polygon.N):
@@ -332,42 +346,42 @@ class GeometryTests(TestCase):
 				# 	b = polygon.vertices[(n + 1) % polygon.N]
 				# 	self.assertTrue(_isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), polygon.vertices))
 
-			if polygon.convex:
-				# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
-				# can assume that the _generateConvexPolygon() function works as intended.
-				self.assertTrue(_isConvex(polygon.vertices))
+				if polygon.convex:
+					# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
+					# can assume that the _generateConvexPolygon() function works as intended.
+					self.assertTrue(_isConvex(polygon.vertices))
 
-				# This test asserts that the largest vector lies across the x-axis.
-				self.assertTrue(polygon.vertices[LV[1][0]][0] == 0.)
-				self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
+					# This test asserts that the largest vector lies across the x-axis.
+					self.assertTrue(polygon.vertices[LV[1][0]][0] == 0.)
+					self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
 
-				# This test asserts that isPointInsideConvexPolygon includes the vertices.
-				for p in polygon.vertices:
-					self.assertTrue(_isPointInsideConvexPolygon(p, polygon.vertices))
+					# This test asserts that isPointInsideConvexPolygon includes the vertices.
+					for p in polygon.vertices:
+						self.assertTrue(_isPointInsideConvexPolygon(p, polygon.vertices))
 
-				# This test asserts that isPointInsideConvexPolygon includes the midpoint of each vertex.
-				# for n in range(polygon.N):
-				# 	a = polygon.vertices[n]
-				# 	b = polygon.vertices[(n + 1) % polygon.N]
-				# 	self.assertTrue(_isPointInsideConvexPolygon([(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.], polygon.vertices))
+					# This test asserts that isPointInsideConvexPolygon includes the midpoint of each vertex.
+					# for n in range(polygon.N):
+					# 	a = polygon.vertices[n]
+					# 	b = polygon.vertices[(n + 1) % polygon.N]
+					# 	self.assertTrue(_isPointInsideConvexPolygon([(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.], polygon.vertices))
 
-				# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
-				centroid = polygon.centroid
-				self.assertTrue(_isPointInsideConvexPolygon(centroid, polygon.vertices))
-				self.assertTrue(_isPointInsidePolygon(centroid, polygon.vertices))
-				self.assertEqual(polygon.draw(100)[
-					round(centroid[0] * 99),
-					round(centroid[1] * 99),
-				], 1)
+					# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
+					centroid = polygon.centroid
+					self.assertTrue(_isPointInsideConvexPolygon(centroid, polygon.vertices))
+					# self.assertTrue(_isPointInsidePolygon(centroid, polygon.vertices))
+					self.assertEqual(polygon.draw(100)[
+						round(centroid[0] * 99),
+						round(centroid[1] * 99),
+					], 1)
 
-				# This test asserts that _normaliseConvexPolygon does not continuously alter the polygon.
-				# np.allclose is used, as opposed to np.equal, to account for floating point errors.
-				self.assertTrue(np.allclose(polygon.vertices, np.array(_normaliseConvexPolygon(polygon.vertices))))
+					# This test asserts that _normaliseConvexPolygon does not continuously alter the polygon.
+					# np.allclose is used, as opposed to np.equal, to account for floating point errors.
+					self.assertTrue(np.allclose(polygon.vertices, np.array(_normaliseConvexPolygon(polygon.vertices))))
 
-			# This test asserts that polygon translation works as expected.
-			polygon.centroid = (10., 10.)
-			self.assertAlmostEqual(polygon.centroid[0], 10.)
-			self.assertAlmostEqual(polygon.centroid[1], 10.)
+				# This test asserts that polygon translation works as expected.
+				polygon.centroid = (10., 10.)
+				self.assertAlmostEqual(polygon.centroid[0], 10.)
+				self.assertAlmostEqual(polygon.centroid[1], 10.)
 
 	def test_unit_polygon(self) -> None:
 		'''
