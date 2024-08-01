@@ -14,7 +14,7 @@ from ..externals._geometry import (
 	_generateIrregularStar,
 	_generatePolygon,
 	_generateUnitRectangle,
-	_generateUnitTriangle,
+	# _generateUnitTriangle,
 	_normaliseConvexPolygon,
 	_normaliseSimplePolygon,
 )
@@ -26,7 +26,7 @@ __all__ = [
 	'IrregularStar',
 	'TravellingSalesmanPolygon',
 	'UnitRectangle',
-	'UnitTriangle',
+	# 'UnitTriangle',
 ]
 
 
@@ -108,29 +108,28 @@ class UnitRectangle(Polygon):
 		return {'epsilon': [self.epsilon], 'N': [self.N], 'vertices': self.vertices.tolist()}
 
 
-class UnitTriangle(Polygon):
-	'''
-	Define a triangle with unit area. For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [0, 1], the corresponding triangle
-	will be unique.
-	'''
+# class UnitTriangle(Polygon):
+# 	'''
+# 	Define a triangle with unit area. For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [0, 1], the corresponding
+# 	triangle will be unique.
+# 	'''
 
-	r: float
-	theta: float
+# 	r: float
+# 	theta: float
 
-	class Settings(ShapeSettings, total=False):
-		''' Settings to be used when generating. '''
-		r: float			# radius
-		theta: float		# angle
+# 	class Settings(ShapeSettings, total=False):
+# 		''' Settings to be used when generating. '''
+# 		r: float			# radius
+# 		theta: float		# angle
 
-	def __init__(self, r: float | None = None, theta: float | None = None) -> None:
-		self.r = np.random.uniform(0., 1.) if r is None else r
-		self.theta = np.random.uniform(0., np.pi) if theta is None else theta
-		assert self.r <= 1. and self.r >= 0., 'r ∈ [0, 1]'
-		super().__init__(_generateUnitTriangle(self.r, self.theta))
-		raise Exception('unsupported')
+# 	def __init__(self, r: float | None = None, theta: float | None = None) -> None:
+# 		self.r = np.random.uniform(0., 1.) if r is None else r
+# 		self.theta = np.random.uniform(0., np.pi) if theta is None else theta
+# 		assert self.r <= 1. and self.r >= 0., 'r ∈ [0, 1]'
+# 		super().__init__(_generateUnitTriangle(self.r, self.theta))
 
-	def __getLabels__(self) -> dict[str, list[float | int]]:
-		'''
-		This method should be used to return the metadata about the current shape.
-		'''
-		return {'r': [self.r], 'N': [self.N], 'theta': [self.theta], 'vertices': self.vertices.tolist()}
+# 	def __getLabels__(self) -> dict[str, list[float | int]]:
+# 		'''
+# 		This method should be used to return the metadata about the current shape.
+# 		'''
+# 		return {'r': [self.r], 'N': [self.N], 'theta': [self.theta], 'vertices': self.vertices.tolist()}

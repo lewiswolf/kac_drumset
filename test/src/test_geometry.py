@@ -108,10 +108,10 @@ class GeometryTests(TestCase):
 		# The first two quads have opposite vertex order.
 		# The second two quads have their x and y coordinates swapped.
 		quads = [
-			Polygon([[0, 0], [1.1, 0], [1, 1], [0, 1]]),
-			Polygon([[0, 0], [0, 1], [1, 1], [1.1, 0]]),
-			Polygon([[0, 0], [0, 1.1], [1, 1], [1, 0]]),
-			Polygon([[0, 0], [1, 0], [1, 1], [0, 1.1]]),
+			Polygon([[0., 0.], [1.1, 0.], [1., 1.], [0., 1.]]),
+			Polygon([[0., 0.], [0., 1.], [1., 1.], [1.1, 0.]]),
+			Polygon([[0., 0.], [0., 1.1], [1., 1.], [1., 0.]]),
+			Polygon([[0., 0.], [1., 0.], [1., 1.], [0., 1.1]]),
 		]
 
 		for P in quads + squares:
@@ -144,6 +144,16 @@ class GeometryTests(TestCase):
 			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.001), square.vertices))
 			# self.assertFalse(_isPointInsidePolygon((0.5, -0.001), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((0.5, -0.001), square.vertices))
+
+			# These test asserts that the midpoint of each sides are inside the polygon.
+			# self.assertTrue(_isPointInsidePolygon((0., 0.5), square.vertices))
+			self.assertTrue(_isPointInsideConvexPolygon((0., 0.5), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((1., 0.5), square.vertices))
+			self.assertTrue(_isPointInsideConvexPolygon((1., 0.5), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((0.5, 0.), square.vertices))
+			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.), square.vertices))
+			# self.assertTrue(_isPointInsidePolygon((0.5, 1.), square.vertices))
+			self.assertTrue(_isPointInsideConvexPolygon((0.5, 1.), square.vertices))
 
 			# This test asserts that _normaliseConvexPolygon produces the correct output.
 			self.assertFalse(False in np.equal(
@@ -336,15 +346,13 @@ class GeometryTests(TestCase):
 						polygon.vertices[(n + 1) % polygon.N],
 					])))
 
+				# This test asserts that isPointInsidePolygon correctly recognises points outside of the polygon.
+				# self.assertFalse(_isPointInsidePolygon((-0.01, -0.01), polygon.vertices))
+				# self.assertFalse(_isPointInsidePolygon((2., 2.), polygon.vertices))
+
 				# This test asserts that isPointInsidePolygon includes the vertices.
 				# for p in polygon.vertices:
 				# 	self.assertTrue(_isPointInsidePolygon(p, polygon.vertices))
-
-				# This test asserts that isPointInside includes the midpoint of each vertex.
-				# for n in range(polygon.N):
-				# 	a = polygon.vertices[n]
-				# 	b = polygon.vertices[(n + 1) % polygon.N]
-				# 	self.assertTrue(_isPointInsidePolygon(((a[0] + b[0]) / 2., (a[1] + b[1]) / 2.), polygon.vertices))
 
 				if polygon.convex:
 					# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
@@ -355,15 +363,13 @@ class GeometryTests(TestCase):
 					self.assertTrue(polygon.vertices[LV[1][0]][0] == 0.)
 					self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
 
+					# This test asserts that isPointInsideConvexPolygon correctly recognises points outside of the polygon.
+					self.assertFalse(_isPointInsideConvexPolygon((-0.01, -0.01), polygon.vertices))
+					self.assertFalse(_isPointInsideConvexPolygon((2., 2.), polygon.vertices))
+
 					# This test asserts that isPointInsideConvexPolygon includes the vertices.
 					for p in polygon.vertices:
 						self.assertTrue(_isPointInsideConvexPolygon(p, polygon.vertices))
-
-					# This test asserts that isPointInsideConvexPolygon includes the midpoint of each vertex.
-					# for n in range(polygon.N):
-					# 	a = polygon.vertices[n]
-					# 	b = polygon.vertices[(n + 1) % polygon.N]
-					# 	self.assertTrue(_isPointInsideConvexPolygon([(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.], polygon.vertices))
 
 					# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
 					centroid = polygon.centroid
@@ -388,7 +394,7 @@ class GeometryTests(TestCase):
 		Test used in conjunction with ./unit_polygons.py.
 		'''
 
-		# Test the vertices, centroid and area of the UnitRectangle for varying epsilons.
+		# Test the vertices, area and centroid of the UnitRectangle for varying epsilons.
 		for [epsilon, vertices] in [
 			(1., [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5]]),
 			(0.5, [[-0.25, -1.], [-0.25, 1.], [0.25, 1.], [0.25, -1.]]),
@@ -397,7 +403,7 @@ class GeometryTests(TestCase):
 			R = UnitRectangle(epsilon)
 			P = Polygon(vertices)
 			self.assertTrue(np.all(np.equal(R.vertices, P.vertices)))
-			self.assertEqual(R.area, P.area)
+			self.assertEqual(R.area, 1.)
 			self.assertEqual(R.centroid, (0., 0.))
 
 		# Test the vertices and area of the UnitTriangle for varying r, theta.
@@ -408,19 +414,22 @@ class GeometryTests(TestCase):
 		# 	(1., 3.),
 		# 	(1., 4.),
 		# 	(1., 5.),
-		# 	(1., 6.),
+		# 	(-1., 6.),
 		# ]:
-		# 	T = UnitTriangle(1., np.pi / 3)
+		# 	T = UnitTriangle(r, theta)
 		# 	P = Polygon(T.vertices)
 		# 	self.assertAlmostEqual(T.area, P.area)
+		# 	self.assertAlmostEqual(T.area, 1.)
+
+		# 	# This test asserts that the longest line of the UnitTriangle is along the x axis.
 		# 	self.assertEqual(T.vertices[:, 0].min() + T.vertices[:, 0].max(), 0.)
 		# 	self.assertEqual(T.vertices[:, 1].min() + T.vertices[:, 1].max(), 0.)
 
 		# # This tests asserts the symmetry of the method used to generate UnitTriangle
-		# norm_tri = normaliseConvexPolygon(UnitTriangle(1., 1.))
-		# self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., np.pi - 1.)), norm_tri)))
-		# self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., np.pi + 1.)), norm_tri)))
-		# self.assertTrue(np.all(np.allclose(normaliseConvexPolygon(UnitTriangle(1., -1.)), norm_tri)))
+		# norm_tri = _normaliseConvexPolygon(UnitTriangle(1., 1.).vertices)
+		# self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., np.pi - 1.).vertices), norm_tri)))
+		# self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., np.pi + 1.).vertices), norm_tri)))
+		# self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., -1.).vertices), norm_tri)))
 
 		# # This test asserts that the equilateral triangle is properly constructed.
 		# T = UnitTriangle(1., np.pi / 2)
