@@ -59,7 +59,6 @@ class GeometryTests(TestCase):
 			self.assertFalse(C.isPointInside((r_2 * math.cos(theta), r_2 * math.sin(theta))))
 
 		for r in [0.1, 0.25, 0.5, 1., 2.]:
-			E = Ellipse(r, 1 / r)
 			C = Circle(r)
 
 			# This test asserts that the circle correctly has equal foci.
@@ -69,10 +68,9 @@ class GeometryTests(TestCase):
 
 			# This test asserts that areas can be properly updated on the fly.
 			random_area = random.uniform(0., 100.)
+			self.assertNotEqual(C.area, random_area)
 			C.area = random_area
-			E.area = random_area
 			self.assertAlmostEqual(C.area, random_area)
-			self.assertAlmostEqual(E.area, random_area)
 
 			# This test asserts that the default centroid is (0., 0.).
 			self.assertEqual(C.centroid, (0., 0.))
@@ -87,13 +85,12 @@ class GeometryTests(TestCase):
 			self.assertEqual(C.foci(), ((0., 0.), (0., 0.)))
 
 			# This test asserts that the center of the boolean mask is always true.
-			for S in [E, C]:
-				M = S.draw(101)
-				self.assertEqual(M[50, 50], 1)
-				self.assertEqual(M[0, 0], 0)
-				self.assertEqual(M[0, 100], 0)
-				self.assertEqual(M[100, 0], 0)
-				self.assertEqual(M[100, 100], 0)
+			M = C.draw(101)
+			self.assertEqual(M[50, 50], 1)
+			self.assertEqual(M[0, 0], 0)
+			self.assertEqual(M[0, 100], 0)
+			self.assertEqual(M[100, 0], 0)
+			self.assertEqual(M[100, 100], 0)
 
 	def test_convex_polygon(self) -> None:
 		'''
@@ -126,8 +123,8 @@ class GeometryTests(TestCase):
 				self.assertTrue(_isPointInsideConvexPolygon(p, P.vertices))
 				# self.assertTrue(_isPointInsidePolygon(p, P.vertices))
 
-		# This test asserts that P.isPointInside always works as expected.
 		for square in squares:
+			# This test asserts that P.isPointInside correctly identifies points inside each square.
 			# self.assertTrue(_isPointInsidePolygon((0.999, 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.999, 0.5), square.vertices))
 			# self.assertFalse(_isPointInsidePolygon((1.001, 0.5), square.vertices))
@@ -179,6 +176,28 @@ class GeometryTests(TestCase):
 		# np.allclose is used, as opposed to np.equal, to account for floating point errors.
 		self.assertTrue(np.allclose(quads[0].vertices, quads[2].vertices))
 		self.assertTrue(np.allclose(quads[0].vertices, quads[3].vertices))
+
+	def test_ellipse(self) -> None:
+		'''
+		Test properties of the type Ellipse.
+		'''
+
+		for r in [0.1, 0.25, 0.5, 1., 2.]:
+			E = Ellipse(r, 1 / r)
+
+			# This test asserts that areas can be properly updated on the fly.
+			random_area = random.uniform(0., 100.)
+			self.assertNotEqual(E.area, random_area)
+			E.area = random_area
+			self.assertAlmostEqual(E.area, random_area)
+
+			# This test asserts that the center of the boolean mask is always true.
+			M = E.draw(101)
+			self.assertEqual(M[50, 50], 1)
+			self.assertEqual(M[0, 0], 0)
+			self.assertEqual(M[0, 100], 0)
+			self.assertEqual(M[100, 0], 0)
+			self.assertEqual(M[100, 100], 0)
 
 	def test_lines(self) -> None:
 		'''
