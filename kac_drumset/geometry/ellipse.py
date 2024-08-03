@@ -36,8 +36,8 @@ class Ellipse(Shape):
 		minor: float | None = None,
 		centroid: tuple[float, float] = (0., 0.),
 	) -> None:
-		minor = np.random.uniform(0., 1.) if minor is None else minor
-		if (major > minor):
+		minor = minor or np.random.uniform(0., 1.)
+		if (major >= minor):
 			self.major = major
 			self.minor = minor
 		else:
@@ -111,10 +111,10 @@ class Ellipse(Shape):
 		The foci are the two points at which the sum of the distances between any point on the surface of the ellipse is a
 		constant.
 		'''
-		c = self.focal_distance()
+		c = self.focalDistance()
 		return ((self.centroid[0], self.centroid[1] + c), (self.centroid[0], self.centroid[1] - c))
 
-	def focal_distance(self) -> float:
+	def focalDistance(self) -> float:
 		'''
 		The distance between a focus and the centroid.
 		'''
@@ -138,7 +138,7 @@ class Circle(Ellipse):
 		r: float			# radius
 
 	def __init__(self, r: float | None = None, centroid: tuple[float, float] = (0., 0.)) -> None:
-		r = np.random.uniform(0., 1.) if r is None else r
+		r = r or np.random.uniform(0., 1.)
 		super().__init__(r, r, centroid)
 
 	'''

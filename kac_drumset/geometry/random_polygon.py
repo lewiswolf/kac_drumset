@@ -41,9 +41,7 @@ class ConvexPolygon(Polygon):
 		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
-		super().__init__(_normaliseConvexPolygon(_generateConvexPolygon(
-			random.randint(3, max_vertices) if N is None else N,
-		)))
+		super().__init__(_normaliseConvexPolygon(_generateConvexPolygon(N or random.randint(3, max_vertices))))
 
 
 class IrregularStar(Polygon):
@@ -59,7 +57,7 @@ class IrregularStar(Polygon):
 		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
-		super().__init__(_generateIrregularStar(random.randint(3, max_vertices) if N is None else N))
+		super().__init__(_generateIrregularStar(N or random.randint(3, max_vertices)))
 		self.vertices = np.array(
 			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
 		)
@@ -80,7 +78,7 @@ class TravellingSalesmanPolygon(Polygon):
 		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
-		super().__init__(_generatePolygon(random.randint(3, max_vertices) if N is None else N))
+		super().__init__(_generatePolygon(N or random.randint(3, max_vertices)))
 		self.vertices = np.array(
 			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
 		)
@@ -98,7 +96,7 @@ class UnitRectangle(Polygon):
 		epsilon: float		# aspect ratio
 
 	def __init__(self, epsilon: float | None = None) -> None:
-		self.epsilon = np.random.uniform(0., 1.) if epsilon is None else epsilon
+		self.epsilon = epsilon or np.random.uniform(0., 1.)
 		super().__init__(_generateUnitRectangle(self.epsilon))
 
 	def __getLabels__(self) -> dict[str, list[float | int]]:

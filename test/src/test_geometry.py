@@ -66,12 +66,6 @@ class GeometryTests(TestCase):
 			self.assertEqual(C.r, C.major)
 			self.assertEqual(C.r, C.minor)
 
-			# This test asserts that areas can be properly updated on the fly.
-			random_area = random.uniform(0., 100.)
-			self.assertNotEqual(C.area, random_area)
-			C.area = random_area
-			self.assertAlmostEqual(C.area, random_area)
-
 			# This test asserts that the default centroid is (0., 0.).
 			self.assertEqual(C.centroid, (0., 0.))
 
@@ -79,10 +73,16 @@ class GeometryTests(TestCase):
 			self.assertEqual(C.eccentricity(), 0.0)
 
 			# This test asserts that the default focal distance is 0.
-			self.assertEqual(C.focal_distance(), 0.0)
+			self.assertEqual(C.focalDistance(), 0.0)
 
 			# This test asserts that the default foci are each (0., 0.).
 			self.assertEqual(C.foci(), ((0., 0.), (0., 0.)))
+
+			# This test asserts that areas can be properly updated on the fly.
+			random_area = random.uniform(0., 100.)
+			self.assertNotEqual(C.area, random_area)
+			C.area = random_area
+			self.assertAlmostEqual(C.area, random_area)
 
 			# This test asserts that the center of the boolean mask is always true.
 			M = C.draw(101)
@@ -182,8 +182,29 @@ class GeometryTests(TestCase):
 		Test properties of the type Ellipse.
 		'''
 
-		for r in [0.1, 0.25, 0.5, 1., 2.]:
-			E = Ellipse(r, 1 / r)
+		# This test asserts that the major axis is always greater than the minor axis.
+		E = Ellipse(0.1, 10.)
+		self.assertLessEqual(E.minor, E.major)
+
+		for minor in [0.05, 0.1, 0.25, 0.5, 0.75, 1.]:
+			E = Ellipse(minor=minor)
+
+			# This test asserts that the default major is 1.
+			self.assertEqual(E.major, 1.)
+			self.assertLessEqual(E.minor, 1.)
+
+			# This test asserts that the default centroid is (0., 0.).
+			self.assertEqual(E.centroid, (0., 0.))
+
+			# This test asserts that the default eccentricity is less than 1.
+			self.assertLessEqual(E.eccentricity(), 1.)
+
+			# This test asserts that the default focal distance is less than 1.
+			self.assertLessEqual(E.focalDistance(), 1.)
+
+			# This test asserts that the default foci lie along the x axis.
+			self.assertEqual(E.foci()[0][0], 0.)
+			self.assertEqual(E.foci()[1][0], 0.)
 
 			# This test asserts that areas can be properly updated on the fly.
 			random_area = random.uniform(0., 100.)
