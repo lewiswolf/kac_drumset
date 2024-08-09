@@ -39,11 +39,8 @@ class Polygon(Shape):
 		''' Settings to be used when generating. '''
 		vertices: list[list[float]] | npt.NDArray[np.float64]
 
-	def __init__(self, vertices: list[list[float]] | npt.NDArray[np.float64] | None = None) -> None:
+	def __init__(self, vertices: list[list[float]] | npt.NDArray[np.float64]) -> None:
 		self.vertices = np.array(vertices)
-		assert vertices is not None, 'Polygon() must be initialised with an array of vertices.'
-		assert self.vertices.ndim == 2 and self.vertices.shape[1] == 2, 'Array of vertices is not the correct shape: (n, 2)'
-		assert self.N >= 3, 'A polygon must have three vertices.'
 
 	'''
 	Getters and setters for area.

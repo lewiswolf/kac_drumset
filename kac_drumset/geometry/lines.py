@@ -30,8 +30,8 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 
 def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, int]]:
 	'''
-	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the
-	vector and its indices.
+	This function tests each pair of vertices in a given set of points to find the largest vector, and returns the length
+	of the vector and its indices.
 	'''
 	assert vertices.ndim == 2 and vertices[0].shape[0] == 2, \
 		'largestVector() only supports an input of shape (n, 2).'

@@ -37,11 +37,11 @@ class ConvexPolygon(Polygon):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		N: int				# number of vertices
+		N: int				# number of vertices (randomly generated when N < 3)
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
-		super().__init__(_normaliseConvexPolygon(_generateConvexPolygon(N or random.randint(3, max_vertices))))
+	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
+		super().__init__(_normaliseConvexPolygon(_generateConvexPolygon(N if N > 2 else random.randint(3, max_vertices))))
 
 
 class IrregularStar(Polygon):
@@ -53,11 +53,11 @@ class IrregularStar(Polygon):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		N: int				# number of vertices
+		N: int				# number of vertices (randomly generated when N < 3)
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
-		super().__init__(_generateIrregularStar(N or random.randint(3, max_vertices)))
+	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
+		super().__init__(_generateIrregularStar(N if N > 2 else random.randint(3, max_vertices)))
 		self.vertices = np.array(
 			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
 		)
@@ -74,11 +74,11 @@ class TravellingSalesmanPolygon(Polygon):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		N: int				# number of vertices
+		N: int				# number of vertices (randomly generated when N < 3)
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
-		super().__init__(_generatePolygon(N or random.randint(3, max_vertices)))
+	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
+		super().__init__(_generatePolygon(N if N > 2 else random.randint(3, max_vertices)))
 		self.vertices = np.array(
 			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
 		)
@@ -93,9 +93,9 @@ class UnitRectangle(Polygon):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		epsilon: float		# aspect ratio
+		epsilon: float		# aspect ratio (randomly generated when epsilon = 0)
 
-	def __init__(self, epsilon: float | None = None) -> None:
+	def __init__(self, epsilon: float = 0.) -> None:
 		self.epsilon = epsilon or np.random.uniform(0., 1.)
 		super().__init__(_generateUnitRectangle(self.epsilon))
 

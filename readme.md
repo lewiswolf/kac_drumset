@@ -57,10 +57,10 @@ def isColinear(vertices: npt.NDArray[np.float64]) -> bool:
 	Determines whether or not a given set of three vertices are colinear.
 	'''
 
-def largestVector(P: Polygon) -> tuple[float, tuple[int, int]]:
+def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, int]]:
 	'''
-	This function tests each pair of vertices in a given polygon to find the largest vector, and returns the length of the
-	vector and its indices.
+	This function tests each pair of vertices in a given set of points to find the largest vector, and returns the length
+	of the vector and its indices.
 	'''
 
 def lineIntersection(A: npt.NDArray[np.float64], B: npt.NDArray[np.float64]) -> tuple[
@@ -106,15 +106,10 @@ class Circle(Ellipse):
 	'''
 
 	class Settings(ShapeSettings, total=False):
-		r: float			# radius
+		''' Settings to be used when generating. '''
+		r: float			# radius (randomly generated when r = 0)
 
-	def __init__(self, r: float | None = None, centroid: tuple[float, float] = (0., 0.)) -> None:
-
-	@property
-	def r(self) -> float:
-		'''
-		Getters and setters for radius. Updating the radius updates both major and minor.
-		'''
+	def __init__(self, r: float = 0., centroid: tuple[float, float] = (0., 0.)) -> None:
 
 class ConvexPolygon(Polygon):
 	'''
@@ -123,10 +118,10 @@ class ConvexPolygon(Polygon):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		N: int				# number of vertices
+		N: int				# number of vertices (randomly generated when N < 3)
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
+	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
 
 class IrregularStar(Polygon):
 	'''
@@ -137,10 +132,10 @@ class IrregularStar(Polygon):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		N: int				# number of vertices
+		N: int				# number of vertices (randomly generated when N < 3)
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
+	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
 
 class TravellingSalesmanPolygon(Polygon):
 	'''
@@ -153,10 +148,10 @@ class TravellingSalesmanPolygon(Polygon):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		N: int				# number of vertices
+		N: int				# number of vertices (randomly generated when N < 3)
 		max_vertices: int	# maximum number of vertices when generating
 
-	def __init__(self, N: int | None = None, max_vertices: int = 10) -> None:
+	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
 
 class UnitRectangle(Polygon):
 	'''
@@ -165,10 +160,9 @@ class UnitRectangle(Polygon):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		epsilon: float		# aspect ratio
+		epsilon: float		# aspect ratio (randomly generated when epsilon = 0)
 
-	def __init__(self, epsilon: float | None = None) -> None:
-
+	def __init__(self, epsilon: float = 0.) -> None:
 ```
 
 ### Types
@@ -179,15 +173,15 @@ class Ellipse(Shape):
 	A base class for an ellipse, instantiated with two foci.
 	'''
 
-	major: float
-	minor: float
+	major: float			# length across the x axis
+	minor: float			# length across the y axis
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		major: float				# length across the x axis
-		minor: float				# length across the y axis
+		major: float		# length across the x axis
+		minor: float		# length across the y axis (randomly generated when minor = 0.)
 
-	def __init__(self, major: float | None = None, minor: float | None = None, centroid: tuple[float, float] = (0., 0.)) -> None:
+	def __init__(self, major: float = 1., minor: float = 0., centroid: tuple[float, float] = (0., 0.)) -> None:
 
 	@property
 	def area(self) -> float:
@@ -218,7 +212,7 @@ class Ellipse(Shape):
 		constant.
 		'''
 
-	def focal_distance(self) -> float:
+	def focalDistance(self) -> float:
 		'''
 		The distance between a focus and the centroid.
 		'''
@@ -237,12 +231,8 @@ class Polygon(Shape):
 		''' Settings to be used when generating. '''
 		vertices: list[list[float]] | npt.NDArray[np.float64]
 
-	def __init__(self, vertices: list[list[float]] | npt.NDArray[np.float64] | None = None) -> None:
-	
-	'''
-	Getters and setters for area.
-	Setting area _should_ be used to scale the polygon, but is not currently implemented.
-	'''
+	def __init__(self, vertices: list[list[float]] | npt.NDArray[np.float64]) -> None:
+
 	@property
 	def area(self) -> float:
 		''' An implementation of the polygon area algorithm derived using Green's Theorem. '''
@@ -253,14 +243,23 @@ class Polygon(Shape):
 		Getters and setters for centroid. Setting centroid translates the polygon about the plane.
 		'''
 
-	'''
-	Getters and setters for convex and vertices.
-	This setup maintains that convex is a cached variable, that updates whenever the vertices are updated.
-	'''
 	@property
 	def convex(self) -> bool:
+		'''
+		A cached variable representing the convexity of the polygon.
+		'''
+
 	@property
 	def vertices(self) -> npt.NDArray[np.float64]:
+		'''
+		The vertices of the polygon, here exposed as a mutable property.
+		'''
+
+	@property
+	def N(self) -> int:
+		'''
+		A cached variable representing the number of vertices.
+		'''
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
@@ -297,7 +296,6 @@ class Shape(ABC):
 		'''
 		This method should be used to return the metadata about the current shape.
 		'''
-		pass
 
 	@property
 	@abstractmethod
@@ -422,7 +420,7 @@ def equilateralTriangleAmplitudes(u: float, v: float, w: float, N: int, M: int) 
 		M = number of modes per order
 	output:
 		A = {
-			abs(sin(nxπ) sin(nyπ) sin(nzπ))
+			abs(sin(nuπ) sin(nvπ) sin(nwπ))
 			| a ∈ ℝ, 0 < n <= N, 0 < m <= M
 		}
 	'''
@@ -516,7 +514,7 @@ def FDTDWaveform2D(
 
 def raisedCosine(
 	matrix_size: tuple[int, ...],
-	mu: tuple[float, ...],
+	mu: tuple[float] | tuple[float, float],
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
@@ -529,7 +527,7 @@ def raisedCosine(
 
 def raisedTriangle(
 	matrix_size: tuple[int, ...],
-	mu: tuple[float, ...],
+	mu: tuple[float] | tuple[float, float],
 	x_ab: tuple[float, float] | None = None,
 	y_ab: tuple[float, float] | None = None,
 ) -> npt.NDArray[np.float64]:
@@ -591,6 +589,7 @@ class FDTD_2D():
 			u_x+1_y + u_0_x-1_y + u_0_x_y+1 + u_0_x_y-1
 		) + c_1 * u_0_x_y - c_2 * (u_1_x_y)
 	'''
+
 	def __init__(
 		self,
 		u_0: list[list[float]],

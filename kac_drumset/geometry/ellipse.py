@@ -28,14 +28,9 @@ class Ellipse(Shape):
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
 		major: float				# length across the x axis
-		minor: float				# length across the y axis
+		minor: float				# length across the y axis (randomly generated when minor = 0.)
 
-	def __init__(
-		self,
-		major: float = 1.,
-		minor: float | None = None,
-		centroid: tuple[float, float] = (0., 0.),
-	) -> None:
+	def __init__(self, major: float = 1., minor: float = 0., centroid: tuple[float, float] = (0., 0.)) -> None:
 		minor = minor or np.random.uniform(0., 1.)
 		if (major >= minor):
 			self.major = major
@@ -135,9 +130,9 @@ class Circle(Ellipse):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		r: float			# radius
+		r: float			# radius (randomly generated when r = 0)
 
-	def __init__(self, r: float | None = None, centroid: tuple[float, float] = (0., 0.)) -> None:
+	def __init__(self, r: float = 0., centroid: tuple[float, float] = (0., 0.)) -> None:
 		r = r or np.random.uniform(0., 1.)
 		super().__init__(r, r, centroid)
 
