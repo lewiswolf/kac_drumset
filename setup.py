@@ -5,7 +5,7 @@ Custom build script used to import this package's metadata from both the readme 
 # core
 import codecs
 import os
-from setuptools import find_packages
+from setuptools import find_namespace_packages
 from skbuild import setup
 
 
@@ -57,7 +57,7 @@ setup(
 		'Programming Language :: Python :: 3.12',
 		'Typing :: Typed',
 	],
-	cmake_install_dir='kac_drumset/externals',
+	cmake_install_dir=f'{os.path.relpath(os.path.dirname(__file__), os.getcwd())}/kac_drumset/externals',
 	description=short_description,
 	long_description=long_description,
 	include_package_data=True,
@@ -65,7 +65,8 @@ setup(
 	keywords=['kac_drumset'],
 	long_description_content_type='text/markdown',
 	name=name,
-	packages=find_packages(),
+	packages=find_namespace_packages(),
+	package_dir={'kac_drumset': f'{os.path.relpath(os.path.dirname(__file__), os.getcwd())}/kac_drumset'},
 	package_data={'kac_drumset': ['py.typed']},
 	version=version,
 )
