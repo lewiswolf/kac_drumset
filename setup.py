@@ -37,7 +37,7 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 		# append package names with required version / git config
 		if is_pkg:
 			pkg_name, _, *spec = line.split()
-			if spec[0] == '"*"':
+			if spec[0] == '"*"' or spec[0] == '{file' or spec[0] == '{path':
 				packages.append(pkg_name)
 			elif spec[0] == '{git':
 				packages.append(f'{pkg_name} @ git+{spec[2][1:-2]}')
