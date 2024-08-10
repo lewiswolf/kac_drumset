@@ -695,7 +695,7 @@ class PoissonModel(AudioSampler):
 git clone --recursive ...
 pipenv install -d
 ```
-### Build 
+### Build C++ Backend
 
 ```bash
 pipenv run build

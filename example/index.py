@@ -2,6 +2,7 @@
 A series of example scripts demonstrating the functionality of the kac_drumset package.
 '''
 
+
 def DatasetExample() -> None:
 	'''
 	This example demonstrates all of the methods used to generate, load, and modify a dataset.
@@ -28,24 +29,22 @@ def DatasetExample() -> None:
 		loadDataset,
 		transformDataset,
 		# types
-		AudioSampler,
 		RepresentationSettings,
 		TorchDataset,
 	)
 
 	# Default variables for this script.
 	dataset: TorchDataset
-	dataset_dir: str = ''
+	dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/data')
 	representation_settings: RepresentationSettings = {'output_type': 'end2end'}
 
 	# Generate a dataset of 2D physical models of varying geometric design.
 	# Here we use the FDTDModel, parametrised using objects of the class Shape.
 	shapes: list[type[Shape]] = [Circle, Ellipse]
 	for shape in shapes:
-		dataset_dir = os.path.normpath(f'{os.path.dirname(__file__)}/data/{shape.__name__}')
 		dataset = generateDataset(
 			FDTDModel,
-			dataset_dir=dataset_dir,
+			dataset_dir=f'{dataset_dir}/{shape.__name__}',
 			dataset_size=10,
 			representation_settings=representation_settings,
 			sampler_settings=FDTDModel.Settings({
@@ -64,32 +63,57 @@ def DatasetExample() -> None:
 
 	# Genereate a dataset of linear models of simple geometric design.
 	# Here generateDataset() is parametrised using objects of the class AudioSampler.
-	linear_models: list[type[AudioSampler]] = [BesselModel, LaméModel, PoissonModel]
-	for model in linear_models:
-		dataset_dir = os.path.normpath(f'{os.path.dirname(__file__)}/data/{model.__name__}')
-		dataset = generateDataset(
-			model,
-			dataset_dir=dataset_dir,
-			dataset_size=10,
-			representation_settings=representation_settings,
-			sampler_settings={
-				'duration': 1.,
-				'sample_rate': 48000,
-			},
-			# sampler_settings=AudioSampler.Settings({
-			# 	'M': 10,
-			# 	'N': 10,
-			# 	'amplitude': 1.,
-			# 	'decay_time': 2.,
-			# 	'duration': 1.,
-			# 	'material_density': 0.2,
-			# 	'sample_rate': 48000,
-			# 	'tension': 2000.,
-			# }),
-		)
+	generateDataset(
+		BesselModel,
+		dataset_dir=f'{dataset_dir}/{BesselModel.__name__}',
+		dataset_size=10,
+		representation_settings=representation_settings,
+		sampler_settings=BesselModel.Settings({
+			'M': 10,
+			'N': 10,
+			'amplitude': 1.,
+			'decay_time': 2.,
+			'duration': 1.,
+			'material_density': 0.2,
+			'sample_rate': 48000,
+			'tension': 2000.,
+		}),
+	)
+	dataset = generateDataset(
+		LaméModel,
+		dataset_dir=f'{dataset_dir}/{LaméModel.__name__}',
+		dataset_size=10,
+		representation_settings=representation_settings,
+		sampler_settings=LaméModel.Settings({
+			'M': 10,
+			'N': 10,
+			'amplitude': 1.,
+			'decay_time': 2.,
+			'duration': 1.,
+			'material_density': 0.2,
+			'sample_rate': 48000,
+			'tension': 2000.,
+		}),
+	)
+	generateDataset(
+		PoissonModel,
+		dataset_dir=f'{dataset_dir}/{PoissonModel.__name__}',
+		dataset_size=10,
+		representation_settings=representation_settings,
+		sampler_settings=PoissonModel.Settings({
+			'M': 10,
+			'N': 10,
+			'amplitude': 1.,
+			'decay_time': 2.,
+			'duration': 1.,
+			'material_density': 0.2,
+			'sample_rate': 48000,
+			'tension': 2000.,
+		}),
+	)
 
 	# Datasets can be loaded using the method below, which takes only the dataset directory as its argument.
-	dataset = loadDataset(dataset_dir)
+	dataset = loadDataset(f'{dataset_dir}/{Ellipse.__name__}')
 	# To redefine the input representation, the below method is used. This modifies the metadata for the dataset, such
 	# that this method is only executed when the current settings are different from the ones passed to the function.
 	representation_settings = {'output_type': 'fft'}
