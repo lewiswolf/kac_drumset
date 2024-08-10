@@ -87,7 +87,8 @@ class Ellipse(Shape):
 		).astype(np.int8) if self.major == self.minor else cv2.ellipse(
 			np.zeros((grid_size, grid_size), np.int8),
 			(half_grid, half_grid),
-			(half_grid, round(half_grid * self.minor / self.major)),
+			# transposing maintains that mask[x, y] works as intended
+			(round(half_grid * self.minor / self.major), half_grid),
 			0,
 			0,
 			360,
@@ -119,8 +120,10 @@ class Ellipse(Shape):
 		'''
 		Determines if a given point p ∈ P, including boundaries.
 		'''
-		return (((p[0] - self.centroid[0]) ** 2) / (self.major ** 2)) \
-			+ (((p[1] - self.centroid[1]) ** 2) / (self.minor ** 2)) <= 1.
+		major_2 = (self.major ** 2)
+		minor_2 = (self.minor ** 2)
+		return (((p[0] - self.centroid[0]) ** 2) * minor_2) \
+			+ (((p[1] - self.centroid[1]) ** 2) * major_2) <= (major_2 * minor_2)
 
 
 class Circle(Ellipse):

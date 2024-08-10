@@ -124,7 +124,7 @@ class FDTDModel(AudioSampler):
 				self.u_0,
 				np.pad(self.a * raisedCosine(
 					(self.H, self.H),
-					(self.strike[0] * (self.H - 1), self.strike[1] * (self.H - 1)),
+					(((self.strike[0] + 1) / 2) * (self.H - 1), ((self.strike[1] + 1) / 2) * (self.H - 1)),
 					sigma=self.sigma,
 				) / self.sigma_2, 1, mode='constant'),
 				self.B,
@@ -132,7 +132,7 @@ class FDTDModel(AudioSampler):
 				self.c_1,
 				self.c_2,
 				self.length,
-				self.w,
+				(((self.w[0] + 1) / 2), ((self.w[1] + 1) / 2)),
 			)
 
 	def getLabels(self) -> dict[str, list[float | int]]:
@@ -154,7 +154,7 @@ class FDTDModel(AudioSampler):
 		# lambda for maintaining that points are within the shape.
 		def pointInsideLambda(p: tuple[float, float]) -> tuple[float, float]:
 			while not self.shape.isPointInside(p):
-				p = (np.random.uniform(0., 1.), np.random.uniform(0., 1.))
+				p = (np.random.uniform(-1., 1.), np.random.uniform(-1., 1.))
 			return p
 
 		if i is None or i % 5 == 0:
@@ -167,4 +167,4 @@ class FDTDModel(AudioSampler):
 			self.w = pointInsideLambda(centroid)
 		else:
 			# update the strike location to be a random location.
-			self.strike = pointInsideLambda((np.random.uniform(0., 1.), np.random.uniform(0., 1.)))
+			self.strike = pointInsideLambda((np.random.uniform(-1., 1.), np.random.uniform(-1., 1.)))
