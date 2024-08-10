@@ -1,3 +1,7 @@
+'''
+A series of example scripts demonstrating the functionality of the kac_drumset package.
+'''
+
 def DatasetExample() -> None:
 	'''
 	This example demonstrates all of the methods used to generate, load, and modify a dataset.
@@ -7,45 +11,87 @@ def DatasetExample() -> None:
 	import os
 
 	# src
-	from kac_drumset.geometry import ConvexPolygon
-	from kac_drumset.samplers import FDTDModel
+	from kac_drumset.geometry import (
+		Circle,
+		Ellipse,
+		Shape,
+	)
+	from kac_drumset.samplers import (
+		BesselModel,
+		FDTDModel,
+		LaméModel,
+		PoissonModel,
+	)
 	from kac_prediction.dataset import (
 		# methods
 		generateDataset,
 		loadDataset,
 		transformDataset,
 		# types
+		AudioSampler,
 		RepresentationSettings,
 		TorchDataset,
 	)
 
-	# Generating a dataset takes as its first argument an AudioSampler, each of which has its own customised settings
-	# constructor. To configure the representation settings, a dict of type RepresentationSettings is passed to the
-	# function. This function also takes an absolute path as an argument to store the dataset.
-	dataset_dir: str = os.path.normpath(f'{os.path.dirname(__file__)}/data')
+	# Default variables for this script.
+	dataset: TorchDataset
+	dataset_dir: str = ''
 	representation_settings: RepresentationSettings = {'output_type': 'end2end'}
-	dataset: TorchDataset = generateDataset(
-		FDTDModel,
-		dataset_dir=dataset_dir,
-		dataset_size=10,
-		representation_settings=representation_settings,
-		sampler_settings=FDTDModel.Settings({
-			'amplitude': 1.,
-			'arbitrary_shape': ConvexPolygon,
-			'decay_time': 2.,
-			'drum_size': 0.3,
-			'duration': 1.,
-			'material_density': 0.2,
-			'sample_rate': 48000,
-			'shape_settings': ConvexPolygon.Settings({'max_vertices': 10}),
-			'strike_width': 0.01,
-			'tension': 2000.,
-		}),
-	)
+
+	# Generate a dataset of 2D physical models of varying geometric design.
+	# Here we use the FDTDModel, parametrised using objects of the class Shape.
+	shapes: list[type[Shape]] = [Circle, Ellipse]
+	for shape in shapes:
+		dataset_dir = os.path.normpath(f'{os.path.dirname(__file__)}/data/{shape.__name__}')
+		dataset = generateDataset(
+			FDTDModel,
+			dataset_dir=dataset_dir,
+			dataset_size=10,
+			representation_settings=representation_settings,
+			sampler_settings=FDTDModel.Settings({
+				'amplitude': 1.,
+				'arbitrary_shape': shape,
+				'decay_time': 2.,
+				'drum_size': 0.3,
+				'duration': 1.,
+				'material_density': 0.2,
+				'sample_rate': 48000,
+				'shape_settings': Shape.Settings(),
+				'strike_width': 0.01,
+				'tension': 2000.,
+			}),
+		)
+
+	# Genereate a dataset of linear models of simple geometric design.
+	# Here generateDataset() is parametrised using objects of the class AudioSampler.
+	linear_models: list[type[AudioSampler]] = [BesselModel, LaméModel, PoissonModel]
+	for model in linear_models:
+		dataset_dir = os.path.normpath(f'{os.path.dirname(__file__)}/data/{model.__name__}')
+		dataset = generateDataset(
+			model,
+			dataset_dir=dataset_dir,
+			dataset_size=10,
+			representation_settings=representation_settings,
+			sampler_settings={
+				'duration': 1.,
+				'sample_rate': 48000,
+			},
+			# sampler_settings=AudioSampler.Settings({
+			# 	'M': 10,
+			# 	'N': 10,
+			# 	'amplitude': 1.,
+			# 	'decay_time': 2.,
+			# 	'duration': 1.,
+			# 	'material_density': 0.2,
+			# 	'sample_rate': 48000,
+			# 	'tension': 2000.,
+			# }),
+		)
+
 	# Datasets can be loaded using the method below, which takes only the dataset directory as its argument.
 	dataset = loadDataset(dataset_dir)
-	# To redefine the input representation, the below method is used. This modifies the metadata for the dataset, such that
-	# this method is only executed when the current settings are different from the ones passed to the function.
+	# To redefine the input representation, the below method is used. This modifies the metadata for the dataset, such
+	# that this method is only executed when the current settings are different from the ones passed to the function.
 	representation_settings = {'output_type': 'fft'}
 	dataset = transformDataset(dataset, representation_settings)
 

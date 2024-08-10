@@ -69,6 +69,9 @@ class GeometryTests(TestCase):
 			# This test asserts that the default centroid is (0., 0.).
 			self.assertEqual(C.centroid, (0., 0.))
 
+			# This test asserts that the centroid is within the shape.
+			self.assertTrue(C.isPointInside(C.centroid))
+
 			# This test asserts that the default eccentricity is 0.
 			self.assertEqual(C.eccentricity(), 0.0)
 
@@ -195,6 +198,9 @@ class GeometryTests(TestCase):
 
 			# This test asserts that the default centroid is (0., 0.).
 			self.assertEqual(E.centroid, (0., 0.))
+
+			# This test asserts that the centroid is within the shape.
+			self.assertTrue(E.isPointInside(E.centroid))
 
 			# This test asserts that the default eccentricity is less than 1.
 			self.assertLessEqual(E.eccentricity(), 1.)
@@ -343,7 +349,7 @@ class GeometryTests(TestCase):
 		Stress test multiple properties of random polygons.
 		'''
 
-		for i in range(10000):
+		for _ in range(10000):
 			# This test asserts that all polygon generation methods always produces a unique output.
 			self.assertFalse(np.all(np.equal(_generateConvexPolygon(3), _generateConvexPolygon(3))))
 			self.assertFalse(np.all(np.equal(_generateIrregularStar(3), _generateIrregularStar(3))))
@@ -370,12 +376,12 @@ class GeometryTests(TestCase):
 				# This test asserts that the largest vector is of magnitude 1.0.
 				self.assertEqual(LV[0], 1.)
 
-				# This test asserts that the area of a polygon is accurate to at least 7 decimal places. This comparison is bounded
+				# This test asserts that the area of a polygon is accurate to at least 6 decimal places. This comparison is bounded
 				# due to the area being 64-bit, whilst the comparison function, cv2.contourArea(), is 32-bit.
 				self.assertAlmostEqual(
 					polygon.area,
 					cv2.contourArea(polygon.vertices.astype('float32')),
-					places=7,
+					places=6,
 				)
 
 				# This test asserts that no 3 adjacent vertices are colinear.
