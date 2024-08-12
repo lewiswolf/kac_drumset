@@ -33,12 +33,6 @@
 	)
 	```
 
--   **isPointInsidePolygon**
-
-	```python
-	assert isConvex(P), 'isPointInsidePolygon() does not currently support concave shapes.'
-	```
-
 -   **UnitTriangle**
 
 ## Physics
