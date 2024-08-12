@@ -60,6 +60,8 @@ jobs:
 
             - name: Install python dependencies
               run: pipenv install -d --python ${{ matrix.python }}
+              if: ${{ matrix.os == 'windows-latest' }}
+              run: pipenv run pip install soundfile
 
             - name: Build CPP
               run: pipenv run build
