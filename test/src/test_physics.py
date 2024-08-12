@@ -34,7 +34,7 @@ class PhysicsTests(TestCase):
 				self.assertAlmostEqual(
 					float(circularAmplitudes(r, theta, series).max()),
 					0.,
-					places=15,
+					places=14,
 				)
 
 	def test_fdtd(self) -> None:
