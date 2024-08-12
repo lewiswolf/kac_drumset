@@ -60,6 +60,8 @@ jobs:
 
             - name: Install python dependencies
               run: pipenv install -d --python ${{ matrix.python }}
+            
+            - name: Install OS specific python dependencies
               if: ${{ matrix.os == 'windows-latest' }}
               run: pipenv run pip install soundfile
 
