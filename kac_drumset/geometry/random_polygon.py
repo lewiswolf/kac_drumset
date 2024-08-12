@@ -41,7 +41,9 @@ class ConvexPolygon(Polygon):
 		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
-		super().__init__(_normaliseConvexPolygon(_generateConvexPolygon(N if N > 2 else random.randint(3, max_vertices))))
+		super().__init__(
+			_normaliseConvexPolygon(_generateConvexPolygon(N if N > 2 else random.randint(3, max_vertices)), True),
+		)
 
 
 class IrregularStar(Polygon):
@@ -59,7 +61,7 @@ class IrregularStar(Polygon):
 	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
 		super().__init__(_generateIrregularStar(N if N > 2 else random.randint(3, max_vertices)))
 		self.vertices = np.array(
-			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
+			_normaliseConvexPolygon(self.vertices, True) if self.convex else _normaliseSimplePolygon(self.vertices, True),
 		)
 
 
@@ -80,7 +82,7 @@ class TravellingSalesmanPolygon(Polygon):
 	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
 		super().__init__(_generatePolygon(N if N > 2 else random.randint(3, max_vertices)))
 		self.vertices = np.array(
-			_normaliseConvexPolygon(self.vertices) if self.convex else _normaliseSimplePolygon(self.vertices),
+			_normaliseConvexPolygon(self.vertices, True) if self.convex else _normaliseSimplePolygon(self.vertices, True),
 		)
 
 

@@ -95,6 +95,14 @@ class GeometryTests(TestCase):
 			self.assertEqual(M[100, 0], 0)
 			self.assertEqual(M[100, 100], 0)
 
+			# This test asserts that circle translation works as expected.
+			C.centroid = (10., 10.)
+			self.assertEqual(C.centroid[0], 10.)
+			self.assertEqual(C.centroid[1], 10.)
+			C.centroid = (-10., -10.)
+			self.assertEqual(C.centroid[0], -10.)
+			self.assertEqual(C.centroid[1], -10.)
+
 	def test_convex_polygon(self) -> None:
 		'''
 		Test properties of the type Polygon.
@@ -127,6 +135,10 @@ class GeometryTests(TestCase):
 				# self.assertTrue(_isPointInsidePolygon(p, P.vertices))
 
 		for square in squares:
+			# This test asserts that the centroid is properly located at (0.5, 0.5).
+			self.assertEqual(P.centroid[0], 0.5)
+			self.assertEqual(P.centroid[1], 0.5)
+
 			# This test asserts that P.isPointInside correctly identifies points inside each square.
 			# self.assertTrue(_isPointInsidePolygon((0.999, 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.999, 0.5), square.vertices))
@@ -157,8 +169,8 @@ class GeometryTests(TestCase):
 
 			# This test asserts that _normaliseConvexPolygon produces the correct output.
 			self.assertFalse(False in np.equal(
-				np.array(_normaliseConvexPolygon(square.vertices)),
-				np.array([[0., 0.5], [0.5, 1.], [1., 0.5], [0.5, 0.]]),
+				np.array(_normaliseConvexPolygon(square.vertices, True)),
+				np.array([[-1., 0.], [0., 1.], [1., 0.], [0., -1.]]),
 			))
 
 		# This test asserts that _isSimple works as expected.
@@ -167,18 +179,49 @@ class GeometryTests(TestCase):
 			self.assertTrue(square.isSimple())
 
 		# This test asserts that after _normaliseConvexPolygon, the two squares produce the same output.
-		self.assertFalse(False in np.equal(
-			_normaliseConvexPolygon(squares[0].vertices),
-			_normaliseConvexPolygon(squares[1].vertices)),
-		)
+		for square in squares:
+			square.vertices = np.array(_normaliseConvexPolygon(square.vertices, True))
+		self.assertFalse(False in np.equal(squares[0].vertices, squares[1].vertices))
+
+		for square in squares:
+			# This test asserts the centroid moves to the correct location after normalisation.
+			self.assertEqual(square.centroid[0], 0.)
+			self.assertEqual(square.centroid[1], 0.)
+
+			# This test asserts that square translation works as expected.
+			square.centroid = (10., 10.)
+			self.assertAlmostEqual(square.centroid[0], 10.)
+			self.assertAlmostEqual(square.centroid[1], 10.)
+			square.centroid = (-10., -10.)
+			self.assertAlmostEqual(square.centroid[0], -10.)
+			self.assertAlmostEqual(square.centroid[1], -10.)
 
 		# This test asserts that after _normaliseConvexPolygon, the quads produce the same output.
 		for quad in quads:
-			quad.vertices = np.array(_normaliseConvexPolygon(quad.vertices))
+			quad.vertices = np.array(_normaliseConvexPolygon(quad.vertices, True))
 		self.assertFalse(False in np.equal(quads[0].vertices, quads[1].vertices))
 		# np.allclose is used, as opposed to np.equal, to account for floating point errors.
 		self.assertTrue(np.allclose(quads[0].vertices, quads[2].vertices))
 		self.assertTrue(np.allclose(quads[0].vertices, quads[3].vertices))
+
+		# These tests assert that isPointInside() works for polygons with negative vertices
+		negative_square = Polygon([[-1., -1.], [1., -1.], [1., 1.], [-1., 1.]])
+		# self.assertTrue(_isPointInsidePolygon((0.999, 0.5), negative_square.vertices))
+		self.assertTrue(_isPointInsideConvexPolygon((0.999, 0.5), negative_square.vertices))
+		# self.assertFalse(_isPointInsidePolygon((1.001, 0.5), negative_square.vertices))
+		self.assertFalse(_isPointInsideConvexPolygon((1.001, 0.5), negative_square.vertices))
+		# self.assertTrue(_isPointInsidePolygon((0.5, 0.999), negative_square.vertices))
+		self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.999), negative_square.vertices))
+		# self.assertFalse(_isPointInsidePolygon((0.5, 1.001), negative_square.vertices))
+		self.assertFalse(_isPointInsideConvexPolygon((0.5, 1.001), negative_square.vertices))
+		# self.assertTrue(_isPointInsidePolygon((0.001, 0.5), negative_square.vertices))
+		self.assertTrue(_isPointInsideConvexPolygon((-0.999, 0.5), negative_square.vertices))
+		# self.assertFalse(_isPointInsidePolygon((-0.001, 0.5), negative_square.vertices))
+		self.assertFalse(_isPointInsideConvexPolygon((-1.001, 0.5), negative_square.vertices))
+		# self.assertTrue(_isPointInsidePolygon((0.5, 0.001), negative_square.vertices))
+		self.assertTrue(_isPointInsideConvexPolygon((0.5, -0.999), negative_square.vertices))
+		# self.assertFalse(_isPointInsidePolygon((0.5, -0.001), negative_square.vertices))
+		self.assertFalse(_isPointInsideConvexPolygon((0.5, -1.001), negative_square.vertices))
 
 	def test_ellipse(self) -> None:
 		'''
@@ -225,6 +268,14 @@ class GeometryTests(TestCase):
 			self.assertEqual(M[0, 100], 0)
 			self.assertEqual(M[100, 0], 0)
 			self.assertEqual(M[100, 100], 0)
+
+			# This test asserts that ellipse translation works as expected.
+			E.centroid = (10., 10.)
+			self.assertEqual(E.centroid[0], 10.)
+			self.assertEqual(E.centroid[1], 10.)
+			E.centroid = (-10., -10.)
+			self.assertEqual(E.centroid[0], -10.)
+			self.assertEqual(E.centroid[1], -10.)
 
 	def test_lines(self) -> None:
 		'''
@@ -369,12 +420,12 @@ class GeometryTests(TestCase):
 				# This test asserts that a polygon is simple.
 				self.assertTrue(polygon.isSimple())
 
-				# This test asserts that the vertices are strictly bounded between 0.0 and 1.0.
-				self.assertEqual(polygon.vertices.min(), 0.)
+				# This test asserts that the vertices are strictly bounded between -1.0 and 1.0.
+				self.assertEqual(polygon.vertices.min(), -1.)
 				self.assertEqual(polygon.vertices.max(), 1.)
 
 				# This test asserts that the largest vector is of magnitude 1.0.
-				self.assertEqual(LV[0], 1.)
+				self.assertEqual(LV[0], 2.)
 
 				# This test asserts that the area of a polygon is accurate to at least 6 decimal places. This comparison is bounded
 				# due to the area being 64-bit, whilst the comparison function, cv2.contourArea(), is 32-bit.
@@ -406,12 +457,12 @@ class GeometryTests(TestCase):
 					self.assertTrue(_isConvex(polygon.vertices))
 
 					# This test asserts that the largest vector lies across the x-axis.
-					self.assertTrue(polygon.vertices[LV[1][0]][0] == 0.)
+					self.assertTrue(polygon.vertices[LV[1][0]][0] == -1.)
 					self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
 
 					# This test asserts that isPointInsideConvexPolygon correctly recognises points outside of the polygon.
-					self.assertFalse(_isPointInsideConvexPolygon((-0.01, -0.01), polygon.vertices))
-					self.assertFalse(_isPointInsideConvexPolygon((2., 2.), polygon.vertices))
+					self.assertFalse(_isPointInsideConvexPolygon((-1.01, -1.01), polygon.vertices))
+					self.assertFalse(_isPointInsideConvexPolygon((1.01, 1.01), polygon.vertices))
 
 					# This test asserts that isPointInsideConvexPolygon includes the vertices.
 					for p in polygon.vertices:
@@ -421,19 +472,22 @@ class GeometryTests(TestCase):
 					centroid = polygon.centroid
 					self.assertTrue(_isPointInsideConvexPolygon(centroid, polygon.vertices))
 					# self.assertTrue(_isPointInsidePolygon(centroid, polygon.vertices))
-					self.assertEqual(polygon.draw(100)[
-						round(centroid[0] * 99),
-						round(centroid[1] * 99),
+					self.assertEqual(polygon.draw(101)[
+						round((centroid[0] + 1) * 50),
+						round((centroid[0] + 1) * 50),
 					], 1)
 
 					# This test asserts that _normaliseConvexPolygon does not continuously alter the polygon.
 					# np.allclose is used, as opposed to np.equal, to account for floating point errors.
-					self.assertTrue(np.allclose(polygon.vertices, np.array(_normaliseConvexPolygon(polygon.vertices))))
+					self.assertTrue(np.allclose(polygon.vertices, np.array(_normaliseConvexPolygon(polygon.vertices, True))))
 
 				# This test asserts that polygon translation works as expected.
 				polygon.centroid = (10., 10.)
 				self.assertAlmostEqual(polygon.centroid[0], 10.)
 				self.assertAlmostEqual(polygon.centroid[1], 10.)
+				polygon.centroid = (-10., -10.)
+				self.assertAlmostEqual(polygon.centroid[0], -10.)
+				self.assertAlmostEqual(polygon.centroid[1], -10.)
 
 	def test_unit_polygon(self) -> None:
 		'''

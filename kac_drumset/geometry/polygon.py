@@ -63,7 +63,7 @@ class Polygon(Shape):
 	@property
 	def centroid(self) -> tuple[float, float]:
 		''' This algorithm is used to calculate the geometric centroid of a 2D polygon. '''
-		return cast(tuple[float, float], tuple(_polygonCentroid(self.vertices, self.area)))
+		return cast(tuple[float, float], tuple(_polygonCentroid(self.vertices)))
 
 	@centroid.setter
 	def centroid(self, c: tuple[float, float]) -> None:
@@ -125,7 +125,10 @@ class Polygon(Shape):
 				[
 					[round(y * (grid_size - 1)), round(x * (grid_size - 1))]
 					for [x, y] in (
-						self.vertices if self.vertices.min() == 0. and self.vertices.max() == 1. else _normalisePolygon(self.vertices)
+						self.vertices if self.vertices.min() == 0. and self.vertices.max() == 1. else _normalisePolygon(
+							self.vertices,
+							False,
+						)
 					)
 				],
 				'int32',
@@ -136,7 +139,10 @@ class Polygon(Shape):
 			[np.array([
 				[round(y * (grid_size - 1)), round(x * (grid_size - 1))]
 				for [x, y] in (
-					self.vertices if self.vertices.min() == 0. and self.vertices.max() == 1. else _normalisePolygon(self.vertices)
+					self.vertices if self.vertices.min() == 0. and self.vertices.max() == 1. else _normalisePolygon(
+						self.vertices,
+						False,
+					)
 				)
 			])],
 			(1, 0, 0),

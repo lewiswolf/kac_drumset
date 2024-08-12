@@ -95,22 +95,22 @@ std::pair<std::string, _Point> _lineIntersection(_Line& A, _Line& B) {
 	return std::make_pair(out.first, _Point({out.second.x, out.second.y}));
 }
 
-_Vertices _normaliseConvexPolygon(const _Vertices& V) {
-	return convertPolygonToVector(g::normaliseConvexPolygon(convertVectorToPolygon(V)));
+_Vertices _normaliseConvexPolygon(const _Vertices& V, const bool& signed_norm) {
+	return convertPolygonToVector(g::normaliseConvexPolygon(convertVectorToPolygon(V), signed_norm));
 }
 
-_Vertices _normalisePolygon(const _Vertices& V) {
-	return convertPolygonToVector(g::normalisePolygon(convertVectorToPolygon(V)));
+_Vertices _normalisePolygon(const _Vertices& V, const bool& signed_norm) {
+	return convertPolygonToVector(g::normalisePolygon(convertVectorToPolygon(V), signed_norm));
 }
 
-_Vertices _normaliseSimplePolygon(const _Vertices& V) {
-	return convertPolygonToVector(g::normaliseSimplePolygon(convertVectorToPolygon(V)));
+_Vertices _normaliseSimplePolygon(const _Vertices& V, const bool& signed_norm) {
+	return convertPolygonToVector(g::normaliseSimplePolygon(convertVectorToPolygon(V), signed_norm));
 }
 
 double _polygonArea(const _Vertices& V) { return g::polygonArea(convertVectorToPolygon(V)); }
 
-_Point _polygonCentroid(const _Vertices& V, double area) {
-	T::Point p = g::polygonCentroid(convertVectorToPolygon(V), area);
+_Point _polygonCentroid(const _Vertices& V) {
+	T::Point p = g::polygonCentroid(convertVectorToPolygon(V));
 	return {p.x, p.y};
 }
 
