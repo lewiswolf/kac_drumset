@@ -14,7 +14,7 @@ from kac_drumset.externals._geometry import (
 	_generatePolygon,
 	_isConvex,
 	_isPointInsideConvexPolygon,
-	# _isPointInsidePolygon,
+	_isPointInsidePolygon,
 	_normaliseConvexPolygon,
 )
 from kac_drumset.geometry import (
@@ -140,7 +140,7 @@ class GeometryTests(TestCase):
 			# This test asserts that P.isPointInside is True for all vertices.
 			for p in P.vertices:
 				self.assertTrue(_isPointInsideConvexPolygon(p, P.vertices))
-				# self.assertTrue(_isPointInsidePolygon(p, P.vertices))
+				self.assertTrue(_isPointInsidePolygon(p, P.vertices))
 
 		for square in squares:
 			# This test asserts that the centroid is properly located at (0.5, 0.5).
@@ -148,32 +148,32 @@ class GeometryTests(TestCase):
 			self.assertEqual(P.centroid[1], 0.5)
 
 			# This test asserts that P.isPointInside correctly identifies points inside each square.
-			# self.assertTrue(_isPointInsidePolygon((0.999, 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.999, 0.5), square.vertices))
-			# self.assertFalse(_isPointInsidePolygon((1.001, 0.5), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.999, 0.5), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((1.001, 0.5), square.vertices))
-			# self.assertTrue(_isPointInsidePolygon((0.5, 0.999), square.vertices))
+			self.assertFalse(_isPointInsidePolygon((1.001, 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.999), square.vertices))
-			# self.assertFalse(_isPointInsidePolygon((0.5, 1.001), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.5, 0.999), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((0.5, 1.001), square.vertices))
-			# self.assertTrue(_isPointInsidePolygon((0.001, 0.5), square.vertices))
+			self.assertFalse(_isPointInsidePolygon((0.5, 1.001), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.001, 0.5), square.vertices))
-			# self.assertFalse(_isPointInsidePolygon((-0.001, 0.5), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.001, 0.5), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((-0.001, 0.5), square.vertices))
-			# self.assertTrue(_isPointInsidePolygon((0.5, 0.001), square.vertices))
+			self.assertFalse(_isPointInsidePolygon((-0.001, 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.001), square.vertices))
-			# self.assertFalse(_isPointInsidePolygon((0.5, -0.001), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.5, 0.001), square.vertices))
 			self.assertFalse(_isPointInsideConvexPolygon((0.5, -0.001), square.vertices))
+			self.assertFalse(_isPointInsidePolygon((0.5, -0.001), square.vertices))
 
 			# These test asserts that the midpoint of each sides are inside the polygon.
-			# self.assertTrue(_isPointInsidePolygon((0., 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0., 0.5), square.vertices))
-			# self.assertTrue(_isPointInsidePolygon((1., 0.5), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0., 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((1., 0.5), square.vertices))
-			# self.assertTrue(_isPointInsidePolygon((0.5, 0.), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((1., 0.5), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.), square.vertices))
-			# self.assertTrue(_isPointInsidePolygon((0.5, 1.), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.5, 0.), square.vertices))
 			self.assertTrue(_isPointInsideConvexPolygon((0.5, 1.), square.vertices))
+			self.assertTrue(_isPointInsidePolygon((0.5, 1.), square.vertices))
 
 			# This test asserts that _normaliseConvexPolygon produces the correct output.
 			self.assertFalse(False in np.equal(
@@ -214,22 +214,22 @@ class GeometryTests(TestCase):
 
 		# These tests assert that isPointInside() works for polygons with negative vertices
 		negative_square = Polygon([[-1., -1.], [1., -1.], [1., 1.], [-1., 1.]])
-		# self.assertTrue(_isPointInsidePolygon((0.999, 0.5), negative_square.vertices))
 		self.assertTrue(_isPointInsideConvexPolygon((0.999, 0.5), negative_square.vertices))
-		# self.assertFalse(_isPointInsidePolygon((1.001, 0.5), negative_square.vertices))
+		self.assertTrue(_isPointInsidePolygon((0.999, 0.5), negative_square.vertices))
 		self.assertFalse(_isPointInsideConvexPolygon((1.001, 0.5), negative_square.vertices))
-		# self.assertTrue(_isPointInsidePolygon((0.5, 0.999), negative_square.vertices))
+		self.assertFalse(_isPointInsidePolygon((1.001, 0.5), negative_square.vertices))
 		self.assertTrue(_isPointInsideConvexPolygon((0.5, 0.999), negative_square.vertices))
-		# self.assertFalse(_isPointInsidePolygon((0.5, 1.001), negative_square.vertices))
+		self.assertTrue(_isPointInsidePolygon((0.5, 0.999), negative_square.vertices))
 		self.assertFalse(_isPointInsideConvexPolygon((0.5, 1.001), negative_square.vertices))
-		# self.assertTrue(_isPointInsidePolygon((0.001, 0.5), negative_square.vertices))
+		self.assertFalse(_isPointInsidePolygon((0.5, 1.001), negative_square.vertices))
 		self.assertTrue(_isPointInsideConvexPolygon((-0.999, 0.5), negative_square.vertices))
-		# self.assertFalse(_isPointInsidePolygon((-0.001, 0.5), negative_square.vertices))
+		self.assertTrue(_isPointInsidePolygon((-0.999, 0.5), negative_square.vertices))
 		self.assertFalse(_isPointInsideConvexPolygon((-1.001, 0.5), negative_square.vertices))
-		# self.assertTrue(_isPointInsidePolygon((0.5, 0.001), negative_square.vertices))
+		self.assertFalse(_isPointInsidePolygon((-1.001, 0.5), negative_square.vertices))
 		self.assertTrue(_isPointInsideConvexPolygon((0.5, -0.999), negative_square.vertices))
-		# self.assertFalse(_isPointInsidePolygon((0.5, -0.001), negative_square.vertices))
+		self.assertTrue(_isPointInsidePolygon((0.5, -0.999), negative_square.vertices))
 		self.assertFalse(_isPointInsideConvexPolygon((0.5, -1.001), negative_square.vertices))
+		self.assertFalse(_isPointInsidePolygon((0.5, -1.001), negative_square.vertices))
 
 	def test_ellipse(self) -> None:
 		'''
@@ -460,12 +460,12 @@ class GeometryTests(TestCase):
 					])))
 
 				# This test asserts that isPointInsidePolygon correctly recognises points outside of the polygon.
-				# self.assertFalse(_isPointInsidePolygon((-0.01, -0.01), polygon.vertices))
-				# self.assertFalse(_isPointInsidePolygon((2., 2.), polygon.vertices))
+				self.assertFalse(_isPointInsidePolygon((-1.01, -1.01), polygon.vertices))
+				self.assertFalse(_isPointInsidePolygon((1.01, 1.01), polygon.vertices))
 
 				# This test asserts that isPointInsidePolygon includes the vertices.
-				# for p in polygon.vertices:
-				# 	self.assertTrue(_isPointInsidePolygon(p, polygon.vertices))
+				for p in polygon.vertices:
+					self.assertTrue(_isPointInsidePolygon(p, polygon.vertices))
 
 				if polygon.convex:
 					# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
@@ -487,7 +487,7 @@ class GeometryTests(TestCase):
 					# This test asserts that the calculated centroid lies within the polygon. For concave shapes, this test may fail.
 					centroid = polygon.centroid
 					self.assertTrue(_isPointInsideConvexPolygon(centroid, polygon.vertices))
-					# self.assertTrue(_isPointInsidePolygon(centroid, polygon.vertices))
+					self.assertTrue(_isPointInsidePolygon(centroid, polygon.vertices))
 					self.assertEqual(polygon.draw(101)[
 						round((centroid[0] + 1) * 50),
 						round((centroid[1] + 1) * 50),

@@ -152,13 +152,7 @@ class Polygon(Shape):
 		'''
 		Determines if a given point p ∈ P, including boundaries.
 		'''
-		return _isPointInsideConvexPolygon(
-			list(p),
-			self.vertices,
-		) if self.convex else _isPointInsidePolygon(
-			list(p),
-			self.vertices,
-		)
+		return _isPointInsideConvexPolygon(p, self.vertices) if self.convex else _isPointInsidePolygon(p, self.vertices)
 
 	def isSimple(self) -> bool:
 		'''

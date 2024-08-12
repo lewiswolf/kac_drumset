@@ -10,9 +10,9 @@ from kac_drumset.geometry import (
 	Circle,
 	ConvexPolygon,
 	Ellipse,
-	# IrregularStar,
+	IrregularStar,
 	Shape,
-	# TravellingSalesmanPolygon,
+	TravellingSalesmanPolygon,
 )
 from kac_drumset.samplers import (
 	BesselModel,
@@ -87,6 +87,8 @@ class SamplerTests(TestCase):
 			Circle,
 			ConvexPolygon,
 			Ellipse,
+			IrregularStar,
+			TravellingSalesmanPolygon,
 		]
 		for shape in shapes:
 

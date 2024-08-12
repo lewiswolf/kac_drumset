@@ -13,9 +13,11 @@ def DatasetExample() -> None:
 
 	# src
 	from kac_drumset.geometry import (
-		ConvexPolygon
+		ConvexPolygon,
 		Ellipse,
+		IrregularStar,
 		Shape,
+		TravellingSalesmanPolygon,
 	)
 	from kac_drumset.samplers import (
 		BesselModel,
@@ -40,7 +42,7 @@ def DatasetExample() -> None:
 
 	# Generate a dataset of 2D physical models of varying geometric design.
 	# Here we use the FDTDModel, parametrised using objects of the class Shape.
-	shapes: list[type[Shape]] = [ConvexPolygon, Ellipse]
+	shapes: list[type[Shape]] = [ConvexPolygon, Ellipse, IrregularStar, TravellingSalesmanPolygon]
 	for shape in shapes:
 		dataset = generateDataset(
 			FDTDModel,
