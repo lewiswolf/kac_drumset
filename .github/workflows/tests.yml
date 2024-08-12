@@ -34,8 +34,8 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                # os: [macos-latest, ubuntu-latest, windows-latest]
-                os: [macos-latest, ubuntu-latest]
+                os: [macos-latest, ubuntu-latest, windows-latest]
+                # os: [macos-latest, ubuntu-latest]
                 python: ["3.11", "3.12"]
 
         steps:
@@ -43,7 +43,7 @@ jobs:
               with:
                   submodules: recursive
             - uses: lukka/get-cmake@latest
-            - uses: actions/setup-python@main
+            - uses: actions/setup-python@v5
               with:
                   python-version: ${{ matrix.python }}
             - uses: actions/cache@v4
