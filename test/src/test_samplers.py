@@ -8,7 +8,7 @@ import numpy as np 			# maths
 # src
 from kac_drumset.geometry import (
 	Circle,
-	# ConvexPolygon,
+	ConvexPolygon,
 	Ellipse,
 	# IrregularStar,
 	Shape,
@@ -83,7 +83,11 @@ class SamplerTests(TestCase):
 		'''
 
 		# test using all shapes
-		shapes: list[type[Shape]] = [Circle, Ellipse]
+		shapes: list[type[Shape]] = [
+			Circle,
+			ConvexPolygon,
+			Ellipse,
+		]
 		for shape in shapes:
 
 			# This test asserts that model correctly mounts with both its minimum requirements and type safety.

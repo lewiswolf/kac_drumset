@@ -124,7 +124,7 @@ class FDTDModel(AudioSampler):
 				self.u_0,
 				np.pad(self.a * raisedCosine(
 					(self.H, self.H),
-					(((self.strike[0] + 1) / 2) * (self.H - 1), ((self.strike[1] + 1) / 2) * (self.H - 1)),
+					((self.strike[0] + 1) * 0.5 * self.H, (self.strike[1] + 1) * 0.5 * self.H),
 					sigma=self.sigma,
 				) / self.sigma_2, 1, mode='constant'),
 				self.B,
@@ -132,7 +132,7 @@ class FDTDModel(AudioSampler):
 				self.c_1,
 				self.c_2,
 				self.length,
-				(((self.w[0] + 1) / 2), ((self.w[1] + 1) / 2)),
+				((self.w[0] + 1) * 0.5, (self.w[1] + 1) * 0.5),
 			)
 
 	def getLabels(self) -> dict[str, list[float | int]]:
