@@ -69,8 +69,16 @@ class GeometryTests(TestCase):
 			# This test asserts that the default centroid is (0., 0.).
 			self.assertEqual(C.centroid, (0., 0.))
 
+			# This test asserts that the default centroid is (0., 0.).
+			centroid = C.centroid
+			self.assertEqual(centroid, (0., 0.))
+
 			# This test asserts that the centroid is within the shape.
-			self.assertTrue(C.isPointInside(C.centroid))
+			self.assertTrue(C.isPointInside(centroid))
+			self.assertEqual(C.draw(101)[
+				round((centroid[0] + 1) * 50),
+				round((centroid[0] + 1) * 50),
+			], 1)
 
 			# This test asserts that the default eccentricity is 0.
 			self.assertEqual(C.eccentricity(), 0.0)
@@ -240,7 +248,15 @@ class GeometryTests(TestCase):
 			self.assertLessEqual(E.minor, 1.)
 
 			# This test asserts that the default centroid is (0., 0.).
-			self.assertEqual(E.centroid, (0., 0.))
+			centroid = E.centroid
+			self.assertEqual(centroid, (0., 0.))
+
+			# This test asserts that the centroid is within the shape.
+			self.assertTrue(E.isPointInside(centroid))
+			self.assertEqual(E.draw(101)[
+				round((centroid[0] + 1) * 50),
+				round((centroid[0] + 1) * 50),
+			], 1)
 
 			# This test asserts that the centroid is within the shape.
 			self.assertTrue(E.isPointInside(E.centroid))
@@ -474,7 +490,7 @@ class GeometryTests(TestCase):
 					# self.assertTrue(_isPointInsidePolygon(centroid, polygon.vertices))
 					self.assertEqual(polygon.draw(101)[
 						round((centroid[0] + 1) * 50),
-						round((centroid[0] + 1) * 50),
+						round((centroid[1] + 1) * 50),
 					], 1)
 
 					# This test asserts that _normaliseConvexPolygon does not continuously alter the polygon.
