@@ -16,7 +16,7 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
-            - uses: actions/setup-python@v5
+            - uses: actions/setup-python@main
               with:
                   python-version: ${{ matrix.python }}
 
@@ -42,7 +42,7 @@ jobs:
               with:
                   submodules: recursive
             - uses: lukka/get-cmake@latest
-            - uses: actions/setup-python@v4
+            - uses: actions/setup-python@main
               with:
                   python-version: ${{ matrix.python }}
             - uses: actions/cache@v4
