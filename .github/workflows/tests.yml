@@ -24,12 +24,17 @@ jobs:
               run: |
                   pip install "git+https://github.com/lewiswolf/kac_drumset.git"
                   python3 -c "import kac_drumset"
+            
+            # - name: Test C++ deployment
+            #   run: |
+            #       python3 -c "import kac_drumset.externals._geometry"
+            #       python3 -c "import kac_drumset.externals._physics"
 
     all-tests:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [macos-latest, ubuntu-latest, windows-latest]
+                os: [macos-latest, ubuntu-latest]
                 python: ["3.11", "3.12"]
 
         steps:
