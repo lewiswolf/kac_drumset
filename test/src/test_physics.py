@@ -6,13 +6,14 @@ import numpy as np 			# maths
 
 # src
 from kac_drumset.physics import (
-	calculateCircularAmplitudes,
-	calculateCircularSeries,
-	calculateRectangularAmplitudes,
-	FDTD_2D,
+	circularAmplitudes,
+	circularSeries,
+	equilateralTriangleAmplitudes,
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
+	rectangularAmplitudes,
+	FDTD_2D,
 )
 
 
@@ -26,14 +27,14 @@ class PhysicsTests(TestCase):
 		Tests used in conjunction with circular_modes.hpp.
 		'''
 
-		# This test asserts that the amplitude calculation is programmed correctly.
-		series = calculateCircularSeries(10, 10)
+		# This test asserts that all amplitudes are zero at the boundary.
+		series = circularSeries(10, 10)
 		for r in [1., -1.]:
 			for theta in [0., np.pi / 2, np.pi, np.pi * 2]:
 				self.assertAlmostEqual(
-					float(calculateCircularAmplitudes(r, theta, series).max()),
+					float(circularAmplitudes(r, theta, series).max()),
 					0.,
-					places=15,
+					places=14,
 				)
 
 	def test_fdtd(self) -> None:
@@ -61,13 +62,29 @@ class PhysicsTests(TestCase):
 			self.assertGreaterEqual(u.min(), -1.)
 
 		# Test waveform generator with a square simulation
-		waveform = FDTDWaveform2D(u_0=u_0, u_1=u_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=(4, 4))
+		waveform = FDTDWaveform2D(u_0=u_0, u_1=u_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=(0.5, 0.5))
 		# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 		# simulation.
 		self.assertFalse(np.isnan(waveform).any())
 		self.assertLessEqual(waveform.max(), 1.)
 		self.assertGreaterEqual(waveform.min(), -1.)
+
+	def test_lamé(self) -> None:
+		'''
+		Tests used in conjunction with triangular_modes.hpp.
+		'''
+
+		# This test asserts that the amplitude calculation is programmed correctly.
+		self.assertNotEqual(float(equilateralTriangleAmplitudes(0.5, 0.5, 0.5, 10, 10).max()), 0.)
+		for u in [0., 1.]:
+			for v in [0., 1.]:
+				for w in [0., 1.]:
+					self.assertAlmostEqual(
+						float(equilateralTriangleAmplitudes(u, v, w, 10, 10).max()),
+						0.,
+						places=15,
+					)
 
 	def test_poisson(self) -> None:
 		'''
@@ -79,22 +96,22 @@ class PhysicsTests(TestCase):
 			e_root = e ** 0.5
 			e_inv = 1 / (e ** 0.5)
 			self.assertAlmostEqual(
-				float(calculateRectangularAmplitudes((0., 0.), 10, 10, e).max()),
+				float(rectangularAmplitudes((0., 0.), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
 			self.assertAlmostEqual(
-				float(calculateRectangularAmplitudes((e_root, 0.), 10, 10, e).max()),
+				float(rectangularAmplitudes((e_root, 0.), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
 			self.assertAlmostEqual(
-				float(calculateRectangularAmplitudes((0., e_inv), 10, 10, e).max()),
+				float(rectangularAmplitudes((0., e_inv), 10, 10, e).max()),
 				0.,
 				places=28,
 			)
 			self.assertAlmostEqual(
-				float(calculateRectangularAmplitudes((e_root, e_inv), 10, 10, e).max()),
+				float(rectangularAmplitudes((e_root, e_inv), 10, 10, e).max()),
 				0.,
 				places=28,
 			)

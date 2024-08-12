@@ -4,25 +4,24 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy = ">=1.23"
-opencv-python = ">=4.6"
-soundfile = "*"
-torch = ">=1.12"
-torchaudio = ">=0.12"
-tqdm = ">=4.64"
+kac_prediction = {git = "https://github.com/lewiswolf/kac_prediction.git"}
+numpy = ">=2.0"
+opencv-python = ">=4.10"
 
 [dev-packages]
 flake8 = "*"
 flake8-commas = "*"
 flake8-pyi = "*"
+flake8-quotes = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
-kac_drumset = {editable = true, path = "."}
+kac-drumset = {file = ".", editable = true}
 mypy = "*"
 scikit-build = "*"
+types-setuptools = "*"
 types-tqdm = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.11"
 
 [scripts]
 build = "python setup.py develop"

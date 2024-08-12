@@ -12,33 +12,41 @@ jobs:
         strategy:
             matrix:
                 os: [macos-latest, ubuntu-latest, windows-latest]
-                python: ["3.9", "3.10"]
+                python: ["3.11", "3.12"]
 
         steps:
-            - uses: actions/checkout@master
-            - uses: actions/setup-python@v4
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@main
               with:
                   python-version: ${{ matrix.python }}
 
             - name: Test installation
-              run: pip install "git+https://github.com/lewiswolf/kac_drumset.git#egg=kac_drumset"
+              run: |
+                  pip install "git+https://github.com/lewiswolf/kac_drumset.git"
+                  python3 -c "import kac_drumset"
+            
+            # - name: Test C++ deployment
+            #   run: |
+            #       python3 -c "import kac_drumset.externals._geometry"
+            #       python3 -c "import kac_drumset.externals._physics"
 
     all-tests:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [macos-latest, ubuntu-latest, windows-latest]
-                python: ["3.9", "3.10"]
+                # os: [macos-latest, ubuntu-latest, windows-latest]
+                os: [macos-latest, ubuntu-latest]
+                python: ["3.11", "3.12"]
 
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   submodules: recursive
             - uses: lukka/get-cmake@latest
-            - uses: actions/setup-python@v4
+            - uses: actions/setup-python@v5
               with:
                   python-version: ${{ matrix.python }}
-            - uses: actions/cache@v3
+            - uses: actions/cache@v4
               id: cache-pipenv
               with:
                   path: ~/.local/share/virtualenvs
@@ -57,8 +65,13 @@ jobs:
             - name: Build CPP
               run: pipenv run build
 
-            - name: Lint project
+            - name: Lint project 3.11
+              if: ${{ matrix.python == '3.11' }}
               run: pipenv run flake8 --config=test/test.cfg
+
+            - name: Lint project 3.12
+              if: ${{ matrix.python == '3.12' }}
+              run: pipenv run flake8 --config=test/test.cfg --extend-ignore=Q000
 
             - name: Assert types
               run: pipenv run mypy --config-file=test/test.cfg

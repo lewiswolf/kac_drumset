@@ -2,9 +2,6 @@
 Import FDTD functions from external C++ library and configure python type conversions.
 '''
 
-# core
-from typing import Optional
-
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
@@ -111,7 +108,7 @@ class FDTD_2D():
 
 		if self._n < self.T:
 			self._n += 1
-			if self._n % 2 == 0:
+			if self._n % 2 == 1:
 				self.u_0 = _FDTDUpdate2D(
 					self.u_0,
 					self.u_1,
@@ -147,19 +144,19 @@ def FDTDWaveform2D(
 	c_1: float,
 	c_2: float,
 	T: int,
-	w: tuple[int, int],
+	w: tuple[float, float],
 ) -> npt.NDArray[np.float64]:
 	'''
 	Generates a waveform using a 2 dimensional FDTD scheme. See `fdtd.hpp` for a parameter description.
 	input:
 		u_0 = initial fdtd grid at t = 0.
 		u_1 = initial fdtd grid at t = 1.
-		B = B conditions.
+		B = boundary conditions.
 		c_0 = first fdtd coefficient related to the decay term and the courant number.
 		c_1 = second fdtd coefficient related to the decay term and the courant number.
 		c_2 = third fdtd coefficient related to the decay term.
 		T = length of simulation in samples.
-		w = the coordinate at which the waveform is sampled.
+		w = the coordinate at which the waveform is sampled ∈ ℝ^2, [0. 1.].
 	output:
 		waveform = W[n] ∈
 			c_0 * (
@@ -172,7 +169,7 @@ def FDTDWaveform2D(
 
 def raisedCosine(
 	matrix_size: tuple[int, ...],
-	mu: tuple[float, ...],
+	mu: tuple[float] | tuple[float, float],
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
@@ -192,17 +189,16 @@ def raisedCosine(
 	) if len(mu) == 1 else _raisedCosine2D(
 		matrix_size[0],
 		matrix_size[1],
-		mu[0],
-		mu[1],
+		mu,
 		sigma,
 	))
 
 
 def raisedTriangle(
 	matrix_size: tuple[int, ...],
-	mu: tuple[float, ...],
-	x_ab: Optional[tuple[float, float]] = None,
-	y_ab: Optional[tuple[float, float]] = None,
+	mu: tuple[float] | tuple[float, float],
+	x_ab: tuple[float, float] | None = None,
+	y_ab: tuple[float, float] | None = None,
 ) -> npt.NDArray[np.float64]:
 	'''
 	Calculate a one or two dimensional triangular distribution.
@@ -220,6 +216,7 @@ def raisedTriangle(
 			0,								x > a
 		}
 	'''
+
 	assert len(mu) <= 2 and len(mu) == len(matrix_size), \
 		'raisedTriangle() only supports one or two dimensional inputs.'
 	# configure x_ab
@@ -241,8 +238,7 @@ def raisedTriangle(
 		return np.array(_raisedTriangle2D(
 			matrix_size[0],
 			matrix_size[1],
-			mu[0],
-			mu[1],
+			mu,
 			x_ab[0],
 			x_ab[1],
 			y_ab[0],

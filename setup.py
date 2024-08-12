@@ -11,7 +11,7 @@ from skbuild import setup
 
 this = os.path.abspath(os.path.dirname(__file__))
 name = 'kac_drumset'
-version = '1.2.0'
+version = '2.0.0'
 short_description = 'Analysis tools and a dataset generator for arbitrarily shaped drums.'
 
 # import long description from readme.md
@@ -32,16 +32,17 @@ with codecs.open(os.path.join(this, 'Pipfile'), encoding='utf-8') as raw_pipfile
 			continue
 		# find [packages]
 		if line[0] == '[':
-			if line == '[packages]':
-				is_pkg = True
-				continue
-			else:
-				is_pkg = False
-				continue
-		# append package names with required version
+			is_pkg = line == '[packages]'
+			continue
+		# append package names with required version / git config
 		if is_pkg:
 			pkg_name, _, *spec = line.split()
-			packages.append(pkg_name if spec[0] == '"*"' else f'{pkg_name}{spec[0][1:-1]}')
+			if spec[0] == '"*"' or spec[0] == '{file' or spec[0] == '{path':
+				packages.append(pkg_name)
+			elif spec[0] == '{git':
+				packages.append(f'{pkg_name} @ git+{spec[2][1:-2]}')
+			else:
+				packages.append(f'{pkg_name}{spec[0][1:-1]}')
 
 setup(
 	author='Lewis Wolstanholme',
@@ -52,11 +53,11 @@ setup(
 		'Operating System :: Unix',
 		'Programming Language :: Python :: 3',
 		'Programming Language :: Python :: 3 :: Only',
-		'Programming Language :: Python :: 3.9',
-		'Programming Language :: Python :: 3.10',
+		'Programming Language :: Python :: 3.11',
+		'Programming Language :: Python :: 3.12',
 		'Typing :: Typed',
 	],
-	cmake_install_dir="kac_drumset/externals",
+	cmake_install_dir=f'{os.path.relpath(os.path.dirname(__file__), os.getcwd())}/kac_drumset/externals',
 	description=short_description,
 	long_description=long_description,
 	include_package_data=True,
