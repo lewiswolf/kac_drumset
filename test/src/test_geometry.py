@@ -77,7 +77,7 @@ class GeometryTests(TestCase):
 			self.assertTrue(C.isPointInside(centroid))
 			self.assertEqual(C.draw(101)[
 				round((centroid[0] + 1) * 50),
-				round((centroid[0] + 1) * 50),
+				round((centroid[1] + 1) * 50),
 			], 1)
 
 			# This test asserts that the default eccentricity is 0.
@@ -255,7 +255,7 @@ class GeometryTests(TestCase):
 			self.assertTrue(E.isPointInside(centroid))
 			self.assertEqual(E.draw(101)[
 				round((centroid[0] + 1) * 50),
-				round((centroid[0] + 1) * 50),
+				round((centroid[1] + 1) * 50),
 			], 1)
 
 			# This test asserts that the centroid is within the shape.
