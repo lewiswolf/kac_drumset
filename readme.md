@@ -40,7 +40,6 @@ from kac_drumset.geometry import (
 	IrregularStar,
 	TravellingSalesmanPolygon,
 	UnitRectangle,
-	UnitTriangle,
 	# Types
 	Ellipse,
 	Polygon,
@@ -235,7 +234,9 @@ class Polygon(Shape):
 
 	@property
 	def area(self) -> float:
-		''' An implementation of the polygon area algorithm derived using Green's Theorem. '''
+		'''
+		An implementation of the polygon area algorithm derived using Green's Theorem.
+		'''
 
 	@property
 	def centroid(self) -> tuple[float, float]:
