@@ -204,6 +204,6 @@ def GeometryExample() -> None:
 
 
 if __name__ == '__main__':
-	# DatasetExample()
+	DatasetExample()
 	GeometryExample()
 	exit()
