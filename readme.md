@@ -245,21 +245,15 @@ class Polygon(Shape):
 		'''
 
 	@property
-	def convex(self) -> bool:
-		'''
-		A cached variable representing the convexity of the polygon.
-		'''
-
-	@property
 	def vertices(self) -> npt.NDArray[np.float64]:
 		'''
 		The vertices of the polygon, here exposed as a mutable property.
 		'''
 
-	@property
-	def N(self) -> int:
+	def convex(self) -> bool:
 		'''
-		A cached variable representing the number of vertices.
+		Determine whether or not the polygon is convex. The convexity of the polygon is cached when the vertices are set.
+		This is to save time when computing other Class methods such as draw() and isPointInside().
 		'''
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
@@ -268,14 +262,19 @@ class Polygon(Shape):
 		normalised to the domain R^G before being drawn.
 		'''
 
+	def N(self) -> int:
+		'''
+		Return the number of vertices for the polygon.
+		'''
+
 	def isPointInside(self, p: tuple[float, float]) -> bool:
 		'''
 		Determines if a given point p ∈ P, including boundaries.
 		'''
 
-	def isSimple(self) -> bool:
+	def simple(self) -> bool:
 		'''
-		Determine if a polygon is simple by checking for intersections.
+		Determine whether or not the polygon is simple by checking for intersections.
 		'''
 
 class Shape(ABC):

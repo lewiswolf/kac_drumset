@@ -61,7 +61,7 @@ class IrregularStar(Polygon):
 	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
 		super().__init__(_generateIrregularStar(N if N > 2 else random.randint(3, max_vertices)))
 		self.vertices = np.array(
-			_normaliseConvexPolygon(self.vertices, True) if self.convex else _normaliseSimplePolygon(self.vertices, True),
+			_normaliseConvexPolygon(self.vertices, True) if self.convex() else _normaliseSimplePolygon(self.vertices, True),
 		)
 
 
@@ -82,7 +82,7 @@ class TravellingSalesmanPolygon(Polygon):
 	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
 		super().__init__(_generatePolygon(N if N > 2 else random.randint(3, max_vertices)))
 		self.vertices = np.array(
-			_normaliseConvexPolygon(self.vertices, True) if self.convex else _normaliseSimplePolygon(self.vertices, True),
+			_normaliseConvexPolygon(self.vertices, True) if self.convex() else _normaliseSimplePolygon(self.vertices, True),
 		)
 
 
@@ -105,7 +105,7 @@ class UnitRectangle(Polygon):
 		'''
 		This method should be used to return the metadata about the current shape.
 		'''
-		return {'epsilon': [self.epsilon], 'N': [self.N], 'vertices': self.vertices.tolist()}
+		return {'epsilon': [self.epsilon], 'N': [self.N()], 'vertices': self.vertices.tolist()}
 
 
 # class UnitTriangle(Polygon):

@@ -132,7 +132,7 @@ class GeometryTests(TestCase):
 
 		for P in quads + squares:
 			# This test asserts that a square has the correct number of vertices.
-			self.assertEqual(len(P.vertices), P.N)
+			self.assertEqual(len(P.vertices), P.N())
 
 			# This test asserts that _isConvex works for any closed arrangement of vertices.
 			self.assertTrue(P.convex)
@@ -182,9 +182,9 @@ class GeometryTests(TestCase):
 			))
 
 		# This test asserts that _isSimple works as expected.
-		self.assertFalse(Polygon([[0., 0.], [1., 1.], [1., 0.], [0., 1.]]).isSimple())
+		self.assertFalse(Polygon([[0., 0.], [1., 1.], [1., 0.], [0., 1.]]).simple)
 		for square in squares:
-			self.assertTrue(square.isSimple())
+			self.assertTrue(square.simple)
 
 		# This test asserts that after _normaliseConvexPolygon, the two squares produce the same output.
 		for square in squares:
@@ -431,10 +431,10 @@ class GeometryTests(TestCase):
 				LV = largestVector(polygon.vertices)
 
 				# This test asserts that a polygon has the correct number of vertices.
-				self.assertEqual(len(polygon.vertices), polygon.N)
+				self.assertEqual(len(polygon.vertices), polygon.N())
 
 				# This test asserts that a polygon is simple.
-				self.assertTrue(polygon.isSimple())
+				self.assertTrue(polygon.simple)
 
 				# This test asserts that the vertices are strictly bounded between -1.0 and 1.0.
 				self.assertEqual(polygon.vertices.min(), -1.)
@@ -452,11 +452,11 @@ class GeometryTests(TestCase):
 				)
 
 				# This test asserts that no 3 adjacent vertices are colinear.
-				for n in range(polygon.N):
+				for n in range(polygon.N()):
 					self.assertFalse(isColinear(np.array([
-						polygon.vertices[n - 1 if n > 0 else polygon.N - 1],
+						polygon.vertices[n - 1 if n > 0 else polygon.N() - 1],
 						polygon.vertices[n],
-						polygon.vertices[(n + 1) % polygon.N],
+						polygon.vertices[(n + 1) % polygon.N()],
 					])))
 
 				# This test asserts that isPointInsidePolygon correctly recognises points outside of the polygon.
@@ -467,7 +467,7 @@ class GeometryTests(TestCase):
 				for p in polygon.vertices:
 					self.assertTrue(_isPointInsidePolygon(p, polygon.vertices))
 
-				if polygon.convex:
+				if polygon.convex():
 					# This test asserts that all supposedly convex polygons are in fact convex. As a result, if this test passes, we
 					# can assume that the _generateConvexPolygon() function works as intended.
 					self.assertTrue(_isConvex(polygon.vertices))

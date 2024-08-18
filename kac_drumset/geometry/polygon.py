@@ -77,14 +77,6 @@ class Polygon(Shape):
 	'''
 
 	@property
-	def convex(self) -> bool:
-		return self._convex
-
-	@convex.setter
-	def convex(self, v: bool) -> None:
-		pass
-
-	@property
 	def vertices(self) -> npt.NDArray[np.float64]:
 		return self._vertices
 
@@ -93,25 +85,20 @@ class Polygon(Shape):
 		self._vertices = v
 		self._convex = _isConvex(v)
 		assert self.vertices.ndim == 2 and self.vertices.shape[1] == 2, 'Array of vertices is not the correct shape: (n, 2)'
-		assert self.N >= 3, 'A polygon must have three vertices.'
-
-	'''
-	Getters and setters for N. This approach maintains that N is immutable.
-	'''
-
-	@property
-	def N(self) -> int:
-		return self.vertices.shape[0]
-
-	@N.setter
-	def N(self) -> None:
-		pass
+		assert self.N() >= 3, 'A polygon must have three vertices.'
 
 	def __getLabels__(self) -> dict[str, list[float | int]]:
 		'''
 		This method should be used to return the metadata about the current shape.
 		'''
-		return {'N': [self.N], 'vertices': self.vertices.tolist()}
+		return {'N': [self.N()], 'vertices': self.vertices.tolist()}
+
+	def convex(self) -> bool:
+		'''
+		Determine whether or not the polygon is convex. The convexity of the polygon is cached when the vertices are set.
+		This is to save time when computing other Class methods such as draw() and isPointInside().
+		'''
+		return self._convex
 
 	def draw(self, grid_size: int) -> npt.NDArray[np.int8]:
 		'''
@@ -134,7 +121,7 @@ class Polygon(Shape):
 				'int32',
 			),
 			(1, 0, 0),
-		).astype(np.int8) if self.convex else cv2.fillPoly(
+		).astype(np.int8) if self.convex() else cv2.fillPoly(
 			np.zeros((grid_size, grid_size), 'int8'),
 			[np.array([
 				[round(y * (grid_size - 1)), round(x * (grid_size - 1))]
@@ -148,14 +135,20 @@ class Polygon(Shape):
 			(1, 0, 0),
 		).astype(np.int8)
 
+	def N(self) -> int:
+		'''
+		Return the number of vertices for the polygon.
+		'''
+		return self.vertices.shape[0]
+
 	def isPointInside(self, p: tuple[float, float]) -> bool:
 		'''
 		Determines if a given point p ∈ P, including boundaries.
 		'''
-		return _isPointInsideConvexPolygon(p, self.vertices) if self.convex else _isPointInsidePolygon(p, self.vertices)
+		return _isPointInsideConvexPolygon(p, self.vertices) if self.convex() else _isPointInsidePolygon(p, self.vertices)
 
-	def isSimple(self) -> bool:
+	def simple(self) -> bool:
 		'''
-		Determine if a polygon is simple by checking for intersections.
+		Determine whether or not the polygon is simple by checking for intersections.
 		'''
 		return _isSimple(self.vertices)
