@@ -135,7 +135,7 @@ class GeometryTests(TestCase):
 			self.assertEqual(len(P.vertices), P.N())
 
 			# This test asserts that _isConvex works for any closed arrangement of vertices.
-			self.assertTrue(P.convex)
+			self.assertTrue(P.convex())
 
 			# This test asserts that P.isPointInside is True for all vertices.
 			for p in P.vertices:
@@ -182,9 +182,9 @@ class GeometryTests(TestCase):
 			))
 
 		# This test asserts that _isSimple works as expected.
-		self.assertFalse(Polygon([[0., 0.], [1., 1.], [1., 0.], [0., 1.]]).simple)
+		self.assertFalse(Polygon([[0., 0.], [1., 1.], [1., 0.], [0., 1.]]).simple())
 		for square in squares:
-			self.assertTrue(square.simple)
+			self.assertTrue(square.simple())
 
 		# This test asserts that after _normaliseConvexPolygon, the two squares produce the same output.
 		for square in squares:
@@ -434,7 +434,7 @@ class GeometryTests(TestCase):
 				self.assertEqual(len(polygon.vertices), polygon.N())
 
 				# This test asserts that a polygon is simple.
-				self.assertTrue(polygon.simple)
+				self.assertTrue(polygon.simple())
 
 				# This test asserts that the vertices are strictly bounded between -1.0 and 1.0.
 				self.assertEqual(polygon.vertices.min(), -1.)
