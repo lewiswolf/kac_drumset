@@ -702,11 +702,11 @@ pipenv run build
 ```
 ### Example
 
-```
+```bash
 pipenv run start
 ```
 ### Test
 
-```
+```bash
 pipenv run test
 ```
