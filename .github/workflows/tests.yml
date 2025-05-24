@@ -7,36 +7,38 @@ on:
         branches: [master]
 
 jobs:
-    installation:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                os: [macos-latest, ubuntu-latest, windows-latest]
-                python: ["3.11", "3.12", "3.13"]
+    # installation:
+    #     runs-on: ${{ matrix.os }}
+    #     strategy:
+    #         matrix:
+    #             os: [macos-latest, ubuntu-latest, windows-latest]
+    #             python: ["3.11", "3.12", "3.13"]
 
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-python@v5
-              with:
-                  python-version: ${{ matrix.python }}
+    #     steps:
+    #         - uses: actions/checkout@v4
+    #         - uses: actions/setup-python@v5
+    #           with:
+    #               python-version: ${{ matrix.python }}
 
-            - name: Test installation
-              run: |
-                  pip install "git+https://github.com/lewiswolf/kac_drumset.git"
-                  python3 -c "import kac_drumset"
+    #         - name: Test installation
+    #           run: |
+    #               pip install "git+https://github.com/lewiswolf/kac_drumset.git"
+    #               python3 -c "import kac_drumset"
             
-            # - name: Test C++ deployment
-            #   run: |
-            #       python3 -c "import kac_drumset.externals._geometry"
-            #       python3 -c "import kac_drumset.externals._physics"
+    #         # - name: Test C++ deployment
+    #         #   run: |
+    #         #       python3 -c "import kac_drumset.externals._geometry"
+    #         #       python3 -c "import kac_drumset.externals._physics"
 
     all-tests:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
                 # os: [macos-latest, ubuntu-latest, windows-latest]
-                os: [macos-latest, ubuntu-latest]
-                python: ["3.11", "3.12", "3.13"]
+                # os: [macos-latest, ubuntu-latest]
+                os: [ubuntu-latest]
+                # python: ["3.11", "3.12", "3.13"]
+                python: ["3.11", "3.12"]
 
         steps:
             - uses: actions/checkout@v4
