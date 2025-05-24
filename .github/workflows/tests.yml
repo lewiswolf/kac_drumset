@@ -65,13 +65,13 @@ jobs:
             - name: Build CPP
               run: pipenv run build
 
-            - name: Lint project 3.11
-              if: ${{ matrix.python == '3.11' }}
-              run: pipenv run flake8 --config=test/test.cfg
-
-            - name: Lint project 3.12
-              if: ${{ matrix.python == '3.12' }}
-              run: pipenv run flake8 --config=test/test.cfg --extend-ignore=Q000
+            - name: Lint project
+              run: |
+                if [ "${{ matrix.python }}" = "3.11" ]; then
+                  pipenv run flake8 --config=test/test.cfg
+                else
+                  pipenv run flake8 --config=test/test.cfg --extend-ignore=Q000
+                fi
 
             - name: Assert types
               run: pipenv run mypy --config-file=test/test.cfg

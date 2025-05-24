@@ -8,7 +8,6 @@ _skbuild
 *.so
 .DS_Store
 MANIFEST.in
-Pipfile.lock
 
 # lew stuff
 unused
