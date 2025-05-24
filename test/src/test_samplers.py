@@ -126,6 +126,7 @@ class SamplerTests(TestCase):
 			for drum_size in drum_sizes:
 				for material_density in material_densities:
 					for tension in tensions:
+						print(shape, drum_size, material_density, tension)
 						model = FDTDModel(
 							arbitrary_shape=shape,
 							drum_size=drum_size,

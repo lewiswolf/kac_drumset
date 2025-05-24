@@ -77,4 +77,4 @@ jobs:
               run: pipenv run mypy --config-file=test/test.cfg
 
             - name: Run unit tests
-              run: pipenv run python test/test.py
+              run: pipenv run python test/test.py -v

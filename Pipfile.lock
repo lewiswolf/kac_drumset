@@ -1223,7 +1223,7 @@
         },
         "kac-prediction": {
             "git": "https://github.com/lewiswolf/kac_prediction.git",
-            "ref": "e57e76a0a6031669430f8fb3d51ec047b9fe1fed"
+            "ref": "2fa64788cd2e502582fb423fa19ad1d670dd3678"
         },
         "kaleido": {
             "hashes": [
