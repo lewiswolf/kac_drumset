@@ -2,7 +2,7 @@
 
 # kac_drumset
 
-![python version](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)
+![python version](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)
 <a href="https://doi.org/10.5281/zenodo.7274474">
 ![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.7274474-blue)
 </a>
@@ -616,7 +616,7 @@ class FDTD_2D():
 ### Import
 
 ```python
-from kac_drumset import (
+from kac_drumset.samplers import (
 	BesselModel,
 	FDTDModel,
 	LaméModel,
@@ -702,11 +702,11 @@ pipenv run build
 ```
 ### Example
 
-```
+```bash
 pipenv run start
 ```
 ### Test
 
-```
+```bash
 pipenv run test
 ```
