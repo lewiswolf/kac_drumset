@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "014b376848419a6df0b8839f65a57c7951211e8ef35475d5cb9ef4419e5de1ba"
+            "sha256": "deed1e0b3b8e857de1498e9265e53f3d8005ad3fe119222dd066d2e502105830"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -268,7 +268,7 @@
         },
         "kac-prediction": {
             "git": "https://github.com/lewiswolf/kac_prediction.git",
-            "ref": "e57e76a0a6031669430f8fb3d51ec047b9fe1fed"
+            "ref": "2fa64788cd2e502582fb423fa19ad1d670dd3678"
         },
         "markupsafe": {
             "hashes": [
