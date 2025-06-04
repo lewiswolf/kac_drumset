@@ -45,7 +45,7 @@ class Polygon(Shape):
 
 	'''
 	Getters and setters for area.
-	Setting area _should_ be used to scale the polygon, but is not currently implemented.
+	Setting the area scales the polygon, whilst preserving its centroid.
 	'''
 
 	@property

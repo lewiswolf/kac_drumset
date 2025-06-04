@@ -236,6 +236,7 @@ class Polygon(Shape):
 	def area(self) -> float:
 		'''
 		An implementation of the polygon area algorithm derived using Green's Theorem.
+		Setting the area scales the polygon, whilst preserving its centroid.
 		'''
 
 	@property
