@@ -55,6 +55,7 @@ setup(
 		'Programming Language :: Python :: 3 :: Only',
 		'Programming Language :: Python :: 3.11',
 		'Programming Language :: Python :: 3.12',
+		'Programming Language :: Python :: 3.13',
 		'Typing :: Typed',
 	],
 	cmake_install_dir=f'{os.path.relpath(os.path.dirname(__file__), os.getcwd())}/kac_drumset/externals',

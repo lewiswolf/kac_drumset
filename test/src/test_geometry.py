@@ -504,6 +504,17 @@ class GeometryTests(TestCase):
 				polygon.centroid = (-10., -10.)
 				self.assertAlmostEqual(polygon.centroid[0], -10.)
 				self.assertAlmostEqual(polygon.centroid[1], -10.)
+				polygon.centroid = (np.pi, -np.pi)
+				self.assertAlmostEqual(polygon.centroid[0], np.pi)
+				self.assertAlmostEqual(polygon.centroid[1], -np.pi)
+
+				# This test asserts that polygon scaling works as expected.
+				polygon.area = 10.
+				self.assertAlmostEqual(polygon.area, 10.)
+				polygon.area = -10.
+				self.assertAlmostEqual(polygon.area, 10.)
+				polygon.area = np.pi
+				self.assertAlmostEqual(polygon.area, np.pi)
 
 	def test_unit_polygon(self) -> None:
 		'''
