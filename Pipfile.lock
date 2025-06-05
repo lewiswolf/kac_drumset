@@ -261,7 +261,7 @@
         },
         "kac-prediction": {
             "git": "https://github.com/lewiswolf/kac_prediction.git",
-            "ref": "d1704acaedd5501a67d1ab177a0dc5c1128aac27"
+            "ref": "784efa7f5d514fa5f67be3ce4ce4893d18c47969"
         },
         "markupsafe": {
             "hashes": [
