@@ -21,18 +21,6 @@
 	self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
 	```
 
--   **Add a method to scale a polygon to a target area**
-
-	```python
-	# This test asserts that the area can be accurately scaled to any size.
-	from random import random
-	target_area = random()
-	self.assertEqual(
-		target_area,
-		polygon.area() * ((target_area / polygon.area()) ** 0.5),
-	)
-	```
-
 -   **UnitTriangle**
 
 ## Physics

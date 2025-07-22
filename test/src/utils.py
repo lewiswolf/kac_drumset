@@ -35,7 +35,7 @@ def withoutPrinting(allow_errors: bool = False) -> Iterator[Any]:
 	sys.stdout = sys.__stdout__
 
 
-def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
+def withProfiler(func: Callable[..., Any], n: int, *args: Any, **kwargs: Any) -> None:
 	'''
 	Calls the input function using cProfile to generate a performance report in the console. Prints the n most costly
 	functions.
@@ -48,7 +48,7 @@ def withProfiler(func: Callable, n: int, *args: Any, **kwargs: Any) -> None:
 	stats.print_stats(n)
 
 
-def withTimer(func: Callable, *args: Any, **kwargs: Any) -> None:
+def withTimer(func: Callable[..., Any], *args: Any, **kwargs: Any) -> None:
 	'''
 	Calls the input function and posts its runtime to the console.
 	'''

@@ -19,6 +19,7 @@ from ..externals._geometry import (
 	_normalisePolygon,
 	_polygonArea,
 	_polygonCentroid,
+	_scalePolygonByArea,
 )
 from .types import Shape, ShapeSettings
 
@@ -44,7 +45,7 @@ class Polygon(Shape):
 
 	'''
 	Getters and setters for area.
-	Setting area _should_ be used to scale the polygon, but is not currently implemented.
+	Setting the area scales the polygon, whilst preserving its centroid.
 	'''
 
 	@property
@@ -54,7 +55,7 @@ class Polygon(Shape):
 
 	@area.setter
 	def area(self, a: float) -> None:
-		pass
+		self._vertices = np.array(_scalePolygonByArea(self.vertices, a))
 
 	'''
 	Getters and setters for centroid. Setting centroid translates the polygon about the plane.
