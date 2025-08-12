@@ -64,7 +64,7 @@ def DatasetExample() -> None:
 			}),
 		)
 
-	# Genereate a dataset of linear models of simple geometric design.
+	# Generate a dataset of linear models of simple geometric design.
 	# Here generateDataset() is parametrised using objects of the class AudioSampler.
 	generateDataset(
 		BesselModel,

@@ -140,7 +140,7 @@ class Polygon(Shape):
 		'''
 		Return the number of vertices for the polygon.
 		'''
-		return self.vertices.shape[0]
+		return int(self.vertices.shape[0])
 
 	def isPointInside(self, p: tuple[float, float]) -> bool:
 		'''
