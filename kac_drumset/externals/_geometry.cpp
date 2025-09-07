@@ -96,7 +96,9 @@ std::pair<std::string, _Point> _lineIntersection(_Line& A, _Line& B) {
 }
 
 _Vertices _normaliseConvexPolygon(const _Vertices& V, const bool& signed_norm) {
-	return convertPolygonToVector(g::normaliseConvexPolygon(convertVectorToPolygon(V), signed_norm));
+	return convertPolygonToVector(
+		g::normaliseConvexPolygon(convertVectorToPolygon(V), signed_norm)
+	);
 }
 
 _Vertices _normalisePolygon(const _Vertices& V, const bool& signed_norm) {
@@ -104,7 +106,9 @@ _Vertices _normalisePolygon(const _Vertices& V, const bool& signed_norm) {
 }
 
 _Vertices _normaliseSimplePolygon(const _Vertices& V, const bool& signed_norm) {
-	return convertPolygonToVector(g::normaliseSimplePolygon(convertVectorToPolygon(V), signed_norm));
+	return convertPolygonToVector(
+		g::normaliseSimplePolygon(convertVectorToPolygon(V), signed_norm)
+	);
 }
 
 double _polygonArea(const _Vertices& V) { return g::polygonArea(convertVectorToPolygon(V)); }
@@ -112,6 +116,10 @@ double _polygonArea(const _Vertices& V) { return g::polygonArea(convertVectorToP
 _Point _polygonCentroid(const _Vertices& V) {
 	T::Point p = g::polygonCentroid(convertVectorToPolygon(V));
 	return {p.x, p.y};
+}
+
+_Vertices _scalePolygonByArea(const _Vertices& V, const double& a) {
+	return convertPolygonToVector(g::scalePolygonByArea(convertVectorToPolygon(V), a));
 }
 
 /*
@@ -137,4 +145,5 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_normaliseSimplePolygon", &_normaliseSimplePolygon);
 	m.def("_polygonArea", &_polygonArea);
 	m.def("_polygonCentroid", &_polygonCentroid);
+	m.def("_scalePolygonByArea", &_scalePolygonByArea);
 }

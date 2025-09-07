@@ -2,6 +2,9 @@
 This file contains the fixed geometric types used as part of this package.
 '''
 
+# core
+import math					# maths
+
 # dependencies
 import cv2					# image processing
 import numpy as np 			# maths
@@ -100,7 +103,7 @@ class Ellipse(Shape):
 		'''
 		The ratio between the focal distance and the major axis.
 		'''
-		return (1. - (self.minor ** 2. / self.major ** 2.)) ** 0.5
+		return math.sqrt(1. - (self.minor ** 2. / self.major ** 2.))
 
 	def foci(self) -> tuple[tuple[float, float], tuple[float, float]]:
 		'''
@@ -120,8 +123,8 @@ class Ellipse(Shape):
 		'''
 		Determines if a given point p ∈ P, including boundaries.
 		'''
-		major_2 = (self.major ** 2)
-		minor_2 = (self.minor ** 2)
+		major_2: float = self.major ** 2.
+		minor_2: float = self.minor ** 2.
 		return (((p[0] - self.centroid[0]) ** 2) * minor_2) \
 			+ (((p[1] - self.centroid[1]) ** 2) * major_2) <= (major_2 * minor_2)
 
