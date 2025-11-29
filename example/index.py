@@ -25,6 +25,7 @@ def DatasetExample() -> None:
 		BesselModel,
 		FDTDModel,
 		LaméModel,
+		LinearModel,
 		PoissonModel,
 	)
 	from kac_prediction.dataset import (
@@ -89,6 +90,21 @@ def DatasetExample() -> None:
 		representation_settings=representation_settings,
 		sampler_settings=LaméModel.Settings({
 			'M': 10,
+			'N': 10,
+			'amplitude': 1.,
+			'decay_time': 2.,
+			'duration': 1.,
+			'material_density': 0.2,
+			'sample_rate': 48000,
+			'tension': 2000.,
+		}),
+	)
+	generateDataset(
+		LinearModel,
+		dataset_dir=f'{dataset_dir}/{LinearModel.__name__}',
+		dataset_size=10,
+		representation_settings=representation_settings,
+		sampler_settings=LinearModel.Settings({
 			'N': 10,
 			'amplitude': 1.,
 			'decay_time': 2.,
@@ -199,7 +215,7 @@ def GeometryExample() -> None:
 	circle = Circle()
 	print(
 		'\nA circle is a special case of an ellipse, where the major and minor are the same.',
-		f'\nWith and with a radius of {circle.r}, this circle has an area of {circle.area}.\n',
+		f'\nWith a radius of {circle.r}, this circle has an area of {circle.area}.\n',
 	)
 
 

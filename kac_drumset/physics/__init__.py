@@ -14,9 +14,12 @@ from .modes import (
 	circularSeries,
 	equilateralTriangleAmplitudes,
 	equilateralTriangleSeries,
+	linearAmplitudes,
+	linearSeries,
 	rectangularAmplitudes,
 	rectangularChladniPattern,
 	rectangularSeries,
+	WaveEquationWaveform1D,
 	WaveEquationWaveform2D,
 )
 
@@ -30,11 +33,14 @@ __all__ = [
 	'equilateralTriangleAmplitudes',
 	'equilateralTriangleSeries',
 	'FDTDWaveform2D',
+	'linearAmplitudes',
+	'linearSeries',
 	'raisedCosine',
 	'raisedTriangle',
 	'rectangularAmplitudes',
 	'rectangularChladniPattern',
 	'rectangularSeries',
+	'WaveEquationWaveform1D',
 	'WaveEquationWaveform2D',
 	# classes
 	'FDTD_2D',

@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 kac_prediction = {git = "https://github.com/lewiswolf/kac_prediction.git"}
-numpy = ">=2.2"
+numpy = ">=2.3"
 opencv-python = ">=4.11"
 
 [dev-packages]
