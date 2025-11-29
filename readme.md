@@ -349,9 +349,12 @@ from kac_drumset.physics import (
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
+	linearAmplitudes,
+	linearSeries,
 	rectangularAmplitudes,
 	rectangularChladniPattern,
 	rectangularSeries,
+	WaveEquationWaveform1D,
 	WaveEquationWaveform2D,
 	# classes
 	FDTD_2D
@@ -438,6 +441,25 @@ def equilateralTriangleSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 			(m ** 2 + n ** 2 + mn) ** 0.5
 			| s ∈ ℝ, 0 < n <= N, 0 < m <= M
 		}
+	'''
+
+def linearAmplitudes(x: float, N: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the amplitudes of the 1D eigenmodes relative to a strike location.
+	input:
+		x = strike location
+		N = number of modes
+	output:
+		A = { abs(sin(nxπ)) | a ∈ ℝ, 0 < n <= N }
+	'''
+
+def linearSeries(N: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the the harmonic series.
+	input:
+		N = number of modes
+	output:
+		S = { n | s ∈ ℕ, 0 < n <= N }
 	'''
 
 def rectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
@@ -549,6 +571,25 @@ def raisedTriangle(
 		}
 	'''
 
+def WaveEquationWaveform1D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 1D wave equation.
+	input:
+		F = frequencies (hertz)
+		α = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
+	'''
+
 def WaveEquationWaveform2D(
 	F: npt.NDArray[np.float64],
 	A: npt.NDArray[np.float64],
@@ -560,12 +601,12 @@ def WaveEquationWaveform2D(
 	Calculate a closed form solution to the 2D wave equation.
 	input:
 		F = frequencies (hertz)
-		A = amplitudes ∈ [0, 1]
+		α = amplitudes ∈ [0, 1]
 		d = decay
 		k = sample length
 		T = length of simulation
 	output:
-		waveform = W[t] ∈ A * e^dt * sin(ωt) / max(A) * NM
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
 	'''
 ```
 
@@ -705,6 +746,12 @@ pipenv run build
 
 ```bash
 pipenv run start
+```
+### Update Dependencies
+
+```bash
+pipenv update -d
+git submodule update --remote
 ```
 ### Test
 

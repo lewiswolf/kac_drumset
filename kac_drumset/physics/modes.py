@@ -13,9 +13,12 @@ from ..externals._physics import (
 	_circularSeries,
 	_equilateralTriangleAmplitudes,
 	_equilateralTriangleSeries,
+	_linearAmplitudes,
+	_linearSeries,
 	_rectangularAmplitudes,
 	_rectangularChladniPattern,
 	_rectangularSeries,
+	_WaveEquationWaveform1D,
 	_WaveEquationWaveform2D,
 )
 
@@ -25,9 +28,12 @@ __all__ = [
 	'circularSeries',
 	'equilateralTriangleAmplitudes',
 	'equilateralTriangleSeries',
+	'linearAmplitudes',
+	'linearSeries',
 	'rectangularAmplitudes',
 	'rectangularChladniPattern',
 	'rectangularSeries',
+	'WaveEquationWaveform1D',
 	'WaveEquationWaveform2D',
 ]
 
@@ -115,6 +121,31 @@ def equilateralTriangleSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 	return np.array(_equilateralTriangleSeries(N, M))
 
 
+def linearAmplitudes(x: float, N: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the amplitudes of the 1D eigenmodes relative to a strike location.
+	input:
+		x = strike location
+		N = number of modes
+	output:
+		A = { abs(sin(nxπ)) | a ∈ ℝ, 0 < n <= N }
+	'''
+
+	return np.array(_linearAmplitudes(x, N))
+
+
+def linearSeries(N: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the the harmonic series.
+	input:
+		N = number of modes
+	output:
+		S = { n | s ∈ ℕ, 0 < n <= N }
+	'''
+
+	return np.array(_linearSeries(N))
+
+
 def rectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the amplitudes of the rectangular eigenmodes relative to a cartesian strike location.
@@ -169,6 +200,28 @@ def rectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]
 	return np.array(_rectangularSeries(N, M, epsilon))
 
 
+def WaveEquationWaveform1D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 1D wave equation.
+	input:
+		F = frequencies (hertz)
+		α = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
+	'''
+
+	return np.array(_WaveEquationWaveform1D(F, A, d, k, T))
+
+
 def WaveEquationWaveform2D(
 	F: npt.NDArray[np.float64],
 	A: npt.NDArray[np.float64],
@@ -180,12 +233,12 @@ def WaveEquationWaveform2D(
 	Calculate a closed form solution to the 2D wave equation.
 	input:
 		F = frequencies (hertz)
-		A = amplitudes ∈ [0, 1]
+		α = amplitudes ∈ [0, 1]
 		d = decay
 		k = sample length
 		T = length of simulation
 	output:
-		waveform = W[t] ∈ A * e^dt * sin(ωt) / max(A) * NM
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
 	'''
 
 	return np.array(_WaveEquationWaveform2D(F, A, d, k, T))
