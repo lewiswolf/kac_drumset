@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 kac_prediction = {git = "https://github.com/lewiswolf/kac_prediction.git"}
-numpy = ">=2.2"
+numpy = ">=2.3"
 opencv-python = ">=4.11"
 
 [dev-packages]
@@ -25,6 +25,7 @@ types-tqdm = "*"
 python_version = "3.13"
 
 [scripts]
-build = "python setup.py develop"
+audit = "safety scan"
+build = "sh ./build.sh"
 start = "python example/index.py"
 test = "sh ./test/test.sh"

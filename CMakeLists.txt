@@ -23,3 +23,11 @@ pybind11_add_module(_physics MODULE ${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/exte
 target_link_libraries(_geometry PRIVATE kac_core)
 target_link_libraries(_physics PRIVATE kac_core)
 install(TARGETS _geometry _physics DESTINATION .)
+
+# manually copy after build
+add_custom_command(TARGET _geometry POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:_geometry> ${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/externals
+)
+add_custom_command(TARGET _physics POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:_physics> ${CMAKE_CURRENT_SOURCE_DIR}/kac_drumset/externals
+)
