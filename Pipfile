@@ -16,12 +16,13 @@ flake8-quotes = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
 kac-drumset = {file = ".", editable = true}
 mypy = "*"
+safety = "*"
 scikit-build = "*"
 types-setuptools = "*"
 types-tqdm = "*"
 
 [requires]
-python_version = "3.11"
+python_version = "3.13"
 
 [scripts]
 build = "python setup.py develop"
