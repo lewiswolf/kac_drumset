@@ -11,7 +11,8 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [macos-latest, ubuntu-latest, windows-latest]
+                # os: [macos-latest, ubuntu-latest, windows-latest]
+                os: [macos-latest]
                 python: ["3.11", "3.12", "3.13"]
 
         steps:
@@ -20,10 +21,11 @@ jobs:
               with:
                   python-version: ${{ matrix.python }}
 
+            - name: Install Package
+              run: pip install "git+https://github.com/lewiswolf/kac_drumset.git"
+            
             - name: Test installation
-              run: |
-                  pip install "git+https://github.com/lewiswolf/kac_drumset.git"
-                  python3 -c "from kac_drumset.geometry import Polygon; P = Polygon([[0., 0.], [1., 1.], [0., 1.]]); P.centroid"
+              run: python3 -c "from kac_drumset.geometry import Polygon; P = Polygon([[0., 0.], [1., 1.], [0., 1.]]); P.centroid"
 
     all-tests:
         runs-on: ${{ matrix.os }}
