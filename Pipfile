@@ -3,22 +3,18 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
-[packages]
-kac_prediction = {git = "https://github.com/lewiswolf/kac_prediction.git"}
-numpy = ">=2.3"
-opencv-python = ">=4.11"
-
 [dev-packages]
+cmake = "*"
 flake8 = "*"
 flake8-commas = "*"
 flake8-pyi = "*"
+flake8-pyproject = "*"
 flake8-quotes = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
 kac-drumset = {file = ".", editable = true}
 mypy = "*"
 safety = "*"
-scikit-build = "*"
-types-setuptools = "*"
+scikit-build-core = "*"
 types-tqdm = "*"
 
 [requires]
@@ -26,6 +22,6 @@ python_version = "3.13"
 
 [scripts]
 audit = "safety scan"
-build = "sh ./build.sh"
+build = "sh ./bin/build.sh"
 start = "python example/index.py"
-test = "sh ./test/test.sh"
+test = "sh ./bin/test.sh"
