@@ -1,9 +1,71 @@
-[build-system]
-build-backend = "setuptools.build_meta"
-requires = [
-    "cmake>=3.22",
-    "pybind11>=2.13",
-    "scikit-build>=0.18",
-	"setuptools",
-	"wheel",
+[project]
+name = "kac-drumset"
+version = "2.0.0"
+authors = [{ name = "Lewis Wolstanholme", email = "lewiswolstanholme@gmail.com" }]
+description = "Analysis tools and a dataset generator for arbitrarily shaped drums."
+keywords = ["kac_drumset"]
+license = { text = "CC-BY" }
+
+classifiers = [
+	"Operating System :: MacOS :: MacOS X",
+	"Operating System :: Microsoft :: Windows",
+	"Operating System :: Unix",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3 :: Only",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
+	"Typing :: Typed",
 ]
+
+requires-python = ">=3.11"
+dependencies = [
+	"numpy>=2.3",
+	"opencv-python>=4.11",
+	"kac_prediction@git+https://github.com/lewiswolf/kac_prediction.git",
+]
+
+[build-system]
+build-backend = "scikit_build_core.build"
+requires = [
+	"scikit-build-core>=0.11",
+	"cmake>=3.27",
+	"pybind11>=3.0",
+]
+
+[tool.scikit-build]
+cmake.build-type = "Release"
+cmake.minimum-version = "3.27"
+cmake.verbose = true
+sdist.include = ["kac_drumset/**"]
+wheel.packages = ["kac_drumset"]
+
+[tool.flake8]
+exclude = [
+	".git",
+	"_skbuild",
+	"kac_core",
+	"unused"
+]
+ignore = ["E261", "W191", "W504"]
+	# E261 - two spaces before inline comment
+	# W191 - indentation contains tabs (python prefers spaces, I prefer tabs)
+	# W504 - line break before binary operator (if x or y and ... should line break before the operator if necessary)
+per-file-ignores = ["*.pyi:E302,E402,E704"]
+	# E302 - expected 2 blank lines, found 0 (for .pyi files)
+	# E402 - module level import not at top of file
+	# E704 - multiple statements on one line (def) - for .pyi files
+max-line-length = 120
+docstring-quotes = "'''"
+multiline-quotes = "'''"
+
+[tool.mypy]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+files = [
+	"example/**/*.py",
+	"kac_drumset/**/*.py",
+	"kac_drumset/**/*.pyi",
+	"test/**/*.py"
+]
+strict = true
