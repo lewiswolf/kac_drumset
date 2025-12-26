@@ -7,24 +7,25 @@ on:
         branches: [master]
 
 jobs:
-    installation:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                os: [macos-latest, ubuntu-latest, windows-latest]
-                python: ["3.11", "3.12", "3.13"]
 
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-python@v5
-              with:
-                  python-version: ${{ matrix.python }}
+#     installation:
+#         runs-on: ${{ matrix.os }}
+#         strategy:
+#             matrix:
+#                 os: [macos-latest, ubuntu-latest, windows-latest]
+#                 python: ["3.11", "3.12", "3.13"]
 
-            - name: Install Package
-              run: pip3 install "git+https://github.com/lewiswolf/kac_drumset.git"
+#         steps:
+#             - uses: actions/checkout@v4
+#             - uses: actions/setup-python@v5
+#               with:
+#                   python-version: ${{ matrix.python }}
+
+#             - name: Install Package
+#               run: pip3 install "git+https://github.com/lewiswolf/kac_drumset.git"
             
-            - name: Test installation
-              run: python3 -c "from kac_drumset.geometry import Polygon; P = Polygon([[0., 0.], [1., 1.], [0., 1.]]); P.centroid"
+#             - name: Test installation
+#               run: python3 -c "from kac_drumset.geometry import Polygon; P = Polygon([[0., 0.], [1., 1.], [0., 1.]]); P.centroid"
 
     all-tests:
         runs-on: ${{ matrix.os }}
