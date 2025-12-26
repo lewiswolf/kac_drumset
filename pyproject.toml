@@ -29,15 +29,13 @@ dependencies = [
 build-backend = "scikit_build_core.build"
 requires = [
 	"scikit-build-core>=0.11",
-	"cmake>=3.27",
 	"pybind11>=3.0",
 ]
 
 [tool.scikit-build]
+build.verbose = true
 cmake.build-type = "Release"
-cmake.minimum-version = "3.27"
-cmake.verbose = true
-sdist.include = ["kac_drumset/**"]
+cmake.version = "3.27"
 wheel.packages = ["kac_drumset"]
 
 [tool.flake8]

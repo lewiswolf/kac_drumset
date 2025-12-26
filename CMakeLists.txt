@@ -20,7 +20,7 @@ target_link_libraries(_geometry PRIVATE kac_core)
 target_link_libraries(_physics PRIVATE kac_core)
 install(
     TARGETS _geometry _physics
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/kac_drumset/externals
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/kac_drumset/externals
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/kac_drumset/externals
+    LIBRARY DESTINATION kac_drumset/externals
+    RUNTIME DESTINATION kac_drumset/externals
+	ARCHIVE DESTINATION kac_drumset/externals
 )
