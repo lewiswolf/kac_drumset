@@ -35,7 +35,6 @@ requires = [
 [tool.scikit-build]
 build.verbose = true
 cmake.build-type = "Release"
-cmake.version = "3.27"
 sdist.include = ["kac_drumset/**"]
 wheel.packages = ["kac_drumset"]
 
