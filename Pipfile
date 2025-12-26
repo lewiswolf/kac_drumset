@@ -11,7 +11,7 @@ flake8-pyi = "*"
 flake8-pyproject = "*"
 flake8-quotes = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
-kac-drumset = {file = ".", editable = true}
+kac_drumset = {file = ".", editable = true}
 mypy = "*"
 safety = "*"
 scikit-build-core = "*"
