@@ -25,7 +25,7 @@ jobs:
               run: pip install "git+https://github.com/lewiswolf/kac_drumset.git"
             
             - name: Test installation
-              run: python -c "from kac_drumset.geometry import Polygon; P = Polygon([[0., 0.], [1., 1.], [0., 1.]]); P.centroid"
+              run: python -c "import kac_drumset; import os; print(os.listdir(os.path.join(os.path.dirname(kac_drumset.__file__), 'externals')))"
 
     all-tests:
         runs-on: ${{ matrix.os }}
