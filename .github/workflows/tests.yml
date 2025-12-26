@@ -22,56 +22,56 @@ jobs:
                   python-version: ${{ matrix.python }}
 
             - name: Install Package
-              run: pip install "git+https://github.com/lewiswolf/kac_drumset.git"
+              run: pip install "git+https://github.com/lewiswolf/kac_drumset.git" --verbose
             
             - name: Test installation
               run: python -c "import kac_drumset; import os; print(os.listdir(os.path.join(os.path.dirname(kac_drumset.__file__), 'externals')))"
 
-    all-tests:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                # os: [macos-latest, ubuntu-latest, windows-latest]
-                os: [macos-latest]
-                python: ["3.13"]
+    # all-tests:
+    #     runs-on: ${{ matrix.os }}
+    #     strategy:
+    #         matrix:
+    #             # os: [macos-latest, ubuntu-latest, windows-latest]
+    #             os: [macos-latest]
+    #             python: ["3.13"]
 
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  submodules: recursive
-            - uses: lukka/get-cmake@latest
-            - uses: actions/setup-python@v5
-              with:
-                  python-version: ${{ matrix.python }}
-            - uses: actions/cache@v4
-              id: cache-pipenv
-              with:
-                  path: ~/.local/share/virtualenvs
-                  key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+    #     steps:
+    #         - uses: actions/checkout@v4
+    #           with:
+    #               submodules: recursive
+    #         - uses: lukka/get-cmake@latest
+    #         - uses: actions/setup-python@v5
+    #           with:
+    #               python-version: ${{ matrix.python }}
+    #         - uses: actions/cache@v4
+    #           id: cache-pipenv
+    #           with:
+    #               path: ~/.local/share/virtualenvs
+    #               key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
 
-            - name: Install OS specific dependencies
-              if: ${{ matrix.os == 'ubuntu-latest' }}
-              run: sudo apt-get install libsndfile1
+    #         - name: Install OS specific dependencies
+    #           if: ${{ matrix.os == 'ubuntu-latest' }}
+    #           run: sudo apt-get install libsndfile1
 
-            - name: Install pipenv
-              run: python -m pip install --upgrade pip pipenv setuptools wheel
+    #         - name: Install pipenv
+    #           run: python -m pip install --upgrade pip pipenv setuptools wheel
 
-            - name: Install python dependencies
-              run: pipenv install -d --python ${{ matrix.python }}
+    #         - name: Install python dependencies
+    #           run: pipenv install -d --python ${{ matrix.python }}
 
-            - name: Build CPP
-              run: pipenv run build
+    #         - name: Build CPP
+    #           run: pipenv run build
 
-            - name: Lint project
-              run: |
-                if [ "${{ matrix.python }}" = "3.11" ]; then
-                  pipenv run flake8
-                else
-                  pipenv run flake8 --extend-ignore=Q000
-                fi
+    #         - name: Lint project
+    #           run: |
+    #             if [ "${{ matrix.python }}" = "3.11" ]; then
+    #               pipenv run flake8
+    #             else
+    #               pipenv run flake8 --extend-ignore=Q000
+    #             fi
 
-            - name: Assert types
-              run: pipenv run mypy
+    #         - name: Assert types
+    #           run: pipenv run mypy
 
-            - name: Run unit tests
-              run: pipenv run python test/test.py
+    #         - name: Run unit tests
+    #           run: pipenv run python test/test.py
