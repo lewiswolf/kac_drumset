@@ -11,8 +11,7 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                # os: [macos-latest, ubuntu-latest, windows-latest]
-                os: [macos-latest]
+                os: [macos-latest, ubuntu-latest, windows-latest]
                 python: ["3.11", "3.12", "3.13"]
 
         steps:
@@ -26,6 +25,7 @@ jobs:
             
             - name: Test installation
               run: python -c "import kac_drumset; import os; print(os.listdir(os.path.join(os.path.dirname(kac_drumset.__file__), 'externals')))"
+              # run: python -c "from kac_drumset.geometry import Polygon;"
 
     # all-tests:
     #     runs-on: ${{ matrix.os }}
