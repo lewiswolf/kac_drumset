@@ -1,11 +1,3 @@
-[project]
-name = "kac_drumset"
-version = "2.0.0"
-authors = [{ name = "Lewis Wolstanholme", email = "lewiswolstanholme@gmail.com" }]
-description = "Analysis tools and a dataset generator for arbitrarily shaped drums."
-keywords = ["kac_drumset"]
-license = { text = "CC-BY" }
-
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
