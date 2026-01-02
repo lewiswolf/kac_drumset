@@ -1,9 +1,3 @@
-## General Codebase
-
--	**EasyInstallDeprecationWarning**
-
-	When running `pipenv run build`, the above warning is raised due to the now outdated `setup.py develop` command being called. It is recommended to instead run `pip install -e .`, which works the same, however this command runs `setup.py develop` implicitly, raising the exact same warning.
-
 ## `input_features.py`
 
 -   **Port `librosa.vqt()` to PyTorch**
