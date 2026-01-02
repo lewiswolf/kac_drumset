@@ -8,7 +8,7 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
-from ..physics import circularAmplitudes, circularSeries, WaveEquationWaveform2D
+from ..physics import AdditiveSynthesis2D, circularAmplitudes, circularSeries
 
 __all__ = [
 	'BesselModel',
@@ -84,7 +84,7 @@ class BesselModel(AudioSampler):
 		Using additive synthesis, generate the waveform for the linear model.
 		'''
 
-		self.waveform = WaveEquationWaveform2D(
+		self.waveform = AdditiveSynthesis2D(
 			self.F,
 			self.a * circularAmplitudes(*self.strike, self.series),
 			self.decay,

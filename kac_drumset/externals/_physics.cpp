@@ -47,6 +47,8 @@ T::Matrix_2D _raisedTriangle2D(
 
 PYBIND11_MODULE(_physics, m) {
 	m.doc() = "_physics";
+	m.def("_AdditiveSynthesis1D", &p::AdditiveSynthesis1D);
+	m.def("_AdditiveSynthesis2D", &p::AdditiveSynthesis2D);
 	m.def("_circularAmplitudes", &p::circularAmplitudes);
 	m.def("_circularChladniPattern", &p::circularChladniPattern);
 	m.def("_circularSeries", &p::circularSeries);
@@ -63,8 +65,6 @@ PYBIND11_MODULE(_physics, m) {
 	m.def("_rectangularAmplitudes", &p::rectangularAmplitudes);
 	m.def("_rectangularChladniPattern", &p::rectangularChladniPattern);
 	m.def("_rectangularSeries", &p::rectangularSeries);
-	m.def("_WaveEquationWaveform1D", &p::WaveEquationWaveform1D);
-	m.def("_WaveEquationWaveform2D", &p::WaveEquationWaveform2D);
 	m.def("besselJ", &p::besselJ);
 	m.def("besselJZero", &p::besselJZero);
 }

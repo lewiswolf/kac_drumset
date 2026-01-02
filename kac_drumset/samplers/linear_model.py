@@ -8,7 +8,7 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
-from ..physics import linearAmplitudes, linearSeries, WaveEquationWaveform1D
+from ..physics import AdditiveSynthesis1D, linearAmplitudes, linearSeries
 
 __all__ = [
 	'LinearModel',
@@ -82,7 +82,7 @@ class LinearModel(AudioSampler):
 
 		if hasattr(self, 'L'):
 			alpha = linearAmplitudes(self.strike, self.N)
-			self.waveform = WaveEquationWaveform1D(
+			self.waveform = AdditiveSynthesis1D(
 				self.F,
 				self.a * alpha,
 				self.decay,

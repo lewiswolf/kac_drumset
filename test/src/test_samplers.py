@@ -108,8 +108,6 @@ class SamplerTests(TestCase):
 			self.assertEqual(model.c_2, 1.)
 
 			# generate a random shape and dirichlet boundary conditions.
-			settings = {'arbitrary_shape': shape, 'duration': 1., 'sample_rate': 48000}
-			model = FDTDModel(**settings)
 			model.updateProperties()
 
 			# This test asserts that a shape was properly defined after updating the model's properties.

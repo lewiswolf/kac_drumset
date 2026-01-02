@@ -339,6 +339,8 @@ class ShapeSettings(TypedDict, total=False):
 ```python
 from kac_drumset.physics import (
 	# methods
+	AdditiveSynthesis1D,
+	AdditiveSynthesis2D,
 	besselJ,
 	besselJZero,
 	circularAmplitudes,
@@ -354,8 +356,6 @@ from kac_drumset.physics import (
 	rectangularAmplitudes,
 	rectangularChladniPattern,
 	rectangularSeries,
-	WaveEquationWaveform1D,
-	WaveEquationWaveform2D,
 	# classes
 	FDTD_2D
 )
@@ -364,6 +364,44 @@ from kac_drumset.physics import (
 ### Methods
 
 ```python
+def AdditiveSynthesis1D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 1D wave equation.
+	input:
+		F = frequencies (hertz)
+		α = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
+	'''
+
+def AdditiveSynthesis2D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 2D wave equation.
+	input:
+		F = frequencies (hertz)
+		α = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
+	'''
+
 def besselJ(n: float, m: float) -> float:
 	'''
 	Calculate the bessel function of the first kind. This method is a clone of boost::math::cyl_bessel_j.
@@ -569,44 +607,6 @@ def raisedTriangle(
 			1. - (x - μ) / (b - μ),			μ < x ≤ b
 			0,								x > a
 		}
-	'''
-
-def WaveEquationWaveform1D(
-	F: npt.NDArray[np.float64],
-	A: npt.NDArray[np.float64],
-	d: float,
-	k: float,
-	T: int,
-) -> npt.NDArray[np.float64]:
-	'''
-	Calculate a closed form solution to the 1D wave equation.
-	input:
-		F = frequencies (hertz)
-		α = amplitudes ∈ [0, 1]
-		d = decay
-		k = sample length
-		T = length of simulation
-	output:
-		waveform = W[t] ∈ e^dt * sin(ωt) * α
-	'''
-
-def WaveEquationWaveform2D(
-	F: npt.NDArray[np.float64],
-	A: npt.NDArray[np.float64],
-	d: float,
-	k: float,
-	T: int,
-) -> npt.NDArray[np.float64]:
-	'''
-	Calculate a closed form solution to the 2D wave equation.
-	input:
-		F = frequencies (hertz)
-		α = amplitudes ∈ [0, 1]
-		d = decay
-		k = sample length
-		T = length of simulation
-	output:
-		waveform = W[t] ∈ e^dt * sin(ωt) * α
 	'''
 ```
 

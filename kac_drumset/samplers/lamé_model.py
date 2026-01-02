@@ -8,7 +8,7 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
-from ..physics import equilateralTriangleAmplitudes, equilateralTriangleSeries, WaveEquationWaveform2D
+from ..physics import AdditiveSynthesis2D, equilateralTriangleAmplitudes, equilateralTriangleSeries
 
 __all__ = [
 	'LaméModel',
@@ -84,7 +84,7 @@ class LaméModel(AudioSampler):
 		Using additive synthesis, generate the waveform for the linear model.
 		'''
 
-		self.waveform = WaveEquationWaveform2D(
+		self.waveform = AdditiveSynthesis2D(
 			self.F,
 			self.a * equilateralTriangleAmplitudes(*self.strike, self.N, self.M),
 			self.decay,

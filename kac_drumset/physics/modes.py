@@ -8,6 +8,8 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from ..externals._physics import (
+	_AdditiveSynthesis1D,
+	_AdditiveSynthesis2D,
 	_circularAmplitudes,
 	_circularChladniPattern,
 	_circularSeries,
@@ -18,11 +20,11 @@ from ..externals._physics import (
 	_rectangularAmplitudes,
 	_rectangularChladniPattern,
 	_rectangularSeries,
-	_WaveEquationWaveform1D,
-	_WaveEquationWaveform2D,
 )
 
 __all__ = [
+	'AdditiveSynthesis1D',
+	'AdditiveSynthesis2D',
 	'circularAmplitudes',
 	'circularChladniPattern',
 	'circularSeries',
@@ -33,9 +35,51 @@ __all__ = [
 	'rectangularAmplitudes',
 	'rectangularChladniPattern',
 	'rectangularSeries',
-	'WaveEquationWaveform1D',
-	'WaveEquationWaveform2D',
 ]
+
+
+def AdditiveSynthesis1D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 1D wave equation.
+	input:
+		F = frequencies (hertz)
+		α = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
+	'''
+
+	return np.array(_AdditiveSynthesis1D(F, A, d, k, T))
+
+
+def AdditiveSynthesis2D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 2D wave equation.
+	input:
+		F = frequencies (hertz)
+		α = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
+	'''
+
+	return np.array(_AdditiveSynthesis2D(F, A, d, k, T))
 
 
 def circularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
@@ -198,47 +242,3 @@ def rectangularSeries(N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]
 	'''
 
 	return np.array(_rectangularSeries(N, M, epsilon))
-
-
-def WaveEquationWaveform1D(
-	F: npt.NDArray[np.float64],
-	A: npt.NDArray[np.float64],
-	d: float,
-	k: float,
-	T: int,
-) -> npt.NDArray[np.float64]:
-	'''
-	Calculate a closed form solution to the 1D wave equation.
-	input:
-		F = frequencies (hertz)
-		α = amplitudes ∈ [0, 1]
-		d = decay
-		k = sample length
-		T = length of simulation
-	output:
-		waveform = W[t] ∈ e^dt * sin(ωt) * α
-	'''
-
-	return np.array(_WaveEquationWaveform1D(F, A, d, k, T))
-
-
-def WaveEquationWaveform2D(
-	F: npt.NDArray[np.float64],
-	A: npt.NDArray[np.float64],
-	d: float,
-	k: float,
-	T: int,
-) -> npt.NDArray[np.float64]:
-	'''
-	Calculate a closed form solution to the 2D wave equation.
-	input:
-		F = frequencies (hertz)
-		α = amplitudes ∈ [0, 1]
-		d = decay
-		k = sample length
-		T = length of simulation
-	output:
-		waveform = W[t] ∈ e^dt * sin(ωt) * α
-	'''
-
-	return np.array(_WaveEquationWaveform2D(F, A, d, k, T))
