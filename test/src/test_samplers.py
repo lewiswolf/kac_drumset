@@ -18,6 +18,7 @@ from kac_drumset.samplers import (
 	BesselModel,
 	FDTDModel,
 	LaméModel,
+	LinearModel,
 	PoissonModel,
 )
 from kac_prediction.utils import clearDirectory
@@ -194,6 +195,42 @@ class SamplerTests(TestCase):
 
 			# This test asserts that the model returns a drum_size.
 			self.assertEqual(len(model.getLabels()['drum_size']), 1)
+
+			# This test asserts that the waveform is not distorted.
+			model.generateWaveform()
+			self.assertLessEqual(model.waveform.max(), 1.)
+			self.assertGreaterEqual(model.waveform.min(), -1.)
+
+	def test_linear_model(self) -> None:
+		'''
+		Tests used in conjunction with `samplers/linear_model.py`.
+		'''
+
+		# This test asserts that model correctly mounts with both its minimum requirements and type safety.
+		settings: LinearModel.Settings = {'duration': 1., 'sample_rate': 48000, 'decay_time': np.inf}
+		model = LinearModel(**settings)
+
+		# This test asserts that the labels default to an empty array when no waveform has been generated.
+		self.assertEqual(model.getLabels(), {})
+
+		# This test asserts that decay_time: np.inf works as expected.
+		self.assertEqual(model.decay, 0.)
+
+		# stress test the bessel model
+		for i in range(100):
+			model.updateProperties(i)
+
+			# This test asserts that a size and strike location were properly defined after updating
+			# the model's properties.
+			self.assertTrue(hasattr(model, 'F'))
+			self.assertTrue(hasattr(model, 'L'))
+			self.assertTrue(hasattr(model, 'strike'))
+
+			# This test asserts that the 2D series has correct shape
+			self.assertEqual(model.F.shape, (10,))
+
+			# This test asserts that the model returns a size.
+			self.assertEqual(len(model.getLabels()['size']), 1)
 
 			# This test asserts that the waveform is not distorted.
 			model.generateWaveform()

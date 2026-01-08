@@ -81,10 +81,9 @@ class LinearModel(AudioSampler):
 		'''
 
 		if hasattr(self, 'L'):
-			alpha = linearAmplitudes(self.strike, self.N)
 			self.waveform = AdditiveSynthesis1D(
 				self.F,
-				self.a * alpha,
+				self.a * linearAmplitudes(self.strike, self.N),
 				self.decay,
 				self.k,
 				self.length,
@@ -95,10 +94,7 @@ class LinearModel(AudioSampler):
 		Return the labels of the model.
 		'''
 
-		return {
-			'size': [self.L],
-			'strike_location': [self.strike],
-		} if hasattr(self, 'L') else {}
+		return {'size': [self.L], 'strike_location': [self.strike]} if hasattr(self, 'L') else {}
 
 	def updateProperties(self, i: int | None = None) -> None:
 		'''
