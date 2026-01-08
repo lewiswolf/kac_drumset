@@ -574,38 +574,53 @@ def FDTDWaveform2D(
 	'''
 
 def raisedCosine(
-	matrix_size: tuple[int, ...],
 	mu: tuple[float] | tuple[float, float],
+	matrix_size: tuple[int, ...],
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
-	Creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
+	Calculate a two dimensional raised cosine distribution, normalised to a unit interval.
+	Only 1D and 2D distributions are supported.
 	input:
+		μ = a normalised point representing the maxima of the distribution ∈ [0, 1].
 		matrix_size = A tuple representing the size of the output matrix.
-		μ = The coordinate used to represent the centre of the cosine distribution.
-		σ = The radius of the distribution.
+		σ = normalised variance ∈ (0, ∞].
+	output:
+		RC(x):
+			{
+				(1 + cos(π(x - μ) / σ)) / 2,	|x - μ| ≤ σ
+				0,								|x - μ| > σ
+			}
+		RC(x, y):
+			l2_norm = ((x - mu_x)^2 + (y - mu_y)^2)^0.5
+			{
+				(1 + cos(π(l2_norm) / σ)) / 2,	|l2_norm| ≤ σ
+				0,								|l2_norm| > σ
+			}
 	'''
 
 def raisedTriangle(
-	matrix_size: tuple[int, ...],
 	mu: tuple[float] | tuple[float, float],
-	x_ab: tuple[float, float] | None = None,
-	y_ab: tuple[float, float] | None = None,
+	matrix_size: tuple[int, ...],
+	x_ab: tuple[float, float] = (0.25, 0.25),
+	y_ab: tuple[float, float] = (0.25, 0.25),
 ) -> npt.NDArray[np.float64]:
 	'''
 	Calculate a one or two dimensional triangular distribution.
 	input:
+		μ = a normalised point representing the maxima of the distribution ∈ [0, 1].
 		size = the size of the matrix.
-		μ = a cartesian point representing the maxima of the triangle.
-		x_ab = minimum and maximum x value for the distribution.
-		y_ab = minimum and maximum y value for the distribution.
+		x_a = segment length of horizontal distribution such that a = μ - x_a.
+		x_b = segment length of horizontal distribution such that b = μ - x_b.
+		y_a = segment length of vertical distribution such that a = μ - y_a.
+		y_b = segment length of vertical distribution such that b = μ - y_b.
 	output:
 		Λ(x, y) = Λ(x) * Λ(y)
 		Λ(x) = {
 			0,								x < a
 			(x - a) / (μ - a),				a ≤ x ≤ μ
 			1. - (x - μ) / (b - μ),			μ < x ≤ b
-			0,								x > a
+			0,								x > b
 		}
 	'''
 ```

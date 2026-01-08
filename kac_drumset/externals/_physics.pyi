@@ -1,13 +1,14 @@
 # core
-from typing import TypeAlias
+from typing import Annotated, TypeAlias
 
 # dependencies
 import numpy as np 			# maths
 import numpy.typing as npt	# typing for numpy
 
+BooleanImage: TypeAlias = list[list[int]] | npt.NDArray[np.int8]
 Matrix_1D: TypeAlias = list[float] | npt.NDArray[np.float64]
 Matrix_2D: TypeAlias = list[list[float]] | npt.NDArray[np.float64]
-BooleanImage: TypeAlias = list[list[int]] | npt.NDArray[np.int8]
+Point: TypeAlias = Annotated[list[float], len(2)] | tuple[float, float]
 
 
 def _AdditiveSynthesis1D(F: Matrix_1D, alpha: Matrix_1D, d: float, k: float, T: int) -> list[float]: ...
@@ -35,19 +36,19 @@ def _FDTDWaveform2D(
 	c_1: float,
 	c_2: float,
 	T: int,
-	w: tuple[float, float],
+	w: Point,
 ) -> list[float]: ...
-def _raisedCosine1D(size: int, mu: float, sigma: float) -> list[float]: ...
-def _raisedCosine2D(size_X: int, size_Y: int, mu: tuple[float, float], sigma: float) -> list[list[float]]: ...
-def _raisedTriangle1D(size: int, mu: float, a: float, b: float) -> list[float]: ...
+def _raisedCosine1D(mu: float, sigma: float, size: int) -> list[float]: ...
+def _raisedCosine2D(mu: Point, sigma: float, size_X: int, size_Y: int) -> list[list[float]]: ...
+def _raisedTriangle1D(mu: float, a: float, b: float, size: int) -> list[float]: ...
 def _raisedTriangle2D(
-	size_X: int,
-	size_Y: int,
-	mu: tuple[float, float],
+	mu: Point,
 	x_a: float,
 	x_b: float,
 	y_a: float,
 	y_b: float,
+	size_X: int,
+	size_Y: int,
 ) -> list[list[float]]: ...
 def _linearAmplitudes(x: float, N: int) -> list[float]: ...
 def _linearSeries(N: int) -> list[float]: ...

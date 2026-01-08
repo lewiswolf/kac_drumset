@@ -44,7 +44,7 @@ class PhysicsTests(TestCase):
 
 		# matrices
 		u_0 = np.zeros((10, 10))
-		u_1 = np.pad(raisedCosine((8, 8), (3., 3.)), 1, mode='constant')
+		u_1 = np.pad(raisedCosine((0.5, 0.5), (8, 8), sigma=0.1), 1, mode='constant')
 		B = np.pad(np.ones((8, 8), dtype=np.int8), 1, mode='constant')
 		# courant number and decay coefficients
 		cfl = 1 / (2 ** 0.5)
@@ -122,7 +122,7 @@ class PhysicsTests(TestCase):
 		'''
 
 		# This test asserts that the one dimensional raised cosine has the correct peaks.
-		rc = raisedCosine((100, ), (50., ), sigma=10)
+		rc = raisedCosine((0.5, ), (101, ), sigma=0.1)
 		self.assertEqual(rc[50], 1.)
 		self.assertEqual(rc.max(), 1.)
 		self.assertEqual(rc.min(), 0.)
@@ -130,7 +130,7 @@ class PhysicsTests(TestCase):
 		self.assertGreater(rc[51], 0.)
 
 		# This test asserts that the two dimensional raised cosine has the correct peaks.
-		rc = raisedCosine((100, 100), (50., 50.), sigma=10)
+		rc = raisedCosine((0.5, 0.5), (101, 101), sigma=0.1)
 		self.assertEqual(rc[50, 50], 1.)
 		self.assertEqual(rc.max(), 1.)
 		self.assertEqual(rc.min(), 0.)
@@ -140,7 +140,7 @@ class PhysicsTests(TestCase):
 		self.assertGreater(rc[50, 51], 0.)
 
 		# This test asserts that the one dimensional triangular distribution has the correct peaks.
-		t = raisedTriangle((100, ), (50., ), x_ab=(30., 70.))
+		t = raisedTriangle((0.5, ), (101, ), x_ab=(0.25, 0.25))
 		self.assertEqual(t[50], 1.)
 		self.assertEqual(t.max(), 1.)
 		self.assertEqual(t.min(), 0.)
@@ -148,11 +148,11 @@ class PhysicsTests(TestCase):
 		self.assertGreater(t[51], 0.)
 
 		# This test asserts that the two dimensional triangular distribution has the correct peaks.
-		t = raisedTriangle((100, 100), (50., 50), x_ab=(30., 70.), y_ab=(30., 70.))
-		self.assertEqual(rc[50, 50], 1.)
+		t = raisedTriangle((0.5, 0.5), (101, 101), x_ab=(0.25, 0.25), y_ab=(0.25, 0.25))
+		self.assertEqual(t[50, 50], 1.)
 		self.assertEqual(t.max(), 1.)
 		self.assertEqual(t.min(), 0.)
-		self.assertGreater(rc[49, 50], 0.)
-		self.assertGreater(rc[51, 50], 0.)
-		self.assertGreater(rc[50, 49], 0.)
-		self.assertGreater(rc[50, 51], 0.)
+		self.assertGreater(t[49, 50], 0.)
+		self.assertGreater(t[51, 50], 0.)
+		self.assertGreater(t[50, 49], 0.)
+		self.assertGreater(t[50, 51], 0.)

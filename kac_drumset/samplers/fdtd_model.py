@@ -107,8 +107,8 @@ class FDTDModel(AudioSampler):
 		self.H = math.floor((1 / (2 ** 0.5)) / (self.gamma * self.k))
 		self.h = 1 / self.H
 		self.cfl = self.gamma * self.k / self.h
-		self.sigma = self.H * strike_width / self.L
-		self.sigma_2 = max(self.sigma ** 2., 1.)
+		self.sigma = strike_width / self.L
+		self.sigma_2 = max((self.sigma * self.H) ** 2., 1.)
 		# FDTD update coefficients
 		log_decay = self.k * 6 * np.log(10) / self.d_60
 		self.c_0 = (self.cfl ** 2) / (1 + log_decay)
@@ -122,11 +122,11 @@ class FDTDModel(AudioSampler):
 		if hasattr(self, 'shape'):
 			self.waveform = FDTDWaveform2D(
 				self.u_0,
-				np.pad(self.a * raisedCosine(
-					(self.H, self.H),
-					((self.strike[0] + 1) * 0.5 * self.H, (self.strike[1] + 1) * 0.5 * self.H),
-					sigma=self.sigma,
-				) / self.sigma_2, 1, mode='constant'),
+				np.pad(
+					self.a * raisedCosine(self.strike, (self.H, self.H), sigma=self.sigma) / self.sigma_2,
+					1,
+					mode='constant',
+				),
 				self.B,
 				self.c_0,
 				self.c_1,
