@@ -339,6 +339,8 @@ class ShapeSettings(TypedDict, total=False):
 ```python
 from kac_drumset.physics import (
 	# methods
+	AdditiveSynthesis1D,
+	AdditiveSynthesis2D,
 	besselJ,
 	besselJZero,
 	circularAmplitudes,
@@ -349,10 +351,11 @@ from kac_drumset.physics import (
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
+	linearAmplitudes,
+	linearSeries,
 	rectangularAmplitudes,
 	rectangularChladniPattern,
 	rectangularSeries,
-	WaveEquationWaveform2D,
 	# classes
 	FDTD_2D
 )
@@ -361,6 +364,44 @@ from kac_drumset.physics import (
 ### Methods
 
 ```python
+def AdditiveSynthesis1D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 1D wave equation.
+	input:
+		F = frequencies (hertz)
+		α = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
+	'''
+
+def AdditiveSynthesis2D(
+	F: npt.NDArray[np.float64],
+	A: npt.NDArray[np.float64],
+	d: float,
+	k: float,
+	T: int,
+) -> npt.NDArray[np.float64]:
+	'''
+	Calculate a closed form solution to the 2D wave equation.
+	input:
+		F = frequencies (hertz)
+		α = amplitudes ∈ [0, 1]
+		d = decay
+		k = sample length
+		T = length of simulation
+	output:
+		waveform = W[t] ∈ e^dt * sin(ωt) * α
+	'''
+
 def besselJ(n: float, m: float) -> float:
 	'''
 	Calculate the bessel function of the first kind. This method is a clone of boost::math::cyl_bessel_j.
@@ -440,6 +481,25 @@ def equilateralTriangleSeries(N: int, M: int) -> npt.NDArray[np.float64]:
 		}
 	'''
 
+def linearAmplitudes(x: float, N: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the amplitudes of the 1D eigenmodes relative to a strike location.
+	input:
+		x = strike location
+		N = number of modes
+	output:
+		A = { abs(sin(nxπ)) | a ∈ ℝ, 0 < n <= N }
+	'''
+
+def linearSeries(N: int) -> npt.NDArray[np.float64]:
+	'''
+	Calculate the the harmonic series.
+	input:
+		N = number of modes
+	output:
+		S = { n | s ∈ ℕ, 0 < n <= N }
+	'''
+
 def rectangularAmplitudes(p: tuple[float, float], N: int, M: int, epsilon: float) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the amplitudes of the rectangular eigenmodes relative to a cartesian strike location.
@@ -514,58 +574,54 @@ def FDTDWaveform2D(
 	'''
 
 def raisedCosine(
-	matrix_size: tuple[int, ...],
 	mu: tuple[float] | tuple[float, float],
+	matrix_size: tuple[int, ...],
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
-	Creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
+	Calculate a two dimensional raised cosine distribution, normalised to a unit interval.
+	Only 1D and 2D distributions are supported.
 	input:
+		μ = a normalised point representing the maxima of the distribution ∈ [0, 1].
 		matrix_size = A tuple representing the size of the output matrix.
-		μ = The coordinate used to represent the centre of the cosine distribution.
-		σ = The radius of the distribution.
+		σ = normalised variance ∈ (0, ∞].
+	output:
+		RC(x):
+			{
+				(1 + cos(π(x - μ) / σ)) / 2,	|x - μ| ≤ σ
+				0,								|x - μ| > σ
+			}
+		RC(x, y):
+			l2_norm = ((x - mu_x)^2 + (y - mu_y)^2)^0.5
+			{
+				(1 + cos(π(l2_norm) / σ)) / 2,	|l2_norm| ≤ σ
+				0,								|l2_norm| > σ
+			}
 	'''
 
 def raisedTriangle(
-	matrix_size: tuple[int, ...],
 	mu: tuple[float] | tuple[float, float],
-	x_ab: tuple[float, float] | None = None,
-	y_ab: tuple[float, float] | None = None,
+	matrix_size: tuple[int, ...],
+	x_ab: tuple[float, float] = (0.25, 0.25),
+	y_ab: tuple[float, float] = (0.25, 0.25),
 ) -> npt.NDArray[np.float64]:
 	'''
 	Calculate a one or two dimensional triangular distribution.
 	input:
+		μ = a normalised point representing the maxima of the distribution ∈ [0, 1].
 		size = the size of the matrix.
-		μ = a cartesian point representing the maxima of the triangle.
-		x_ab = minimum and maximum x value for the distribution.
-		y_ab = minimum and maximum y value for the distribution.
+		x_a = segment length of horizontal distribution such that a = μ - x_a.
+		x_b = segment length of horizontal distribution such that b = μ - x_b.
+		y_a = segment length of vertical distribution such that a = μ - y_a.
+		y_b = segment length of vertical distribution such that b = μ - y_b.
 	output:
 		Λ(x, y) = Λ(x) * Λ(y)
 		Λ(x) = {
 			0,								x < a
 			(x - a) / (μ - a),				a ≤ x ≤ μ
 			1. - (x - μ) / (b - μ),			μ < x ≤ b
-			0,								x > a
+			0,								x > b
 		}
-	'''
-
-def WaveEquationWaveform2D(
-	F: npt.NDArray[np.float64],
-	A: npt.NDArray[np.float64],
-	d: float,
-	k: float,
-	T: int,
-) -> npt.NDArray[np.float64]:
-	'''
-	Calculate a closed form solution to the 2D wave equation.
-	input:
-		F = frequencies (hertz)
-		A = amplitudes ∈ [0, 1]
-		d = decay
-		k = sample length
-		T = length of simulation
-	output:
-		waveform = W[t] ∈ A * e^dt * sin(ωt) / max(A) * NM
 	'''
 ```
 
@@ -705,6 +761,12 @@ pipenv run build
 
 ```bash
 pipenv run start
+```
+### Update Dependencies
+
+```bash
+pipenv update -d
+git submodule update --remote
 ```
 ### Test
 

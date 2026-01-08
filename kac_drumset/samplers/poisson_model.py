@@ -8,7 +8,7 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
-from ..physics import rectangularAmplitudes, rectangularSeries, WaveEquationWaveform2D
+from ..physics import AdditiveSynthesis2D, rectangularAmplitudes, rectangularSeries
 
 __all__ = [
 	'PoissonModel',
@@ -84,7 +84,7 @@ class PoissonModel(AudioSampler):
 		'''
 
 		if hasattr(self, 'L'):
-			self.waveform = WaveEquationWaveform2D(
+			self.waveform = AdditiveSynthesis2D(
 				self.F,
 				self.a * rectangularAmplitudes(
 					(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),

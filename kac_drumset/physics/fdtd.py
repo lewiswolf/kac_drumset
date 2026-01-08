@@ -108,30 +108,18 @@ class FDTD_2D():
 
 		if self._n < self.T:
 			self._n += 1
-			if self._n % 2 == 1:
-				self.u_0 = _FDTDUpdate2D(
-					self.u_0,
-					self.u_1,
-					self.B,
-					self.c_0,
-					self.c_1,
-					self.c_2,
-					self.x_range,
-					self.y_range,
-				)
-				return np.asarray(self.u_0)
-			else:
-				self.u_1 = _FDTDUpdate2D(
-					self.u_1,
-					self.u_0,
-					self.B,
-					self.c_0,
-					self.c_1,
-					self.c_2,
-					self.x_range,
-					self.y_range,
-				)
-				return np.asarray(self.u_1)
+			self.u_0 = _FDTDUpdate2D(
+				self.u_0,
+				self.u_1,
+				self.B,
+				self.c_0,
+				self.c_1,
+				self.c_2,
+				self.x_range,
+				self.y_range,
+			)
+			self.u_0, self.u_1 = self.u_1, self.u_0
+			return np.asarray(self.u_1)
 		else:
 			raise StopIteration
 
@@ -168,79 +156,83 @@ def FDTDWaveform2D(
 
 
 def raisedCosine(
-	matrix_size: tuple[int, ...],
 	mu: tuple[float] | tuple[float, float],
+	matrix_size: tuple[int, ...],
 	sigma: float = 0.5,
 ) -> npt.NDArray[np.float64]:
 	'''
-	Creates a raised cosine distribution centred at mu. Only 1D and 2D distributions are supported.
+	Calculate a two dimensional raised cosine distribution, normalised to a unit interval.
+	Only 1D and 2D distributions are supported.
 	input:
+		μ = a normalised point representing the maxima of the distribution ∈ [0, 1].
 		matrix_size = A tuple representing the size of the output matrix.
-		μ = The coordinate used to represent the centre of the cosine distribution.
-		σ = The radius of the distribution.
+		σ = normalised variance ∈ (0, ∞].
+	output:
+		RC(x):
+			{
+				(1 + cos(π(x - μ) / σ)) / 2,	|x - μ| ≤ σ
+				0,								|x - μ| > σ
+			}
+		RC(x, y):
+			l2_norm = ((x - mu_x)^2 + (y - mu_y)^2)^0.5
+			{
+				(1 + cos(π(l2_norm) / σ)) / 2,	|l2_norm| ≤ σ
+				0,								|l2_norm| > σ
+			}
 	'''
 
 	assert len(mu) <= 2 and len(mu) == len(matrix_size), \
 		'raisedCosine() only supports one or two dimensional inputs.'
 	return np.array(_raisedCosine1D(
-		matrix_size[0],
 		mu[0],
 		sigma,
-	) if len(mu) == 1 else _raisedCosine2D(
 		matrix_size[0],
-		matrix_size[1],
+	) if len(mu) == 1 else np.array(_raisedCosine2D(
 		mu,
 		sigma,
-	))
+		matrix_size[0],
+		matrix_size[1],
+	)))
 
 
 def raisedTriangle(
-	matrix_size: tuple[int, ...],
 	mu: tuple[float] | tuple[float, float],
-	x_ab: tuple[float, float] | None = None,
-	y_ab: tuple[float, float] | None = None,
+	matrix_size: tuple[int, ...],
+	x_ab: tuple[float, float] = (0.25, 0.25),
+	y_ab: tuple[float, float] = (0.25, 0.25),
 ) -> npt.NDArray[np.float64]:
 	'''
 	Calculate a one or two dimensional triangular distribution.
 	input:
+		μ = a normalised point representing the maxima of the distribution ∈ [0, 1].
 		size = the size of the matrix.
-		μ = a cartesian point representing the maxima of the triangle.
-		x_ab = minimum and maximum x value for the distribution.
-		y_ab = minimum and maximum y value for the distribution.
+		x_a = segment length of horizontal distribution such that a = μ - x_a.
+		x_b = segment length of horizontal distribution such that b = μ - x_b.
+		y_a = segment length of vertical distribution such that a = μ - y_a.
+		y_b = segment length of vertical distribution such that b = μ - y_b.
 	output:
 		Λ(x, y) = Λ(x) * Λ(y)
 		Λ(x) = {
 			0,								x < a
 			(x - a) / (μ - a),				a ≤ x ≤ μ
 			1. - (x - μ) / (b - μ),			μ < x ≤ b
-			0,								x > a
+			0,								x > b
 		}
 	'''
 
 	assert len(mu) <= 2 and len(mu) == len(matrix_size), \
 		'raisedTriangle() only supports one or two dimensional inputs.'
-	# configure x_ab
-	if x_ab is None:
-		x_ab = (0, matrix_size[0] - 1)
-	assert x_ab[0] <= mu[0] and x_ab[1] >= mu[0]
-	if len(mu) == 1:
-		return np.array(_raisedTriangle1D(
-			matrix_size[0],
-			mu[0],
-			x_ab[0],
-			x_ab[1],
-		))
-	else:
-		# configure y_ab
-		if y_ab is None:
-			y_ab = (0, matrix_size[1] - 1)
-		assert y_ab[0] <= mu[1] and y_ab[1] >= mu[1]
-		return np.array(_raisedTriangle2D(
-			matrix_size[0],
-			matrix_size[1],
-			mu,
-			x_ab[0],
-			x_ab[1],
-			y_ab[0],
-			y_ab[1],
-		))
+	return np.array(_raisedTriangle1D(
+		mu[0],
+		x_ab[0],
+		x_ab[1],
+		matrix_size[0],
+	)) if len(mu) == 1 else np.array(_raisedTriangle2D(
+		mu,
+		x_ab[0],
+		x_ab[1],
+		y_ab[0],
+		y_ab[1],
+		matrix_size[0],
+		matrix_size[1],
+	))

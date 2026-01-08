@@ -9,19 +9,24 @@ from .fdtd import (
 	raisedTriangle,
 )
 from .modes import (
+	AdditiveSynthesis1D,
+	AdditiveSynthesis2D,
 	circularAmplitudes,
 	circularChladniPattern,
 	circularSeries,
 	equilateralTriangleAmplitudes,
 	equilateralTriangleSeries,
+	linearAmplitudes,
+	linearSeries,
 	rectangularAmplitudes,
 	rectangularChladniPattern,
 	rectangularSeries,
-	WaveEquationWaveform2D,
 )
 
 __all__ = [
 	# methods
+	'AdditiveSynthesis1D',
+	'AdditiveSynthesis2D',
 	'besselJ',
 	'besselJZero',
 	'circularChladniPattern',
@@ -30,12 +35,13 @@ __all__ = [
 	'equilateralTriangleAmplitudes',
 	'equilateralTriangleSeries',
 	'FDTDWaveform2D',
+	'linearAmplitudes',
+	'linearSeries',
 	'raisedCosine',
 	'raisedTriangle',
 	'rectangularAmplitudes',
 	'rectangularChladniPattern',
 	'rectangularSeries',
-	'WaveEquationWaveform2D',
 	# classes
 	'FDTD_2D',
 ]
