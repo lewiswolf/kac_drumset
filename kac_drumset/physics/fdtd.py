@@ -108,30 +108,18 @@ class FDTD_2D():
 
 		if self._n < self.T:
 			self._n += 1
-			if self._n % 2 == 1:
-				self.u_0 = _FDTDUpdate2D(
-					self.u_0,
-					self.u_1,
-					self.B,
-					self.c_0,
-					self.c_1,
-					self.c_2,
-					self.x_range,
-					self.y_range,
-				)
-				return np.asarray(self.u_0)
-			else:
-				self.u_1 = _FDTDUpdate2D(
-					self.u_1,
-					self.u_0,
-					self.B,
-					self.c_0,
-					self.c_1,
-					self.c_2,
-					self.x_range,
-					self.y_range,
-				)
-				return np.asarray(self.u_1)
+			self.u_0 = _FDTDUpdate2D(
+				self.u_0,
+				self.u_1,
+				self.B,
+				self.c_0,
+				self.c_1,
+				self.c_2,
+				self.x_range,
+				self.y_range,
+			)
+			self.u_0, self.u_1 = self.u_1, self.u_0
+			return np.asarray(self.u_1)
 		else:
 			raise StopIteration
 

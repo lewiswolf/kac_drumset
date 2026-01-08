@@ -44,7 +44,7 @@ class PhysicsTests(TestCase):
 
 		# matrices
 		u_0 = np.zeros((10, 10))
-		u_1 = np.pad(raisedCosine((0.5, 0.5), (8, 8), sigma=0.1), 1, mode='constant')
+		u_1 = np.pad(raisedCosine((0.5, 0.5), (8, 8), sigma=0.2), 1, mode='constant')
 		B = np.pad(np.ones((8, 8), dtype=np.int8), 1, mode='constant')
 		# courant number and decay coefficients
 		cfl = 1 / (2 ** 0.5)
@@ -59,6 +59,7 @@ class PhysicsTests(TestCase):
 			# simulation.
 			self.assertFalse(np.isnan(u).any())
 			self.assertLessEqual(u.max(), 1.)
+			self.assertNotEqual(np.sum(u), 0.)
 			self.assertGreaterEqual(u.min(), -1.)
 
 		# Test waveform generator with a square simulation
@@ -68,6 +69,7 @@ class PhysicsTests(TestCase):
 		# simulation.
 		self.assertFalse(np.isnan(waveform).any())
 		self.assertLessEqual(waveform.max(), 1.)
+		self.assertNotEqual(np.sum(waveform), 0.)
 		self.assertGreaterEqual(waveform.min(), -1.)
 
 	def test_lamé(self) -> None:
