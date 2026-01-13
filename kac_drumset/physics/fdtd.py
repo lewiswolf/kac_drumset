@@ -158,26 +158,25 @@ def FDTDWaveform2D(
 def raisedCosine(
 	mu: tuple[float] | tuple[float, float],
 	matrix_size: tuple[int, ...],
-	sigma: float = 0.5,
+	sigma: float = 0.25,
 ) -> npt.NDArray[np.float64]:
 	'''
-	Calculate a two dimensional raised cosine distribution, normalised to a unit interval.
-	Only 1D and 2D distributions are supported.
+	Calculate a one or two-dimensional raised cosine distribution, normalised to a unit interval.
 	input:
 		μ = a normalised point representing the maxima of the distribution ∈ [0, 1].
 		matrix_size = A tuple representing the size of the output matrix.
-		σ = normalised variance ∈ (0, ∞].
+		σ = normalised half-width of the distribution ∈ (0, ∞].
 	output:
 		RC(x):
 			{
-				(1 + cos(π(x - μ) / σ)) / 2,	|x - μ| ≤ σ
+				(1 + cos(π * |x - μ| / σ)) / 2,	|x - μ| ≤ σ
 				0,								|x - μ| > σ
 			}
 		RC(x, y):
 			l2_norm = ((x - mu_x)^2 + (y - mu_y)^2)^0.5
 			{
-				(1 + cos(π(l2_norm) / σ)) / 2,	|l2_norm| ≤ σ
-				0,								|l2_norm| > σ
+				(1 + cos(π * l2_norm / σ)) / 2,	l2_norm ≤ σ
+				0,								l2_norm > σ
 			}
 	'''
 
@@ -202,14 +201,14 @@ def raisedTriangle(
 	y_ab: tuple[float, float] = (0.25, 0.25),
 ) -> npt.NDArray[np.float64]:
 	'''
-	Calculate a one or two dimensional triangular distribution.
+	Calculate a one or two-dimensional triangular function, normalised to a unit interval.
 	input:
 		μ = a normalised point representing the maxima of the distribution ∈ [0, 1].
 		size = the size of the matrix.
-		x_a = segment length of horizontal distribution such that a = μ - x_a.
-		x_b = segment length of horizontal distribution such that b = μ - x_b.
-		y_a = segment length of vertical distribution such that a = μ - y_a.
-		y_b = segment length of vertical distribution such that b = μ - y_b.
+		x_a = normalised segment length of horizontal distribution such that a = μ - x_a.
+		x_b = normalised segment length of horizontal distribution such that b = μ - x_b.
+		y_a = normalised segment length of vertical distribution such that a = μ - y_a.
+		y_b = normalised segment length of vertical distribution such that b = μ - y_b.
 	output:
 		Λ(x, y) = Λ(x) * Λ(y)
 		Λ(x) = {

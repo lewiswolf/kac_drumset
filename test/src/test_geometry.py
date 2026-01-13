@@ -28,7 +28,7 @@ from kac_drumset.geometry import (
 	IrregularStar,
 	TravellingSalesmanPolygon,
 	UnitRectangle,
-	# UnitTriangle,
+	UnitTriangle,
 	# types
 	Ellipse,
 	Polygon,
@@ -534,36 +534,37 @@ class GeometryTests(TestCase):
 			self.assertEqual(R.centroid, (0., 0.))
 
 		# Test the vertices and area of the UnitTriangle for varying r, theta.
-		# for [r, theta] in [
-		# 	(0.5, np.pi / 2.),
-		# 	(1., 1.),
-		# 	(1., 2.),
-		# 	(1., 3.),
-		# 	(1., 4.),
-		# 	(1., 5.),
-		# 	(-1., 6.),
-		# ]:
-		# 	T = UnitTriangle(r, theta)
-		# 	P = Polygon(T.vertices)
-		# 	self.assertAlmostEqual(T.area, P.area)
-		# 	self.assertAlmostEqual(T.area, 1.)
+		for [r, theta] in [
+			(1., np.pi / 2.),
+			(1., 1.),
+			(1., 2.),
+			(1., 3.),
+			(1., 4.),
+			(0.5, 5.),
+			(-1., 6.),
+		]:
+			T = UnitTriangle(r, theta)
+			P = Polygon(T.vertices)
+			self.assertAlmostEqual(T.area, P.area)
+			self.assertAlmostEqual(T.area, 1.)
 
-		# 	# This test asserts that the longest line of the UnitTriangle is along the x axis.
-		# 	self.assertEqual(T.vertices[:, 0].min() + T.vertices[:, 0].max(), 0.)
-		# 	self.assertEqual(T.vertices[:, 1].min() + T.vertices[:, 1].max(), 0.)
+			# # This test asserts that the base of the UnitTriangle lies along the x axis.
+			self.assertEqual(T.vertices[0, 1], 0.)
+			self.assertEqual(T.vertices[1, 1], 0.)
 
-		# # This tests asserts the symmetry of the method used to generate UnitTriangle
-		# norm_tri = _normaliseConvexPolygon(UnitTriangle(1., 1.).vertices)
-		# self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., np.pi - 1.).vertices), norm_tri)))
-		# self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., np.pi + 1.).vertices), norm_tri)))
-		# self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., -1.).vertices), norm_tri)))
+		# This tests asserts the symmetry of the method used to generate UnitTriangle
+		norm_tri = _normaliseConvexPolygon(UnitTriangle(1., 1.).vertices, True)
+		self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., np.pi - 1.).vertices, True), norm_tri)))
+		self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., np.pi + 1.).vertices, True), norm_tri)))
+		self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., -1.).vertices, True), norm_tri)))
 
-		# # This test asserts that the equilateral triangle is properly constructed.
-		# T = UnitTriangle(1., np.pi / 2)
-		# for n in range(3):
-		# 	a = T.vertices[n]
-		# 	b = T.vertices[(n + 1) % 3]
-		# 	self.assertEqual(
-		# 		((a[0] - b[0]) ** 2) + ((a[1] - b[1]) ** 2) ** 0.5,
-		# 		(4 / (3 ** 0.5)) ** 0.5,
-		# 	)
+		# This test asserts that the equilateral triangle is properly constructed.
+		T = UnitTriangle(1., np.pi / 2)
+		for n in range(3):
+			a = T.vertices[n]
+			b = T.vertices[(n + 1) % 3]
+			c = T.vertices[(n + 2) % 3]
+			self.assertAlmostEqual(
+				math.hypot(b[0] - a[0], b[1] - a[1]),
+				math.hypot(c[0] - b[0], c[1] - b[1]),
+			)

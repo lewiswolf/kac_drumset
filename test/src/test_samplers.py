@@ -78,6 +78,9 @@ class SamplerTests(TestCase):
 			self.assertLessEqual(model.waveform.max(), 1.)
 			self.assertGreaterEqual(model.waveform.min(), -1.)
 
+			# This test asserts that the waveform is not silent.
+			self.assertNotEqual(np.sum(model.waveform), 0.)
+
 	def test_fdtd_model(self) -> None:
 		'''
 		Tests used in conjunction with `samplers/fdtd_model.py`.
@@ -162,6 +165,8 @@ class SamplerTests(TestCase):
 							self.assertFalse(np.isnan(model.waveform).any())
 							self.assertLessEqual(model.waveform.max(), 1.)
 							self.assertGreaterEqual(model.waveform.min(), -1.)
+
+							# This test asserts that the waveform is not silent.
 							# fails sporadically
 							# self.assertNotEqual(np.sum(model.waveform), 0.)
 
@@ -201,6 +206,9 @@ class SamplerTests(TestCase):
 			self.assertLessEqual(model.waveform.max(), 1.)
 			self.assertGreaterEqual(model.waveform.min(), -1.)
 
+			# This test asserts that the waveform is not silent.
+			self.assertNotEqual(np.sum(model.waveform), 0.)
+
 	def test_linear_model(self) -> None:
 		'''
 		Tests used in conjunction with `samplers/linear_model.py`.
@@ -236,6 +244,9 @@ class SamplerTests(TestCase):
 			model.generateWaveform()
 			self.assertLessEqual(model.waveform.max(), 1.)
 			self.assertGreaterEqual(model.waveform.min(), -1.)
+
+			# This test asserts that the waveform is not silent.
+			self.assertNotEqual(np.sum(model.waveform), 0.)
 
 	def test_poisson_model(self) -> None:
 		'''
@@ -282,3 +293,6 @@ class SamplerTests(TestCase):
 			model.generateWaveform()
 			self.assertLessEqual(model.waveform.max(), 1.)
 			self.assertGreaterEqual(model.waveform.min(), -1.)
+
+			# This test asserts that the waveform is not silent.
+			self.assertNotEqual(np.sum(model.waveform), 0.)

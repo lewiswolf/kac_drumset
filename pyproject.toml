@@ -3,9 +3,16 @@ name = "kac_drumset"
 version = "2.0.0"
 authors = [{ name = "Lewis Wolstanholme", email = "lewiswolstanholme@gmail.com" }]
 description = "Analysis tools and a dataset generator for arbitrarily shaped drums."
-keywords = ["kac_drumset"]
+readme = {file = "readme.md", content-type = "text/markdown"}
 license = { text = "CC-BY" }
-
+keywords = [
+	"kac_drumset",
+	"arbitrarily shaped drums",
+	"computational geometry",
+	"digital signal processing",
+	"physical modelling",
+	"spectral geometry",
+]
 classifiers = [
 	"Operating System :: MacOS :: MacOS X",
 	"Operating System :: Microsoft :: Windows",
@@ -20,7 +27,7 @@ classifiers = [
 
 requires-python = ">=3.11"
 dependencies = [
-	"numpy>=2.3",
+	"numpy>=2.4",
 	"opencv-python>=4.11",
 	"kac_prediction@git+https://github.com/lewiswolf/kac_prediction.git",
 ]

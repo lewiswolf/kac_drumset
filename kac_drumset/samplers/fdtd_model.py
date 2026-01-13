@@ -42,8 +42,8 @@ class FDTDModel(AudioSampler):
 	H: int							# number of grid points across each dimension, for the domain U ∈ [0, 1]
 	h: float						# length of each grid step
 	k: float						# sample length (ms)
-	sigma: float					# strike width relative to H
-	sigma_2: float					# sigma ** 2
+	sigma: float					# half strike width relative to L
+	sigma_2: float					# sigma ** 2 relative to H
 	# FDTD update coefficients
 	c_0: float						# first coefficient
 	c_1: float						# second coefficient
@@ -80,7 +80,7 @@ class FDTDModel(AudioSampler):
 		drum_size: float = 0.3,
 		material_density: float = 0.2,
 		shape_settings: ShapeSettings | None = None,
-		strike_width: float = 0.01,
+		strike_width: float = 0.02,
 		tension: float = 2000.,
 	) -> None:
 		'''
@@ -107,7 +107,7 @@ class FDTDModel(AudioSampler):
 		self.H = math.floor((1 / (2 ** 0.5)) / (self.gamma * self.k))
 		self.h = 1 / self.H
 		self.cfl = self.gamma * self.k / self.h
-		self.sigma = strike_width / self.L
+		self.sigma = strike_width * 0.5 / self.L
 		self.sigma_2 = max((self.sigma * self.H) ** 2., 1.)
 		# FDTD update coefficients
 		log_decay = self.k * 6 * np.log(10) / self.d_60
@@ -122,11 +122,11 @@ class FDTDModel(AudioSampler):
 		if hasattr(self, 'shape'):
 			self.waveform = FDTDWaveform2D(
 				self.u_0,
-				np.pad(
-					self.a * raisedCosine(self.strike, (self.H, self.H), sigma=self.sigma) / self.sigma_2,
-					1,
-					mode='constant',
-				),
+				np.pad(self.a * raisedCosine(
+					((self.strike[0] + 1) * 0.5, (self.strike[1] + 1) * 0.5),
+					(self.H, self.H),
+					sigma=self.sigma,
+				) / self.sigma_2, 1, mode='constant'),
 				self.B,
 				self.c_0,
 				self.c_1,
