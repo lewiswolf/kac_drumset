@@ -159,12 +159,20 @@ def GeometryExample() -> None:
 		Ellipse,
 		ConvexPolygon,
 		UnitRectangle,
+		UnitTriangle,
+	)
+
+	# Define a triangle.
+	triangle = UnitTriangle(1., 1.5707963268)
+	print(
+		f'\nThis is a equilateral triangle: \n \n {triangle.draw(11)} \n \n with vertices: \n \n {triangle.vertices} \n',
+		f'\nIts area is {triangle.area}.',
 	)
 
 	# Define a square.
 	square = UnitRectangle(1.)
 	print(
-		f'This is a square: \n \n {square.vertices} \n',
+		f'\nThis is a square: \n \n {square.vertices} \n',
 		f'\nIts area is {square.area}.',
 		f'\nThis square {"does" if isColinear(square.vertices[0: 3]) else "does not"} contain any points that are colinear.',
 		'\nWhereas the points [[0., 0.], [1., 1.], [2., 2.]]',
@@ -194,11 +202,11 @@ def GeometryExample() -> None:
 	)
 
 	# Define a line
-	line_a = np.array([[0., 0.], [1., 0.]])
-	line_b = np.array([[0., 1.], [1., 1.]])
+	line_a = np.array([[0., 0.], [1., 1.]])
+	line_b = np.array([[1., 0.], [0., 1.]])
 	do_they_intersect, and_where = lineIntersection(line_a, line_b)
 	print(
-		'\nThe two lines, [[0., 0.], [1., 0.]] and [[0., 1.], [1., 1.]],',
+		'\nThe two lines, [[0., 0.], [1., 1.]] and [[1., 0.], [0., 1.]]',
 		f'{"" if do_they_intersect else "do not "}intersect at point',
 		f'({and_where[0]}, {and_where[1]}).',
 	)
@@ -206,7 +214,7 @@ def GeometryExample() -> None:
 	# Define an ellipse
 	ellipse = Ellipse()
 	print(
-		f'\nA ellipse with major of {ellipse.major} and minor of {ellipse.minor} has an area of {ellipse.area}.',
+		f'\nAn ellipse with major of {ellipse.major} and minor of {ellipse.minor} has an area of {ellipse.area}.',
 		f'\nThis ellipse has a focal distance of {ellipse.focalDistance()} and an eccentricity of {ellipse.eccentricity()}.',
 		f'\nThe ellipse has foci at {ellipse.foci()[0]} and {ellipse.foci()[1]}.',
 	)
