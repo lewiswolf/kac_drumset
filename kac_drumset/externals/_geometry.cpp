@@ -61,9 +61,9 @@ PYBIND11_MODULE(_geometry, m) {
 	m.def("_generateUnitRectangle", [](const double& epsilon) -> _Vertices {
 		return convertPolygonToVector(g::generateUnitRectangle(epsilon));
 	});
-	// m.def("_generateUnitTriangle", [](const double& r, const double& theta) -> _Vertices {
-	// 	return convertPolygonToVector(g::generateUnitTriangle(r, theta));
-	// });
+	m.def("_generateUnitTriangle", [](const double& r, const double& theta) -> _Vertices {
+		return convertPolygonToVector(g::generateUnitTriangle(r, theta));
+	});
 	m.def("_isColinear", [](const std::array<_Point, 3>& V) -> bool {
 		return g::isColinear(T::Point(V[0]), T::Point(V[1]), T::Point(V[2]));
 	});

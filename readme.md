@@ -40,6 +40,7 @@ from kac_drumset.geometry import (
 	IrregularStar,
 	TravellingSalesmanPolygon,
 	UnitRectangle,
+	UnitTriangle,
 	# Types
 	Ellipse,
 	Polygon,
@@ -161,7 +162,21 @@ class UnitRectangle(Polygon):
 		''' Settings to be used when generating. '''
 		epsilon: float		# aspect ratio (randomly generated when epsilon = 0)
 
-	def __init__(self, epsilon: float = 0.) -> None:
+	def __init__(self, epsilon: float | None = None) -> None:
+
+
+class UnitTriangle(Polygon):
+	'''
+	Define a triangle with unit area. For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [-1, 1], the corresponding
+	triangle will be unique.
+	'''
+
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		r: float			# radius
+		theta: float		# angle
+
+	def __init__(self, r: float | None = None, theta: float | None = None) -> None:
 ```
 
 ### Types
