@@ -28,7 +28,7 @@ classifiers = [
 requires-python = ">=3.11"
 dependencies = [
 	"numpy>=2.4",
-	"opencv-python>=4.11",
+	"opencv-python>=4.13",
 	"kac_prediction@git+https://github.com/lewiswolf/kac_prediction.git",
 ]
 
