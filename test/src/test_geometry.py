@@ -451,40 +451,40 @@ class GeometryTests(TestCase):
 
 		# These tests assert that all polygon generators are functioning correctly
 		for n in range(97):
-			P = np.array(_generateConvexPolygon(n + 3))
+			_P = np.array(_generateConvexPolygon(n + 3))
 			# This test asserts convexity
-			self.assertTrue(_isConvex(P))
+			self.assertTrue(_isConvex(_P))
 			# This test asserts simplicity
-			self.assertTrue(_isSimple(P))
+			self.assertTrue(_isSimple(_P))
 			# This test asserts coordinate normalisation
-			self.assertLessEqual(np.max(P[:, 0]), 1.0)
-			self.assertGreaterEqual(np.min(P[:, 0]), -1.0)
-			self.assertLessEqual(np.max(P[:, 1]), 1.0)
-			self.assertGreaterEqual(np.min(P[:, 1]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 0]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 0]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 1]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 1]), -1.0)
 			# This test asserts orientation
-			self.assertGreater(_polygonArea(P), 0.)
+			self.assertGreater(_polygonArea(_P), 0.)
 
-			P = np.array(_generateIrregularStar(n + 3))
+			_P = np.array(_generateIrregularStar(n + 3))
 			# This test asserts simplicity
-			self.assertTrue(_isSimple(P))
+			self.assertTrue(_isSimple(_P))
 			# This test asserts coordinate normalisation
-			self.assertLessEqual(np.max(P[:, 0]), 1.0)
-			self.assertGreaterEqual(np.min(P[:, 0]), -1.0)
-			self.assertLessEqual(np.max(P[:, 1]), 1.0)
-			self.assertGreaterEqual(np.min(P[:, 1]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 0]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 0]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 1]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 1]), -1.0)
 			# This test asserts orientation
-			self.assertGreater(_polygonArea(P), 0.)
-				
-			P = np.array(_generatePolygon(n + 3))
+			self.assertGreater(_polygonArea(_P), 0.)
+
+			_P = np.array(_generatePolygon(n + 3))
 			# This test asserts simplicity
-			self.assertTrue(_isSimple(P))
+			self.assertTrue(_isSimple(_P))
 			# This test asserts coordinate normalisation
-			self.assertLessEqual(np.max(P[:, 0]), 1.0)
-			self.assertGreaterEqual(np.min(P[:, 0]), -1.0)
-			self.assertLessEqual(np.max(P[:, 1]), 1.0)
-			self.assertGreaterEqual(np.min(P[:, 1]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 0]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 0]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 1]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 1]), -1.0)
 			# This test asserts orientation
-			# self.assertGreater(_polygonArea(P), 0.)
+			# self.assertGreater(_polygonArea(_P), 0.)
 
 		for _ in range(10000):
 			# This test asserts that all polygon generation methods always produces a unique output.

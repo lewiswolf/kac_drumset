@@ -35,6 +35,8 @@ __all__ = [
 class ConvexPolygon(Polygon):
 	'''
 	Generate convex shapes according to Pavel Valtr's 1995 algorithm.
+	Adapted from Sander Verdonschot's Java version, found here:
+	https://cglab.ca/~sander/misc/ConvexGeneration/ValtrAlgorithm.java
 	'''
 
 	class Settings(ShapeSettings, total=False):
@@ -66,9 +68,10 @@ class IrregularStar(Polygon):
 			_normaliseConvexPolygon(self.vertices, True) if self.convex() else _normaliseSimplePolygon(self.vertices, True),
 		)
 
+
 class RegularPolygon(Polygon):
 	'''
-	This is a fast method for generating regular polygons, particularly with a large number of vertices.
+	Generate an N-sided regular polygon.
 	'''
 
 	class Settings(ShapeSettings, total=False):
@@ -104,16 +107,17 @@ class TravellingSalesmanPolygon(Polygon):
 class UnitRectangle(Polygon):
 	'''
 	Define a rectangle with unit area and an aspect ration epsilon.
+	If no default argument is supplied, output is randomly distributed according to ϵ ∈ (0, 1].
 	'''
 
 	epsilon: float
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		epsilon: float		# aspect ratio (randomly generated when epsilon = 0)
+		epsilon: float		# aspect ratio (randomly generated when epsilon is None)
 
 	def __init__(self, epsilon: float | None = None) -> None:
-		self.epsilon = np.random.uniform(0., 1.) if epsilon is None else epsilon
+		self.epsilon = 1. - np.random.uniform(0., 1.) if epsilon is None else epsilon
 		super().__init__(_generateUnitRectangle(self.epsilon))
 
 	def __getLabels__(self) -> dict[str, list[float | int]]:
@@ -125,8 +129,9 @@ class UnitRectangle(Polygon):
 
 class UnitTriangle(Polygon):
 	'''
-	Define a triangle with unit area. For any point (r, θ) where θ ∈ [0, π / 2] and r ∈ [-1, 1], the corresponding
-	triangle will be unique.
+	Define a triangle with unit area. This construction is achieve through mapping a polar coordinate (r, θ),
+	where θ ∈ [0, π / 2] and r ∈ [-1, 1], onto a lens.
+	If no default argument is supplied, output is randomly distributed according to r ∈ (0, 1], θ ∈ (0, π).
 	'''
 
 	r: float
@@ -134,13 +139,12 @@ class UnitTriangle(Polygon):
 
 	class Settings(ShapeSettings, total=False):
 		''' Settings to be used when generating. '''
-		r: float			# radius
-		theta: float		# angle
+		r: float			# radius (randomly generated when r is None)
+		theta: float		# angle (randomly generated when theta is None)
 
 	def __init__(self, r: float | None = None, theta: float | None = None) -> None:
-		self.r = np.random.uniform(0., 1.) if r is None else r
-		self.theta = np.random.uniform(0., np.pi) if theta is None else theta
-		assert self.r <= 1. and self.r >= -1., 'r ∈ [-1, 1]'
+		self.r = 1. - np.random.uniform(0., 1.) if r is None else r
+		self.theta = np.random.uniform(np.finfo(float).eps, np.pi) if theta is None else theta
 		super().__init__(_generateUnitTriangle(self.r, self.theta))
 
 	def __getLabels__(self) -> dict[str, list[float | int]]:
