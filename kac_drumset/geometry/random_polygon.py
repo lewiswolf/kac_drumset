@@ -12,6 +12,7 @@ import numpy as np 			# maths
 from ..externals._geometry import (
 	_generateConvexPolygon,
 	_generateIrregularStar,
+	_generateRegularPolygon,
 	_generatePolygon,
 	_generateUnitRectangle,
 	_generateUnitTriangle,
@@ -24,6 +25,7 @@ from .types import ShapeSettings
 __all__ = [
 	'ConvexPolygon',
 	'IrregularStar',
+	'RegularPolygon',
 	'TravellingSalesmanPolygon',
 	'UnitRectangle',
 	'UnitTriangle',
@@ -63,6 +65,19 @@ class IrregularStar(Polygon):
 		self.vertices = np.array(
 			_normaliseConvexPolygon(self.vertices, True) if self.convex() else _normaliseSimplePolygon(self.vertices, True),
 		)
+
+class RegularPolygon(Polygon):
+	'''
+	This is a fast method for generating regular polygons, particularly with a large number of vertices.
+	'''
+
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		N: int				# number of vertices (randomly generated when N < 3)
+		max_vertices: int	# maximum number of vertices when generating
+
+	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
+		super().__init__(_generateRegularPolygon(N if N > 2 else random.randint(3, max_vertices)))
 
 
 class TravellingSalesmanPolygon(Polygon):

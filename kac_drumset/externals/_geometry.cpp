@@ -49,11 +49,14 @@ PyBind11 config.
 
 PYBIND11_MODULE(_geometry, m) {
 	m.doc() = "_geometry";
+	m.def("_generateConvexPolygon", [](const int& N) -> _Vertices {
+		return convertPolygonToVector(g::generateConvexPolygon(N));
+	});
 	m.def("_generateIrregularStar", [](const int& N) -> _Vertices {
 		return convertPolygonToVector(g::generateIrregularStar(N));
 	});
-	m.def("_generateConvexPolygon", [](const int& N) -> _Vertices {
-		return convertPolygonToVector(g::generateConvexPolygon(N));
+	m.def("_generateRegularPolygon", [](const int& N) -> _Vertices {
+		return convertPolygonToVector(g::generateRegularPolygon(N));
 	});
 	m.def("_generatePolygon", [](const int& N) -> _Vertices {
 		return convertPolygonToVector(g::generatePolygon(N));
@@ -83,10 +86,31 @@ PYBIND11_MODULE(_geometry, m) {
 		return g::largestVector(convertVectorToPolygon(V));
 	});
 	m.def("_lineIntersection", [](_Line& A, _Line& B) -> std::pair<std::string, _Point> {
-		std::pair<std::string, T::Point> out = g::lineIntersection(
+		std::pair<g::IntersectionType, T::Point> out = g::lineIntersection(
 			T::Line(T::Point(A[0]), T::Point(A[1])), T::Line(T::Point(B[0]), T::Point(B[1]))
 		);
-		return std::make_pair(out.first, _Point({out.second.x, out.second.y}));
+		std::string S = "";
+		switch (out.first) {
+			case g::IntersectionType::Branch:
+				S = "branch";
+				break;
+			case g::IntersectionType::Colinear:
+				S = "colinear";
+				break;
+			case g::IntersectionType::Intersect:
+				S = "intersect";
+				break;
+			case g::IntersectionType::None:
+				S = "none";
+				break;
+			case g::IntersectionType::Vertex:
+				S = "vertex";
+				break;
+			default:
+				S = "error";
+				break;
+		}
+		return {S, _Point({out.second.x, out.second.y})};
 	});
 	m.def("_normaliseConvexPolygon", [](const _Vertices& V, const bool& signed_norm) -> _Vertices {
 		return convertPolygonToVector(
