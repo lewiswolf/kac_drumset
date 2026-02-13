@@ -9,11 +9,12 @@ from kac_drumset.physics import (
 	circularAmplitudes,
 	circularSeries,
 	equilateralTriangleAmplitudes,
+	FDTDWaveform1D,
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
 	rectangularAmplitudes,
-	FDTD_2D,
+	FDTD,
 )
 
 
@@ -42,18 +43,47 @@ class PhysicsTests(TestCase):
 		Tests used in conjunction with `fdtd.hpp`.
 		'''
 
-		# matrices
-		u_0 = np.zeros((10, 10))
-		u_1 = np.pad(raisedCosine((0.5, 0.5), (8, 8), sigma=0.2), 1, mode='constant')
+		# 1D matrices
+		u1_0 = np.zeros((11,))
+		u1_1 = np.pad(raisedCosine((0.5,), (9,), sigma=0.2), 1, mode='constant')
+		# courant number and decay coefficients
+		cfl = 1.
+		c_0 = cfl ** 2.
+		c_1 = 2. * (1. - (cfl ** 2))
+		c_2 = 1.
+
+		# Test iterator with a linear simulation
+		for u in FDTD(u_0=u1_0, u_1=u1_1, c_0=c_0, c_1=c_1, c_2=c_2, T=20):
+			# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
+			# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
+			# simulation.
+			self.assertFalse(np.isnan(u).any())
+			self.assertLessEqual(u.max(), 1.)
+			self.assertNotEqual(np.sum(u), 0.)
+			self.assertGreaterEqual(u.min(), -1.)
+
+		# Test waveform generator with a linear simulation
+		waveform = FDTDWaveform1D(u_0=u1_0, u_1=u1_1, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=0.5)
+		# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
+		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
+		# simulation.
+		self.assertFalse(np.isnan(waveform).any())
+		self.assertLessEqual(waveform.max(), 1.)
+		self.assertNotEqual(np.sum(waveform), 0.)
+		self.assertGreaterEqual(waveform.min(), -1.)
+
+		# 2D matrices
+		u2_0 = np.zeros((10, 10))
+		u2_1 = np.pad(raisedCosine((0.5, 0.5), (8, 8), sigma=0.2), 1, mode='constant')
 		B = np.pad(np.ones((8, 8), dtype=np.int8), 1, mode='constant')
 		# courant number and decay coefficients
-		cfl = 1 / (2 ** 0.5)
-		c_0 = cfl ** 2
-		c_1 = 2 * (1 - 2 * (cfl ** 2))
+		cfl = 1. / (2. ** 0.5)
+		c_0 = cfl ** 2.
+		c_1 = 2. * (1. - 2. * (cfl ** 2.))
 		c_2 = 1.
 
 		# Test iterator with a square simulation
-		for u in FDTD_2D(u_0=u_0.tolist(), u_1=u_1.tolist(), B=B.tolist(), c_0=c_0, c_1=c_1, c_2=c_2, T=20):
+		for u in FDTD(u_0=u2_0, u_1=u2_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20):
 			# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 			# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 			# simulation.
@@ -63,7 +93,7 @@ class PhysicsTests(TestCase):
 			self.assertGreaterEqual(u.min(), -1.)
 
 		# Test waveform generator with a square simulation
-		waveform = FDTDWaveform2D(u_0=u_0, u_1=u_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=(0.5, 0.5))
+		waveform = FDTDWaveform2D(u_0=u2_0, u_1=u2_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=(0.5, 0.5))
 		# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 		# simulation.
