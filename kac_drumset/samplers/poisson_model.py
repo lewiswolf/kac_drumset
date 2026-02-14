@@ -8,7 +8,7 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
-from ..physics import AdditiveSynthesis2D, rectangularAmplitudes, rectangularSeries
+from ..physics import AdditiveSynthesis, rectangularAmplitudes, rectangularSeries
 
 __all__ = [
 	'PoissonModel',
@@ -21,21 +21,22 @@ class PoissonModel(AudioSampler):
 	'''
 
 	# user defined variables
-	a: float						# maximum amplitude of the simulation ∈ [0, 1]
-	d_60: float						# decay time (seconds)
-	M: int							# number of mth modes
-	N: int							# number of nth modes
-	p: float						# material density of the simulated drum membrane (kg/m^2)
-	t: float						# tension at rest (N/m)
+	a: float							# maximum amplitude of the simulation ∈ [0, 1]
+	bc: tuple[bool, bool, bool, bool]	# control which boundaries are fixed (true) or free (false)
+	d_60: float							# decay time (seconds)
+	M: int								# number of mth modes
+	N: int								# number of nth modes
+	p: float							# material density of the simulated drum membrane (kg/m^2)
+	t: float							# tension at rest (N/m)
 	# model inferences
-	c: float						# wavespeed (m/s)
-	decay: float					# decay constant
-	F: npt.NDArray[np.float64]		# array of eigenfrequencies
-	k: float						# sample length (ms)
+	c: float							# wavespeed (m/s)
+	decay: float						# decay constant
+	F: npt.NDArray[np.float64]			# array of frequencies (hz)
+	k: float							# sample length (ms)
 	# drum properties
-	epsilon: float					# aspect ratio
-	L: float						# size of the drum (m)
-	strike: tuple[float, float]		# strike location in cartesian coordinates
+	epsilon: float						# aspect ratio
+	L: float							# size of the drum (m)
+	strike: tuple[float, float]			# normalised excitation location in cartesian coordinates
 
 	class Settings(SamplerSettings, total=False):
 		'''
@@ -43,21 +44,23 @@ class PoissonModel(AudioSampler):
 		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
 		'''
 
-		M: int						# number of mth modes
-		N: int						# number of nth modes
-		amplitude: float			# maximum amplitude of the simulation ∈ [0, 1]
-		decay_time: float			# how long will the simulation take to decay? (seconds)
-		material_density: float		# material density of the simulated drum membrane (kg/m^2)
-		tension: float				# tension at rest (N/m)
+		amplitude: float									# maximum amplitude of the simulation ∈ [0, 1]
+		boundary_conditions: tuple[bool, bool, bool, bool]	# control which boundaries are fixed (true) or free (false)
+		decay_time: float									# how long will the simulation take to decay? (seconds)
+		M: int												# number of mth modes
+		N: int												# number of nth modes
+		material_density: float								# material density of the simulated drum membrane (kg/m^2)
+		tension: float										# tension at rest (N/m)
 
 	def __init__(
 		self,
 		duration: float,
 		sample_rate: int,
+		amplitude: float = 1.,
+		boundary_conditions: tuple[bool, bool, bool, bool] = (True, True, True, True),
+		decay_time: float = 2.,
 		M: int = 10,
 		N: int = 10,
-		amplitude: float = 1.,
-		decay_time: float = 2.,
 		material_density: float = 0.2,
 		tension: float = 2000.,
 	) -> None:
@@ -68,6 +71,7 @@ class PoissonModel(AudioSampler):
 		# initialise user defined variables
 		super().__init__(**classLocalsToKwargs(locals()))
 		self.a = amplitude
+		self.bc = boundary_conditions
 		self.d_60 = decay_time
 		self.M = M
 		self.N = N
@@ -76,7 +80,7 @@ class PoissonModel(AudioSampler):
 		# initialise inferences
 		self.c = (self.t / self.p) ** 0.5
 		self.k = 1. / self.sample_rate
-		self.decay = -1 * self.k * 6 * np.log(10) / self.d_60
+		self.decay = -1. * self.k * 6. * np.log(10.) / self.d_60
 
 	def generateWaveform(self) -> None:
 		'''
@@ -84,14 +88,9 @@ class PoissonModel(AudioSampler):
 		'''
 
 		if hasattr(self, 'L'):
-			self.waveform = AdditiveSynthesis2D(
+			self.waveform = AdditiveSynthesis(
 				self.F,
-				self.a * rectangularAmplitudes(
-					(self.strike[0] * (self.epsilon ** 0.5), self.strike[1] / (self.epsilon ** 0.5)),
-					self.N,
-					self.M,
-					self.epsilon,
-				),
+				self.a * rectangularAmplitudes(*self.strike, self.M, self.N, self.bc),
 				self.decay,
 				self.k,
 				self.length,
@@ -117,8 +116,8 @@ class PoissonModel(AudioSampler):
 		if i is None or i % 5 == 0:
 			# initialise a random drum size and strike location in the centroid of the drum.
 			self.epsilon = np.random.uniform(1., 4.)
-			self.L = np.random.uniform(0.1, 2.)
-			self.F = rectangularSeries(self.N, self.M, self.epsilon) * self.c / self.L
+			self.L = np.random.uniform(0.1, 1.)
+			self.F = rectangularSeries(self.M, self.N, self.epsilon, self.bc) * self.c / (2. * self.L)
 			self.strike = (0.5, 0.5)
 		else:
 			# otherwise update the strike location to be a random location.

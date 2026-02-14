@@ -43,7 +43,7 @@ __all__ = [
 
 
 def AdditiveSynthesis(
-	f: npt.NDArray[np.float64],
+	F: npt.NDArray[np.float64],
 	alpha: npt.NDArray[np.float64],
 	d: float,
 	k: float,
@@ -61,12 +61,12 @@ def AdditiveSynthesis(
 		waveform = W[t] ∈ e^dt * sin(ωt) * α
 	'''
 
-	assert f.ndim <= 2, \
+	assert F.ndim <= 2, \
 		'AdditiveSynthesis() only supports one or two dimensional inputs.'
-	assert f.ndim == alpha.ndim, \
-		'f and alpha must have the same number of dimensions.'
+	assert F.ndim == alpha.ndim, \
+		'F and alpha must have the same number of dimensions.'
 	return np.array(
-		_AdditiveSynthesis1D(f, alpha, d, k, T) if f.ndim == 1 else _AdditiveSynthesis2D(f, alpha, d, k, T),
+		_AdditiveSynthesis1D(F, alpha, d, k, T) if F.ndim == 1 else _AdditiveSynthesis2D(F, alpha, d, k, T),
 	)
 
 
@@ -252,10 +252,10 @@ def linearSeries(N: int, boundary_conditions: tuple[bool, bool] = (True, True)) 
 
 
 def rectangularAmplitudes(
-	p: tuple[float, float],
+	x: float,
+	y: float,
 	M: int,
 	N: int,
-	epsilon: float,
 	boundary_conditions: tuple[bool, bool, bool, bool] = (True, True, True, True),
 ) -> npt.NDArray[np.float64]:
 	'''
@@ -265,7 +265,6 @@ def rectangularAmplitudes(
 		(x, y) = cartesian strike location
 		M = number of modes across the Mth axis
 		N = number of modes across the Nth axis
-		epsilon = aspect ratio of the rectangle
 		boundary_conditions = boolean array indicating the boundary conditions
 			(true = fixed, false = free)
 			1: x-axis minima boundary condition
@@ -288,7 +287,7 @@ def rectangularAmplitudes(
 		α_mn = { X_m * Y_n | α ∈ ℝ }
 	'''
 
-	return np.array(_rectangularAmplitudes(p[0], p[1], M, N, epsilon, boundary_conditions))
+	return np.array(_rectangularAmplitudes(x, y, M, N, boundary_conditions))
 
 
 def rectangularCymatics(

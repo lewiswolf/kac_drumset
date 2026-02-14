@@ -124,29 +124,26 @@ class PhysicsTests(TestCase):
 		'''
 
 		# This test asserts that the amplitude calculation is programmed correctly.
-		for e in [1., 1.5, 2.]:
-			e_root = e ** 0.5
-			e_inv = 1 / (e ** 0.5)
-			self.assertAlmostEqual(
-				float(rectangularAmplitudes((0., 0.), 10, 10, e).max()),
-				0.,
-				places=28,
-			)
-			self.assertAlmostEqual(
-				float(rectangularAmplitudes((e_root, 0.), 10, 10, e).max()),
-				0.,
-				places=28,
-			)
-			self.assertAlmostEqual(
-				float(rectangularAmplitudes((0., e_inv), 10, 10, e).max()),
-				0.,
-				places=28,
-			)
-			self.assertAlmostEqual(
-				float(rectangularAmplitudes((e_root, e_inv), 10, 10, e).max()),
-				0.,
-				places=28,
-			)
+		self.assertAlmostEqual(
+			float(rectangularAmplitudes(0., 0., 10, 10).max()),
+			0.,
+			places=28,
+		)
+		self.assertAlmostEqual(
+			float(rectangularAmplitudes(1., 0., 10, 10).max()),
+			0.,
+			places=28,
+		)
+		self.assertAlmostEqual(
+			float(rectangularAmplitudes(0., 1., 10, 10).max()),
+			0.,
+			places=28,
+		)
+		self.assertAlmostEqual(
+			float(rectangularAmplitudes(1., 1., 10, 10).max()),
+			0.,
+			places=28,
+		)
 
 	def test_initial_conditions(self) -> None:
 		'''

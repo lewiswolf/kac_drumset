@@ -77,7 +77,6 @@ def _rectangularAmplitudes(
 	y: float,
 	M: int,
 	N: int,
-	epsilon: float,
 	boundary_conditions: tuple[bool, bool, bool, bool],
 ) -> list[list[float]]: ...
 def _rectangularCymatics(
