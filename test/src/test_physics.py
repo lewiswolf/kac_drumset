@@ -53,7 +53,7 @@ class PhysicsTests(TestCase):
 		c_2 = 1.
 
 		# Test iterator with a linear simulation
-		for u in FDTD(u_0=u1_0, u_1=u1_1, c_0=c_0, c_1=c_1, c_2=c_2, T=20):
+		for u in FDTD(u_0=u1_0, u_1=u1_1, c_0=c_0, c_1=c_1, c_2=c_2, T=1000):
 			# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 			# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 			# simulation.
@@ -63,7 +63,7 @@ class PhysicsTests(TestCase):
 			self.assertGreaterEqual(u.min(), -1.)
 
 		# Test waveform generator with a linear simulation
-		waveform = FDTDWaveform1D(u_0=u1_0, u_1=u1_1, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=0.5)
+		waveform = FDTDWaveform1D(u_0=u1_0, u_1=u1_1, c_0=c_0, c_1=c_1, c_2=c_2, T=1000, w=0.5)
 		# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 		# simulation.
@@ -83,7 +83,7 @@ class PhysicsTests(TestCase):
 		c_2 = 1.
 
 		# Test iterator with a square simulation
-		for u in FDTD(u_0=u2_0, u_1=u2_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20):
+		for u in FDTD(u_0=u2_0, u_1=u2_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=1000):
 			# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 			# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 			# simulation.
@@ -93,7 +93,7 @@ class PhysicsTests(TestCase):
 			self.assertGreaterEqual(u.min(), -1.)
 
 		# Test waveform generator with a square simulation
-		waveform = FDTDWaveform2D(u_0=u2_0, u_1=u2_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=20, w=(0.5, 0.5))
+		waveform = FDTDWaveform2D(u_0=u2_0, u_1=u2_1, B=B, c_0=c_0, c_1=c_1, c_2=c_2, T=1000, w=(0.5, 0.5))
 		# This test asserts that the conservation law of energy is upheld. This is here naively tested, using the waveform
 		# itself, but should also be confirmed by comparing expected bounds on the Hamiltonian energy throughout the
 		# simulation.
