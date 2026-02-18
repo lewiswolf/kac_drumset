@@ -18,7 +18,7 @@ scikit-build-core = "*"
 types-tqdm = "*"
 
 [requires]
-python_version = "3.13"
+python_version = "3.14"
 
 [scripts]
 build = "sh ./bin/build.sh"
