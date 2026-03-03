@@ -50,15 +50,17 @@ def AdditiveSynthesis(
 	T: int,
 ) -> npt.NDArray[np.float64]:
 	'''
-	Calculate a closed form solution to the 2D wave equation.
+	Create a waveform of a 1 or 2-dimensional material using a physically informed
+	representation of additive synthesis.
 	input:
-		f = frequencies (hertz)
-		α = amplitudes ∈ [-1, 1]
-		d = decay
-		k = sample length
-		T = length of simulation
+		F = frequencies (hertz)
+		α = spatial eigenfunction ∈ [-1, 1]
+		d = decay ∈ [0, ∞)
+		k = sample length (ms)
+		T = length of simulation (seconds)
 	output:
-		waveform = W[t] ∈ e^dt * sin(ωt) * α
+		W[t] = ∑ e^dt * sin(f_n 2πkt) * α_n
+		W[t] = ∑ e^dt * sin(f_mn 2πkt) * α_mn
 	'''
 
 	assert F.ndim <= 2, \
@@ -92,15 +94,15 @@ def ChladniPattern(U: npt.NDArray[np.float64], tolerance: float = 0.1) -> npt.ND
 def circularAmplitudes(r: float, theta: float, S: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the spatial eigenfunction of a circular 2-dimensional domain relative to a
-	polar strike location. The boundary conditions for this spatial eigenfunction are
+	polar excitation. The boundary conditions for this spatial eigenfunction are
 	determined by the input series of wavenumbers λ_mn.
 	input:
-		(r, θ) = polar strike location
+		(r, θ) = polar excitation
 		S = { λ_mn | λ ∈ ℝ }
 	output:
 		α_mn = {
-			J_m(λ_mn * r) * √2 * sin(mθ + π/4)
-			| α ∈ ℝ, m ∈ [0, M), n ∈ (0, N]
+			J_m(λ_mn * r * √π) * e^(imθ)
+			| α ∈ ℝ, m ∈ [0, M), n ∈ [1, N]
 		}
 	'''
 
@@ -120,7 +122,7 @@ def circularCymatics(m: float, n: float, H: int, boundary_conditions: bool = Tru
 		boundary_conditions = (true = fixed, false = free)
 	output:
 		U_rθ = {
-			J_n(z_nm * r) * (cos(nθ) + sin(nθ))
+			J_n(z_nm * r) * e^(imθ)
 			| U ∈ ℝ^2
 		}
 	'''
@@ -136,11 +138,12 @@ def circularSeries(M: int, N: int, boundary_conditions: bool = True) -> npt.NDAr
 		N = number of modes across the Nth axis
 		boundary_conditions = (true = fixed, false = free)
 	output:
-		λ_mn = {
-			J_m(λ_mn) = 0 					dirichlet boundary condition
-			J'_m(λ_mn) = 0 					neumann boundary condition
-			| λ ∈ ℝ, m ∈ [0, M), n ∈ (0, N]
+		z_mn = {
+			J_m(z_mn) = 0 					dirichlet boundary condition
+			J'_m(z_mn) = 0 					neumann boundary condition
+			| m ∈ [0, M), n ∈ [1, N]
 		}
+		λ_mn { z_mn / √π | λ ∈ ℝ }
 	'''
 
 	return np.array(_circularSeries(M, N, boundary_conditions))
@@ -188,9 +191,10 @@ def linearAmplitudes(
 	boundary_conditions: tuple[bool, bool] = (True, True),
 ) -> npt.NDArray[np.float64]:
 	'''
-	Calculate the spatial eigenfunction of a 1-dimensional domain relative to a strike location.
+	Calculate the spatial eigenfunction of a 1-dimensional domain relative to a excitation
+	location.
 	input:
-		x = strike location
+		x = excitation location
 		N = number of modes
 		boundary_conditions = boolean array indicating the boundary conditions
 			(true = fixed, false = free)
@@ -200,7 +204,8 @@ def linearAmplitudes(
 		α_n = {
 			sin((n + 1)πx),			dirichlet boundary condition
 			cos(nπx),				neumann boundary condition
-			sin((n + 0.5)πx),		mixed boundary conditions
+			sin((n + 0.5)πx),		minima fixed, maxima free
+			cos((n + 0.5)πx),		minima free, maxima fixed
 			| α ∈ ℝ, n ∈ [0, N)
 		}
 	'''
@@ -220,9 +225,10 @@ def linearCymatics(n: float, X: int, boundary_conditions: tuple[bool, bool] = (T
 			2: x-axis maxima boundary condition
 	output:
 		U_x = {
-			sin((n + 1) πx/H),		dirichlet boundary condition
-			cos(nπx/H),				neumann boundary condition
-			sin((n + 0.5)πx/H),		mixed boundary conditions
+			sin((n + 1) πx/X),		dirichlet boundary condition
+			cos(nπx/X),				neumann boundary condition
+			sin((n + 0.5)πx/X),		minima fixed, maxima free
+			cos((n + 0.5)πx/X),		minima free, maxima fixed
 			| U ∈ ℝ^1, n ∈ [0, ∞)
 		}
 	'''
@@ -260,9 +266,12 @@ def rectangularAmplitudes(
 ) -> npt.NDArray[np.float64]:
 	'''
 	Calculate the spatial eigenfunction of a rectangular 2-dimensional domain relative to a
-	cartesian strike location.
+	cartesian excitation.
 	input:
-		(x, y) = cartesian strike location
+		(x, y) = normalised cartesian excitation where [0, 1] represents the mappings onto
+			an aspect ratio Є
+			x ∈ [0, 1] -> x ∈ [1, √Є]
+			y ∈ [0, 1] -> y ∈ [1, 1 / √Є]
 		M = number of modes across the Mth axis
 		N = number of modes across the Nth axis
 		boundary_conditions = boolean array indicating the boundary conditions
@@ -273,15 +282,17 @@ def rectangularAmplitudes(
 			4: y-axis maxima boundary condition
 	output:
 		X_m = {
-			sin((m + 1)xπ / √Є),	dirichlet boundary condition
-			cos(mxπ / √Є),			neumann boundary condition
-			sin((m + 0.5)xπ / √Є),	mixed boundary conditions
+			sin((m + 1)xπ),		dirichlet boundary condition
+			cos(mxπ),			neumann boundary condition
+			sin((m + 0.5)xπ),	minima fixed, maxima free
+			cos((m + 0.5)xπ),	minima free, maxima fixed
 			| m ∈ [0, M)
 		}
 		Y_n = {
-			sin((n + 1)yπ√Є),		dirichlet boundary condition
-			cos(nyπ√Є),				neumann boundary condition
-			sin((n + 0.5)yπ√Є),		mixed boundary conditions
+			sin((n + 1)yπ),		dirichlet boundary condition
+			cos(nyπ),			neumann boundary condition
+			sin((n + 0.5)yπ),	minima fixed, maxima free
+			cos((m + 0.5)yπ),	minima free, maxima fixed
 			| n ∈ [0, N)
 		}
 		α_mn = { X_m * Y_n | α ∈ ℝ }
@@ -317,13 +328,15 @@ def rectangularCymatics(
 		X_m = {
 			sin((m + 1)xπ / X),		dirichlet boundary condition
 			cos(mxπ / X),			neumann boundary condition
-			sin((m + 0.5)xπ / X),	mixed boundary conditions
+			sin((m + 0.5)xπ / X),	minima fixed, maxima free
+			cos((m + 0.5)xπ / X),	minima free, maxima fixed
 			| m ∈ [0, ∞)
 		}
 		Y_n = {
 			sin((n + 1)yπ / Y),		dirichlet boundary condition
 			cos(nyπ / Y),			neumann boundary condition
-			sin((n + 0.5)yπ / Y),	mixed boundary conditions
+			sin((n + 0.5)yπ / Y),	minima fixed, maxima free
+			cos((n + 0.5)yπ / Y),	minima free, maxima fixed
 			| n ∈ [0, ∞)
 		}
 		U_xy = { X_m * Y_n | U ∈ ℝ^2 }
