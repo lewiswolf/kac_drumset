@@ -840,6 +840,7 @@ from kac_drumset.samplers import (
 	BesselModel,
 	FDTDModel,
 	LaméModel,
+	LinearFDTD,
 	LinearModel,
 	PoissonModel,
 )
@@ -889,6 +890,23 @@ class LaméModel(AudioSampler):
 		decay_time: float			# how long will the simulation take to decay? (seconds)
 		material_density: float		# material density of the simulated drum membrane (kg/m^2)
 		tension: float				# tension at rest (N/m)
+
+class LinearFDTD(AudioSampler):
+	'''
+	This class creates a 1D simulation, calculated using a FDTD scheme.
+	'''
+
+	class Settings(SamplerSettings, total=False):
+		'''
+		This is an abstract TypedDict used to mirror the type declaration for the customised __init__() method. This allows
+		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
+		'''
+
+		amplitude: float				# maximum amplitude of the simulation ∈ [0, 1]
+		decay_time: float				# how long will the simulation take to decay? (seconds)
+		material_density: float			# material density of the simulated drum membrane (kg/m^2)
+		strike_width: float				# width of the drum strike (m)
+		tension: float					# tension at rest (N/m)
 
 class LinearModel(AudioSampler):
 	'''

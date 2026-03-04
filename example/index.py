@@ -16,6 +16,7 @@ def DatasetExample() -> None:
 		# classes
 		ConvexPolygon,
 		Ellipse,
+		RegularPolygon,
 		IrregularStar,
 		TravellingSalesmanPolygon,
 		# types
@@ -25,6 +26,7 @@ def DatasetExample() -> None:
 		BesselModel,
 		FDTDModel,
 		LaméModel,
+		LinearFDTD,
 		LinearModel,
 		PoissonModel,
 	)
@@ -45,8 +47,9 @@ def DatasetExample() -> None:
 
 	# Generate a dataset of 2D physical models of varying geometric design.
 	# Here we use the FDTDModel, parametrised using objects of the class Shape.
-	shapes: list[type[Shape]] = [ConvexPolygon, Ellipse, IrregularStar, TravellingSalesmanPolygon]
+	shapes: list[type[Shape]] = [ConvexPolygon, Ellipse, RegularPolygon, IrregularStar, TravellingSalesmanPolygon]
 	for shape in shapes:
+		print(f'\nDataset: {shape.__name__} rendered using FDTDModel.')
 		dataset = generateDataset(
 			FDTDModel,
 			dataset_dir=f'{dataset_dir}/{shape.__name__}',
@@ -67,74 +70,98 @@ def DatasetExample() -> None:
 
 	# Generate a dataset of linear models of simple geometric design.
 	# Here generateDataset() is parametrised using objects of the class AudioSampler.
+	print('\nDataset: Circle rendered using BesselModel.')
 	generateDataset(
 		BesselModel,
 		dataset_dir=f'{dataset_dir}/{BesselModel.__name__}',
 		dataset_size=10,
 		representation_settings=representation_settings,
 		sampler_settings=BesselModel.Settings({
-			'M': 10,
-			'N': 10,
 			'amplitude': 1.,
 			'decay_time': 2.,
 			'duration': 1.,
 			'material_density': 0.2,
+			'M': 10,
+			'N': 10,
 			'sample_rate': 48000,
 			'tension': 2000.,
 		}),
 	)
+	print('\nDataset: Triangle rendered using LaméModel.')
 	dataset = generateDataset(
 		LaméModel,
 		dataset_dir=f'{dataset_dir}/{LaméModel.__name__}',
 		dataset_size=10,
 		representation_settings=representation_settings,
 		sampler_settings=LaméModel.Settings({
+			'amplitude': 1.,
+			'decay_time': 2.,
+			'duration': 1.,
+			'material_density': 0.2,
 			'M': 10,
 			'N': 10,
+			'sample_rate': 48000,
+			'tension': 2000.,
+		}),
+	)
+	print('\nDataset: Line rendered using LinearFDTD.')
+	generateDataset(
+		LinearFDTD,
+		dataset_dir=f'{dataset_dir}/{LinearFDTD.__name__}',
+		dataset_size=10,
+		representation_settings=representation_settings,
+		sampler_settings=LinearFDTD.Settings({
 			'amplitude': 1.,
 			'decay_time': 2.,
 			'duration': 1.,
 			'material_density': 0.2,
 			'sample_rate': 48000,
+			'strike_width': 0.04,
 			'tension': 2000.,
 		}),
 	)
+	print('\nDataset: Line rendered using LinearModel.')
 	generateDataset(
 		LinearModel,
 		dataset_dir=f'{dataset_dir}/{LinearModel.__name__}',
 		dataset_size=10,
 		representation_settings=representation_settings,
 		sampler_settings=LinearModel.Settings({
-			'N': 10,
 			'amplitude': 1.,
+			'boundary_conditions': (True, True),
 			'decay_time': 2.,
 			'duration': 1.,
 			'material_density': 0.2,
+			'N': 10,
 			'sample_rate': 48000,
 			'tension': 2000.,
 		}),
 	)
+	print('\nDataset: Rectangle rendered using PoissonModel.')
 	generateDataset(
 		PoissonModel,
 		dataset_dir=f'{dataset_dir}/{PoissonModel.__name__}',
 		dataset_size=10,
 		representation_settings=representation_settings,
 		sampler_settings=PoissonModel.Settings({
-			'M': 10,
-			'N': 10,
 			'amplitude': 1.,
+			'boundary_conditions': (True, True, True, True),
 			'decay_time': 2.,
 			'duration': 1.,
 			'material_density': 0.2,
+			'M': 10,
+			'N': 10,
 			'sample_rate': 48000,
 			'tension': 2000.,
 		}),
 	)
 
 	# Datasets can be loaded using the method below, which takes only the dataset directory as its argument.
+	print()
 	dataset = loadDataset(f'{dataset_dir}/{Ellipse.__name__}')
 	# To redefine the input representation, the below method is used. This modifies the metadata for the dataset, such
 	# that this method is only executed when the current settings are different from the ones passed to the function.
+	print()
 	representation_settings = {'output_type': 'fft'}
 	dataset = transformDataset(dataset, representation_settings)
 
