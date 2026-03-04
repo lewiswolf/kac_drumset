@@ -213,7 +213,6 @@ class SamplerTests(TestCase):
 							# CFL stability criterion is upheld. If λ > 1 / (dimensionality)^0.5, the resultant
 							# simulation will be unstable.
 							self.assertLessEqual(model.cfl, 1 / (2 ** 0.5))
-							f.write(f'{model.cfl}\n')
 
 							# This test asserts that the conservation law of energy is upheld. This is here naively
 							# tested, using the waveform itself, but should also be confirmed by comparing expected
