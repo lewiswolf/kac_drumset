@@ -142,91 +142,89 @@ class SamplerTests(TestCase):
 			IrregularStar,
 			TravellingSalesmanPolygon,
 		]
-		with open(f'output.txt', 'w') as f:
-			for shape in shapes:
+		for shape in shapes:
+			# This test asserts that model correctly mounts with both its minimum requirements and type safety.
+			settings: FDTDModel.Settings = {
+				'arbitrary_shape': shape,
+				'decay_time': np.inf,
+				'duration': 1.,
+				'sample_rate': 48000,
+			}
+			model = FDTDModel(**settings)
 
-				# This test asserts that model correctly mounts with both its minimum requirements and type safety.
-				settings: FDTDModel.Settings = {
-					'arbitrary_shape': shape,
-					'decay_time': np.inf,
-					'duration': 1.,
-					'sample_rate': 48000,
-				}
-				model = FDTDModel(**settings)
+			# This test asserts that the labels default to an empty array when no waveform has been generated.
+			self.assertEqual(model.getLabels(), {})
 
-				# This test asserts that the labels default to an empty array when no waveform has been generated.
-				self.assertEqual(model.getLabels(), {})
+			# This test asserts that decay_time: np.inf works as expected.
+			self.assertEqual(model.c_2, 1.)
 
-				# This test asserts that decay_time: np.inf works as expected.
-				self.assertEqual(model.c_2, 1.)
+			# generate a random shape and dirichlet boundary conditions.
+			model.updateProperties()
 
-				# generate a random shape and dirichlet boundary conditions.
-				model.updateProperties()
+			# This test asserts that a shape was properly defined after updating the model's properties.
+			self.assertTrue(hasattr(model, 'shape'))
 
-				# This test asserts that a shape was properly defined after updating the model's properties.
-				self.assertTrue(hasattr(model, 'shape'))
+			# This test asserts that the model returns the sample_location and the strike_location as its labels.
+			self.assertLessEqual(len(model.getLabels()['sample_location']), 2)
+			self.assertEqual(len(model.getLabels()['strike_location']), 2)
 
-				# This test asserts that the model returns the sample_location and the strike_location as its labels.
-				self.assertLessEqual(len(model.getLabels()['sample_location']), 2)
-				self.assertEqual(len(model.getLabels()['strike_location']), 2)
+			# generate a distribution of drums to assert that the sampler works with various configurations
+			drum_sizes = [0.9, 0.7, 0.5, 0.3, 0.1]
+			material_densities = [0.75, 0.5, 0.25, 0.125, 0.0625]
+			tensions = [3000., 2000., 1500., 1000.]
+			for drum_size in drum_sizes:
+				for material_density in material_densities:
+					for tension in tensions:
+						model = FDTDModel(
+							arbitrary_shape=shape,
+							drum_size=drum_size,
+							duration=0.02,
+							material_density=material_density,
+							sample_rate=48000,
+							tension=tension,
+						)
+						model.updateProperties()
 
-				# generate a distribution of drums to assert that the sampler works with various configurations
-				drum_sizes = [0.9, 0.7, 0.5, 0.3, 0.1]
-				material_densities = [0.75, 0.5, 0.25, 0.125, 0.0625]
-				tensions = [3000., 2000., 1500., 1000.]
-				for drum_size in drum_sizes:
-					for material_density in material_densities:
-						for tension in tensions:
-							model = FDTDModel(
-								arbitrary_shape=shape,
-								drum_size=drum_size,
-								duration=0.02,
-								material_density=material_density,
-								sample_rate=48000,
-								tension=tension,
-							)
-							model.updateProperties()
+						# This test asserts that the boundary conditions matches the size H
+						# model.H + 2 is used to account for padding
+						self.assertEqual(model.B.shape[0], model.H + 2)
 
-							# This test asserts that the boundary conditions matches the size H
-							# model.H + 2 is used to account for padding
-							self.assertEqual(model.B.shape[0], model.H + 2)
+						# This test asserts that the listening locations is always within the drum.
+						# model.H + 1 is used to account for model.B being padded
+						self.assertTrue(model.shape.isPointInside(model.w))
+						self.assertEqual(model.B[
+							round((model.w[0] + 1.) * 0.5 * (model.H - 1) + 1),
+							round((model.w[1] + 1.) * 0.5 * (model.H - 1) + 1),
+						], 1)
 
-							# This test asserts that the listening locations is always within the drum.
+						# test both the centroid strike location and the randomised shape location.
+						for i in range(2):
+							model.updateProperties(i)
+
+							# This test asserts that the strike location is always within the drum.
 							# model.H + 1 is used to account for model.B being padded
-							self.assertTrue(model.shape.isPointInside(model.w))
+							self.assertTrue(model.shape.isPointInside(model.strike))
 							self.assertEqual(model.B[
-								round((model.w[0] + 1.) * 0.5 * (model.H - 1) + 1),
-								round((model.w[1] + 1.) * 0.5 * (model.H - 1) + 1),
+								round((model.strike[0] + 1.) * 0.5 * (model.H - 1) + 1),
+								round((model.strike[1] + 1.) * 0.5 * (model.H - 1) + 1),
 							], 1)
 
-							# test both the centroid strike location and the randomised shape location.
-							for i in range(2):
-								model.updateProperties(i)
+							# This test asserts that The Courant number λ = γk/h, which is used to confirm that the
+							# CFL stability criterion is upheld. If λ > 1 / (dimensionality)^0.5, the resultant
+							# simulation will be unstable.
+							self.assertLessEqual(model.cfl, 1 / (2 ** 0.5))
+							f.write(f'{model.cfl}\n')
 
-								# This test asserts that the strike location is always within the drum.
-								# model.H + 1 is used to account for model.B being padded
-								self.assertTrue(model.shape.isPointInside(model.strike))
-								self.assertEqual(model.B[
-									round((model.strike[0] + 1.) * 0.5 * (model.H - 1) + 1),
-									round((model.strike[1] + 1.) * 0.5 * (model.H - 1) + 1),
-								], 1)
+							# This test asserts that the conservation law of energy is upheld. This is here naively
+							# tested, using the waveform itself, but should also be confirmed by comparing expected
+							# bounds on the Hamiltonian energy throughout the simulation.
+							model.generateWaveform()
+							self.assertFalse(np.isnan(model.waveform).any())
+							self.assertLessEqual(model.waveform.max(), 1.)
+							self.assertGreaterEqual(model.waveform.min(), -1.)
 
-								# This test asserts that The Courant number λ = γk/h, which is used to confirm that the
-								# CFL stability criterion is upheld. If λ > 1 / (dimensionality)^0.5, the resultant
-								# simulation will be unstable.
-								self.assertLessEqual(model.cfl, 1 / (2 ** 0.5))
-								f.write(f'{model.cfl}\n')
-
-								# This test asserts that the conservation law of energy is upheld. This is here naively
-								# tested, using the waveform itself, but should also be confirmed by comparing expected
-								# bounds on the Hamiltonian energy throughout the simulation.
-								model.generateWaveform()
-								self.assertFalse(np.isnan(model.waveform).any())
-								self.assertLessEqual(model.waveform.max(), 1.)
-								self.assertGreaterEqual(model.waveform.min(), -1.)
-
-								# This test asserts that the waveform is not silent.
-								self.assertNotEqual(np.sum(model.waveform), 0.)
+							# This test asserts that the waveform is not silent.
+							self.assertNotEqual(np.sum(model.waveform), 0.)
 
 	def test_lamé_model(self) -> None:
 		'''
