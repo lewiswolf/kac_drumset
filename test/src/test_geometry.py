@@ -239,6 +239,27 @@ class GeometryTests(TestCase):
 		self.assertTrue(np.allclose(quads[0].vertices, quads[2].vertices))
 		self.assertTrue(np.allclose(quads[0].vertices, quads[3].vertices))
 
+		# This test asserts that after _normaliseConvexPolygon, the right-angled triangles produce the same output.
+		triangles = [
+			Polygon([[0., 0.], [1., 0.], [1., 1.]]),
+			Polygon([[0., 0.], [0., 1.], [1., 1.]]),
+			Polygon([[0., 0.], [1., 1.], [1., 0.]]),
+			Polygon([[0., 0.], [1., 1.], [0., 1.]]),
+			Polygon([[0., 0.], [0., 1.], [1., 0.]]),
+			Polygon([[0., 0.], [1., 0.], [0., 1.]]),
+			Polygon([[1., 1.], [0., 1.], [1., 0.]]),
+			Polygon([[1., 1.], [1., 0.], [0., 1.]]),
+		]
+		for tri in triangles:
+			tri.vertices = np.array(_normaliseConvexPolygon(tri.vertices, True))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[1].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[2].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[3].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[4].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[5].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[6].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[7].vertices))
+
 		# These tests assert that isPointInside() works for polygons with negative vertices
 		negative_square = Polygon([[-1., -1.], [1., -1.], [1., 1.], [-1., 1.]])
 		self.assertTrue(_isPointInsideConvexPolygon((0.999, 0.5), negative_square.vertices))
