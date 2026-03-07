@@ -15,8 +15,6 @@
 	self.assertTrue(polygon.vertices[LV[1][1]][0] == 1.)
 	```
 
--   **UnitTriangle**
-
 ## Physics
 
 -   **Equilateral amplitudes?**

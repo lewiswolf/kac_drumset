@@ -10,6 +10,8 @@ fi
 VENV_DIR=$(pipenv --venv)
 
 # build
-cmake -S . -B _skbuild -DCMAKE_INSTALL_PREFIX="$VENV_DIR/lib/python3.13/site-packages"
-cmake --build _skbuild --config Debug -j4
+cmake -S . -B _skbuild \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_INSTALL_PREFIX="$VENV_DIR/lib/python3.14/site-packages"
+cmake --build _skbuild -j4
 cmake --install _skbuild

@@ -1,11 +1,15 @@
 from .bessel_model import BesselModel
 from .fdtd_model import FDTDModel
 from .lamé_model import LaméModel
+from .linear_fdtd import LinearFDTD
+from .linear_model import LinearModel
 from .poisson_model import PoissonModel
 
 __all__ = [
 	'BesselModel',
 	'FDTDModel',
 	'LaméModel',
+	'LinearFDTD',
+	'LinearModel',
 	'PoissonModel',
 ]

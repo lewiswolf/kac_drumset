@@ -1,7 +1,15 @@
 from .ellipse import Circle, Ellipse
 from .isospectrality import weylCondition
 from .lines import isColinear, largestVector, lineIntersection
-from .random_polygon import ConvexPolygon, IrregularStar, TravellingSalesmanPolygon, UnitRectangle
+from .random_polygon import (
+	ConvexPolygon,
+	IrregularStar,
+	RegularPolygon,
+	RegularStar,
+	TravellingSalesmanPolygon,
+	UnitRectangle,
+	UnitTriangle,
+)
 from .polygon import Polygon
 from .types import Shape, ShapeSettings
 
@@ -17,8 +25,11 @@ __all__ = [
 	'Circle',
 	'ConvexPolygon',
 	'IrregularStar',
+	'RegularPolygon',
+	'RegularStar',
 	'TravellingSalesmanPolygon',
 	'UnitRectangle',
+	'UnitTriangle',
 	# Types
 	'Ellipse',
 	'Polygon',

@@ -40,15 +40,15 @@ def largestVector(vertices: npt.NDArray[np.float64]) -> tuple[float, tuple[int, 
 
 
 def lineIntersection(A: npt.NDArray[np.float64], B: npt.NDArray[np.float64]) -> tuple[
-	Literal['adjacent', 'colinear', 'intersect', 'none', 'vertex'],
+	Literal['branch', 'colinear', 'intersect', 'none', 'vertex'],
 	npt.NDArray[np.float64],
 ]:
 	'''
 	This function determines whether a line has an intersection, and returns it's type as well
 	as the point of intersection (if one exists).
-	input
+	input:
 		A, B - Line segments to compare.
-	output
+	output:
 		type -
 			'none'		No intersection.
 			'intersect' The general case where lines intersect one another.
