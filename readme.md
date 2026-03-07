@@ -404,7 +404,7 @@ from kac_drumset.physics import (
 	rectangularCymatics,
 	rectangularSeries,
 	# classes
-	FDTD_2D
+	FDTD
 )
 ```
 
@@ -807,7 +807,7 @@ def raisedTriangle(
 ### Classes
 
 ```python
-class FDTD_2D():
+class FDTD():
 	'''
 	Class implementation of a two dimensional FDTD equation. This method is designed to be used as an iterator:
 	for u in FDTD(*args):
@@ -815,30 +815,32 @@ class FDTD_2D():
 	input:
 		u_0 = initial fdtd grid at t = 0.
 		u_1 = initial fdtd grid at t = 1.
-		B = boundary condition.
 		c_0 = first fdtd coefficient related to the decay term and the courant number.
 		c_1 = second fdtd coefficient related to the decay term and the courant number.
 		c_2 = third fdtd coefficient related to the decay term.
 		T = length of simulation.
+		B = boundary condition (Optional: only incorporated when u_0 = 2D).
 	output:
-		u[n] = c_0 * (
-			u_x+1_y + u_0_x-1_y + u_0_x_y+1 + u_0_x_y-1
-		) + c_1 * u_0_x_y - c_2 * (u_1_x_y)
+	output:
+		u_0 = 1D:
+			u[n] = u = c_0 * (u_n-1_x+1 + u_n-1_x-1) + c_1 * u_n-1_x - c_2 * u_n-2_x
+		u_0 = 2D:
+			u[n] = c_0 * (u_x+1_y + u_0_x-1_y + u_0_x_y+1 + u_0_x_y-1) + c_1 * u_0_x_y - c_2 * (u_1_x_y)
 	'''
 
 	def __init__(
 		self,
-		u_0: list[list[float]],
-		u_1: list[list[float]],
-		B: list[list[int]],
+		u_0: npt.NDArray[np.float64],
+		u_1: npt.NDArray[np.float64],
 		c_0: float,
 		c_1: float,
 		c_2: float,
 		T: int,
+		B: Optional[npt.NDArray[np.int8]] = None,
 	) -> None:
 		''' Initialise FDTD iterator. '''
 	
-	def __iter__(self) -> 'FDTD_2D':
+	def __iter__(self) -> 'FDTD':
 		''' Return the iterator. '''
 
 	def __next__(self) -> npt.NDArray[np.float64]:
