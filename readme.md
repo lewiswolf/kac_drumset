@@ -39,6 +39,7 @@ from kac_drumset.geometry import (
 	ConvexPolygon,
 	IrregularStar,
 	RegularPolygon,
+	RegularStar,
 	TravellingSalesmanPolygon,
 	UnitRectangle,
 	UnitTriangle,
@@ -150,6 +151,21 @@ class RegularPolygon(Polygon):
 		max_vertices: int	# maximum number of vertices when generating
 
 	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
+
+class RegularStar(Polygon):
+	'''
+	Generate a regular star polygon via a specified Schläfli symbol.
+	See: https://en.wikipedia.org/wiki/Star_polygon
+	input:
+		{p, q} = Schläfli symbol
+	'''
+
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		schlafli: tuple[int, int]	# Schläfli symbol - (p, q), p >= 3 && p >= (2 * q) + 1
+		max_vertices: int			# maximum number of vertices when generating
+
+	def __init__(self, schlafli: tuple[int, int] | None = None, max_vertices: int = 10) -> None:
 
 class TravellingSalesmanPolygon(Polygon):
 	'''

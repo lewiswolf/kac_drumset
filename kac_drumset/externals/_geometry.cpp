@@ -49,16 +49,19 @@ PyBind11 config.
 
 PYBIND11_MODULE(_geometry, m) {
 	m.doc() = "_geometry";
-	m.def("_generateConvexPolygon", [](const int& N) -> _Vertices {
+	m.def("_generateConvexPolygon", [](const std::size_t& N) -> _Vertices {
 		return convertPolygonToVector(g::generateConvexPolygon(N));
 	});
-	m.def("_generateIrregularStar", [](const int& N) -> _Vertices {
+	m.def("_generateIrregularStar", [](const std::size_t& N) -> _Vertices {
 		return convertPolygonToVector(g::generateIrregularStar(N));
 	});
-	m.def("_generateRegularPolygon", [](const int& N) -> _Vertices {
+	m.def("_generateRegularPolygon", [](const std::size_t& N) -> _Vertices {
 		return convertPolygonToVector(g::generateRegularPolygon(N));
 	});
-	m.def("_generatePolygon", [](const int& N) -> _Vertices {
+	m.def("_generateRegularStar", [](const std::size_t& p, std::size_t& q) -> _Vertices {
+		return convertPolygonToVector(g::generateRegularStar(p, q));
+	});
+	m.def("_generatePolygon", [](const std::size_t& N) -> _Vertices {
 		return convertPolygonToVector(g::generatePolygon(N));
 	});
 	m.def("_generateUnitRectangle", [](const double& epsilon) -> _Vertices {

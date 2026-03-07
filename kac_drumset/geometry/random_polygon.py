@@ -3,6 +3,7 @@ This file contains classes for generating polygons, including random polygon gen
 '''
 
 # core
+import math
 import random
 
 # dependencies
@@ -13,6 +14,7 @@ from ..externals._geometry import (
 	_generateConvexPolygon,
 	_generateIrregularStar,
 	_generateRegularPolygon,
+	_generateRegularStar,
 	_generatePolygon,
 	_generateUnitRectangle,
 	_generateUnitTriangle,
@@ -26,6 +28,7 @@ __all__ = [
 	'ConvexPolygon',
 	'IrregularStar',
 	'RegularPolygon',
+	'RegularStar',
 	'TravellingSalesmanPolygon',
 	'UnitRectangle',
 	'UnitTriangle',
@@ -81,6 +84,34 @@ class RegularPolygon(Polygon):
 
 	def __init__(self, N: int = 0, max_vertices: int = 10) -> None:
 		super().__init__(_generateRegularPolygon(N if N > 2 else random.randint(3, max_vertices)))
+
+
+class RegularStar(Polygon):
+	'''
+	Generate a regular star polygon via a specified Schläfli symbol.
+	See: https://en.wikipedia.org/wiki/Star_polygon
+	input:
+		{p, q} = Schläfli symbol
+	'''
+
+	schlafli: tuple[int, int]
+
+	class Settings(ShapeSettings, total=False):
+		''' Settings to be used when generating. '''
+		schlafli: tuple[int, int]	# Schläfli symbol - (p, q), p >= 3 && p >= (2 * q) + 1
+		max_vertices: int			# maximum number of vertices when generating
+
+	def __init__(self, schlafli: tuple[int, int] | None = None, max_vertices: int = 10) -> None:
+		p = random.randint(3, max_vertices)
+		q = 1 if p > (max_vertices // 2) else random.randint(1, math.floor((p - 1) / 2))
+		self.schlafli = (p, q) if schlafli is None else schlafli
+		super().__init__(_generateRegularStar(p, q))
+
+	def __getLabels__(self) -> dict[str, list[float | int]]:
+		'''
+		This method should be used to return the metadata about the current shape.
+		'''
+		return {'schlafli_symbol': [*self.schlafli], 'N': [self.N()], 'vertices': self.vertices.tolist()}
 
 
 class TravellingSalesmanPolygon(Polygon):

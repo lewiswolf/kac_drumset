@@ -11,6 +11,8 @@ from kac_drumset.geometry import (
 	ConvexPolygon,
 	Ellipse,
 	IrregularStar,
+	RegularPolygon,
+	RegularStar,
 	Shape,
 	TravellingSalesmanPolygon,
 )
@@ -140,6 +142,8 @@ class SamplerTests(TestCase):
 			ConvexPolygon,
 			Ellipse,
 			IrregularStar,
+			RegularPolygon,
+			RegularStar,
 			TravellingSalesmanPolygon,
 		]
 		for shape in shapes:
@@ -193,8 +197,8 @@ class SamplerTests(TestCase):
 						# model.H + 1 is used to account for model.B being padded
 						self.assertTrue(model.shape.isPointInside(model.w))
 						self.assertEqual(model.B[
-							round((model.w[0] + 1.) * 0.5 * (model.H - 1) + 1),
-							round((model.w[1] + 1.) * 0.5 * (model.H - 1) + 1),
+							round((model.w[0] + 1.) * 0.5 * (model.H - 1)) + 1,
+							round((model.w[1] + 1.) * 0.5 * (model.H - 1)) + 1,
 						], 1)
 
 						# test both the centroid strike location and the randomised shape location.
@@ -205,8 +209,8 @@ class SamplerTests(TestCase):
 							# model.H + 1 is used to account for model.B being padded
 							self.assertTrue(model.shape.isPointInside(model.strike))
 							self.assertEqual(model.B[
-								round((model.strike[0] + 1.) * 0.5 * (model.H - 1) + 1),
-								round((model.strike[1] + 1.) * 0.5 * (model.H - 1) + 1),
+								round((model.strike[0] + 1.) * 0.5 * (model.H - 1)) + 1,
+								round((model.strike[1] + 1.) * 0.5 * (model.H - 1)) + 1,
 							], 1)
 
 							# This test asserts that The Courant number λ = γk/h, which is used to confirm that the
