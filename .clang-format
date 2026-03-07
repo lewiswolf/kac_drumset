@@ -14,6 +14,7 @@ AlignTrailingComments:
 AllowAllArgumentsOnNextLine: true
 AllowShortBlocksOnASingleLine: Always
 AllowShortLoopsOnASingleLine: true
+AllowShortNamespacesOnASingleLine: true
 AlwaysBreakBeforeMultilineStrings: true
 BinPackArguments: false
 BinPackParameters: false
@@ -32,6 +33,7 @@ IncludeBlocks: Preserve
 IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: true
+IndentExportBlock: true
 IndentExternBlock: Indent
 IndentGotoLabels: true
 IndentPPDirectives: BeforeHash
@@ -54,6 +56,7 @@ PointerAlignment: Left
 QualifierAlignment: Left
 ReferenceAlignment: Pointer
 ReflowComments: true
+RemoveEmptyLinesInUnwrappedLines: true
 RemoveParentheses: ReturnStatement
 RemoveSemicolon: true
 RequiresExpressionIndentation: OuterScope
@@ -72,6 +75,7 @@ SpaceBeforeJsonColon: false
 SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: false
 SpaceBeforeSquareBrackets: false
+SpaceInEmptyBraces: Block
 SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 4
@@ -85,3 +89,4 @@ Standard: c++20
 TabWidth: 4
 UseCRLF: false
 UseTab: Always
+WrapNamespaceBodyWithEmptyLines: Always
