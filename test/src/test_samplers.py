@@ -26,8 +26,6 @@ from kac_drumset.samplers import (
 )
 from kac_prediction.utils import clearDirectory
 
-from graphs import PlotMatrix
-
 
 class SamplerTests(TestCase):
 	'''
