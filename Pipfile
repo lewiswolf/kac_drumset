@@ -13,15 +13,14 @@ flake8-quotes = "*"
 graphs = {git = "https://github.com/lewiswolf/graphs.git"}
 kac-drumset = {file = ".", editable = true}
 mypy = "*"
-safety = "*"
+pip-audit = "*"
 scikit-build-core = "*"
 types-tqdm = "*"
 
 [requires]
-python_version = "3.13"
+python_version = "3.14"
 
 [scripts]
-audit = "safety scan"
 build = "sh ./bin/build.sh"
 start = "python example/index.py"
 test = "sh ./bin/test.sh"

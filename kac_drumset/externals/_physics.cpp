@@ -15,17 +15,21 @@ PYBIND11_MODULE(_physics, m) {
 	m.doc() = "_physics";
 	m.def("_AdditiveSynthesis1D", &p::AdditiveSynthesis1D);
 	m.def("_AdditiveSynthesis2D", &p::AdditiveSynthesis2D);
+	m.def("_ChladniPattern1D", &p::ChladniPattern1D);
+	m.def("_ChladniPattern2D", &p::ChladniPattern2D);
 	m.def("_circularAmplitudes", &p::circularAmplitudes);
-	m.def("_circularChladniPattern", &p::circularChladniPattern);
+	m.def("_circularCymatics", &p::circularCymatics);
 	m.def("_circularSeries", &p::circularSeries);
 	m.def("_equilateralTriangleAmplitudes", &p::equilateralTriangleAmplitudes);
 	m.def("_equilateralTriangleSeries", &p::equilateralTriangleSeries);
+	m.def("_FDTDUpdate1D", &p::FDTDUpdate1D);
 	m.def("_FDTDUpdate2D", &p::FDTDUpdate2D);
+	m.def("_FDTDWaveform1D", &p::FDTDWaveform1D);
 	m.def(
 		"_FDTDWaveform2D",
 		[](T::Matrix_2D u_0,
 		   T::Matrix_2D u_1,
-		   const T::BooleanImage& B,
+		   const T::BooleanImage_2D& B,
 		   const double& c_0,
 		   const double& c_1,
 		   const double& c_2,
@@ -58,10 +62,9 @@ PYBIND11_MODULE(_physics, m) {
 		}
 	);
 	m.def("_linearAmplitudes", &p::linearAmplitudes);
+	m.def("_linearCymatics", &p::linearCymatics);
 	m.def("_linearSeries", &p::linearSeries);
 	m.def("_rectangularAmplitudes", &p::rectangularAmplitudes);
-	m.def("_rectangularChladniPattern", &p::rectangularChladniPattern);
+	m.def("_rectangularCymatics", &p::rectangularCymatics);
 	m.def("_rectangularSeries", &p::rectangularSeries);
-	m.def("besselJ", &p::besselJ);
-	m.def("besselJZero", &p::besselJZero);
 }

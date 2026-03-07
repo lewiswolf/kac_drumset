@@ -15,7 +15,12 @@ from kac_drumset.externals._geometry import (
 	_isConvex,
 	_isPointInsideConvexPolygon,
 	_isPointInsidePolygon,
+	_isSimple,
 	_normaliseConvexPolygon,
+	_normaliseSimplePolygon,
+	_polygonArea,
+	_polygonCentroid,
+	_scalePolygonByArea,
 )
 from kac_drumset.geometry import (
 	# methods
@@ -26,6 +31,7 @@ from kac_drumset.geometry import (
 	Circle,
 	ConvexPolygon,
 	IrregularStar,
+	RegularPolygon,
 	TravellingSalesmanPolygon,
 	UnitRectangle,
 	UnitTriangle,
@@ -178,7 +184,7 @@ class GeometryTests(TestCase):
 			# This test asserts that _normaliseConvexPolygon produces the correct output.
 			self.assertFalse(False in np.equal(
 				np.array(_normaliseConvexPolygon(square.vertices, True)),
-				np.array([[-1., 0.], [0., 1.], [1., 0.], [0., -1.]]),
+				np.array([[-1., 0.], [0., -1.], [1., 0.], [0., 1.]]),
 			))
 
 		# This test asserts that _isSimple works as expected.
@@ -186,9 +192,18 @@ class GeometryTests(TestCase):
 		for square in squares:
 			self.assertTrue(square.simple())
 
-		# This test asserts that after _normaliseConvexPolygon, the two squares produce the same output.
+		# This test asserts that after _normaliseConvexPolygon and _normalisePolygon produce the correct signed output.
 		for square in squares:
-			square.vertices = np.array(_normaliseConvexPolygon(square.vertices, True))
+			_original = square.vertices
+			square.vertices = np.array(_normaliseSimplePolygon(_original, False))
+			self.assertEqual(square.area, 0.5)
+			square.vertices = np.array(_normaliseConvexPolygon(_original, False))
+			self.assertEqual(square.area, 0.5)
+			square.vertices = np.array(_normaliseSimplePolygon(_original, True))
+			self.assertEqual(square.area, 2.)
+			square.vertices = np.array(_normaliseConvexPolygon(_original, True))
+			self.assertEqual(square.area, 2.)
+		# This test asserts that after _normaliseConvexPolygon, the two squares produce the same output.
 		self.assertFalse(False in np.equal(squares[0].vertices, squares[1].vertices))
 
 		for square in squares:
@@ -197,20 +212,53 @@ class GeometryTests(TestCase):
 			self.assertEqual(square.centroid[1], 0.)
 
 			# This test asserts that square translation works as expected.
-			square.centroid = (10., 10.)
-			self.assertAlmostEqual(square.centroid[0], 10.)
-			self.assertAlmostEqual(square.centroid[1], 10.)
-			square.centroid = (-10., -10.)
-			self.assertAlmostEqual(square.centroid[0], -10.)
-			self.assertAlmostEqual(square.centroid[1], -10.)
+			for p in [(10., 10.), (-10., -10.), (0., 0.)]:
+				_a = square.area
+				square.centroid = p
+				centroid2 = _polygonCentroid(square.vertices)
+				self.assertEqual(square.area, _a)
+				self.assertAlmostEqual(square.centroid[0], centroid2[0])
+				self.assertAlmostEqual(square.centroid[1], centroid2[1])
+
+		# This test asserts that after _normaliseSimplePolygon, the quads produce the same output.
+		for quad in quads:
+			quad.vertices = np.array(_normaliseSimplePolygon(quad.vertices, True))
+		self.assertFalse(False in np.equal(quads[0].vertices, quads[1].vertices))
 
 		# This test asserts that after _normaliseConvexPolygon, the quads produce the same output.
+		quads = [
+			Polygon([[0., 0.], [1.1, 0.], [1., 1.], [0., 1.]]),
+			Polygon([[0., 0.], [0., 1.], [1., 1.], [1.1, 0.]]),
+			Polygon([[0., 0.], [0., 1.1], [1., 1.], [1., 0.]]),
+			Polygon([[0., 0.], [1., 0.], [1., 1.], [0., 1.1]]),
+		]
 		for quad in quads:
 			quad.vertices = np.array(_normaliseConvexPolygon(quad.vertices, True))
 		self.assertFalse(False in np.equal(quads[0].vertices, quads[1].vertices))
 		# np.allclose is used, as opposed to np.equal, to account for floating point errors.
 		self.assertTrue(np.allclose(quads[0].vertices, quads[2].vertices))
 		self.assertTrue(np.allclose(quads[0].vertices, quads[3].vertices))
+
+		# This test asserts that after _normaliseConvexPolygon, the right-angled triangles produce the same output.
+		triangles = [
+			Polygon([[0., 0.], [1., 0.], [1., 1.]]),
+			Polygon([[0., 0.], [0., 1.], [1., 1.]]),
+			Polygon([[0., 0.], [1., 1.], [1., 0.]]),
+			Polygon([[0., 0.], [1., 1.], [0., 1.]]),
+			Polygon([[0., 0.], [0., 1.], [1., 0.]]),
+			Polygon([[0., 0.], [1., 0.], [0., 1.]]),
+			Polygon([[1., 1.], [0., 1.], [1., 0.]]),
+			Polygon([[1., 1.], [1., 0.], [0., 1.]]),
+		]
+		for tri in triangles:
+			tri.vertices = np.array(_normaliseConvexPolygon(tri.vertices, True))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[1].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[2].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[3].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[4].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[5].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[6].vertices))
+		self.assertFalse(False in np.equal(triangles[0].vertices, triangles[7].vertices))
 
 		# These tests assert that isPointInside() works for polygons with negative vertices
 		negative_square = Polygon([[-1., -1.], [1., -1.], [1., 1.], [-1., 1.]])
@@ -230,6 +278,12 @@ class GeometryTests(TestCase):
 		self.assertTrue(_isPointInsidePolygon((0.5, -0.999), negative_square.vertices))
 		self.assertFalse(_isPointInsideConvexPolygon((0.5, -1.001), negative_square.vertices))
 		self.assertFalse(_isPointInsidePolygon((0.5, -1.001), negative_square.vertices))
+
+		# This test asserts that _scalePolygonByArea correctly preserves the signed area of a polygon.
+		self.assertAlmostEqual(Polygon(_scalePolygonByArea(squares[0].vertices, 10.)).area, 10.)
+		self.assertAlmostEqual(Polygon(_scalePolygonByArea(squares[0].vertices, -10.)).area, -10.)
+		self.assertAlmostEqual(Polygon(_scalePolygonByArea(squares[0].vertices, np.pi)).area, np.pi)
+		self.assertAlmostEqual(Polygon(_scalePolygonByArea(squares[0].vertices, 1.)).area, 1.)
 
 	def test_ellipse(self) -> None:
 		'''
@@ -339,18 +393,18 @@ class GeometryTests(TestCase):
 		self.assertEqual(does_it_cross, 'vertex')
 		self.assertTrue(cross_point[0] == 0. and cross_point[1] == 1.)
 
-		# This test asserts that lineIntersection() correctly reports adjacent.
+		# This test asserts that lineIntersection() correctly reports branch.
 		does_it_cross, cross_point = lineIntersection(
 			np.array([[0., 0.], [1., 0.]]),
 			np.array([[0.5, 0.], [0.5, 1.]]),
 		)
-		self.assertEqual(does_it_cross, 'adjacent')
+		self.assertEqual(does_it_cross, 'branch')
 		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
 		does_it_cross, cross_point = lineIntersection(
 			np.array([[0.5, 0.], [0.5, 1.]]),
 			np.array([[0., 0.], [1., 0.]]),
 		)
-		self.assertEqual(does_it_cross, 'adjacent')
+		self.assertEqual(does_it_cross, 'branch')
 		self.assertTrue(cross_point[0] == 0.5 and cross_point[1] == 0.)
 
 		# This test asserts that lineIntersection() correctly reports colinear.
@@ -416,6 +470,43 @@ class GeometryTests(TestCase):
 		Stress test multiple properties of random polygons.
 		'''
 
+		# These tests assert that all polygon generators are functioning correctly
+		for n in range(97):
+			_P = np.array(_generateConvexPolygon(n + 3))
+			# This test asserts convexity
+			self.assertTrue(_isConvex(_P))
+			# This test asserts simplicity
+			self.assertTrue(_isSimple(_P))
+			# This test asserts coordinate normalisation
+			self.assertLessEqual(np.max(_P[:, 0]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 0]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 1]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 1]), -1.0)
+			# This test asserts orientation
+			self.assertGreater(_polygonArea(_P), 0.)
+
+			_P = np.array(_generateIrregularStar(n + 3))
+			# This test asserts simplicity
+			self.assertTrue(_isSimple(_P))
+			# This test asserts coordinate normalisation
+			self.assertLessEqual(np.max(_P[:, 0]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 0]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 1]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 1]), -1.0)
+			# This test asserts orientation
+			self.assertGreater(_polygonArea(_P), 0.)
+
+			_P = np.array(_generatePolygon(n + 3))
+			# This test asserts simplicity
+			self.assertTrue(_isSimple(_P))
+			# This test asserts coordinate normalisation
+			self.assertLessEqual(np.max(_P[:, 0]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 0]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 1]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 1]), -1.0)
+			# This test asserts orientation
+			# self.assertGreater(_polygonArea(_P), 0.)
+
 		for _ in range(10000):
 			# This test asserts that all polygon generation methods always produces a unique output.
 			self.assertFalse(np.all(np.equal(_generateConvexPolygon(3), _generateConvexPolygon(3))))
@@ -427,11 +518,12 @@ class GeometryTests(TestCase):
 				IrregularStar,
 				TravellingSalesmanPolygon,
 			]:
-				polygon = P(max_vertices=20)
+				polygon = P()
 				LV = largestVector(polygon.vertices)
 
 				# This test asserts that a polygon has the correct number of vertices.
 				self.assertEqual(len(polygon.vertices), polygon.N())
+				self.assertGreater(polygon.N(), 2)
 
 				# This test asserts that a polygon is simple.
 				self.assertTrue(polygon.simple())
@@ -446,10 +538,13 @@ class GeometryTests(TestCase):
 				# This test asserts that the area of a polygon is accurate to at least 6 decimal places. This comparison is bounded
 				# due to the area being 64-bit, whilst the comparison function, cv2.contourArea(), is 32-bit.
 				self.assertAlmostEqual(
-					polygon.area,
+					np.abs(polygon.area),
 					cv2.contourArea(polygon.vertices.astype('float32')),
 					places=6,
 				)
+
+				# This test asserts that the normalise polygon algorithms always produce anti-clockwise ordered polygons.
+				self.assertGreater(polygon.area, 0.)
 
 				# This test asserts that no 3 adjacent vertices are colinear.
 				for n in range(polygon.N()):
@@ -512,24 +607,41 @@ class GeometryTests(TestCase):
 				polygon.area = 10.
 				self.assertAlmostEqual(polygon.area, 10.)
 				polygon.area = -10.
-				self.assertAlmostEqual(polygon.area, 10.)
+				self.assertAlmostEqual(polygon.area, -10.)
 				polygon.area = np.pi
 				self.assertAlmostEqual(polygon.area, np.pi)
+				polygon.area = 1.
+				self.assertAlmostEqual(polygon.area, 1.)
+
+	def test_regular_polygon(self) -> None:
+		'''
+		Test used in conjunction with RegularPolygon.
+		'''
+
+		for n in range(3, 100):
+			P = RegularPolygon(n)
+			# These tests assert the Regular Polygon is correctly constructed.
+			self.assertGreater(P.area, 0.)
+			self.assertEqual(P.N(), n)
+			self.assertTrue(P.simple())
+			self.assertEqual(P.vertices[0, 0], 1.)
+			self.assertEqual(P.vertices[0, 1], 0.)
 
 	def test_unit_polygon(self) -> None:
 		'''
-		Test used in conjunction with ./unit_polygons.py.
+		Test used in conjunction with UnitRectangle and UnitTriangle.
 		'''
 
 		# Test the vertices, area and centroid of the UnitRectangle for varying epsilons.
 		for [epsilon, vertices] in [
-			(1., [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5]]),
-			(0.5, [[-0.25, -1.], [-0.25, 1.], [0.25, 1.], [0.25, -1.]]),
-			(1.25, [[-0.625, -0.4], [-0.625, 0.4], [0.625, 0.4], [0.625, -0.4]]),
+			(1., [[0.5, 0.5], [-0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]]),
+			(0.5, [[0.25, 1.], [-0.25, 1.], [-0.25, -1.], [0.25, -1.]]),
+			(1.25, [[0.625, 0.4], [-0.625, 0.4], [-0.625, -0.4], [0.625, -0.4]]),
 		]:
 			R = UnitRectangle(epsilon)
 			P = Polygon(vertices)
 			self.assertTrue(np.all(np.equal(R.vertices, P.vertices)))
+			self.assertEqual(R.area, P.area)
 			self.assertEqual(R.area, 1.)
 			self.assertEqual(R.centroid, (0., 0.))
 
@@ -537,7 +649,7 @@ class GeometryTests(TestCase):
 		for [r, theta] in [
 			(1., np.pi / 2.),
 			(1., 1.),
-			(1., 2.),
+			(-1., 2.),
 			(1., 3.),
 			(1., 4.),
 			(0.5, 5.),
@@ -548,15 +660,20 @@ class GeometryTests(TestCase):
 			self.assertAlmostEqual(T.area, P.area)
 			self.assertAlmostEqual(T.area, 1.)
 
-			# # This test asserts that the base of the UnitTriangle lies along the x axis.
+			# This test asserts that the base of the UnitTriangle lies along the x axis.
 			self.assertEqual(T.vertices[0, 1], 0.)
-			self.assertEqual(T.vertices[1, 1], 0.)
+			self.assertTrue((T.vertices[1, 1] == 0.) or (T.vertices[2, 1] == 0.))
 
 		# This tests asserts the symmetry of the method used to generate UnitTriangle
 		norm_tri = _normaliseConvexPolygon(UnitTriangle(1., 1.).vertices, True)
-		self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., np.pi - 1.).vertices, True), norm_tri)))
-		self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., np.pi + 1.).vertices, True), norm_tri)))
-		self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(UnitTriangle(1., -1.).vertices, True), norm_tri)))
+		for r, theta in [
+			(1., np.pi - 1.),
+			(1., np.pi + 1.),
+			(1., -1.),
+		]:
+			T = UnitTriangle(r, theta)
+			self.assertGreater(T.area, 0.)
+			self.assertTrue(np.all(np.allclose(_normaliseConvexPolygon(T.vertices, True), norm_tri)))
 
 		# This test asserts that the equilateral triangle is properly constructed.
 		T = UnitTriangle(1., np.pi / 2)

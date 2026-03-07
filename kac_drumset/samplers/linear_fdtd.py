@@ -12,29 +12,26 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
-from ..geometry import Shape, ShapeSettings
-from ..physics import FDTDWaveform2D, raisedCosine
+from ..physics import FDTDWaveform1D, raisedCosine
 
 __all__ = [
-	'FDTDModel',
+	'LinearFDTD',
 ]
 
 
-class FDTDModel(AudioSampler):
+class LinearFDTD(AudioSampler):
 	'''
-	This class creates a 2D simulation of an arbitrarily shaped drum, calculated using a FDTD scheme.
+	This class creates a 1D simulation, calculated using a FDTD scheme.
 	'''
 
 	# user-defined variables
 	a: float						# maximum amplitude of the simulation ∈ [0, 1]
-	arbitrary_shape: type[Shape]	# what shape should the drum be in?
 	d_60: float						# decay time (seconds)
-	L: float						# size of the drum, spanning both the horizontal and vertical axes (m)
 	p: float						# material density of the simulated drum membrane (kg/m^2)
-	shape_settings: ShapeSettings	# the class settings for a given drum shape
 	strike_width: float				# width of the drum strike (m)
 	t: float						# tension at rest (N/m)
 	# FDTD inferences
+	L: float						# size of the drum, spanning both the horizontal and vertical axes (m)
 	c: float						# wavespeed (m/s)
 	cfl: float						# courant number
 	gamma: float					# scaled wavespeed (1/s)
@@ -49,10 +46,8 @@ class FDTDModel(AudioSampler):
 	c_2: float						# third coefficient
 	u_0: npt.NDArray[np.float64]	# initial conditions for each simulation
 	# drum properties
-	B: npt.NDArray[np.int8]			# boolean matrix define the boundary conditions for the drum
-	shape: Shape					# the shape of the drum
-	strike: tuple[float, float]		# where is the drum struck?
-	w: tuple[float, float]			# sample point of the 2D surface
+	strike: float					# where is the drum struck?
+	w: float						# sample point of the 2D surface
 
 	class Settings(SamplerSettings, total=False):
 		'''
@@ -61,11 +56,8 @@ class FDTDModel(AudioSampler):
 		'''
 
 		amplitude: float				# maximum amplitude of the simulation ∈ [0, 1]
-		arbitrary_shape: type[Shape]	# what shape should the drum be in?
 		decay_time: float				# how long will the simulation take to decay? (seconds)
-		drum_size: float				# size of the drum, spanning both the horizontal and vertical axes (m)
 		material_density: float			# material density of the simulated drum membrane (kg/m^2)
-		shape_settings: ShapeSettings	# the class generator settings for a given drum shape
 		strike_width: float				# width of the drum strike (m)
 		tension: float					# tension at rest (N/m)
 
@@ -73,12 +65,9 @@ class FDTDModel(AudioSampler):
 		self,
 		duration: float,
 		sample_rate: int,
-		arbitrary_shape: type[Shape],
 		amplitude: float = 1.,
 		decay_time: float = 2.,
-		drum_size: float = 0.3,
 		material_density: float = 0.2,
-		shape_settings: ShapeSettings | None = None,
 		strike_width: float = 0.02,
 		tension: float = 2000.,
 	) -> None:
@@ -87,23 +76,21 @@ class FDTDModel(AudioSampler):
 		'''
 
 		# initialise settings
-		_locals = locals()
-		_locals['arbitrary_shape'] = arbitrary_shape.__name__
-		super().__init__(**classLocalsToKwargs(_locals))
+		super().__init__(**classLocalsToKwargs(locals()))
 		# initialise user defined variables
 		self.a = amplitude
-		self.arbitrary_shape = arbitrary_shape
 		self.d_60 = decay_time
-		self.L = drum_size
 		self.p = material_density
-		self.shape_settings = shape_settings or {}
 		self.strike_width = strike_width
 		self.t = tension
+		self.w = 0.5
 		# initialise inferences
 		self.k = 1. / self.sample_rate
 		self.c = (self.t / self.p) ** 0.5
+
+	def __updateCoefficients__(self) -> None:
 		self.gamma = self.c / self.L
-		self.H = math.floor(1. / (self.gamma * self.k * (2. ** 0.5)))
+		self.H = math.floor(1. / (self.gamma * self.k))
 		self.h = 1. / self.H
 		self.cfl = self.gamma * self.k / self.h
 		self.sigma = self.strike_width * 0.5 / self.L
@@ -111,59 +98,43 @@ class FDTDModel(AudioSampler):
 		# FDTD update coefficients
 		log_decay = self.k * 6. * np.log(10.) / self.d_60
 		self.c_0 = (self.cfl ** 2.) / (1. + log_decay)
-		self.c_1 = (2. - 4. * (self.cfl ** 2.)) / (1. + log_decay)
+		self.c_1 = (2. - 2. * (self.cfl ** 2.)) / (1. + log_decay)
 		self.c_2 = (1. - log_decay) / (1. + log_decay)
-		self.u_0 = np.zeros((self.H + 2, self.H + 2))
+		self.u_0 = np.zeros((self.H + 2, ))
 
 	def generateWaveform(self) -> None:
-		''' Calculate the FDTD for a 2D polygon. '''
+		''' Calculate the FDTD for a 1D simulation. '''
 
-		if hasattr(self, 'shape'):
-			self.waveform = FDTDWaveform2D(
+		if hasattr(self, 'L'):
+			self.waveform = FDTDWaveform1D(
 				self.u_0,
-				np.pad(self.a * raisedCosine(
-					((self.strike[0] + 1.) * 0.5, (self.strike[1] + 1.) * 0.5),
-					(self.H, self.H),
-					sigma=self.sigma,
-				) / self.sigma_2, 1, mode='constant'),
-				self.B,
+				np.pad(
+					self.a * raisedCosine((self.strike, ), (self.H, ), sigma=self.sigma) / self.sigma_2,
+					1,
+					mode='constant',
+				),
 				self.c_0,
 				self.c_1,
 				self.c_2,
 				self.length,
-				((self.w[0] + 1.) * 0.5, (self.w[1] + 1.) * 0.5),
+				self.w,
 			)
 
 	def getLabels(self) -> dict[str, list[float | int]]:
 		''' This method returns the labels for the FDTD. '''
-
-		if hasattr(self, 'shape'):
-			labels = self.shape.__getLabels__()
-			labels.update({'sample_location': [*self.w], 'strike_location': [*self.strike]})
-		else:
-			labels = {}
-		return labels
+		return {'size': [self.L], 'strike_location': [self.strike]} if hasattr(self, 'L') else {}
 
 	def updateProperties(self, i: int | None = None) -> None:
 		'''
-		For every five drum samples generated, update the drum shape. And for every drum sample generated update the strike
-		location - the first strike location is always the centroid.
+		For every five drum samples generated, update the size of the drum. And for every drum sample generated update the
+		strike location - the first strike location is always the centroid.
 		'''
 
-		# lambda for maintaining that points are within the shape.
-		def pointInsideLambda(p: tuple[float, float]) -> tuple[float, float]:
-			while not self.shape.isPointInside(p):
-				p = (np.random.uniform(-1., 1.), np.random.uniform(-1., 1.))
-			return p
-
 		if i is None or i % 5 == 0:
-			# initialise a random drum shape and calculate the initial conditions.
-			self.shape = self.arbitrary_shape(**self.shape_settings)
-			self.B = np.pad(self.shape.draw(self.H), 1, mode='constant')
-			# if possible use the centroid as the primary listening and excitation position, otherwise use a random point.
-			centroid = self.shape.centroid
-			self.strike = pointInsideLambda(centroid)
-			self.w = pointInsideLambda(centroid)
+			# initialise a random drum size and strike location in the centroid of the drum.
+			self.L = np.random.uniform(0.1, 1.)
+			self.__updateCoefficients__()
+			self.strike = 0.5
 		else:
-			# update the strike location to be a random location.
-			self.strike = pointInsideLambda((np.random.uniform(-1., 1.), np.random.uniform(-1., 1.)))
+			# otherwise update the strike location to be a random location.
+			self.strike = np.random.uniform(0., 1.)

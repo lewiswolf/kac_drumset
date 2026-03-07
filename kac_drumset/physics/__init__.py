@@ -1,47 +1,45 @@
-from ..externals._physics import (
-	besselJ,
-	besselJZero,
-)
 from .fdtd import (
-	FDTD_2D,
+	FDTD,
+	FDTDWaveform1D,
 	FDTDWaveform2D,
 	raisedCosine,
 	raisedTriangle,
 )
 from .modes import (
-	AdditiveSynthesis1D,
-	AdditiveSynthesis2D,
+	AdditiveSynthesis,
+	ChladniPattern,
 	circularAmplitudes,
-	circularChladniPattern,
+	circularCymatics,
 	circularSeries,
 	equilateralTriangleAmplitudes,
 	equilateralTriangleSeries,
 	linearAmplitudes,
+	linearCymatics,
 	linearSeries,
 	rectangularAmplitudes,
-	rectangularChladniPattern,
+	rectangularCymatics,
 	rectangularSeries,
 )
 
 __all__ = [
 	# methods
-	'AdditiveSynthesis1D',
-	'AdditiveSynthesis2D',
-	'besselJ',
-	'besselJZero',
-	'circularChladniPattern',
+	'AdditiveSynthesis',
+	'ChladniPattern',
+	'FDTDWaveform1D',
+	'FDTDWaveform2D',
+	'circularCymatics',
 	'circularAmplitudes',
 	'circularSeries',
 	'equilateralTriangleAmplitudes',
 	'equilateralTriangleSeries',
-	'FDTDWaveform2D',
 	'linearAmplitudes',
+	'linearCymatics',
 	'linearSeries',
 	'raisedCosine',
 	'raisedTriangle',
 	'rectangularAmplitudes',
-	'rectangularChladniPattern',
+	'rectangularCymatics',
 	'rectangularSeries',
 	# classes
-	'FDTD_2D',
+	'FDTD',
 ]
