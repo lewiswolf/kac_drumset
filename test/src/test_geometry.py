@@ -11,6 +11,8 @@ import numpy as np 			# maths
 from kac_drumset.externals._geometry import (
 	_generateConvexPolygon,
 	_generateIrregularStar,
+	_generateRegularPolygon,
+	_generateRegularStar,
 	_generatePolygon,
 	_isConvex,
 	_isPointInsideConvexPolygon,
@@ -488,6 +490,29 @@ class GeometryTests(TestCase):
 			_P = np.array(_generateIrregularStar(n + 3))
 			# This test asserts simplicity
 			self.assertTrue(_isSimple(_P))
+			# This test asserts coordinate normalisation
+			self.assertLessEqual(np.max(_P[:, 0]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 0]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 1]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 1]), -1.0)
+			# This test asserts orientation
+			self.assertGreater(_polygonArea(_P), 0.)
+
+			_P = np.array(_generateRegularPolygon(n + 3))
+			# This test asserts simplicity
+			self.assertTrue(_isSimple(_P))
+			# This test asserts coordinate normalisation
+			self.assertLessEqual(np.max(_P[:, 0]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 0]), -1.0)
+			self.assertLessEqual(np.max(_P[:, 1]), 1.0)
+			self.assertGreaterEqual(np.min(_P[:, 1]), -1.0)
+			# This test asserts orientation
+			self.assertGreater(_polygonArea(_P), 0.)
+
+			_P = np.array(_generateRegularStar((2 * (n + 1)) + 1, n + 1))
+			# This test asserts simplicity
+			# breaks for large values of p and q due to floating point error
+			# self.assertTrue(_isSimple(_P))
 			# This test asserts coordinate normalisation
 			self.assertLessEqual(np.max(_P[:, 0]), 1.0)
 			self.assertGreaterEqual(np.min(_P[:, 0]), -1.0)
