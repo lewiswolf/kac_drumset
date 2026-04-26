@@ -101,7 +101,6 @@ def weylCondition(S_1: Shape, S_2: Shape) -> bool:
 ### Classes
 
 ```python
-
 class Circle(Ellipse):
 	'''
 	A base class for a circle, instantiated with a radius.
