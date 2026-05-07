@@ -127,13 +127,13 @@ class FDTD():
 		if self._n < self.T:
 			self._n += 1
 			self.u_0 = _FDTDUpdate1D(
-				cast(list[float], self.u_0),
+				self.u_0,
 				cast(list[float], self.u_1),
 				self.c_0,
 				self.c_1,
 				self.c_2,
 			) if isinstance(self.u_0[0], float) else _FDTDUpdate2D(
-				cast(list[list[float]], self.u_0),
+				self.u_0,
 				cast(list[list[float]], self.u_1),
 				cast(list[list[int]], self.B),
 				self.c_0,
