@@ -37,7 +37,7 @@ setup(
 	description=short_description,
 	long_description=long_description,
 	include_package_data=True,
-	install_requires=['kac_prediction', 'numpy>=2.3', 'opencv-python>=4.11'],
+	install_requires=['kac_prediction', 'numpy>=2.5', 'opencv-python>=5.0'],
 	keywords=['kac_drumset'],
 	long_description_content_type='text/markdown',
 	name=name,

@@ -7,11 +7,9 @@ if [ ! -d ./_skbuild ]; then
 fi
 
 # locate install dir
-VENV_DIR=$(pipenv --venv)
+SITE_PACKAGES=$(pipenv run python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
 
 # build
-cmake -S . -B _skbuild \
-	-DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_INSTALL_PREFIX="$VENV_DIR/lib/python3.14/site-packages"
+cmake -S . -B _skbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$SITE_PACKAGES"
 cmake --build _skbuild -j4
 cmake --install _skbuild
