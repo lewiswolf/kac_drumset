@@ -12,12 +12,32 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
-from ..geometry import Shape, ShapeSettings
+from ..geometry import (
+	Circle,
+	ConvexPolygon,
+	Ellipse,
+	IrregularStar,
+	RegularPolygon,
+	RegularStar,
+	Shape,
+	ShapeSettings,
+	TravellingSalesmanPolygon,
+)
 from ..physics import FDTDWaveform2D, raisedCosine
 
 __all__ = [
 	'FDTDModel',
 ]
+
+_SHAPES: dict[str, type[Shape]] = {
+	'Circle': Circle,
+	'ConvexPolygon': ConvexPolygon,
+	'Ellipse': Ellipse,
+	'IrregularStar': IrregularStar,
+	'RegularPolygon': RegularPolygon,
+	'RegularStar': RegularStar,
+	'TravellingSalesmanPolygon': TravellingSalesmanPolygon,
+}
 
 
 class FDTDModel(AudioSampler):
@@ -61,20 +81,20 @@ class FDTDModel(AudioSampler):
 		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
 		'''
 
-		amplitude: float				# maximum amplitude of the simulation ∈ [0, 1]
-		arbitrary_shape: type[Shape]	# what shape should the drum be in?
-		decay_time: float				# how long will the simulation take to decay? (seconds)
-		drum_size: float				# area of the drum (m^2)
-		material_density: float			# material density of the simulated drum membrane (kg/m^2)
-		shape_settings: ShapeSettings	# the class generator settings for a given drum shape
-		strike_width: float				# width of the drum strike (m)
-		tension: float					# tension at rest (N/m)
+		amplitude: float					# maximum amplitude of the simulation ∈ [0, 1]
+		arbitrary_shape: type[Shape] | str	# what shape should the drum be in?
+		decay_time: float					# how long will the simulation take to decay? (seconds)
+		drum_size: float					# area of the drum (m^2)
+		material_density: float				# material density of the simulated drum membrane (kg/m^2)
+		shape_settings: ShapeSettings		# the class generator settings for a given drum shape
+		strike_width: float					# width of the drum strike (m)
+		tension: float						# tension at rest (N/m)
 
 	def __init__(
 		self,
 		duration: float,
 		sample_rate: int,
-		arbitrary_shape: type[Shape],
+		arbitrary_shape: type[Shape] | str,
 		amplitude: float = 1.,
 		decay_time: float = 2.,
 		drum_size: float = 0.3,
@@ -88,6 +108,11 @@ class FDTDModel(AudioSampler):
 		'''
 
 		# initialise settings
+		if isinstance(arbitrary_shape, str):
+			try:
+				arbitrary_shape = _SHAPES[arbitrary_shape]
+			except KeyError:
+				raise ValueError(f'Unknown shape: {arbitrary_shape!r}')
 		_locals = locals()
 		_locals['arbitrary_shape'] = arbitrary_shape.__name__
 		super().__init__(**classLocalsToKwargs(_locals))
