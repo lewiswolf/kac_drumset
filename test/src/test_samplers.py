@@ -23,7 +23,9 @@ from kac_drumset.samplers import (
 	LinearModel,
 	PoissonModel,
 )
+from kac_prediction.dataset import generateDataset, regenerateDataPoints
 from kac_prediction.utils import clearDirectory
+from .utils import withoutPrinting
 
 
 class SamplerTests(TestCase):
@@ -228,6 +230,29 @@ class SamplerTests(TestCase):
 							# This test asserts that the waveform is not silent.
 							# fails sporadically
 							# self.assertTrue(np.any(model.waveform))
+
+		# test data point regeneration when using a shape class as a kwarg
+		with withoutPrinting():
+			dataset = generateDataset(
+				FDTDModel,
+				dataset_dir=f'{self.tmp_dir}/regenerate_test',
+				dataset_size=5,
+				sampler_settings=FDTDModel.Settings({
+					'amplitude': 1.,
+					'arbitrary_shape': RegularStar,
+					'decay_time': 2.,
+					'drum_size': 0.01,
+					'duration': 1.,
+					'material_density': 0.2,
+					'sample_rate': 48000,
+					'shape_settings': RegularStar.Settings({
+						'max_vertices': 20,
+					}),
+					'strike_width': 0.02,
+					'tension': 2000.,
+				}),
+			)
+			regenerateDataPoints(dataset, FDTDModel, [i for i in range(5)])
 
 	def test_lamé_model(self) -> None:
 		'''
