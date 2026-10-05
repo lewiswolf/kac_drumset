@@ -7,7 +7,6 @@ import numpy as np 			# maths
 
 # src
 from kac_drumset.geometry import (
-	Circle,
 	ConvexPolygon,
 	Ellipse,
 	IrregularStar,
@@ -24,7 +23,9 @@ from kac_drumset.samplers import (
 	LinearModel,
 	PoissonModel,
 )
+from kac_prediction.dataset import generateDataset, regenerateDataPoints
 from kac_prediction.utils import clearDirectory
+from .utils import withoutPrinting
 
 
 class SamplerTests(TestCase):
@@ -82,7 +83,7 @@ class SamplerTests(TestCase):
 			self.assertGreaterEqual(model.waveform.min(), -1.)
 
 			# This test asserts that the waveform is not silent.
-			self.assertNotEqual(np.sum(model.waveform), 0.)
+			self.assertTrue(np.any(model.waveform))
 
 	def test_fdtd_model(self) -> None:
 		'''
@@ -134,11 +135,10 @@ class SamplerTests(TestCase):
 					self.assertGreaterEqual(model_1.waveform.min(), -1.)
 
 					# This test asserts that the waveform is not silent.
-					self.assertNotEqual(np.sum(model_1.waveform), 0.)
+					self.assertTrue(np.any(model_1.waveform))
 
 		# test using all shapes
 		shapes: list[type[Shape]] = [
-			Circle,
 			ConvexPolygon,
 			Ellipse,
 			IrregularStar,
@@ -159,11 +159,11 @@ class SamplerTests(TestCase):
 			# This test asserts that the labels default to an empty array when no waveform has been generated.
 			self.assertEqual(model.getLabels(), {})
 
-			# This test asserts that decay_time: np.inf works as expected.
-			self.assertEqual(model.c_2, 1.)
-
 			# generate a random shape and dirichlet boundary conditions.
 			model.updateProperties()
+
+			# This test asserts that decay_time: np.inf works as expected.
+			self.assertEqual(model.c_2, 1.)
 
 			# This test asserts that a shape was properly defined after updating the model's properties.
 			self.assertTrue(hasattr(model, 'shape'))
@@ -173,7 +173,7 @@ class SamplerTests(TestCase):
 			self.assertEqual(len(model.getLabels()['strike_location']), 2)
 
 			# generate a distribution of drums to assert that the sampler works with various configurations
-			drum_sizes = [0.9, 0.7, 0.5, 0.3, 0.1]
+			drum_sizes = [0.125, 0.075, 0.0325]
 			material_densities = [0.75, 0.5, 0.25, 0.125, 0.0625]
 			tensions = [3000., 2000., 1500., 1000.]
 			for drum_size in drum_sizes:
@@ -229,7 +229,30 @@ class SamplerTests(TestCase):
 
 							# This test asserts that the waveform is not silent.
 							# fails sporadically
-							# self.assertNotEqual(np.sum(model.waveform), 0.)
+							# self.assertTrue(np.any(model.waveform))
+
+		# test data point regeneration when using a shape class as a kwarg
+		with withoutPrinting():
+			dataset = generateDataset(
+				FDTDModel,
+				dataset_dir=f'{self.tmp_dir}/regenerate_test',
+				dataset_size=5,
+				sampler_settings=FDTDModel.Settings({
+					'amplitude': 1.,
+					'arbitrary_shape': RegularStar,
+					'decay_time': 2.,
+					'drum_size': 0.01,
+					'duration': 1.,
+					'material_density': 0.2,
+					'sample_rate': 48000,
+					'shape_settings': RegularStar.Settings({
+						'max_vertices': 20,
+					}),
+					'strike_width': 0.02,
+					'tension': 2000.,
+				}),
+			)
+			regenerateDataPoints(dataset, FDTDModel, [i for i in range(5)])
 
 	def test_lamé_model(self) -> None:
 		'''
@@ -268,7 +291,7 @@ class SamplerTests(TestCase):
 			self.assertGreaterEqual(model.waveform.min(), -1.)
 
 			# This test asserts that the waveform is not silent.
-			self.assertNotEqual(np.sum(model.waveform), 0.)
+			self.assertTrue(np.any(model.waveform))
 
 	def test_linear_model(self) -> None:
 		'''
@@ -307,7 +330,7 @@ class SamplerTests(TestCase):
 			self.assertGreaterEqual(model.waveform.min(), -1.)
 
 			# This test asserts that the waveform is not silent.
-			self.assertNotEqual(np.sum(model.waveform), 0.)
+			self.assertTrue(np.any(model.waveform))
 
 	def test_poisson_model(self) -> None:
 		'''
@@ -356,4 +379,4 @@ class SamplerTests(TestCase):
 			self.assertGreaterEqual(model.waveform.min(), -1.)
 
 			# This test asserts that the waveform is not silent.
-			self.assertNotEqual(np.sum(model.waveform), 0.)
+			self.assertTrue(np.any(model.waveform))

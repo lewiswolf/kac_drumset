@@ -12,12 +12,32 @@ import numpy.typing as npt	# typing for numpy
 
 # src
 from kac_prediction.dataset import classLocalsToKwargs, AudioSampler, SamplerSettings
-from ..geometry import Shape, ShapeSettings
+from ..geometry import (
+	Circle,
+	ConvexPolygon,
+	Ellipse,
+	IrregularStar,
+	RegularPolygon,
+	RegularStar,
+	Shape,
+	ShapeSettings,
+	TravellingSalesmanPolygon,
+)
 from ..physics import FDTDWaveform2D, raisedCosine
 
 __all__ = [
 	'FDTDModel',
 ]
+
+_SHAPES: dict[str, type[Shape]] = {
+	'Circle': Circle,
+	'ConvexPolygon': ConvexPolygon,
+	'Ellipse': Ellipse,
+	'IrregularStar': IrregularStar,
+	'RegularPolygon': RegularPolygon,
+	'RegularStar': RegularStar,
+	'TravellingSalesmanPolygon': TravellingSalesmanPolygon,
+}
 
 
 class FDTDModel(AudioSampler):
@@ -29,12 +49,13 @@ class FDTDModel(AudioSampler):
 	a: float						# maximum amplitude of the simulation ∈ [0, 1]
 	arbitrary_shape: type[Shape]	# what shape should the drum be in?
 	d_60: float						# decay time (seconds)
-	L: float						# size of the drum, spanning both the horizontal and vertical axes (m)
+	A: float						# area of the drum (m^2)
 	p: float						# material density of the simulated drum membrane (kg/m^2)
 	shape_settings: ShapeSettings	# the class settings for a given drum shape
 	strike_width: float				# width of the drum strike (m)
 	t: float						# tension at rest (N/m)
 	# FDTD inferences
+	L: float						# size of the drum, spanning both the horizontal and vertical axes (m)
 	c: float						# wavespeed (m/s)
 	cfl: float						# courant number
 	gamma: float					# scaled wavespeed (1/s)
@@ -60,20 +81,20 @@ class FDTDModel(AudioSampler):
 		for type safety when using a custom AudioSampler with an arbitrary __init__() method.
 		'''
 
-		amplitude: float				# maximum amplitude of the simulation ∈ [0, 1]
-		arbitrary_shape: type[Shape]	# what shape should the drum be in?
-		decay_time: float				# how long will the simulation take to decay? (seconds)
-		drum_size: float				# size of the drum, spanning both the horizontal and vertical axes (m)
-		material_density: float			# material density of the simulated drum membrane (kg/m^2)
-		shape_settings: ShapeSettings	# the class generator settings for a given drum shape
-		strike_width: float				# width of the drum strike (m)
-		tension: float					# tension at rest (N/m)
+		amplitude: float					# maximum amplitude of the simulation ∈ [0, 1]
+		arbitrary_shape: type[Shape] | str	# what shape should the drum be in?
+		decay_time: float					# how long will the simulation take to decay? (seconds)
+		drum_size: float					# area of the drum (m^2)
+		material_density: float				# material density of the simulated drum membrane (kg/m^2)
+		shape_settings: ShapeSettings		# the class generator settings for a given drum shape
+		strike_width: float					# width of the drum strike (m)
+		tension: float						# tension at rest (N/m)
 
 	def __init__(
 		self,
 		duration: float,
 		sample_rate: int,
-		arbitrary_shape: type[Shape],
+		arbitrary_shape: type[Shape] | str,
 		amplitude: float = 1.,
 		decay_time: float = 2.,
 		drum_size: float = 0.3,
@@ -87,6 +108,11 @@ class FDTDModel(AudioSampler):
 		'''
 
 		# initialise settings
+		if isinstance(arbitrary_shape, str):
+			try:
+				arbitrary_shape = _SHAPES[arbitrary_shape]
+			except KeyError:
+				raise ValueError(f'Unknown shape: {arbitrary_shape!r}')
 		_locals = locals()
 		_locals['arbitrary_shape'] = arbitrary_shape.__name__
 		super().__init__(**classLocalsToKwargs(_locals))
@@ -94,7 +120,7 @@ class FDTDModel(AudioSampler):
 		self.a = amplitude
 		self.arbitrary_shape = arbitrary_shape
 		self.d_60 = decay_time
-		self.L = drum_size
+		self.A = drum_size
 		self.p = material_density
 		self.shape_settings = shape_settings or {}
 		self.strike_width = strike_width
@@ -102,18 +128,6 @@ class FDTDModel(AudioSampler):
 		# initialise inferences
 		self.k = 1. / self.sample_rate
 		self.c = (self.t / self.p) ** 0.5
-		self.gamma = self.c / self.L
-		self.H = math.floor(1. / (self.gamma * self.k * (2. ** 0.5)))
-		self.h = 1. / self.H
-		self.cfl = self.gamma * self.k / self.h
-		self.sigma = self.strike_width * 0.5 / self.L
-		self.sigma_2 = max((self.sigma * self.H) ** 2., 1.)
-		# FDTD update coefficients
-		log_decay = self.k * 6. * np.log(10.) / self.d_60
-		self.c_0 = (self.cfl ** 2.) / (1. + log_decay)
-		self.c_1 = (2. - 4. * (self.cfl ** 2.)) / (1. + log_decay)
-		self.c_2 = (1. - log_decay) / (1. + log_decay)
-		self.u_0 = np.zeros((self.H + 2, self.H + 2))
 
 	def generateWaveform(self) -> None:
 		''' Calculate the FDTD for a 2D polygon. '''
@@ -159,6 +173,20 @@ class FDTDModel(AudioSampler):
 		if i is None or i % 5 == 0:
 			# initialise a random drum shape and calculate the initial conditions.
 			self.shape = self.arbitrary_shape(**self.shape_settings)
+			# initialise inferences
+			self.L = 2. * math.sqrt(self.A / self.shape.area)
+			self.gamma = self.c / self.L
+			self.H = math.floor(1. / (self.gamma * self.k * (2. ** 0.5)))
+			self.h = 1. / self.H
+			self.cfl = min(self.gamma * self.k / self.h, 1. / (2 ** 0.5))
+			self.sigma = self.strike_width * 0.5 / self.L
+			self.sigma_2 = max((self.sigma * self.H) ** 2., 1.)
+			# FDTD update coefficients
+			log_decay = self.k * 6. * np.log(10.) / self.d_60
+			self.c_0 = (self.cfl ** 2.) / (1. + log_decay)
+			self.c_1 = (2. - 4. * (self.cfl ** 2.)) / (1. + log_decay)
+			self.c_2 = (1. - log_decay) / (1. + log_decay)
+			self.u_0 = np.zeros((self.H + 2, self.H + 2))
 			self.B = np.pad(self.shape.draw(self.H), 1, mode='constant')
 			# if possible use the centroid as the primary listening and excitation position, otherwise use a random point.
 			centroid = self.shape.centroid
